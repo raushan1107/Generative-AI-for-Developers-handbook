@@ -1,6 +1,6 @@
 # Generative AI for Developers handbook: build guide
 
-Notes for myself (not published on the site): how this handbook is built and how to add Parts II–V in the same style. Part I (setup, Modules 01–03, the project, labs and capstone pages) is live. Parts II (Modules 04–05) and III (Modules 06–07, Milestones 6–7) are built as **drafts**: complete and tested, but not linked from live pages yet (see "Draft modules" below). The **open-source lab guide** (section 8) is also a draft.
+Notes for myself (not published on the site): how this handbook is built and how to add Parts II–V in the same style. Part I (setup, Modules 01–03, the project, labs and capstone pages) is live. Parts II (Modules 04–05) and III (Modules 06–07) and the **open-source lab guide** (section 8) went live on 2026-10-12. New Parts start as drafts (see "Draft modules" below).
 
 ---
 
@@ -197,5 +197,5 @@ A second, separate track for learners without Azure or paid API access, written 
 - Code: `code/oss-labs/` is the learner's project folder `oss-genai-labs`: `client.py` (LLM_BASE_URL / LLM_API_KEY / CHAT_MODEL / AGENT_MODEL / EMBED_*), `.env.example`, `requirements.txt`, `lab0_check.py`, `lN_*.py` per lab, `data/` (courses, help articles, 3 internal docs). Programs are self-contained, simpler than the handbook drills, and Ollama-first.
 - Keys: Ollama needs none (the placeholder `ollama` satisfies the OpenAI library). Option B, documented in Lab 0, is a hosted open-model provider with a free key (Groq, OpenRouter); embeddings stay on Ollama.
 - Models: `llama3.2` (chat, 8 GB RAM), `nomic-embed-text` (embeddings), `qwen2.5:7b` (agents, 16 GB RAM).
-- The whole section is a **draft** (`"draft": true` on the nav section, plus `"code_dirs": ["code/oss-labs"]`): its pages are hidden from live sidebars and `tools/stage_site.py` leaves its pages and code out of the site. To publish it, remove `"draft": true` from the section (Lab 2 and 3 pages link to nothing in draft modules, but check the build output).
+- Live since 2026-10-12. The section keeps `"code_dirs": ["code/oss-labs"]`, so if it is ever set back to `"draft": true`, `tools/stage_site.py` hides its pages and code again. When a new Part is built as a draft, put its new lab on a draft section of its own, or keep the whole guide live and add the lab when the Part goes live.
 - Draft sections work like draft modules: any nav section can carry `"draft": true`.

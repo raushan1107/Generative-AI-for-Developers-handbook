@@ -9,6 +9,7 @@
   <div class="hero-actions">
     <a class="btn primary" href="modules/01/index.html">Start Module 01</a>
     <a class="btn" href="setup/index.html">Set up your lab</a>
+    <a class="btn" href="oss/index.html">Open-source labs</a>
     <a class="btn" href="start/how-it-works.html">How this handbook works</a>
   </div>
 </section>
@@ -70,14 +71,14 @@
       <rect x="208" y="20" width="186" height="210" rx="14" class="s-teal"/>
       <text x="224" y="46" class="t-m t-teal">PART II</text>
       <text x="224" y="68" class="t-b">Connect</text>
-      <rect x="222" y="84" width="158" height="38" rx="9" class="s-surface2"/><text x="234" y="108" class="t"><tspan class="t-m">04</tspan> Structured out</text>
-      <rect x="222" y="130" width="158" height="38" rx="9" class="s-surface2"/><text x="234" y="154" class="t"><tspan class="t-m">05</tspan> Embeddings</text>
+      <rect x="222" y="84" width="158" height="38" rx="9" class="s-surface"/><text x="234" y="108" class="t"><tspan class="t-m">04</tspan> Structured out</text>
+      <rect x="222" y="130" width="158" height="38" rx="9" class="s-surface"/><text x="234" y="154" class="t"><tspan class="t-m">05</tspan> Embeddings</text>
 
       <rect x="406" y="20" width="186" height="210" rx="14" class="s-violet"/>
       <text x="422" y="46" class="t-m t-violet">PART III</text>
       <text x="422" y="68" class="t-b">Ground and act</text>
-      <rect x="420" y="84" width="158" height="38" rx="9" class="s-surface2"/><text x="432" y="108" class="t"><tspan class="t-m">06</tspan> RAG</text>
-      <rect x="420" y="130" width="158" height="38" rx="9" class="s-surface2"/><text x="432" y="154" class="t"><tspan class="t-m">07</tspan> AI agents</text>
+      <rect x="420" y="84" width="158" height="38" rx="9" class="s-surface"/><text x="432" y="108" class="t"><tspan class="t-m">06</tspan> RAG</text>
+      <rect x="420" y="130" width="158" height="38" rx="9" class="s-surface"/><text x="432" y="154" class="t"><tspan class="t-m">07</tspan> AI agents</text>
 
       <rect x="604" y="20" width="186" height="210" rx="14" class="s-amber"/>
       <text x="620" y="46" class="t-m t-amber">PART IV</text>
@@ -105,14 +106,43 @@
 </figure>
 
 <div class="section-head">
-  <h2>Start with Part I</h2>
-  <p>Foundations: how LLMs think, how to call them like a professional, and how to write prompts that behave.</p>
+  <h2>Part I · Foundations</h2>
+  <p>How LLMs think, how to call them like a professional, and how to write prompts that behave.</p>
 </div>
 <div class="page-cards">
   <a class="page-card" href="setup/index.html"><span class="pc-tag">Before you begin · ~30 min</span><b>Lab setup</b><ul><li>Azure or open track · VS Code · AI coding assistant · smoke test</li></ul></a>
   <a class="page-card" href="modules/01/index.html"><span class="pc-tag">Module 01 · 9 topics · 13 drills</span><b>Introduction to Generative AI</b><ul><li>Tokens, generation, training vs inference, model choice, multimodal</li></ul></a>
   <a class="page-card" href="modules/02/index.html"><span class="pc-tag">Module 02 · 9 topics · 15 drills</span><b>Working with LLM APIs</b><ul><li>Auth, roles, parameters, streaming, errors, retries, cost</li></ul></a>
   <a class="page-card" href="modules/03/index.html"><span class="pc-tag">Module 03 · 10 topics · 13 drills</span><b>Prompt Engineering</b><ul><li>Few-shot, chain-of-thought, templates, JSON output, injection</li></ul></a>
+</div>
+
+<div class="section-head">
+  <h2>Part II · Connect the model to your app</h2>
+  <p>Data your code can trust, functions the model can call, and search by meaning.</p>
+</div>
+<div class="page-cards">
+  <a class="page-card" href="modules/04/index.html"><span class="pc-tag">Module 04 · 7 topics · 10 drills</span><b>Structured Outputs and Function Calling</b><ul><li>JSON and schemas, tools, validation, malformed output</li></ul></a>
+  <a class="page-card" href="modules/05/index.html"><span class="pc-tag">Module 05 · 8 topics · 9 drills</span><b>Embeddings and Semantic Search</b><ul><li>Similarity, vector databases, chunking, filters, hybrid search</li></ul></a>
+</div>
+
+<div class="section-head">
+  <h2>Part III · Ground it and let it act</h2>
+  <p>Answers from your own documents, and an assistant that acts with a human's approval.</p>
+</div>
+<div class="page-cards">
+  <a class="page-card" href="modules/06/index.html"><span class="pc-tag">Module 06 · 9 topics · 10 drills</span><b>Retrieval-Augmented Generation</b><ul><li>Ingestion, chunking, retrieval, prompt construction, citations</li></ul></a>
+  <a class="page-card" href="modules/07/index.html"><span class="pc-tag">Module 07 · 8 topics · 8 drills</span><b>Building AI Agents</b><ul><li>Planning, tools, workflows, memory, approvals, reliability</li></ul></a>
+</div>
+
+<div class="section-head">
+  <h2>No cloud subscription? Use the open-source labs</h2>
+  <p>Step-by-step lab guides with free, open models running on your own computer through Ollama: one lab of about three hours per Part.</p>
+</div>
+<div class="page-cards">
+  <a class="page-card" href="oss/lab-0-setup.html"><span class="pc-tag">Lab 0 · 30–60 min</span><b>Set up Ollama and Python</b><ul><li>Install, download models, configure, check</li></ul></a>
+  <a class="page-card" href="oss/lab-1.html"><span class="pc-tag">Lab 1 · Part I · ≈ 3 h</span><b>Prompts, APIs and JSON</b><ul><li>First prompt, streaming chat app, structured triage</li></ul></a>
+  <a class="page-card" href="oss/lab-2.html"><span class="pc-tag">Lab 2 · Part II · ≈ 3 h</span><b>Tools and semantic search</b><ul><li>Schemas, function calling, embeddings, a search app</li></ul></a>
+  <a class="page-card" href="oss/lab-3.html"><span class="pc-tag">Lab 3 · Part III · ≈ 3 h</span><b>RAG and agents</b><ul><li>Knowledge assistant with citations, an agent with approval</li></ul></a>
 </div>
 
 <div class="section-head">
