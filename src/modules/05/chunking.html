@@ -1,0 +1,138 @@
+<!--meta
+{"id": "m05-chunk", "short": "Chunking Strategies", "h1": "Chunking Strategies", "description": "Module 05, topic 6: why documents are split into chunks before embedding, fixed-size with overlap, sentence-based and structure-based chunking, chunk size trade-offs, keeping context in each chunk, and a drill that measures four strategies on 20 help-centre questions.", "lead": "You don't embed a whole manual as one vector; its meaning would blur into 'something about everything'. You cut it into chunks, and how you cut decides what can be found. Too small and a chunk loses its context; too big and the answer drowns. You'll measure four strategies on TrainCrest's help centre and let the hit rate decide.", "chips": ["Fixed · sentences · headings", "Size and overlap", "Measure hit rate", "Drill 05.7"], "time": "Learn 10 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>How you cut decides what you find.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Chunking</strong> splits documents into smaller passages that are embedded and indexed separately. Common strategies are <strong>fixed-size</strong> (a number of characters or tokens, often with <strong>overlap</strong>), <strong>sentence or paragraph</strong> based, and <strong>structure-based</strong> (by headings, sections, pages or code functions). Each chunk keeps a link to its source document.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>One vector per whole article means one blurry summary. One vector per section means a sharp vector for "how much do I get back?" and another for "when does the money arrive?", so a question can land on exactly the right one.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Index cards for a cookbook. One card per book ("Italian food") won't help you find the risotto. One card per word is useless too. One card per recipe, with the book title on top, is just right: specific enough to find, complete enough to cook from.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 280" role="img" aria-labelledby="ch-t ch-d">
+      <title id="ch-t">Three ways to chunk the same article</title>
+      <desc id="ch-d">The refunds article is split three ways. Fixed-size chunks of about 300 characters cut across sections and sometimes through the middle of a rule, with some overlap between neighbours. Sentence-based chunks keep whole sentences but can still mix sections. Heading-based chunks follow the article's own sections, and each chunk starts with the article and section title, so it makes sense on its own.</desc>
+      <text x="20" y="34" class="t-m">FIXED 300 CHARS</text>
+      <rect x="20" y="44" width="290" height="44" rx="8" class="s-amber"/><text x="32" y="70" class="t-s">...start date is the first day of...</text>
+      <rect x="20" y="96" width="290" height="44" rx="8" class="s-amber"/><text x="32" y="122" class="t-s">...class. ## How much you get back...</text>
+      <rect x="20" y="148" width="290" height="44" rx="8" class="s-amber"/><text x="32" y="174" class="t-s">...days: 100% refund. - Cancel 7...</text>
+      <text x="20" y="214" class="t-s">cuts through rules and sections</text>
+      <text x="335" y="34" class="t-m">SENTENCES (≤ 400 CHARS)</text>
+      <rect x="335" y="44" width="290" height="44" rx="8" class="s-blue"/><text x="347" y="70" class="t-s">Cancel 14+ days before... 100% refund.</text>
+      <rect x="335" y="96" width="290" height="44" rx="8" class="s-blue"/><text x="347" y="122" class="t-s">Cancel 7 to 13 days... 50% refund.</text>
+      <rect x="335" y="148" width="290" height="44" rx="8" class="s-blue"/><text x="347" y="174" class="t-s">## How to cancel  Open My Learning...</text>
+      <text x="335" y="214" class="t-s">whole sentences · sections can still mix</text>
+      <text x="650" y="34" class="t-m">BY HEADINGS</text>
+      <rect x="650" y="44" width="290" height="62" rx="8" class="s-green"/><text x="662" y="68" class="t-b">Refunds › How much you get back</text><text x="662" y="88" class="t-s">14+ days: 100%. 7–13 days: 50%. Under 7...</text>
+      <rect x="650" y="114" width="290" height="62" rx="8" class="s-green"/><text x="662" y="138" class="t-b">Refunds › When the money arrives</text><text x="662" y="158" class="t-s">Refunds go back to the original payment...</text>
+      <text x="650" y="200" class="t-s">one idea per chunk · titles give context</text>
+      <text x="480" y="258" class="t-s mid">same article, three cuttings · which one finds the answer most often? measure it</text>
+    </svg>
+  </div>
+  <figcaption><b>Follow the document's own structure when it has one.</b> Fixed-size chunking is the fallback for text without structure.</figcaption>
+</figure>
+
+<h3>The trade-offs</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Choice</th><th>Smaller</th><th>Larger</th></tr></thead>
+    <tbody>
+      <tr><td>Chunk size</td><td>Precise matches, but may lose context ("it costs $49" — what does?)</td><td>More context, but the vector blurs and the answer is diluted</td></tr>
+      <tr><td>Overlap</td><td>Less duplication, but a rule split at a boundary can be lost</td><td>Safer boundaries, more chunks to store and embed</td></tr>
+      <tr><td>Context header</td><td>Shorter chunks</td><td>"Labs › How long labs stay open" makes the chunk understandable alone</td></tr>
+    </tbody>
+  </table>
+</div>
+<ul>
+  <li><strong>Structure first:</strong> markdown headings, HTML sections, PDF pages, code functions, FAQ question-answer pairs. Fixed-size windows are for walls of text.</li>
+  <li><strong>Add context to each chunk:</strong> the document and section title (and maybe a date or product) at the top. It helps both retrieval and the model that reads it later.</li>
+  <li><strong>Keep the source:</strong> store <code>source</code> (file, URL, page) with every chunk. Module 06 uses it for citations.</li>
+  <li><strong>Re-chunking means re-embedding:</strong> treat the chunking strategy like the embedding model: versioned, measured, rebuilt deliberately.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams building "chat with our documentation" bots typically spend more time on chunking and cleaning than on prompts: stripping navigation menus from web pages, keeping tables intact, splitting PDFs by section rather than by page, and adding titles to every chunk. Azure AI Search can chunk for you with built-in skills during indexing, but you still choose the strategy and measure it.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Split the text every 1,000 characters and index it."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Chunks are the <strong>units of retrieval</strong>. I cut along the document's meaning, give each chunk its context, keep its source, and pick size and overlap by <strong>measuring hit rate</strong> on real questions."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Judging chunking by eye ("these chunks look reasonable") instead of by retrieval. Drill 05.7's fixed 800-character chunks look tidy, put the right chunk in the top 3 every time, and still put it <em>first</em> only 15 times out of 20.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I chunk by the document's structure where possible, add document and section titles to each chunk, use fixed-size windows with overlap as a fallback, store the source for citations, and choose size and overlap by <strong>measuring retrieval hit rate</strong> on labelled questions."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Four strategies, 20 questions, one table of numbers.</p></div></div>
+
+<div class="drill" id="d05-7" data-title="Chunkers compared: let the hit rate decide" data-time="~25 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 05.7</span><h3>Chunkers compared: let the hit rate decide</h3>
+    <div class="drill-meta"><span class="time">~25 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> implement three chunkers, test them, then measure which one most often retrieves the chunk that actually contains the answer.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Three chunkers</h4>
+        <pre class="code" data-file="chunkers.py" data-src="code/genai-labs/chunkers.py"></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Test them offline</h4>
+        <pre class="code" data-file="test_chunkers.py" data-src="code/genai-labs/test_chunkers.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_chunkers.py
+<span class="o">....                                                                     [100%]
+4 passed in 0.03s</span></code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Measure: 20 questions with known answers</h4>
+        <p>Each question in <code>data/help_questions.json</code> names its article and a phrase the retrieved chunk must contain, for example <em>"How much do I get back if I cancel 10 days before the class?"</em> → <code>refunds-and-cancellations</code>, must contain <code>50% refund</code>. A hit means the right article <strong>and</strong> the phrase.</p>
+        <pre class="code" data-file="lab05_07_chunking.py" data-src="code/genai-labs/lab05_07_chunking.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_07_chunking.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama); yours will differ</span>
+<pre class="out"><code>strategy          chunks avg chars  hit@1  hit@3
+fixed 300 chars       40       264  17/20  19/20
+      missed: How can my employer check my certificate is real?
+fixed 800 chars       19       522  15/20  20/20
+sentences 400         30       299  19/20  19/20
+      missed: How long do I have to finish a self-paced course?
+by headings           47       208  19/20  20/20</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read the table</h4>
+        <ol>
+          <li>Why does "fixed 800" have the best top-3 score but the worst top-1?</li>
+          <li>"By headings" has the most chunks and the shortest ones. Why does it still win?</li>
+          <li>Which strategy would you choose for TrainCrest, and what would you check before trusting this table?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>Big chunks almost always <em>contain</em> the answer, but each covers several topics, so its vector is a blend and the most relevant one doesn't always rank first. Fine if you send 3 chunks to a model; poor for a search page that shows the first result.</li>
+            <li>Each chunk is one idea with its title on top ("Payments and invoices › Paying in instalments"), so its vector is sharp and matches the question directly.</li>
+            <li>By headings, because the help centre is well structured markdown. Before trusting it: more and harder questions (real learner wording, other languages), the production embedding model, and re-running after content changes. Twenty questions is a good start, not a final verdict.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Stretch:</b> ask your assistant to add a fifth strategy, <em>"by headings, but split any section longer than 500 characters into sentence chunks that keep the heading"</em>, add it to <code>STRATEGIES</code>, and see if it changes the table.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-7"> I've completed Drill 05.7</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Chunking.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A chunk reads "It costs $49 for 14 more days." Why is that a retrieval problem, and how do you fix it?</summary><div><p>Out of context, nothing says <em>what</em> costs $49, so questions about lab extensions may not match it. Add the context header ("Labs and cloud sandboxes › How long labs stay open") or chunk by section so the subject travels with the fact.</p></div></details>
+  <details><summary>2. Why use overlap with fixed-size chunking?</summary><div><p>So a sentence or rule that straddles a boundary appears whole in at least one chunk. The cost is some duplication in storage and embeddings.</p></div></details>
+  <details><summary>3. You change from 300- to 500-character chunks. What else must happen?</summary><div><p>Re-chunk and <strong>re-embed</strong> the whole corpus, rebuild the index, and re-measure the hit rate to confirm the change helped.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Cut along the document's structure, give every chunk its context and source, and choose the strategy by hit rate, not by eye.</p></div>

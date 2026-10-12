@@ -1,0 +1,125 @@
+<!--meta
+{"id": "m05-search", "short": "Similarity Search", "h1": "Similarity Search: Top-k by Meaning", "description": "Module 05, topic 5: how similarity search works end to end (embed the query, find the top k, return text and scores), choosing k, the fact that vector search always returns something, and a drill comparing keyword and semantic search on the course catalogue.", "lead": "Similarity search is the query half of the pipeline: embed the question with the same model, find the k nearest vectors, and return their text. It's where users stop needing your vocabulary. It's also where a new failure appears: vector search never says 'no results'. You'll compare it with keyword search on queries real learners would type.", "chips": ["Top-k retrieval", "Choosing k", "Always returns something", "Drill 05.6"], "time": "Learn 8 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Ask in your words, find in theirs.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Similarity search</strong> (semantic search, vector search, k-nearest-neighbour search) retrieves the <strong>k</strong> stored items whose embeddings are most similar to the query's embedding, returning each item's text, metadata and similarity score.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Turn the question into a vector, then fetch the k closest documents. "Cheap intro to containers" lands next to "Docker Quick Start: build, run and share container images", even though the words barely overlap.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A knowledgeable shop assistant. You say "something to keep my coffee hot on the commute" and they hand you three insulated travel mugs, though you never said "insulated", "travel" or "mug". They match what you <em>mean</em> to what they <em>have</em>. They also never say "we have nothing"; ask for a lawnmower in a coffee shop and you'll still be shown the closest thing, which is your cue to add a threshold.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 220" role="img" aria-labelledby="ss-t ss-d">
+      <title id="ss-t">Similarity search step by step</title>
+      <desc id="ss-d">The query "cheap intro to containers" is embedded with the same model used for the index. The index compares the query vector with stored vectors and returns the top three: Docker Quick Start, Kubernetes for Developers and a third course, each with a score. The application shows them or sends them to a model.</desc>
+      <rect x="16" y="70" width="200" height="70" rx="12" class="s-surface"/><text x="116" y="100" class="t-b mid">"cheap intro to</text><text x="116" y="120" class="t-b mid">containers"</text>
+      <path d="M216 105 H254" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="260" y="70" width="170" height="70" rx="12" class="s-violet"/><text x="345" y="100" class="t-b mid">embed (same</text><text x="345" y="120" class="t-b mid">model as index)</text>
+      <path d="M430 105 H468" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="474" y="70" width="170" height="70" rx="12" class="s-blue"/><text x="559" y="100" class="t-b mid">top k = 3</text><text x="559" y="120" class="t-s mid">by cosine</text>
+      <path d="M644 105 H682" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="688" y="30" width="256" height="150" rx="12" class="s-green"/>
+      <text x="704" y="58" class="t-s">0.63  Docker Quick Start</text>
+      <text x="704" y="82" class="t-s">…     Kubernetes for Developers</text>
+      <text x="704" y="106" class="t-s">…     (third closest)</text>
+      <text x="704" y="146" class="t-s">text + metadata + score →</text>
+      <text x="704" y="164" class="t-s">show it, or send it to the model</text>
+    </svg>
+  </div>
+  <figcaption><b>Embed, rank, return.</b> The only expensive step is embedding the query: one small API call.</figcaption>
+</figure>
+
+<h3>Decisions you make</h3>
+<ul>
+  <li><strong>k (how many):</strong> a search page shows 5 to 10. RAG (Module 06) usually sends 3 to 8 chunks to the model: too few misses the answer, too many adds cost and noise.</li>
+  <li><strong>Threshold:</strong> vector search always returns k results, even for nonsense. Decide what "no good match" looks like for your model (calibrated on real queries), or combine with keywords (topic 8).</li>
+  <li><strong>What to embed:</strong> for courses, title plus description; for articles, chunks with their headings (topic 6). Whatever you embed is what can be found.</li>
+  <li><strong>Query side:</strong> questions are short and documents long; that asymmetry is normal. Some models want a query prefix (topic 3).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Shops, streaming services and job sites all run semantic search behind their search boxes now, usually blended with keyword search and business rules (in stock, in your region, popular). The "no results" page has become rare, which is good for users and dangerous for chatbots: a weak match passed to a model becomes a confident wrong answer.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"No matching rows means no results."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Vector search <strong>always</strong> returns its nearest k. Relevance is a score I have to interpret, so I set k deliberately, watch the scores, and handle 'nothing good' explicitly."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Passing the top results to a model without checking relevance. Ask TrainCrest's help sections about "Docker" and vector search returns <em>Ways to pay</em> as the best match (Drill 05.9 shows it). A chatbot would then answer a Docker question with payment details.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Similarity search embeds the query with the <strong>same model</strong> as the corpus and returns the <strong>top-k nearest</strong> items with scores. I tune k for the use case and handle low-relevance results, because vector search never returns an empty set."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Learners' words against your catalogue.</p></div></div>
+
+<div class="drill" id="d05-6" data-title="Keyword vs semantic search on the course catalogue" data-time="~15 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 05.6</span><h3>Keyword vs semantic search on the course catalogue</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · numpy</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> run five realistic learner requests through a basic keyword search and a semantic search, and see where each one wins.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab05_06_course_search.py" data-src="code/genai-labs/lab05_06_course_search.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_06_course_search.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama)</span>
+<pre class="out"><code>I want my app to recognise objects in photos
+  keyword : Docker Quick Start  (1 shared words)
+  semantic: Computer Vision with Deep Learning  (cosine 0.63)
+
+cheap intro to containers
+  keyword : Kubernetes for Developers  (1 shared words)
+  semantic: Docker Quick Start  (cosine 0.63)
+
+not a coder, want to use chat assistants better at work
+  keyword : Prompt Engineering for Business Teams  (3 shared words)
+  semantic: Prompt Engineering for Business Teams  (cosine 0.70)
+
+get certified as a cloud admin
+  keyword : Machine Learning Essentials  (1 shared words)
+  semantic: AZ-104: Azure Administrator  (cosine 0.65)
+
+make answers come from our own documents
+  keyword : Building RAG Applications  (3 shared words)
+  semantic: Building RAG Applications  (cosine 0.63)</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read the misses</h4>
+        <ol>
+          <li>Why did keyword search pick Docker for "recognise objects in photos", and Machine Learning Essentials for "cloud admin"?</li>
+          <li>Two queries tied. What do those queries have in common?</li>
+          <li>Invent a query where you'd expect keyword search to beat semantic search.</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>One accidental shared word each time: "app" appears in the Docker description, and "as" (from "such as") in Machine Learning Essentials. AZ-900 shares "cloud" too, but with one word each, the first course in the list wins the tie. Keyword search counts words, not meaning.</li>
+            <li>The learner happened to use the catalogue's own words ("documents", "work", "teams"). When vocabularies match, both methods work.</li>
+            <li>Exact identifiers and rare terms: a course code like <code>C113</code> (if it were in the text), an error code like <code>LAB-503</code>, a product name. Drill 05.9 tests exactly this, with some surprises.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-6"> I've completed Drill 05.6</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Similarity search.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A learner asks Traincrest Assist about something TrainCrest doesn't offer. What does vector search return?</summary><div><p>Still the k nearest items, just with lower scores. The application must notice low relevance (threshold, keyword check, or the model being told to say "not covered") rather than present them as answers.</p></div></details>
+  <details><summary>2. Why embed a course's title and description together, rather than only the title?</summary><div><p>Titles are short and use internal names; descriptions contain the words and ideas learners use. What you embed is what can be found.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Embed the query with the same model, take the top k, and remember vector search never says "nothing found": that part is your job.</p></div>

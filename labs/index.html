@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All Drills</title>
+<meta name="description" content="Catalogue of every hands-on drill and build milestone in the Generative AI for Developers handbook, filterable by step type: run, ask AI, your prompt, verify, no-code and think.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-labs" data-page="labs">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link active" data-page-id="labs" href="../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Handbook</a><i>/</i><span>Practice</span><i>/</i><span>All drills</span></nav>
+  <span class="kind-pill">Practice</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Practice</span><h1>All Drills and Milestones</h1><p class="lead">Every drill and milestone in one place. Filter by the kind of step you want to practise: running code, prompting your AI assistant, writing your own prompts, verifying, or design thinking.</p><div class="chips"><span class="chip">Filter by step type</span><span class="chip">Links straight to each drill</span></div></header>
+<div class="content">
+
+<div class="filter-bar" data-drill-filter>
+  <button type="button" class="on">All</button>
+  <button type="button" data-step="run">Run</button>
+  <button type="button" data-step="ask">Ask AI</button>
+  <button type="button" data-step="write">Your prompt</button>
+  <button type="button" data-step="verify">Verify</button>
+  <button type="button" data-step="nocode">No-code</button>
+  <button type="button" data-step="think">Think</button>
+  <button type="button" data-step="portal">Portal</button>
+</div>
+<div class="table-wrap"><table class="drill-table"><thead><tr><th>Drill</th><th>What you do</th><th>Step types</th><th>Time</th></tr></thead><tbody><tr class="group"><td colspan="4">Lab setup</td></tr>
+<tr data-steps="portal,verify"><td class="mono">Drill 00.1</td><td><a href="../setup/azure-foundry.html#d00-1">Create a Foundry resource and deploy &#x27;chat&#x27; in the portal</a><div class="small muted">Azure: Foundry and a model</div></td><td><span class="badge b-portal">Portal</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="write,run,verify"><td class="mono">Drill 00.2</td><td><a href="../setup/azure-foundry.html#d00-2">Have your AI assistant write the Azure CLI script, then verify it</a><div class="small muted">Azure: Foundry and a model</div></td><td><span class="badge b-write">Your prompt</span><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="ask,verify"><td class="mono">Drill 00.3</td><td><a href="../setup/workstation.html#d00-3">Warm up your AI assistant with a verified first task</a><div class="small muted">Workstation and AI assistant</div></td><td><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~5 min</td></tr>
+<tr data-steps="run,ask,verify"><td class="mono">Drill 00.4</td><td><a href="../setup/helpers.html#d00-4">Smoke test: prove the pipe works</a><div class="small muted">Helpers and smoke test</div></td><td><span class="badge b-run">Run</span><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~5 min</td></tr>
+<tr data-steps="ask,verify"><td class="mono">Drill 00.5</td><td><a href="../setup/troubleshooting.html#d00-5">Debug an error with your AI assistant, the right way</a><div class="small muted">Troubleshooting and cost</div></td><td><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~5 min</td></tr>
+<tr class="group"><td colspan="4">Module 01 · Introduction to Generative AI</td></tr>
+<tr data-steps="nocode,think"><td class="mono">Drill 01.1</td><td><a href="../modules/01/what-is-genai.html#d01-1">First conversation: notice the weirdness</a><div class="small muted">What is Generative AI?</div></td><td><span class="badge b-nocode">No-code</span><span class="badge b-think">Think</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="run,ask,verify"><td class="mono">Drill 01.2</td><td><a href="../modules/01/what-is-genai.html#d01-2">One brief, three outputs, and test the generated code</a><div class="small muted">What is Generative AI?</div></td><td><span class="badge b-run">Run</span><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="write,verify,run,think"><td class="mono">Drill 01.3</td><td><a href="../modules/01/genai-vs-ml.html#d01-3">Train a classic classifier, then race it against an LLM</a><div class="small muted">GenAI vs traditional AI/ML</div></td><td><span class="badge b-write">Your prompt</span><span class="badge b-verify">Verify</span><span class="badge b-run">Run</span><span class="badge b-think">Think</span></td><td class="mono">~20 min</td></tr>
+<tr data-steps="write,run,think"><td class="mono">Drill 01.4</td><td><a href="../modules/01/llms.html#d01-4">Build a toy next-word predictor from scratch</a><div class="small muted">Large Language Models</div></td><td><span class="badge b-write">Your prompt</span><span class="badge b-run">Run</span><span class="badge b-think">Think</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 01.5</td><td><a href="../modules/01/tokens.html#d01-5">See text the way the model sees it</a><div class="small muted">Tokens and context windows</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="ask,verify"><td class="mono">Drill 01.6</td><td><a href="../modules/01/tokens.html#d01-6">Build a token-budget CLI with your AI assistant</a><div class="small muted">Tokens and context windows</div></td><td><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,think"><td class="mono">Drill 01.7</td><td><a href="../modules/01/generation.html#d01-7">Temperature from scratch: softmax and sampling</a><div class="small muted">How LLMs generate responses</div></td><td><span class="badge b-run">Run</span><span class="badge b-think">Think</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 01.8</td><td><a href="../modules/01/generation.html#d01-8">Watch your model pick its next token</a><div class="small muted">How LLMs generate responses</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="think,ask"><td class="mono">Drill 01.10</td><td><a href="../modules/01/training-inference.html#d01-10">Prompt, RAG or fine-tune? Five decisions</a><div class="small muted">Training vs inference</div></td><td><span class="badge b-think">Think</span><span class="badge b-ask">Ask AI</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 01.9</td><td><a href="../modules/01/training-inference.html#d01-9">Frozen knowledge vs handed-over facts</a><div class="small muted">Training vs inference</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="run,write,verify"><td class="mono">Drill 01.11</td><td><a href="../modules/01/foundation-models.html#d01-11">Same prompt, two models: measure, then extend the benchmark</a><div class="small muted">Foundation models</div></td><td><span class="badge b-run">Run</span><span class="badge b-write">Your prompt</span><span class="badge b-verify">Verify</span></td><td class="mono">~20 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 01.12</td><td><a href="../modules/01/multimodal.html#d01-12">Read a screenshot: diagnose an error from an image</a><div class="small muted">Multimodal AI</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~12 min</td></tr>
+<tr data-steps="think,run,verify"><td class="mono">Drill 01.13</td><td><a href="../modules/01/use-cases.html#d01-13">Pattern spotting: map eight feature requests</a><div class="small muted">Developer use cases</div></td><td><span class="badge b-think">Think</span><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="write,run,verify"><td class="mono">Milestone 1</td><td><a href="../modules/01/build.html#b01-1">Milestone 1: scaffold and build Traincrest Assist v0.1</a> <span class="badge b-exercise">Exercise</span><div class="small muted">Build: Milestone 1</div></td><td><span class="badge b-write">Your prompt</span><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~30 min</td></tr>
+<tr class="group"><td colspan="4">Module 02 · Working with LLM APIs</td></tr>
+<tr data-steps="ask,run,verify"><td class="mono">Drill 02.1</td><td><a href="../modules/02/architecture.html#d02-1">Hide the key behind a backend proxy</a><div class="small muted">API-based app architecture</div></td><td><span class="badge b-ask">Ask AI</span><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~20 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 02.2</td><td><a href="../modules/02/authentication.html#d02-2">See the wire: one call with raw HTTP and a key</a><div class="small muted">Authentication and API keys</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="write,run,verify"><td class="mono">Drill 02.3</td><td><a href="../modules/02/authentication.html#d02-3">Go keyless: write the role assignment with AI, then call with your identity</a><div class="small muted">Authentication and API keys</div></td><td><span class="badge b-write">Your prompt</span><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="ask,verify"><td class="mono">Drill 02.4</td><td><a href="../modules/02/lifecycle.html#d02-4">Build a response inspector with your AI assistant</a><div class="small muted">Request/response lifecycle</div></td><td><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 02.5</td><td><a href="../modules/02/roles.html#d02-5">Roles and memory by hand</a><div class="small muted">System, user, assistant messages</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="write,verify"><td class="mono">Drill 02.6</td><td><a href="../modules/02/roles.html#d02-6">Write a tested history-trimming function</a><div class="small muted">System, user, assistant messages</div></td><td><span class="badge b-write">Your prompt</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 02.7</td><td><a href="../modules/02/parameters.html#d02-7">Parameter playground: which knobs does your model have?</a><div class="small muted">Temperature and parameters</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 02.8</td><td><a href="../modules/02/streaming.html#d02-8">Streaming vs waiting: measure time to first token</a><div class="small muted">Streaming responses</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="run,think"><td class="mono">Drill 02.9</td><td><a href="../modules/02/streaming.html#d02-9">Look at the raw server-sent events</a><div class="small muted">Streaming responses</div></td><td><span class="badge b-run">Run</span><span class="badge b-think">Think</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 02.10</td><td><a href="../modules/02/errors.html#d02-10">Break it on purpose: read every kind of error</a><div class="small muted">Error handling</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="ask,verify"><td class="mono">Drill 02.11</td><td><a href="../modules/02/errors.html#d02-11">Build a tested error-to-message mapper</a><div class="small muted">Error handling</div></td><td><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="portal,run,verify"><td class="mono">Drill 02.12</td><td><a href="../modules/02/rate-limits.html#d02-12">Hit a real 429 and recover with backoff</a><div class="small muted">Rate limits and retries</div></td><td><span class="badge b-portal">Portal</span><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="write,verify"><td class="mono">Drill 02.13</td><td><a href="../modules/02/rate-limits.html#d02-13">Write a tested retry decorator with backoff and jitter</a><div class="small muted">Rate limits and retries</div></td><td><span class="badge b-write">Your prompt</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 02.14</td><td><a href="../modules/02/cost.html#d02-14">A cost meter: tokens to dollars to a monthly projection</a><div class="small muted">Managing API costs</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="ask,verify"><td class="mono">Drill 02.15</td><td><a href="../modules/02/cost.html#d02-15">Build a usage report from your logs with your AI assistant</a><div class="small muted">Managing API costs</div></td><td><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,ask,verify"><td class="mono">Milestone 2</td><td><a href="../modules/02/build.html#b02-1">Milestone 2: streaming chat service with memory, errors and logging</a> <span class="badge b-exercise">Exercise</span><div class="small muted">Build: Milestone 2</div></td><td><span class="badge b-run">Run</span><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~60 min</td></tr>
+<tr class="group"><td colspan="4">Module 03 · Prompt Engineering</td></tr>
+<tr data-steps="ask,verify,think"><td class="mono">Drill 03.1</td><td><a href="../modules/03/what-is-prompt-engineering.html#d03-1">Vague vs specified: prompt your coding assistant two ways</a><div class="small muted">What is prompt engineering?</div></td><td><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span><span class="badge b-think">Think</span></td><td class="mono">~20 min</td></tr>
+<tr data-steps="nocode,run,verify"><td class="mono">Drill 03.2</td><td><a href="../modules/03/clear-instructions.html#d03-2">Vague vs clear: measure the difference</a><div class="small muted">Clear instructions and context</div></td><td><span class="badge b-nocode">No-code</span><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 03.3</td><td><a href="../modules/03/role-prompting.html#d03-3">What a role changes, and what it doesn&#x27;t</a><div class="small muted">Role prompting</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~12 min</td></tr>
+<tr data-steps="write,verify"><td class="mono">Drill 03.4</td><td><a href="../modules/03/zero-shot.html#d03-4">Generate a labelled test set with AI, then verify it</a><div class="small muted">Zero-shot prompting</div></td><td><span class="badge b-write">Your prompt</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 03.5</td><td><a href="../modules/03/zero-shot.html#d03-5">Measure the zero-shot baseline</a><div class="small muted">Zero-shot prompting</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~10 min</td></tr>
+<tr data-steps="run,verify,think"><td class="mono">Drill 03.6</td><td><a href="../modules/03/few-shot.html#d03-6">Few-shot vs zero-shot: beat your baseline</a><div class="small muted">Few-shot prompting</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span><span class="badge b-think">Think</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,verify,think"><td class="mono">Drill 03.7</td><td><a href="../modules/03/chain-of-thought.html#d03-7">Chain-of-thought on a multi-step refund case</a><div class="small muted">Chain-of-thought</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span><span class="badge b-think">Think</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,verify"><td class="mono">Drill 03.8</td><td><a href="../modules/03/templates.html#d03-8">Build a versioned prompt template library</a><div class="small muted">Prompt templates</div></td><td><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~12 min</td></tr>
+<tr data-steps="ask,verify"><td class="mono">Drill 03.9</td><td><a href="../modules/03/templates.html#d03-9">Protect your prompts with tests written by your AI assistant</a><div class="small muted">Prompt templates</div></td><td><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~12 min</td></tr>
+<tr data-steps="write,run,verify"><td class="mono">Drill 03.10</td><td><a href="../modules/03/structured-prompts.html#d03-10">Restructure a messy prompt and score both versions</a><div class="small muted">Structured prompts</div></td><td><span class="badge b-write">Your prompt</span><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~20 min</td></tr>
+<tr data-steps="run,write,verify"><td class="mono">Drill 03.11</td><td><a href="../modules/03/output-constraints.html#d03-11">Exercise: turn an unreliable prompt into consistent JSON</a> <span class="badge b-exercise">Exercise</span><div class="small muted">Output constraints</div></td><td><span class="badge b-run">Run</span><span class="badge b-write">Your prompt</span><span class="badge b-verify">Verify</span></td><td class="mono">~30 min</td></tr>
+<tr data-steps="nocode,run,verify"><td class="mono">Drill 03.12</td><td><a href="../modules/03/prompt-injection.html#d03-12">Attack and defend a course-review summariser</a><div class="small muted">Prompt injection awareness</div></td><td><span class="badge b-nocode">No-code</span><span class="badge b-run">Run</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="write,verify"><td class="mono">Drill 03.13</td><td><a href="../modules/03/prompt-injection.html#d03-13">Build a tested output guard</a><div class="small muted">Prompt injection awareness</div></td><td><span class="badge b-write">Your prompt</span><span class="badge b-verify">Verify</span></td><td class="mono">~15 min</td></tr>
+<tr data-steps="run,write,ask,verify"><td class="mono">Milestone 3</td><td><a href="../modules/03/build.html#b03-1">Milestone 3: prompt library, JSON triage, output guard and checks</a> <span class="badge b-exercise">Exercise</span><div class="small muted">Build: Milestone 3</div></td><td><span class="badge b-run">Run</span><span class="badge b-write">Your prompt</span><span class="badge b-ask">Ask AI</span><span class="badge b-verify">Verify</span></td><td class="mono">~60 min</td></tr></tbody></table></div>
+<p class="small muted">Tick "I've completed…" at the end of any drill to track your progress in this browser.</p>
+
+</div>
+<nav class="pager" aria-label="Page navigation"><a class="prev" href="../project/index.html"><small>Previous</small><span>← Traincrest Assist: the build</span></a><a class="next" href="../capstone/index.html"><small>Next</small><span>Capstone project →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

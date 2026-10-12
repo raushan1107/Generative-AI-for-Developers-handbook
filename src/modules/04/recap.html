@@ -1,0 +1,45 @@
+<!--meta
+{"id": "m04-recap", "short": "Module 04 Recap", "h1": "Module 04 Recap and Self-Check", "description": "Module 04 recap: a checklist for structured outputs and tools, the Traincrest Assist design decisions for milestone 4, and a six-question self-check.", "lead": "Check what stuck, review the decisions behind Traincrest Assist's tools, and see where Module 05 takes it next.", "chips": ["Checklist", "Design decisions", "6 questions"]}
+-->
+<h2 id="checklist">Checklist before your model touches your app</h2>
+<ul class="checklist">
+  <li>Output that code reads is structured, never parsed from prose (Drill 04.1).</li>
+  <li>JSON mode is only a fallback, always with validation (Drill 04.2).</li>
+  <li>Schemas are Pydantic models, strict-mode compatible, linted and tested (Drills 04.3, 04.4).</li>
+  <li>Every tool has a precise description, a strict schema and validated arguments (Drills 04.5, 04.6).</li>
+  <li>Tools run through a dispatcher in a bounded loop; errors go back to the model as data (Drill 04.7).</li>
+  <li>Identity comes from the session; no tool parameter chooses whose data is read (Drill 04.8).</li>
+  <li>Business rules live in validators; facts are cross-checked against your systems (Drill 04.9).</li>
+  <li>Every failure mode has a name, a bounded policy and a counter (Drill 04.10).</li>
+</ul>
+
+<h2 id="decisions">Traincrest Assist: the milestone 4 design</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Requirement</th><th>Decision</th><th>Why this and not something else</th></tr></thead>
+    <tbody>
+      <tr><td>Answer with the learner's real data</td><td>Seven small, strict tools over the (stand-in) systems</td><td>Narrow tools are easier for the model to pick and for us to secure and test than one generic query tool</td></tr>
+      <tr><td>Refund figures finance can trust</td><td><code>quote_refund</code> backed by <code>policy.refund_quote()</code></td><td>Exact, consistent, auditable; the model only explains the number</td></tr>
+      <tr><td>No learner sees another's data</td><td><code>learner_id</code> from the session context; same error for "not yours" and "doesn't exist"</td><td>A prompt can be talked round; a code check can't. Identical errors stop ID probing</td></tr>
+      <tr><td>Hand over to people</td><td><code>create_support_ticket</code> writes a ticket with a summary</td><td>Assist never cancels or refunds; humans act (Module 07 adds approval first)</td></tr>
+      <tr><td>Responsive UI while tools run</td><td>Streaming loop with <code>tool</code> status events</td><td>Users see progress; text still streams token by token</td></tr>
+      <tr><td>Predictable cost</td><td>Max 4 tool rounds, one call at a time, only the final answer kept in history</td><td>Bounded worst case; strict tools on Azure can't run in parallel anyway</td></tr>
+      <tr><td>Reliable triage</td><td><code>parse()</code> with the <code>Triage</code> model, validators for rules, JSON-repair fallback</td><td>Shape guaranteed by the API; works on providers without structured outputs</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="quiz">Self-check</h2>
+<div class="quiz">
+  <details><summary>1. JSON mode, structured outputs, validators: what does each one guarantee?</summary><div><p>JSON mode: valid <strong>syntax</strong>. Structured outputs: the reply matches the <strong>schema</strong> (keys, types, enums). Validators: your <strong>business rules</strong>. None of them guarantees the values are true; that takes checks against your systems.</p></div></details>
+  <details><summary>2. Azure rejects your schema because of <code>maxLength</code>. What do you do with the rule?</summary><div><p>Move it to a Pydantic <code>@field_validator</code>, and mention it in the field description so the model aims for it. The schema keeps only what strict mode supports.</p></div></details>
+  <details><summary>3. Walk through one function call, message by message.</summary><div><p>User message + tool definitions → assistant message with <code>tool_calls</code> (name + JSON arguments) → your code validates and runs the function → append the assistant message and a <code>tool</code> message with the result and the matching <code>tool_call_id</code> → the model answers using the result.</p></div></details>
+  <details><summary>4. A teammate adds <code>get_learner_profile(learner_id)</code> as a tool "for flexibility". Your review comment?</summary><div><p>Remove <code>learner_id</code> from the parameters. Take identity from the authenticated session in the tool's context, or any user can ask the model for anyone's profile.</p></div></details>
+  <details><summary>5. A structured call fails. When do you retry, and when not?</summary><div><p>Retry truncation (with more tokens) and invalid or rule-breaking output (once, with the error). Don't retry refusals or content-filter blocks; respond safely and log them.</p></div></details>
+  <details><summary>6. Why does Traincrest Assist keep only the final answer in history, not the tool messages?</summary><div><p>To keep every later request small and cheap; the final answer already contains what the learner was told. The trade-off: the model can't re-read raw tool results in later turns, so it calls the tool again if it needs fresh data, which is usually what you want anyway.</p></div></details>
+</div>
+
+<div class="callout takeaway">
+  <div class="c-label">Carry this into Module 05</div>
+  <p>Traincrest Assist can now use your functions safely. But its catalogue search only matches exact words: ask for "a cheap intro to containers" and the keyword <code>containers</code> finds Kubernetes for Developers ($1,190), not Docker Quick Start ($190), whose description says "container images". Module 05 gives it <strong>embeddings</strong>, so it can search by meaning across courses and help articles.</p>
+</div>

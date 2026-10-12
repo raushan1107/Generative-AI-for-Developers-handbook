@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Azure Foundry Setup</title>
+<meta name="description" content="Lab setup step 2: create a Microsoft Foundry resource and deploy a chat model, through the portal or with an Azure CLI script written by your AI coding assistant.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-setup" data-page="setup-azure">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link active" data-page-id="setup-azure" href="../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Handbook</a><i>/</i><span>Lab setup</span><i>/</i><span>Azure: Foundry and a model</span></nav>
+  <span class="kind-pill">Lab setup</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Lab setup · Step 2 of 5</span><h1>Azure: a Foundry Resource and Your First Model</h1><p class="lead">You'll rent a model the way enterprises do: create a Foundry resource, deploy a small chat model under the name chat, and collect an endpoint and a key. Do it through the portal, or have your AI assistant write the Azure CLI script for you and verify it.</p><div class="chips"><span class="chip">Microsoft Foundry</span><span class="chip">Azure OpenAI</span><span class="chip">Azure CLI</span><span class="chip">Deployment types</span></div><div class="flow"><em>≈ 10 min</em></div></header>
+<div class="content">
+
+<h2 id="learn">What you're creating</h2>
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Microsoft Foundry is Azure's platform for building generative AI applications and agents. A Foundry resource hosts model deployments (including Azure OpenAI models) and projects, and exposes them through secure, metered API endpoints.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Foundry is where you rent a model in Azure. You pick a model from a catalogue, give your copy a name (a <strong>deployment</strong>), and Azure gives you a URL and a key. Your code calls that URL and you pay for the tokens you use.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A food court. The <strong>catalogue</strong> is the list of restaurants. A <strong>deployment</strong> is a table booked at one of them under a name you choose ("chat"). The <strong>endpoint and key</strong> are the table number and your token. You order (send prompts) and pay per plate (per token). An empty table costs nothing.</p>
+</div>
+<div class="callout note">
+  <div class="c-label">Name check</div>
+  <p>Azure AI Studio became Azure AI Foundry, which is now <strong>Microsoft Foundry</strong> (portal: <code>ai.azure.com</code>). Azure OpenAI Service is now offered as Azure OpenAI models inside Foundry. Older articles use the old names, and portal menus move. If a button isn't where a step says, use the search box.</p>
+</div>
+
+<h3>Deployment types, and why the architect in you should care</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Deployment type</th><th>Where prompts are processed</th><th>Use it for</th></tr></thead>
+    <tbody>
+      <tr><td>Global Standard</td><td>Any Azure region with capacity</td><td>Labs, prototypes, most workloads. Widest model choice, best price.</td></tr>
+      <tr><td>Data Zone Standard</td><td>Inside a data zone (for example the EU or the US)</td><td>Data must stay within a geography, but you still want pooled capacity.</td></tr>
+      <tr><td>Standard (regional)</td><td>Only the resource's region</td><td>Strict residency needs. Fewer models available.</td></tr>
+      <tr><td>Provisioned (PTU)</td><td>Reserved capacity, paid hourly</td><td>High, steady production traffic needing predictable latency. Never for labs.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="do">Create it: pick one of two paths</h2>
+
+<div class="drill" id="d00-1" data-title="Create a Foundry resource and deploy 'chat' in the portal" data-time="~10 min" data-steps="portal,verify">
+  <div class="drill-head"><span class="drill-id">Drill 00.1</span><h3>Path A: create it in the Foundry portal</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Microsoft Foundry</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> a live chat deployment named <code>chat</code>, its endpoint and a key.</p>
+    <ol class="dsteps">
+      <li class="dstep portal"><span class="st">Portal</span><h4>Create a project</h4><p>Go to <code>ai.azure.com</code>, sign in, and choose <strong>Create project</strong>. Name it <code>proj-genai-labs</code>; under advanced options create a resource group <code>rg-genai-labs</code> and pick a region. This creates a <strong>Foundry resource</strong> (it holds keys and deployments) and a project inside it. You need Contributor rights on the subscription or resource group.</p></li>
+      <li class="dstep portal"><span class="st">Portal</span><h4>Deploy a small chat model as <code>chat</code></h4><p>Open the model catalogue (search <strong>Models</strong>), pick a small, cheap chat model (at the time of writing <code>gpt-5.4-mini</code> or <code>gpt-6-luna</code>; any current "mini"/"luna" tier works) and choose <strong>Deploy</strong>. Set the deployment name to exactly <code>chat</code>, keep <strong>Global Standard</strong>, and lower tokens-per-minute to about 20K so a runaway loop can't burn money.</p></li>
+      <li class="dstep nocode"><span class="st">No-code</span><h4>Say hello in the playground</h4><p>Open the chat playground, select <code>chat</code>, and ask <em>"Hello, who are you?"</em>.</p></li>
+      <li class="dstep portal"><span class="st">Portal</span><h4>Copy endpoint and key</h4><p>On the resource or project overview, copy one <strong>API key</strong> and the <strong>Azure OpenAI endpoint</strong> (<code>https://&lt;resource-name&gt;.openai.azure.com/</code>). You'll paste them into <code>.env</code> on the <a href="helpers.html">helpers page</a>.</p></li>
+      <li class="dstep verify"><span class="st">Verify</span><ul class="verify-list"><li>The playground answered.</li><li>The deployment name is exactly <code>chat</code> (lowercase).</li><li>You have the endpoint and one key in a safe place (not in a chat or a document).</li></ul></li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d00-1"> I've completed Drill 00.1</label></div>
+</div>
+
+<div class="drill" id="d00-2" data-title="Have your AI assistant write the Azure CLI script, then verify it" data-time="~15 min" data-steps="write,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 00.2</span><h3>Path B: have your AI assistant write the Azure CLI script</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure CLI</span><span class="badge b-tool">Copilot · Claude Code · Codex</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> experience the course in miniature. You describe infrastructure in plain English, a model writes the code, and <em>you</em> verify it before trusting it.</p>
+    <p class="lab-note"><b>Before you start:</b> install the <a href="https://learn.microsoft.com/cli/azure/install-azure-cli" target="_blank" rel="noopener">Azure CLI</a>, run <code>az login</code>, and set up an AI assistant (see <a href="workstation.html">Workstation and AI assistant</a>). Open an empty folder in VS Code.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Write the prompt yourself</h4>
+        <p>Ask your assistant for a script that creates the resource group, the Foundry resource and the <code>chat</code> deployment. Use the template; fill every line.</p>
+        <div class="template-box"><pre><code>Goal:        a script that creates …
+Context:     I'm logged in with az login; OS/shell is …
+Constraints: names …, region …, model …, deployment type …, capacity …;
+             idempotent where possible; no secrets printed or saved
+Done when:   I can list the deployment with an az command you also give me</code></pre></div>
+        <p class="hint"><b>Hint:</b> name the shell (PowerShell or bash), the exact resource names (<code>rg-genai-labs</code>, a globally unique resource name like <code>aif-genai-yourinitials</code>), the deployment name <code>chat</code>, the model (<code>gpt-5.4-mini</code>), <strong>GlobalStandard</strong> with a capacity of 20 (20K tokens per minute), and ask for verification commands too.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Goal: Write a PowerShell script (create_foundry.ps1) that uses the Azure CLI to create everything
+I need for my GenAI labs.
+
+Context: I'm already logged in with `az login`. I'm on Windows, using PowerShell 7.
+
+Constraints:
+- Resource group: rg-genai-labs in eastus2
+- Foundry (Azure AI Services) resource: aif-genai-rr (kind AIServices, SKU S0, custom domain = same name)
+- Model deployment named "chat": model gpt-5.4-mini, model format OpenAI,
+  SKU GlobalStandard, capacity 20 (20K tokens per minute)
+- Put names in variables at the top. Stop on the first error.
+- Do NOT print or save API keys. Print only the endpoint at the end.
+
+Done when: give me separate az commands to verify the resource group, the resource and the
+deployment exist (table output), and explain what each script line does in one comment.</code></pre></div>
+        </div></details>
+        <div class="why"><b>Why this works:</b> every blank that the model would otherwise guess (shell, names, model, SKU, capacity) is filled in, and "Done when" forces it to hand you a way to check its own work. That's the prompt design framework you'll study in Module 03.</div>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Read the script, then run it</h4>
+        <p>Read every line before running it. You're the reviewer. It should look broadly like the reference below (yours may differ in style). If the model version is rejected, ask your assistant to look up valid versions with <code>az cognitiveservices account list-models</code>.</p>
+        <details class="solution"><summary>Reference script (PowerShell)</summary><div>
+<pre class="code" data-file="create_foundry.ps1"><code><span class="c"># Names and settings</span>
+$rg       = "rg-genai-labs"
+$location = "eastus2"
+$name     = "aif-genai-rr"          <span class="c"># must be globally unique</span>
+$ErrorActionPreference = "Stop"
+
+az group create --name $rg --location $location --output none
+
+az cognitiveservices account create --name $name --resource-group $rg `
+  --location $location --kind AIServices --sku S0 --custom-domain $name --yes --output none
+
+az cognitiveservices account deployment create --name $name --resource-group $rg `
+  --deployment-name chat --model-name gpt-5.4-mini --model-version 2026-03-17 `
+  --model-format OpenAI --sku-name GlobalStandard --sku-capacity 20 --output none
+
+az cognitiveservices account show --name $name --resource-group $rg --query properties.endpoint -o tsv</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Prove it exists</h4>
+<pre class="term"><code><span class="ps">$ </span>az group show -n rg-genai-labs -o table
+<span class="ps">$ </span>az cognitiveservices account list -g rg-genai-labs -o table
+<span class="ps">$ </span>az cognitiveservices account deployment list -g rg-genai-labs -n aif-genai-rr -o table</code></pre>
+        <ul class="verify-list"><li>The deployment list shows <code>chat</code> with your model and <code>GlobalStandard</code>.</li><li>The script never printed a key.</li><li>Get a key safely: <code>az cognitiveservices account keys list -g rg-genai-labs -n aif-genai-rr --query key1 -o tsv</code>, straight into <code>.env</code>.</li></ul>
+      </li>
+    </ol>
+    <p class="lab-say"><b>Remember:</b> “The assistant wrote the script; you were the engineer. Reviewing and verifying is the job.”</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d00-2"> I've completed Drill 00.2</label></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>In code, <code>model=</code> must be the <strong>deployment name</strong> (<code>chat</code>), not the model name (<code>gpt-5.4-mini</code>). Mixing them up gives a 404 "deployment not found". It's the most common first-day error in every batch.</p>
+</div>
+
+<h2 id="keyless">Optional: keyless sign-in with Microsoft Entra ID</h2>
+<p>Keys are simple, which is why the labs use them. In production you'd rather have no key at all: the app signs in with its identity and Azure checks its role. You'll do this hands-on in Drill 02.3; the quick version is <code>az login</code>, the <em>Cognitive Services OpenAI User</em> role on the resource, and <code>DefaultAzureCredential</code> in code.</p>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="setup-azure"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../setup/index.html"><small>Previous</small><span>← Choose your track</span></a><a class="next" href="../setup/workstation.html"><small>Next</small><span>Workstation and AI assistant →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

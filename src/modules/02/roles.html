@@ -1,0 +1,159 @@
+<!--meta
+{"id": "m02-roles", "short": "System, User, Assistant", "h1": "System, User and Assistant Messages", "description": "Module 02, topic 4: message roles, why the API is stateless, how chat memory really works, and drills that build memory by hand and a tested history-trimming function with your AI assistant.", "lead": "The model remembers nothing between calls. Chat 'memory' is your app resending the conversation every single time, with a system message on top that sets the rules. You'll prove it, then write the tested trimming function that keeps memory affordable.", "chips": ["Roles", "Stateless API", "Conversation memory", "Drills 02.5 · 02.6"], "time": "Learn 12 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Memory is just resending.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Chat APIs take a list of messages, each with a <strong>role</strong>. The <strong>system</strong> (or <strong>developer</strong>) message sets the model's behaviour and rules; <strong>user</strong> messages carry the end user's input; <strong>assistant</strong> messages are the model's previous replies. The API is stateless, so the relevant conversation must be sent with every request.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>The system message is the job description, written by you. User messages are what the learner says. Assistant messages are what the model said earlier. The model remembers nothing between calls, so your app keeps the transcript and sends it back every time. That's the whole "memory" of a chatbot.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A call centre where every agent has total amnesia. Each time the customer speaks, a <em>new</em> agent picks up. To make it work, the supervisor hands each one a sheet: the <strong>role card</strong> on top ("You're a TrainCrest support agent; be kind; never promise refunds"), then the <strong>transcript so far</strong>, then the newest sentence. The agent reads it all, replies once, and is gone. The sheet gets longer every turn.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 330" role="img" aria-labelledby="hi-t hi-d">
+      <title id="hi-t">The messages array grows every turn</title>
+      <desc id="hi-d">Turn 1 sends the system message and the first user message. Turn 2 resends both plus the first assistant reply and a new user message. Turn 3 resends everything plus another pair. Input tokens grow from about 60 to 190 to 330.</desc>
+      <text x="20" y="28" class="t-m t-accent">REQUEST · TURN 1</text>
+      <rect x="20" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="34" y="62" class="t">system: You are Traincrest Assist…</text>
+      <rect x="20" y="80" width="280" height="34" rx="8" class="s-blue"/><text x="34" y="102" class="t">user: Hi, I'm Diego</text>
+      <text x="20" y="300" class="t-m">≈ 60 TOKENS IN</text>
+      <text x="340" y="28" class="t-m t-accent">REQUEST · TURN 2</text>
+      <rect x="340" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="354" y="62" class="t">system: You are Traincrest Assist…</text>
+      <rect x="340" y="80" width="280" height="34" rx="8" class="s-blue"/><text x="354" y="102" class="t">user: Hi, I'm Diego</text>
+      <rect x="340" y="120" width="280" height="34" rx="8" class="s-green"/><text x="354" y="142" class="t">assistant: Hello Diego! How…</text>
+      <rect x="340" y="160" width="280" height="34" rx="8" class="s-blue"/><text x="354" y="182" class="t">user: My lab won't start</text>
+      <text x="340" y="300" class="t-m">≈ 190 TOKENS IN</text>
+      <text x="660" y="28" class="t-m t-accent">REQUEST · TURN 3</text>
+      <rect x="660" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="674" y="62" class="t">system: You are Traincrest Assist…</text>
+      <rect x="660" y="80" width="280" height="34" rx="8" class="s-blue"/><text x="674" y="102" class="t">user: Hi, I'm Diego</text>
+      <rect x="660" y="120" width="280" height="34" rx="8" class="s-green"/><text x="674" y="142" class="t">assistant: Hello Diego! How…</text>
+      <rect x="660" y="160" width="280" height="34" rx="8" class="s-blue"/><text x="674" y="182" class="t">user: My lab won't start</text>
+      <rect x="660" y="200" width="280" height="34" rx="8" class="s-green"/><text x="674" y="222" class="t">assistant: Sorry! Try restarting…</text>
+      <rect x="660" y="240" width="280" height="34" rx="8" class="s-blue"/><text x="674" y="262" class="t">user: Done. What's my name?</text>
+      <text x="660" y="300" class="t-m">≈ 330 TOKENS IN · AND GROWING</text>
+      <path d="M300 160 H334" class="s-arrow" marker-end="url(#ah)"/><path d="M620 200 H654" class="s-arrow" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption><b>Memory is just resending.</b> Each turn resends everything before it, so cost and latency grow with conversation length. Long chats need trimming or summarising; the system message must survive every trim.</figcaption>
+</figure>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>The system message has the strongest influence on behaviour: rules, persona, tone and boundaries go there.</li>
+  <li>Newer OpenAI reasoning models also accept a <strong>developer</strong> role that works like system. Don't send both in one request.</li>
+  <li>Claude's API takes the system prompt as a separate <code>system</code> parameter, and its <code>messages</code> list starts with a user turn.</li>
+  <li>You can write assistant messages yourself to show the model an example exchange: few-shot prompting (Module 03).</li>
+  <li>A user can write <em>anything</em>, including "ignore your instructions". User content is never trusted (Modules 03 and 10).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>When ChatGPT or Claude.ai "remember" a long conversation, the application is managing history for you: resending recent turns, and for very long chats summarising or dropping older ones. Some products also keep separate long-term "memories" (facts about you) that they insert into the system context. Under the hood it's always the same thing: deciding what goes into the next request.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Chat apps have sessions. The server remembers the conversation."</p></div>
+  <div><h5>GenAI developer view</h5><p>"The model is stateless. <strong>I</strong> own conversation state: where it's stored, how much I resend, what I trim, and that the system message always comes first."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"How does a chatbot remember context?" <strong>"It doesn't; the app resends conversation history in the messages array on each call, trimmed or summarised to fit the context window and control cost."</strong></p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Build memory by hand, then write the tested function that keeps it affordable.</p></div></div>
+
+<div class="drill" id="d02-5" data-title="Roles and memory by hand" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.5</span><h3>Roles and memory by hand</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> prove the API is stateless, build memory yourself, watch input tokens grow, and see how strongly the system message and example turns steer the model.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab02_05_memory.py" data-src="code/genai-labs/lab02_05_memory.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_05_memory.py</code></pre>
+        <span class="out-label">Expected output (abridged)</span>
+<pre class="out"><code>1) No memory
+    Hi Diego, welcome! How can I help with your AZ-305 course?
+    I don't have access to your enrolment details. Could you share your enrolment ID?
+
+2) Memory = resending history
+   [  47 tokens in] Hi, I'm Diego. I'm enrolled in the AZ-305 course.
+                     -&gt; Hi Diego! How can I help with your AZ-305 course today?
+   [  78 tokens in] Which course am I enrolled in?
+                     -&gt; You're enrolled in the AZ-305 course.
+   [ 101 tokens in] And what's my name?
+                     -&gt; Your name is Diego.
+
+3) Swap the system message
+    Arr, how should I know when yer course starts? Check yer enrolment, landlubber!
+
+4) Teach a format with example turns
+    STATUS: CONFIRMED | STARTS: 9 Mar</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list">
+          <li>Part 1: zero memory. Part 2: memory appeared only because <em>you</em> resent history, and input tokens grew every turn.</li>
+          <li>Part 3: one line of system message changed the whole persona.</li>
+          <li>Part 4 should worry you. The model invented a status and date for TC-10293 because the pattern made it plausible. That's why lookups must be <strong>tool calls</strong> (Module 04), never generated text.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-5"> I've completed Drill 02.5</label></div>
+</div>
+
+<div class="drill" id="d02-6" data-title="Write a tested history-trimming function" data-time="~15 min" data-steps="write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.6</span><h3>Write a tested history-trimming function</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · pytest</span><span class="badge b-tool">no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> a small, correct, tested utility that keeps the system message and the last N exchanges. Milestone 2 uses the same rule.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Ask for tests first, then the function</h4>
+        <div class="template-box"><pre><code>Goal:        history.py with trim_history(messages, max_turns) and test_history.py
+Context:     messages are dicts with "role" and "content"; the first may be a system message
+Constraints: keep the system message; keep the last … user/assistant pairs; never start the
+             kept turns with …; return a new list (don't …); raise … if max_turns &lt; 0
+Done when:   pytest -q test_history.py passes, with tests for these edge cases: …</code></pre></div>
+        <p class="hint"><b>Hint:</b> list the edge cases yourself: short history unchanged, no system message, history ending with a new user question, and "doesn't modify the input". Ask for the tests <em>before</em> the implementation; it stops the assistant writing tests that merely mirror its own code.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>First write test_history.py (pytest), then history.py, for a function
+trim_history(messages, max_turns) -> list. messages is a list of {"role", "content"} dicts; the
+first may be a system message. Rules: keep the system message if present; keep only the last
+max_turns user/assistant pairs (max_turns * 2 messages); the kept turns must never start with an
+assistant message; return a NEW list without modifying the input; raise ValueError if max_turns
+is negative. Test these cases: keeps system + last pairs; short history unchanged; works without
+a system message; history ending in a new user question still starts with a user message;
+input list is not modified. Run pytest and show me the output.</code></pre></div>
+        </div></details>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="history.py" data-src="code/genai-labs/history.py"></pre>
+          <pre class="code" data-file="test_history.py" data-src="code/genai-labs/test_history.py"></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_history.py</code></pre>
+        <span class="out-label">Expected</span>
+<pre class="out"><code>.....                                                                    [100%]
+5 passed in 0.03s</code></pre>
+        <ul class="verify-list"><li>All tests pass.</li><li>Break the function on purpose (for example, remove the "never start with assistant" loop) and confirm a test fails. A test that can't fail protects nothing.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-6"> I've completed Drill 02.6</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Roles and state.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A learner says "I told you my enrolment ID five messages ago!" and the bot doesn't know it. Likely cause?</summary><div><p>The history was <strong>trimmed</strong> (or never sent), so that message wasn't in the request. Fixes: keep more turns, summarise older turns, or pull key facts like the enrolment ID into the system context (Module 07).</p></div></details>
+  <details><summary>2. Where should "Never promise refunds" go: system or user message?</summary><div><p>The <strong>system</strong> message. Rules belong to you, not to the user's turn, and the system message has the strongest influence.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>The model is stateless; your app is the memory. Decide deliberately what you resend.</p></div>

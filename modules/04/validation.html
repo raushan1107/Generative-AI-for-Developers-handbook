@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validating Model Outputs</title>
+<meta name="description" content="Module 04, topic 6: three layers of validation (shape, business rules, facts), Pydantic field and model validators, what to do when validation fails, and a drill that adds business rules to tool arguments and catches invented amounts.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m04-valid">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod" open><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic active" data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part II</span><i>/</i><a href="../../modules/04/index.html">Module 04</a><i>/</i><span>Validating model outputs</span></nav>
+  <span class="kind-pill">Learn · Do · Check · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 04 · Topic 6 of 7</span><h1>Validating Model Outputs</h1><p class="lead">Structured outputs guarantee the shape. They can't tell an invented enrolment ID from a real one, a past date from a future one, or a refund the policy allows from one the model made up. Those checks are yours. This page sorts them into three layers and gives each one a home in your code.</p><div class="chips"><span class="chip">Shape · rules · facts</span><span class="chip">Pydantic validators</span><span class="chip">Fail, retry or escalate</span><span class="chip">Drill 04.9</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Trust the shape. Check everything else.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Output validation</strong> checks model output before your application relies on it: that it has the expected <strong>shape</strong> (schema), obeys <strong>business rules</strong> (formats, ranges, dependencies between fields), and agrees with <strong>facts</strong> from your systems (IDs that exist, amounts your code calculated). Invalid output is rejected, repaired, retried or escalated, never silently used.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Treat model output like a form submitted by a stranger on the internet: well formatted, probably honest, and checked anyway.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Airport security has layers. The airline checks your ticket has the right format. The gate checks the date and flight match today. Passport control checks the photo matches <em>you</em>. A perfect-looking ticket for yesterday's flight passes the first check and fails the second. Each layer catches what the one before can't.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 250" role="img" aria-labelledby="vl-t vl-d">
+      <title id="vl-t">Three layers of validation</title>
+      <desc id="vl-d">Model output passes through three layers. Layer 1, shape, enforced by the JSON Schema in strict mode: keys, types and enums. Layer 2, rules, enforced by Pydantic validators in your code: ID format TC-12345, dates in the future, lengths and ranges, fields that depend on each other. Layer 3, facts, checked against your systems: the enrolment exists and belongs to this learner, and dollar amounts match what your code calculated. Output that passes all three is used; a failure leads to a retry with the error, a safe fallback, or a human.</desc>
+      <rect x="16" y="88" width="120" height="70" rx="12" class="s-violet"/><text x="76" y="118" class="t-b mid">model</text><text x="76" y="138" class="t-s mid">output</text>
+      <path d="M136 123 H166" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="172" y="40" width="200" height="166" rx="12" class="s-blue"/><text x="272" y="66" class="t-m mid t-blue">1 · SHAPE</text><text x="272" y="88" class="t-b mid">JSON Schema</text><text x="272" y="112" class="t-s mid">keys, types, enums</text><text x="272" y="130" class="t-s mid">nullable fields</text><text x="272" y="186" class="t-s mid">enforced by the API</text>
+      <path d="M372 123 H402" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="408" y="40" width="200" height="166" rx="12" class="s-teal"/><text x="508" y="66" class="t-m mid t-teal">2 · RULES</text><text x="508" y="88" class="t-b mid">Pydantic validators</text><text x="508" y="112" class="t-s mid">TC-12345 format</text><text x="508" y="130" class="t-s mid">dates, lengths, ranges</text><text x="508" y="148" class="t-s mid">field A needs field B</text><text x="508" y="186" class="t-s mid">your code, every call</text>
+      <path d="M608 123 H638" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="644" y="40" width="200" height="166" rx="12" class="s-amber"/><text x="744" y="66" class="t-m mid t-amber">3 · FACTS</text><text x="744" y="88" class="t-b mid">your systems</text><text x="744" y="112" class="t-s mid">ID exists, belongs to user</text><text x="744" y="130" class="t-s mid">amounts we calculated</text><text x="744" y="148" class="t-s mid">course is on sale</text><text x="744" y="186" class="t-s mid">lookups and cross-checks</text>
+      <path d="M844 123 H874" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="880" y="88" width="64" height="70" rx="12" class="s-green"/><text x="912" y="128" class="t-b mid">use</text>
+      <text x="508" y="236" class="t-s mid">any layer fails → retry with the error message · safe fallback · or a human</text>
+    </svg>
+  </div>
+  <figcaption><b>Each layer catches what the previous one can't.</b> Strict mode gives you layer 1 for free; layers 2 and 3 are your code.</figcaption>
+</figure>
+
+<h3>Where each check lives</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Check</th><th>Layer</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td><code>urgency</code> is low, medium or high</td><td>Shape</td><td><code>Literal[...]</code> becomes an enum in the schema</td></tr>
+      <tr><td><code>enrolment_id</code> looks like TC-12345</td><td>Rules</td><td><code>@field_validator</code> with a regex</td></tr>
+      <tr><td><code>preferred_date</code> is in the next 12 months</td><td>Rules</td><td><code>@field_validator</code> using today's date</td></tr>
+      <tr><td>A scheduling ticket includes an enrolment ID</td><td>Rules</td><td><code>@model_validator(mode="after")</code>: a rule across fields</td></tr>
+      <tr><td>The enrolment belongs to the signed-in learner</td><td>Facts</td><td>Lookup in the tool (Drill 04.8)</td></tr>
+      <tr><td>"$745 refund" matches the policy quote</td><td>Facts</td><td>Compare amounts in the answer with tool results</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>When validation fails</h3>
+<ul>
+  <li><strong>Tool arguments:</strong> return the validation message as the tool result (<code>{"error": "invalid arguments: enrolment_id: must look like TC-12345"}</code>). The model usually fixes it, or asks the learner, on the next round.</li>
+  <li><strong>Structured replies:</strong> retry once with the error (Milestone 3's repair idea), then fall back to a safe default or a "couldn't process" response.</li>
+  <li><strong>Facts in the final answer:</strong> block, regenerate, or flag for review, depending on the risk. A wrong refund amount is worth blocking; a slightly long summary isn't.</li>
+  <li><strong>Always log it.</strong> A rising validation-failure rate is often the first sign a prompt, model or data change broke something (Module 09).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Finance and insurance teams using extraction models run all three layers: schema, rules (totals add up, dates are plausible), and facts (the supplier exists in the vendor database, the policy number is active). Documents that fail go to a human queue. The validation-failure rate is a dashboard metric, just like error rates for an API.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"The schema validated, so the data is good."</p></div>
+  <div><h5>GenAI developer view</h5><p>"The schema means the data is <strong>well formed</strong>. Whether it's <strong>allowed</strong> and whether it's <strong>true</strong> are separate questions, answered by my validators and my systems."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Validating at the end of the pipeline only. By then the invented ID has already been used in a lookup and the wrong amount is already in a reply. Validate at the <strong>boundary</strong>: as tool arguments arrive, and before an answer is sent.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I validate in three layers: <strong>schema</strong> for shape, <strong>validators</strong> for business rules, and <strong>cross-checks against source systems</strong> for facts, at every boundary, with retry, fallback or escalation on failure, and I monitor the failure rate."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Give a ticket-creation tool real rules.</p></div></div>
+
+<div class="drill" id="d04-9" data-title="Business rules with Pydantic validators" data-time="~20 min" data-steps="run,write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 04.9</span><h3>Business rules with Pydantic validators</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-tool">Offline · no API key</span><span class="badge b-tool">Pydantic · pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> add layer-2 rules to the arguments of a <code>create_support_ticket</code> tool, add one more yourself, and use a layer-3 check to catch invented dollar amounts.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The model and its rules</h4>
+        <pre class="code" data-file="validators.py"><code>"""Drill 04.9: validation in layers.
+Layer 1, shape: the JSON Schema (strict mode guarantees it).
+Layer 2, business rules: Pydantic validators in YOUR code (formats, ranges, dates).
+Layer 3, facts: compare what the model says with what your systems say."""
+import re
+from datetime import date, timedelta
+from typing import Literal, Optional
+
+from pydantic import BaseModel, Field, field_validator, model_validator
+
+ENROLMENT_ID = re.compile(r"TC-\d{5}")
+
+
+def today() -&gt; date:                     <span class="c"># a function, so tests can pretend it's another day</span>
+    return date.today()
+
+
+class TicketDraft(BaseModel):
+    """Arguments the model sends to create_support_ticket."""
+    category: Literal["scheduling", "billing", "exam_voucher", "certificate", "lab_access", "account", "other"]
+    summary: str = Field(description="One sentence for the support team")
+    enrolment_id: Optional[str] = Field(description="Like TC-12345, or null")
+    urgency: Literal["low", "medium", "high"]
+    preferred_date: Optional[str] = Field(description="New class date the learner wants, YYYY-MM-DD, or null")
+
+    @field_validator("enrolment_id")
+    @classmethod
+    def enrolment_id_format(cls, v):
+        if v is not None and not ENROLMENT_ID.fullmatch(v):
+            raise ValueError("enrolment_id must look like TC-12345")
+        return v
+
+    @field_validator("summary")
+    @classmethod
+    def summary_length(cls, v):
+        v = v.strip()
+        if not 10 &lt;= len(v) &lt;= 200:
+            raise ValueError("summary must be 10 to 200 characters")
+        return v
+
+    @field_validator("preferred_date")
+    @classmethod
+    def date_in_next_year(cls, v):
+        if v is None:
+            return v
+        try:
+            d = date.fromisoformat(v)
+        except ValueError:
+            raise ValueError("preferred_date must be YYYY-MM-DD") from None
+        if not today() &lt; d &lt;= today() + timedelta(days=365):
+            raise ValueError("preferred_date must be in the future and within 365 days")
+        return v
+
+    @model_validator(mode="after")
+    def scheduling_needs_an_enrolment(self):
+        if self.category == "scheduling" and self.enrolment_id is None:
+            raise ValueError("a scheduling ticket needs the enrolment_id; ask the learner for it")
+        return self
+
+
+MONEY = re.compile(r"\$\s?(\d[\d,]*(?:\.\d{2})?)")
+
+
+def unsupported_amounts(answer: str, allowed: set[float]) -&gt; list[float]:
+    """Layer 3: dollar amounts in the model's answer that our systems didn't produce."""
+    found = {float(m.replace(",", "")) for m in MONEY.findall(answer)}
+    return sorted(found - set(allowed))</code></pre>
+        <pre class="code" data-file="test_validators.py"><code>"""Tests for validators.py. Run:  pytest -q test_validators.py"""
+from datetime import date
+
+import pytest
+from pydantic import ValidationError
+
+import validators
+from validators import TicketDraft, unsupported_amounts
+
+GOOD = {"category": "scheduling", "summary": "Learner wants to move AZ-104 to a later date.",
+        "enrolment_id": "TC-20877", "urgency": "medium", "preferred_date": "2026-11-16"}
+
+
+@pytest.fixture(autouse=True)
+def fixed_today(monkeypatch):
+    monkeypatch.setattr(validators, "today", lambda: date(2026, 10, 11))
+
+
+def test_good_ticket_passes():
+    assert TicketDraft.model_validate(GOOD).preferred_date == "2026-11-16"
+
+
+@pytest.mark.parametrize("change, message", [
+    ({"enrolment_id": "20877"}, "TC-12345"),
+    ({"summary": "help"}, "10 to 200"),
+    ({"preferred_date": "16/11/2026"}, "YYYY-MM-DD"),
+    ({"preferred_date": "2026-10-01"}, "future"),
+    ({"preferred_date": "2028-01-01"}, "365 days"),
+    ({"enrolment_id": None}, "needs the enrolment_id"),
+])
+def test_business_rules(change, message):
+    with pytest.raises(ValidationError) as info:
+        TicketDraft.model_validate({**GOOD, **change})
+    assert message in str(info.value)
+
+
+def test_facts_layer_catches_invented_amounts():
+    answer = "You'll get a 50% refund of $745.00, and a $50 fee applies if you reschedule."
+    assert unsupported_amounts(answer, {745.0, 50.0}) == []
+    assert unsupported_amounts("Good news: a full refund of $1,490!", {745.0}) == [1490.0]</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_validators.py</code></pre>
+        <span class="out-label">Output (exact)</span>
+<pre class="out"><code>........                                                                 [100%]
+8 passed in 0.12s</code></pre>
+        <p>See what a tool's error message would contain. In a Python shell:</p>
+<pre class="code" data-file="python shell"><code>from validators import TicketDraft
+TicketDraft.model_validate({"category": "scheduling", "summary": "help", "enrolment_id": "20877",
+                            "urgency": "medium", "preferred_date": None})</code></pre>
+<pre class="out"><code>2 validation errors for TicketDraft
+summary
+  Value error, summary must be 10 to 200 characters [type=value_error, input_value='help', input_type=str]
+enrolment_id
+  Value error, enrolment_id must look like TC-12345 [type=value_error, input_value='20877', input_type=str]</code></pre>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Add a rule with your AI assistant</h4>
+        <p>New requirement from the support lead: <em>a ticket with urgency "high" must say why in the summary, using one of the words "exam", "deadline", "blocked" or "today".</em> Write the prompt for your assistant:</p>
+        <div class="template-box"><pre><code>Goal: add a rule to TicketDraft in #file:validators.py
+Context: ...
+Constraints: put the rule in the right kind of validator (one field or several?) ...
+             error message the model can act on ...
+             add tests to #file:test_validators.py; don't change existing tests
+Done when: pytest -q test_validators.py passes, including a new test for the rule</code></pre></div>
+        <p class="hint"><b>Hint:</b> the rule involves two fields (<code>urgency</code> and <code>summary</code>), so it belongs in a <code>@model_validator(mode="after")</code>, like <code>scheduling_needs_an_enrolment</code>. Make the message tell the model what to do: <em>"high urgency needs a reason in the summary (exam, deadline, blocked or today)"</em>.</p>
+        <details class="solution"><summary>Compare with my solution</summary><div>
+<pre class="code" data-file="validators.py (added to TicketDraft)"><code>    @model_validator(mode="after")
+    def high_urgency_needs_a_reason(self):
+        if self.urgency == "high" and not re.search(r"\b(exam|deadline|blocked|today)\b", self.summary, re.I):
+            raise ValueError("high urgency needs a reason in the summary (exam, deadline, blocked or today)")
+        return self</code></pre>
+<pre class="code" data-file="test_validators.py (new test)"><code>def test_high_urgency_needs_a_reason():
+    with pytest.raises(ValidationError, match="needs a reason"):
+        TicketDraft.model_validate({**GOOD, "urgency": "high"})
+    assert TicketDraft.model_validate({**GOOD, "urgency": "high",
+                                       "summary": "Exam on Friday; needs a new date urgently."})</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Layer 3: amounts the model made up</h4>
+        <p>Look at <code>unsupported_amounts()</code> and its test. Our code knows the refund quote was $745.00 and the reschedule fee is $50; any other dollar figure in the answer wasn't produced by our systems.</p>
+        <ul class="verify-list">
+          <li>Your new test passes and the original 8 still pass.</li>
+          <li><code>unsupported_amounts("Good news: a full refund of $1,490!", {745.0})</code> returns <code>[1490.0]</code>: a figure to block or flag before the learner sees it.</li>
+          <li>Think about cost: layer 2 is free (pure Python); layer 3 may need lookups. Run both on anything involving money, identity or commitments.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-9"> I've completed Drill 04.9</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Validation.</p></div></div>
+<div class="quiz">
+  <details><summary>1. The schema says <code>preferred_date</code> is a string. The model sends "next Tuesday". Which layer catches it, and how?</summary><div><p>Layer 2: a <code>@field_validator</code> that parses ISO dates (<code>date.fromisoformat</code>) and checks the range. Return the message to the model so it can ask the learner for a date or convert it.</p></div></details>
+  <details><summary>2. Why return validation errors to the model instead of just raising?</summary><div><p>Because the model can often <strong>fix</strong> the problem (reformat, ask the user) on the next round. Raising ends the conversation with a generic error.</p></div></details>
+  <details><summary>3. Name a check that no schema or validator can do on its own.</summary><div><p>Anything needing your data: the enrolment <strong>exists</strong> and belongs to this learner, the refund amount <strong>matches</strong> the policy quote, the course is <strong>currently offered</strong>.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Schema for shape, validators for rules, your systems for facts. Validate at every boundary and log every failure.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m04-valid"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/04/app-logic.html"><small>Previous</small><span>← 04 · Connecting LLMs to app logic</span></a><a class="next" href="../../modules/04/malformed.html"><small>Next</small><span>04 · Handling malformed responses →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

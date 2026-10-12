@@ -1,0 +1,104 @@
+<!--meta
+{"id": "m03-few", "short": "Few-Shot Prompting", "h1": "Few-Shot Prompting", "description": "Module 03, topic 5: teaching a model company-specific conventions with a few examples (in-context learning), how to choose examples, and a drill that measures few-shot against the zero-shot baseline.", "lead": "Show, don't just tell. Give the model a few solved examples and it copies the pattern: your labels, your format, your judgement on tricky cases. You'll add five examples and watch the house-rule mistakes from the baseline disappear, and see exactly what that costs in tokens.", "chips": ["In-context learning", "Choosing examples", "Drill 03.6"], "time": "Learn 10 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The senior agent sitting beside the new joiner.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Few-shot prompting includes a small number of input–output examples in the prompt so the model can infer the desired mapping, labels and format by analogy, without changing its weights (in-context learning).</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>On a new joiner's first day at TrainCrest support, a senior agent doesn't read out a 20-page labelling manual. They sit beside them: "This one asks for a refund but mentions the start date: we tag <em>billing</em>. This one wants more lab days: <em>lab_access</em>, not scheduling." A few examples and the new joiner gets it. Few-shot is that senior agent.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 290" role="img" aria-labelledby="fs-t fs-d">
+      <title id="fs-t">Few-shot prompting</title>
+      <desc id="fs-d">Three example pairs, each a ticket and its label, come before a new ticket. The model infers the pattern, including the house rule that a refund request mentioning dates is billing, and labels the new ticket accordingly.</desc>
+      <text x="20" y="28" class="t-m t-accent">EXAMPLES IN THE PROMPT</text>
+      <rect x="20" y="40" width="430" height="44" rx="9" class="s-surface"/><text x="36" y="67" class="t">"I can't attend next week, please refund my fee"</text>
+      <rect x="460" y="40" width="130" height="44" rx="9" class="s-violet"/><text x="525" y="67" class="t-b mid">billing</text>
+      <rect x="20" y="94" width="430" height="44" rx="9" class="s-surface"/><text x="36" y="121" class="t">"Need 5 more days of lab access"</text>
+      <rect x="460" y="94" width="130" height="44" rx="9" class="s-violet"/><text x="525" y="121" class="t-b mid">lab_access</text>
+      <rect x="20" y="148" width="430" height="44" rx="9" class="s-surface"/><text x="36" y="175" class="t">"Please shift me to the weekend batch"</text>
+      <rect x="460" y="148" width="130" height="44" rx="9" class="s-violet"/><text x="525" y="175" class="t-b mid">scheduling</text>
+      <text x="20" y="224" class="t-m t-accent">NEW INPUT</text>
+      <rect x="20" y="234" width="430" height="44" rx="9" class="s-blue"/><text x="36" y="261" class="t">"Want a refund, course starts in 3 days"</text>
+      <rect x="460" y="234" width="130" height="44" rx="9" class="s-green"/><text x="525" y="261" class="t-b mid">billing ✓</text>
+      <path d="M610 110 Q700 110 730 160" class="s-dash" marker-end="url(#ah)"/>
+      <rect x="680" y="166" width="260" height="96" rx="12" class="s-amber"/>
+      <text x="810" y="194" class="t-b mid">The model infers:</text>
+      <text x="810" y="216" class="t-s mid">• your label set and spelling</text>
+      <text x="810" y="234" class="t-s mid">• "refund = billing, dates or not"</text>
+      <text x="810" y="252" class="t-s mid">• "more lab time = lab_access"</text>
+      <path d="M676 240 Q630 256 596 256" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+    </svg>
+  </div>
+  <figcaption><b>Learning by analogy, inside one request.</b> Without the first example, "refund… starts in 3 days" often gets labelled <em>scheduling</em>. The example taught the house rule without a line of explanation.</figcaption>
+</figure>
+
+<h3>Getting examples right</h3>
+<ul>
+  <li><strong>Two to five examples</strong> usually suffice; more costs tokens on every call.</li>
+  <li><strong>Cover the tricky cases</strong>, not just the easy ones. Examples should sit on the boundaries you care about.</li>
+  <li><strong>Vary and balance them.</strong> Four billing examples and one other nudge the model towards billing.</li>
+  <li><strong>Keep the format identical.</strong> The model copies format faithfully, mistakes included.</li>
+  <li>Use <strong>user/assistant pairs</strong> or a clearly delimited block in the system message; both work.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Few-shot is the workhorse of production classification and extraction pipelines: routing tickets, tagging reviews, normalising product attributes. Some teams go a step further and <strong>retrieve</strong> the most similar labelled examples for each new input (dynamic few-shot), combining this topic with the embeddings of Module 05.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Using real customer tickets as examples, complete with names, emails and phone numbers. That's personal data sent on every request and stored in your prompt files. Write synthetic examples, or anonymise real ones first.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Zero-shot first; if outputs are inconsistent or the task has <strong>company-specific conventions</strong>, add <strong>a few diverse, balanced examples</strong> that cover the edge cases. It's in-context learning: no fine-tuning needed."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Beat your baseline.</p></div></div>
+
+<div class="drill" id="d03-6" data-title="Few-shot vs zero-shot: beat your baseline" data-time="~15 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 03.6</span><h3>Few-shot vs zero-shot: beat your baseline</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> measure the accuracy gain from five examples, and its token cost.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <p>The examples are <code>FEW_SHOT_EXAMPLES</code> in <code>tickets.py</code> (Drill 01.3); the script is <code>lab03_05_triage.py</code> from Drill 03.5.</p>
+        <pre class="term"><code><span class="ps">$ </span>python lab03_05_triage.py --mode both
+<span class="ps">$ </span>python lab03_05_triage.py --mode both --data data/eval_tickets.json</code></pre>
+        <span class="out-label">Typical result (yours will vary)</span>
+<pre class="out"><code>===== ZERO-SHOT =====
+…
+Accuracy 10/12 (83%) · off-list labels: 0 · avg input tokens: 71
+
+===== FEW-SHOT =====
+…
+Accuracy 12/12 (100%) · off-list labels: 0 · avg input tokens: 156</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>Few-shot fixed the house-rule mistakes from the baseline.</li><li>Input tokens roughly doubled. At 25,000 tickets a month, work out the extra cost with your price (Drill 02.14). Is the accuracy gain worth it? Usually, yes.</li></ul>
+      </li>
+      <li class="dstep think"><span class="st">Think</span>
+        <p>Edit <code>FEW_SHOT_EXAMPLES</code> to contain four billing examples and one scheduling example, and rerun. What happens to tickets in other categories?</p>
+        <details class="solution"><summary>What usually happens</summary><div><p>Borderline tickets drift towards <strong>billing</strong>: the model treats the example distribution as a hint about what's common. Balanced examples matter. Restore the original list afterwards.</p></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-6"> I've completed Drill 03.6</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Examples.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Zero-shot labels refund requests that mention dates as "scheduling". Cheapest fix?</summary><div><p><strong>Few-shot examples</strong> that include such a request labelled "billing", in a balanced set. Fine-tuning would be overkill for a rule that examples teach instantly.</p></div></details>
+  <details><summary>2. What's the cost of few-shot, and how do you decide if it's worth it?</summary><div><p>More <strong>input tokens on every call</strong>. Compare the accuracy gain on your test set against the extra cost at your volume.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>When the model keeps missing your conventions, show it a few balanced examples, and measure the gain.</p></div>

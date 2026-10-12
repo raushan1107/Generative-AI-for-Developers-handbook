@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ask TrainCrest</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
+  textarea { width: 100%; height: 90px; font: inherit; }
+  #answer { white-space: pre-wrap; background: #f4f4f8; padding: 12px; border-radius: 8px; min-height: 40px; }
+</style>
+</head>
+<body>
+<h1>Ask TrainCrest</h1>
+<textarea id="q" placeholder="Ask a question about your course..."></textarea>
+<p><button id="send">Ask</button></p>
+<div id="answer"></div>
+<script>
+  // No API key anywhere in this file: the browser only talks to our own backend.
+  document.getElementById("send").addEventListener("click", async () => {
+    const out = document.getElementById("answer");
+    out.textContent = "Thinking...";
+    const res = await fetch("/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: document.getElementById("q").value }),
+    });
+    const data = await res.json();
+    out.textContent = res.ok ? data.answer : "Error: " + JSON.stringify(data);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Embedding Models</title>
+<meta name="description" content="Module 05, topic 3: how to choose an embedding model (quality on your data, languages, dimensions, input limits, cost, hosting), shortened dimensions, task prefixes, the cost of switching, and a drill comparing settings on TrainCrest help questions.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m05-models">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod"><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic active" data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part II</span><i>/</i><a href="../../modules/05/index.html">Module 05</a><i>/</i><span>Embedding models</span></nav>
+  <span class="kind-pill">Learn · Do · Check · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 05 · Topic 3 of 8</span><h1>Embedding Models: Choosing and Using One</h1><p class="lead">There are dozens of embedding models, and leaderboards rank them on other people's data. What matters is how well one finds the right answer in your data, in your users' languages, at a size and price you can live with. You'll compare settings on TrainCrest's own help questions and learn why switching models later means re-embedding everything.</p><div class="chips"><span class="chip">Selection criteria</span><span class="chip">Dimensions and storage</span><span class="chip">Task prefixes</span><span class="chip">Drill 05.3</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 15 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Pick on your data, not on a leaderboard.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>An <strong>embedding model</strong> is a neural network trained to map text (and sometimes images or code) to vectors so that related inputs are close together. Models differ in <strong>quality</strong> for a domain and language, <strong>dimensions</strong>, <strong>maximum input length</strong>, <strong>cost</strong> and <strong>where they run</strong>.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>All embedding models do the same job, like all translators do. Some are better with legal text, some with Spanish, some are cheaper, some run on your laptop. You choose by testing on your own material.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Choosing a map for a hiking trip. A world atlas, a country road map and a detailed trail map all show the same land at different detail, size and price. The best map isn't the most detailed one; it's the one that gets <em>you</em> to <em>your</em> trail without weighing down your bag.</p>
+</div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Model</th><th>Dimensions</th><th>Where</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>text-embedding-3-small</code></td><td>1,536 (can shorten)</td><td>Azure OpenAI, OpenAI</td><td>The sensible default: cheap, multilingual, good quality</td></tr>
+      <tr><td><code>text-embedding-3-large</code></td><td>3,072 (can shorten)</td><td>Azure OpenAI, OpenAI</td><td>Higher quality, several times the price and storage</td></tr>
+      <tr><td><code>text-embedding-ada-002</code></td><td>1,536</td><td>Azure OpenAI, OpenAI</td><td>Older generation; you'll meet it in existing systems</td></tr>
+      <tr><td><code>nomic-embed-text</code></td><td>768</td><td>Local (Ollama)</td><td>Free and private; mostly English; works best with task prefixes</td></tr>
+      <tr><td>Others in the Foundry catalog</td><td>Varies</td><td>Microsoft Foundry</td><td>Including multilingual and domain models from other providers</td></tr>
+    </tbody>
+  </table>
+</div>
+<p class="small muted">Names, prices and retirement dates change. Check the model catalog and retirement schedule before you build on one.</p>
+
+<h3>The choices that matter</h3>
+<ul>
+  <li><strong>Quality on your data:</strong> build 20 to 50 real questions with known answers (like <code>data/help_questions.json</code>) and measure how often the right document comes first. That number beats any leaderboard.</li>
+  <li><strong>Languages:</strong> if users write in Spanish and Hindi, test in Spanish and Hindi (Drill 05.2 showed a mostly-English model missing a Spanish paraphrase).</li>
+  <li><strong>Dimensions and storage:</strong> 1,536 float32 numbers take about 6 KB, so a million chunks is about 6 GB of vectors before indexes. The <code>text-embedding-3</code> models accept a <code>dimensions</code> parameter to return shorter vectors (for example 256) that keep most of the quality.</li>
+  <li><strong>Input length:</strong> text-embedding-3 accepts up to 8,191 tokens per input, but retrieval usually works better on shorter, focused chunks (topic 6).</li>
+  <li><strong>Task prefixes:</strong> some models (like <code>nomic-embed-text</code>) expect <code>search_query: </code> on questions and <code>search_document: </code> on documents. Skipping them still works, just less well.</li>
+  <li><strong>Switching cost:</strong> changing model means <strong>re-embedding every document</strong>. Store the model name with the index and plan re-indexing like a database migration.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams usually start with a cheap general model, build a small labelled test set from real user questions, and only move to a bigger or specialised model when the test set shows a real gain. Large indexes often use shortened vectors to cut storage and latency, accepting a small quality loss measured on that same test set.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Pick the top model on the benchmark and move on."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Benchmarks shortlist; <strong>my test set decides</strong>. I weigh hit rate against cost, size and languages, record the model with the index, and treat a model change as a migration."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Changing the <code>dimensions</code> setting (or the deployment behind <code>embed</code>) for new documents only. Old and new vectors no longer match in size or space, and the index either errors or quietly returns nonsense. Any change to the model or its settings means rebuilding the whole index.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I choose an embedding model by <strong>measuring retrieval on our own labelled questions</strong>, considering language coverage, dimensions (storage and latency), input limits and cost. Changing models requires re-embedding the corpus, so the model is versioned with the index."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Measure, don't guess.</p></div></div>
+
+<div class="drill" id="d05-3" data-title="Compare embedding settings on your own questions" data-time="~15 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 05.3</span><h3>Compare embedding settings on your own questions</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Ollama optional</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> match six learner questions (one in Spanish) to the right help article, and compare full-size vectors, shortened vectors and task prefixes.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Six questions, ten articles</h4>
+        <p>The ten fictional help-centre articles are in <code>data/help/</code>; Module 06 reuses them.</p>
+        <pre class="code" data-file="lab05_03_models.py"><code>"""Drill 05.3: same questions, different embedding settings. Does the best match change?
+Run:  python lab05_03_models.py                    (your EMBED_MODEL, full size)
+      python lab05_03_models.py --dims 256 1536    (text-embedding-3 models only: shortened vectors)
+      python lab05_03_models.py --prefix           (nomic-embed-text: add its task prefixes)"""
+import sys
+import time
+from pathlib import Path
+
+import numpy as np
+
+from embed import EMBED_MODEL, embed
+
+ARTICLES = {p.stem: p.read_text(encoding="utf-8") for p in sorted((Path(__file__).parent / "data" / "help").glob("*.md"))}
+QUESTIONS = {
+    "Can I get my money back if I cancel next week?": "refunds-and-cancellations",
+    "The sandbox won't start, what do I do?": "labs-and-sandboxes",
+    "My certificate has a typo in my surname": "certificates",
+    "Can my company pay in three parts?": "payments-and-invoices",
+    "Do you offer captions for deaf learners?": "accessibility",
+    "¿Cuánto tiempo es válido mi voucher de examen?": "exam-vouchers",
+}
+
+
+def run(dims=None, prefix=False):
+    q_texts = [("search_query: " if prefix else "") + q for q in QUESTIONS]
+    d_texts = [("search_document: " if prefix else "") + t for t in ARTICLES.values()]
+    start = time.perf_counter()
+    docs, qs = embed(d_texts, dimensions=dims), embed(q_texts, dimensions=dims)
+    took = time.perf_counter() - start
+    docs /= np.linalg.norm(docs, axis=1, keepdims=True)
+    qs /= np.linalg.norm(qs, axis=1, keepdims=True)
+    scores = qs @ docs.T
+    names = list(ARTICLES)
+    correct = 0
+    label = f"{EMBED_MODEL} dims={docs.shape[1]}{' +prefix' if prefix else ''}"
+    print(f"\n{label}   ({took:.1f}s, cached calls are instant)")
+    for (q, expected), row in zip(QUESTIONS.items(), scores):
+        best = names[int(np.argmax(row))]
+        correct += best == expected
+        print(f"  {'OK ' if best == expected else 'MISS'} {row.max():.2f}  {q[:46]:&lt;46} -&gt; {best}")
+    print(f"  {correct}/{len(QUESTIONS)} questions matched the right article")
+
+
+if __name__ == "__main__":
+    if "--dims" in sys.argv:
+        for d in sys.argv[sys.argv.index("--dims") + 1:]:
+            run(dims=int(d))
+    else:
+        run(prefix="--prefix" in sys.argv)</code></pre>
+<pre class="term"><code><span class="ps">$ </span>python lab05_03_models.py
+<span class="ps">$ </span>python lab05_03_models.py --dims 256 1536      <span class="o"># Azure / OpenAI text-embedding-3 only</span></code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama)</span>
+<pre class="out"><code>nomic-embed-text dims=768   (2.9s, cached calls are instant)
+  OK  0.70  Can I get my money back if I cancel next week? -> refunds-and-cancellations
+  OK  0.59  The sandbox won't start, what do I do?         -> labs-and-sandboxes
+  OK  0.60  My certificate has a typo in my surname        -> certificates
+  OK  0.61  Can my company pay in three parts?             -> payments-and-invoices
+  OK  0.66  Do you offer captions for deaf learners?       -> accessibility
+  OK  0.71  ¿Cuánto tiempo es válido mi voucher de examen? -> exam-vouchers
+  6/6 questions matched the right article</code></pre>
+        <p>With Ollama, also try the task prefixes the model was trained with:</p>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_03_models.py --prefix</code></pre>
+<pre class="out"><code>nomic-embed-text dims=768 +prefix   (4.6s, cached calls are instant)
+  OK  0.73  Can I get my money back if I cancel next week? -> refunds-and-cancellations
+  OK  0.67  The sandbox won't start, what do I do?         -> labs-and-sandboxes
+  OK  0.67  My certificate has a typo in my surname        -> certificates
+  OK  0.66  Can my company pay in three parts?             -> payments-and-invoices
+  OK  0.71  Do you offer captions for deaf learners?       -> accessibility
+  OK  0.69  ¿Cuánto tiempo es válido mi voucher de examen? -> exam-vouchers
+  6/6 questions matched the right article</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>What did you learn, and what didn't you?</h4>
+        <ol>
+          <li>Prefixes raised most scores but didn't change any answer. Is that an improvement?</li>
+          <li>On Azure, did 256 dimensions get the same 6/6 as 1,536? What would you save at a million chunks?</li>
+          <li>Is 6/6 on six questions enough to choose a model?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>Higher scores alone aren't the goal; correct <em>rankings</em> are. A wider gap between the right article and the rest does make retrieval more robust on harder questions, so it's worth keeping, but prove it on a bigger set.</li>
+            <li>If shortened vectors keep the same hits, you store about a sixth of the data (roughly 1 KB instead of 6 KB per chunk, about 5 GB saved per million chunks) and search faster.</li>
+            <li>No. Six easy questions, each answered by a whole article, is a smoke test. Drill 05.7 uses 20 questions with a required phrase in the retrieved chunk; real projects use hundreds of real user questions.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-3"> I've completed Drill 05.3</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Choosing models.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Two models score 92% and 94% on a public leaderboard. How do you choose for TrainCrest?</summary><div><p>Run both on <strong>TrainCrest's own labelled questions</strong>, in the languages learners use, and weigh the hit rate against cost, dimensions and hosting. Leaderboard gaps that small often vanish or reverse on your data.</p></div></details>
+  <details><summary>2. You want to move from <code>text-embedding-3-small</code> to <code>-large</code>. What has to happen?</summary><div><p>Re-embed <strong>every</strong> document with the new model, build a new index (dimensions change from 1,536 to 3,072), switch queries over at the same moment, and compare hit rates before and after.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Choose the embedding model with your own test set, version it with your index, and budget a re-index for every change.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m05-models"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/05/similarity.html"><small>Previous</small><span>← 05 · Vector similarity</span></a><a class="next" href="../../modules/05/vector-databases.html"><small>Next</small><span>05 · Vector databases →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

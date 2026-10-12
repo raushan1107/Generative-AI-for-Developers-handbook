@@ -1,0 +1,131 @@
+<!--meta
+{"id": "m02-auth", "short": "Authentication and API Keys", "h1": "Authentication and API Keys", "description": "Module 02, topic 2: API keys vs Microsoft Entra ID tokens, provider headers, key hygiene, and drills that make a raw HTTP call with a key and then go keyless with an Azure CLI role assignment written with your AI assistant.", "lead": "A key is a password that never expires; a token is a temporary pass tied to an identity. You'll see both on the wire: first a raw HTTP call with a key, then the same call with no key at all, after your AI assistant writes the role assignment for you.", "chips": ["API keys", "Entra ID tokens", "Managed identity", "Drills 02.2 · 02.3"], "time": "Learn 10 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>House keys vs hotel key cards.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>LLM APIs authenticate each request either with a static <strong>API key</strong> sent in a header, or with a short-lived <strong>access token</strong> issued by an identity provider (for Azure, a Microsoft Entra ID token checked against role-based access control).</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>A key is a long password: whoever has it can spend your money, forever, until you regenerate it. A token is a temporary pass your app gets by proving who it is; it expires in about an hour and access can be removed centrally. Keys are fine for learning. Tokens are what you want in production.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>An API key is a <strong>house key</strong>: copy it once and the copy works forever, and you'll never know who has one. A token is a <strong>hotel key card</strong>: issued at the front desk after checking your ID, it stops working at checkout, and the desk can deactivate it at any time.</p>
+</div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Provider</th><th>Key header</th><th>Token option</th></tr></thead>
+    <tbody>
+      <tr><td>Azure OpenAI (Foundry)</td><td><code>api-key: &lt;key&gt;</code></td><td><code>Authorization: Bearer &lt;Entra ID token&gt;</code> plus a role such as <em>Cognitive Services OpenAI User</em></td></tr>
+      <tr><td>OpenAI</td><td><code>Authorization: Bearer sk-…</code></td><td>Project-scoped keys</td></tr>
+      <tr><td>Anthropic Claude</td><td><code>x-api-key: &lt;key&gt;</code> plus <code>anthropic-version</code></td><td>Workspace keys; cloud identity via Foundry, Bedrock or Vertex</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Key hygiene</h3>
+<ul>
+  <li><strong>Never in code, never in the client.</strong> <code>.env</code> locally; Azure Key Vault or managed identity in the cloud.</li>
+  <li><strong>Rotate without downtime.</strong> Azure gives each resource two keys: move apps to key 2, regenerate key 1, repeat next time.</li>
+  <li><strong>One key per app and environment</strong> where possible, so a leak has a small blast radius.</li>
+  <li><strong>Prefer keyless:</strong> a managed identity plus an RBAC role means there's no secret to leak at all.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Leaked AI keys are a constant problem: bots scrape public repositories for them within minutes, and platforms such as GitHub run secret scanning that detects many provider key formats and alerts the owner. Enterprises on Azure typically disable key authentication on their AI resources altogether and use managed identities, so there is nothing to leak.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"In production on Azure I'd <strong>disable key auth</strong> and use <strong>managed identity with RBAC</strong>, so there's no secret to rotate or leak. Keys are for local development, in environment variables, never in the repo."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>See the key on the wire, then remove it entirely.</p></div></div>
+
+<div class="drill" id="d02-2" data-title="See the wire: one call with raw HTTP and a key" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.2</span><h3>See the wire: one call with raw HTTP and a key</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · requests</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> make one chat call without any SDK, see the exact headers and JSON, and save the response for Drill 02.4.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab02_02_raw_http.py" data-src="code/genai-labs/lab02_02_raw_http.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_02_raw_http.py</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list">
+          <li>Find in the output: <code>model</code>, <code>choices[0].message.content</code>, <code>finish_reason</code>, <code>usage</code> and Azure's content-filter results.</li>
+          <li>Find the <code>x-request-id</code> or <code>apim-request-id</code> header: it's what Microsoft support asks for. Log it on every call.</li>
+          <li>Change the key in the code (not in <code>.env</code>) to something wrong and run again. Read the 401 body, then change it back.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · the same call to Claude, with curl</div>
+      <div class="alt-body">
+        <p>Different provider, different shape: <code>x-api-key</code>, a version header, <code>system</code> outside the messages, and <code>max_tokens</code> is required.</p>
+<pre class="term"><code><span class="ps">$ </span>curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "anthropic-beta: server-side-fallback-2026-07-01" \
+  -H "content-type: application/json" \
+  -d '{"model": "claude-opus-5-5", "max_tokens": 1024, "fallbacks": "default",
+       "system": "You are Traincrest Assist. Be brief.",
+       "messages": [{"role": "user", "content": "What does batch confirmed mean?"}]}'</code></pre>
+        <p>Look for <code>content[0].text</code>, <code>stop_reason</code> (Claude's finish_reason) and <code>usage</code>.</p>
+      </div>
+    </div>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-2"> I've completed Drill 02.2</label></div>
+</div>
+
+<div class="drill" id="d02-3" data-title="Go keyless: write the role assignment with AI, then call with your identity" data-time="~15 min" data-steps="write,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.3</span><h3>Go keyless: role assignment by prompt, then call with your identity</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure CLI · Entra ID</span><span class="badge b-tool">AI assistant</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> call your deployment with no API key: Azure checks <em>who you are</em> and <em>what role you have</em>.</p>
+    <p class="lab-note"><b>Before you start:</b> Azure CLI installed and <code>az login</code> done. You need permission to assign roles on the resource group (Owner or User Access Administrator); on a company subscription, ask your admin.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Ask your assistant for the role assignment commands</h4>
+        <div class="template-box"><pre><code>Goal:        Azure CLI commands to give … the role … on …
+Context:     resource group …, Foundry resource …, I'm signed in with az login; shell is …
+Constraints: look up my object ID and the resource ID with az commands, don't hard-code them;
+             least privilege (only what's needed to call deployments)
+Done when:   a command lists my role assignment on that resource</code></pre></div>
+        <p class="hint"><b>Hint:</b> the role is <em>Cognitive Services OpenAI User</em>, the assignee is the signed-in user (<code>az ad signed-in-user show</code>), and the scope is the Foundry resource's ID (<code>az cognitiveservices account show … --query id</code>).</p>
+        <details class="solution"><summary>Compare with my prompt and the expected commands</summary><div>
+          <div class="prompt-box"><pre><code>Give me PowerShell Azure CLI commands to assign the "Cognitive Services OpenAI User" role to
+the user I'm signed in as (az login), scoped to the Foundry resource aif-genai-rr in resource
+group rg-genai-labs. Look up my object ID and the resource ID with az commands instead of
+hard-coding them. Then give me a command that lists my role assignments on that resource.
+Explain in one line why this role is enough to call deployments but not to manage them.</code></pre></div>
+<pre class="term"><code><span class="ps">PS&gt; </span>$me = az ad signed-in-user show --query id -o tsv
+<span class="ps">PS&gt; </span>$scope = az cognitiveservices account show -n aif-genai-rr -g rg-genai-labs --query id -o tsv
+<span class="ps">PS&gt; </span>az role assignment create --assignee $me --role "Cognitive Services OpenAI User" --scope $scope
+<span class="ps">PS&gt; </span>az role assignment list --assignee $me --scope $scope -o table</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Call the model with your identity</h4>
+        <pre class="code" data-file="lab02_03_keyless.py" data-src="code/genai-labs/lab02_03_keyless.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_03_keyless.py</code></pre>
+        <p class="small muted">Role assignments can take a few minutes to apply. A 401 or 403 right after assigning usually just means "wait and retry".</p>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>The script prints "keyless works" without using <code>AZURE_OPENAI_API_KEY</code> (comment it out in <code>.env</code> to prove it).</li><li><code>az role assignment list</code> shows your role on the resource.</li><li>Run <code>az logout</code>, then the script again: it fails. Identity really is the credential. Log back in.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-3"> I've completed Drill 02.3</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Credentials.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Your key leaked in a public repo an hour ago and you deleted the commit. Are you safe?</summary><div><p>No. Assume it's been copied. <strong>Regenerate the key now</strong> (Azure's two keys let you do it without downtime), then check usage for abuse.</p></div></details>
+  <details><summary>2. Why is "Cognitive Services OpenAI User" better for an app than Contributor on the resource?</summary><div><p><strong>Least privilege</strong>: it can call deployments but not create, delete or reconfigure them, or read keys.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Keys for learning, identities for production. The safest secret is the one that doesn't exist.</p></div>

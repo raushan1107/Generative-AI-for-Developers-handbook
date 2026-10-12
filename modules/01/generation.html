@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How LLMs Generate</title>
+<meta name="description" content="Module 01, topic 5: autoregressive next-token generation, sampling and temperature, why models hallucinate, and drills that implement temperature from scratch and read real token probabilities from your model.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m01-gen">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod" open><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic active" data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/01/index.html">Module 01</a><i>/</i><span>How LLMs generate responses</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 01 · Topic 5 of 9</span><h1>How LLMs Generate Responses</h1><p class="lead">The model writes one token at a time: score every candidate, pick one, append, repeat. That loop explains streaming, variety, temperature and hallucination. You'll implement the maths yourself in 25 lines, then look at your real model's probabilities.</p><div class="chips"><span class="chip">Next-token loop</span><span class="chip">Sampling</span><span class="chip">Temperature</span><span class="chip">Hallucination</span><span class="chip">Drills 01.7 · 01.8</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 20 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>A loop of educated guesses.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>LLMs generate text <strong>autoregressively</strong>: at each step the model computes a probability distribution over its vocabulary for the next token, a decoding strategy selects one token from that distribution, the token is appended to the input, and the process repeats until a stop condition is reached.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>The model writes one token at a time. Each step, every possible next token gets a score ("Jupiter: 96%, Saturn: 2%…"); one is picked, added to the text, and the model goes again with the slightly longer text. That's why answers appear word by word: you're watching the loop run.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 320" role="img" aria-labelledby="gen-t gen-d">
+      <title id="gen-t">Next-token prediction, step by step</title>
+      <desc id="gen-d">Step 1: given "Your exam voucher will arrive", candidates are soon 58 percent, tomorrow 26 percent, today 13 percent, never under 1 percent. "soon" is sampled. Step 2: the extended text is fed back and the next token is predicted. Step 3: an end token stops generation.</desc>
+      <text x="20" y="30" class="t-m t-accent">STEP 1</text>
+      <rect x="20" y="40" width="300" height="44" rx="10" class="s-surface"/><text x="36" y="67" class="t">Your exam voucher will arrive</text>
+      <path d="M320 62 H356" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="362" y="40" width="110" height="44" rx="10" class="s-violet"/><text x="417" y="67" class="t-b mid">Model</text>
+      <path d="M472 62 H508" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="514" y="50" class="t-s">␣soon</text><rect x="590" y="40" width="168" height="13" rx="4" class="s-green"/><text x="766" y="51" class="t-s">58%</text>
+      <text x="514" y="70" class="t-s">␣tomorrow</text><rect x="590" y="60" width="76" height="13" rx="4" class="s-amber"/><text x="674" y="71" class="t-s">26%</text>
+      <text x="514" y="90" class="t-s">␣today</text><rect x="590" y="80" width="38" height="13" rx="4" class="s-amber"/><text x="636" y="91" class="t-s">13%</text>
+      <text x="514" y="110" class="t-s">␣never</text><rect x="590" y="100" width="2" height="13" rx="1" class="s-rose"/><text x="600" y="111" class="t-s">0.4% (plausible text, wrong fact)</text>
+
+      <text x="20" y="160" class="t-m t-accent">STEP 2 · append the sampled token, run again</text>
+      <rect x="20" y="170" width="300" height="44" rx="10" class="s-surface"/><text x="36" y="197" class="t">… will arrive <tspan class="t-b t-green">soon</tspan></text>
+      <path d="M320 192 H356" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="362" y="170" width="110" height="44" rx="10" class="s-violet"/><text x="417" y="197" class="t-b mid">Model</text>
+      <path d="M472 192 H508" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="514" y="197" class="t-s">"," · "." · "after" · …</text>
+
+      <text x="20" y="254" class="t-m t-accent">STEP N</text>
+      <rect x="20" y="264" width="300" height="44" rx="10" class="s-surface"/><text x="36" y="291" class="t">… soon, within 3 business days.</text>
+      <path d="M320 286 H356" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="362" y="264" width="110" height="44" rx="10" class="s-violet"/><text x="417" y="291" class="t-b mid">Model</text>
+      <path d="M472 286 H508" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="514" y="264" width="200" height="44" rx="10" class="s-surface2"/><text x="614" y="291" class="t-b mid">⟨end⟩ → stop</text>
+    </svg>
+  </div>
+  <figcaption><b>A loop of guesses.</b> Each step is a probability distribution, not a lookup. These numbers are the real softmax values from Drill 01.7 at temperature 1.0. "never" had a tiny but non-zero chance: that's where hallucinations live.</figcaption>
+</figure>
+
+<h3>Temperature: how adventurous the pick is</h3>
+<p>The model produces raw scores (logits); <strong>softmax</strong> turns them into probabilities. Temperature divides the scores before softmax. Low temperature sharpens the distribution so the top choice almost always wins; high temperature flattens it so long shots get a real chance. It changes <em>variety</em>, never <em>knowledge</em>.</p>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A cautious friend and an adventurous friend order from the same menu. The cautious one (low temperature) orders the bestseller every time. The adventurous one (high temperature) sometimes picks the weird special. Same menu, same kitchen. Neither knows more about food.</p>
+</div>
+
+<h3>Why models hallucinate</h3>
+<p>The model is trained to produce <strong>likely</strong> text, not <strong>true</strong> text. Usually they overlap. When the model lacks the fact (TrainCrest's actual voucher policy, last week's price, a learner's enrolment), it still produces the most likely-sounding text, fluently and confidently.</p>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A student in an oral exam who didn't study chapter 7 doesn't stay silent. They give a confident, well-structured answer built from everything that <em>sounds</em> related. Sometimes it's even right. The cure is the same as for the student: <strong>hand them the textbook page</strong> (grounding, Module 06) and <strong>let them say "I don't know"</strong> (prompting, Module 03).</p>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Press "regenerate" in ChatGPT or Claude.ai and you get a different answer: that's sampling. Watch the answer appear word by word: that's the loop, streamed. Products that must be consistent (extracting invoice fields, routing tickets) constrain the output format and validate it, rather than hoping sampling behaves.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"If the output is wrong, the model is buggy. Find a better model."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Wrong-but-fluent is the <em>expected</em> failure mode of next-token prediction. I reduce it by design: give facts, constrain output, allow abstaining, and evaluate."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Why do LLMs hallucinate?" <strong>"They're optimised to generate plausible continuations, not to verify facts. When the needed information isn't in the context or training data, the most plausible text can be false."</strong> Then name two mitigations: grounding with retrieved data, and allowing the model to abstain.</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Implement temperature yourself, then read your model's real probabilities.</p></div></div>
+
+<div class="drill" id="d01-7" data-title="Temperature from scratch: softmax and sampling" data-time="~10 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 01.7</span><h3>Temperature from scratch: softmax and sampling</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-tool">Pure Python · no API</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> see exactly what temperature does to probabilities and to 1,000 samples, with no black box.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Create and run the script</h4>
+        <pre class="code" data-file="lab01_07_temperature.py"><code>"""Drill 01.7: temperature from scratch. Turn scores into probabilities, then sample."""
+import math
+import random
+from collections import Counter
+
+<span class="c"># Scores ("logits") a model might give five candidate words after:</span>
+<span class="c">#   "Your exam voucher will arrive ..."</span>
+LOGITS = {"soon": 4.0, "tomorrow": 3.2, "today": 2.5, "eventually": 1.0, "never": -1.0}
+
+
+def softmax(logits, temperature):
+    """Divide scores by the temperature, then normalise them into probabilities."""
+    scaled = {w: s / temperature for w, s in logits.items()}
+    top = max(scaled.values())
+    exps = {w: math.exp(s - top) for w, s in scaled.items()}  <span class="c"># subtract the max for numerical safety</span>
+    total = sum(exps.values())
+    return {w: e / total for w, e in exps.items()}
+
+
+rng = random.Random(42)
+for t in (0.2, 0.7, 1.0, 1.5, 3.0):
+    probs = softmax(LOGITS, t)
+    picks = Counter(rng.choices(list(probs), weights=list(probs.values()), k=1000))
+    print(f"\ntemperature = {t}")
+    for word, p in probs.items():
+        print(f"  {word:11} {p:6.1%}  {'#' * round(p * 40):40} picked {picks[word]:4} / 1000")</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_07_temperature.py</code></pre>
+        <span class="out-label">Real output (abridged to three temperatures)</span>
+<pre class="out"><code>temperature = 0.2
+  soon         98.1%  #######################################  picked  978 / 1000
+  tomorrow      1.8%  #                                        picked   20 / 1000
+  today         0.1%                                           picked    2 / 1000
+  eventually    0.0%                                           picked    0 / 1000
+  never         0.0%                                           picked    0 / 1000
+
+temperature = 1.0
+  soon         57.8%  #######################                  picked  583 / 1000
+  tomorrow     26.0%  ##########                               picked  249 / 1000
+  today        12.9%  #####                                    picked  127 / 1000
+  eventually    2.9%  #                                        picked   35 / 1000
+  never         0.4%                                           picked    6 / 1000
+
+temperature = 3.0
+  soon         34.1%  ##############                           picked  351 / 1000
+  tomorrow     26.1%  ##########                               picked  267 / 1000
+  today        20.7%  ########                                 picked  215 / 1000
+  eventually   12.6%  #####                                    picked  112 / 1000
+  never         6.4%  ###                                      picked   55 / 1000</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Translate the numbers into product decisions</h4>
+        <p>At temperature 3.0, "never" was picked 55 times out of 1,000. Imagine that word in a message to a learner waiting for a voucher. Which TrainCrest features would you run at low temperature, and which could tolerate high?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div>
+          <p><strong>Low:</strong> ticket triage, data extraction, policy answers, anything a program parses or a customer relies on. <strong>Higher:</strong> brainstorming course names, marketing drafts, quiz question ideas, where variety is the point and a human reviews. And remember: many reasoning models fix temperature for you (Module 02).</p>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-7"> I've completed Drill 01.7</label></div>
+</div>
+
+<div class="drill" id="d01-8" data-title="Watch your model pick its next token" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 01.8</span><h3>Watch your model pick its next token</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> read the real probability distribution behind one token from your deployment, and see sampling produce different answers to the same prompt.</p>
+    <p class="lab-note"><b>Before you start:</b> token probabilities (<code>logprobs</code>) are only returned by some models; many reasoning models refuse the parameter. The script tells you if yours does. If so, read the expected output, or try a deployment whose feature table lists <code>logprobs</code>.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab01_08_next_token.py"><code>"""Drill 01.8: the real probability distribution behind one token, and sampling in action."""
+import math
+
+import openai
+
+from llm import get_client, MODEL
+
+client = get_client()
+
+<span class="c"># Part A: what were the candidates for the first token?</span>
+try:
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[{"role": "user", "content": "Complete with one word only: The largest planet in our solar system is"}],
+        logprobs=True,     <span class="c"># return the log-probability of each generated token</span>
+        top_logprobs=5,    <span class="c"># ...and the top 5 alternatives at each position</span>
+    )
+    lp = response.choices[0].logprobs
+    if lp is None or not lp.content:
+        raise ValueError("no logprobs returned")
+    first = lp.content[0]
+    print(f"Chosen first token: {first.token!r}\n")
+    for cand in first.top_logprobs:
+        pct = math.exp(cand.logprob) * 100
+        print(f"  {cand.token!r:14} {pct:6.2f}%  {'#' * round(pct / 4)}")
+except (openai.BadRequestError, ValueError) as err:
+    print("This model doesn't return token probabilities:", err)
+
+<span class="c"># Part B: the same open-ended prompt, three times</span>
+print("\nThree samples of the same prompt:")
+for i in range(3):
+    r = client.chat.completions.create(
+        model=MODEL,
+        messages=[{"role": "user", "content": "Invent a 4-word slogan for an online tech training company. Slogan only."}],
+    )
+    print(f"  {i + 1}. {r.choices[0].message.content.strip()}")</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_08_next_token.py</code></pre>
+        <span class="out-label">Expected output (yours will differ)</span>
+<pre class="out"><code>Chosen first token: 'Jupiter'
+
+  'Jupiter'       97.70%  ########################
+  'J'              1.19%
+  '**'             0.62%
+  'jupiter'        0.31%
+  'The'            0.09%
+
+Three samples of the same prompt:
+  1. Learn. Build. Certify. Grow.
+  2. Skills That Ship Code
+  3. Train Smart, Deploy Faster</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><ul class="verify-list"><li>The top token carries almost all the probability for a well-known fact.</li><li>The three slogans differ: each token was sampled.</li><li>Your model either returned probabilities or the script told you clearly that it doesn't support them (no crash).</li></ul></li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-8"> I've completed Drill 01.8</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Explain it in one sentence each.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Does setting temperature to 0 make the model correct?</summary><div><p>No. It makes the top choice win more consistently. If the top choice is a hallucination, you'll get the <strong>same wrong answer reliably</strong>.</p></div></details>
+  <details><summary>2. Why can a model state a wrong refund policy so confidently?</summary><div><p>Because it produces the most <strong>plausible</strong> continuation, and confidence is just fluent text. Without the real policy in its context, a common policy from training data looks most likely.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Generation is sampling from probabilities. Design so that the likely answer is also the right one: give facts, constrain, verify.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m01-gen"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/01/tokens.html"><small>Previous</small><span>← 01 · Tokens and context windows</span></a><a class="next" href="../../modules/01/training-inference.html"><small>Next</small><span>01 · Training vs inference →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

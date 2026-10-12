@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foundation Models</title>
+<meta name="description" content="Module 01, topic 7: what foundation models are, the model landscape (frontier, small, open-weight), the questions for choosing a model, and a drill that measures two models on the same task.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m01-fm">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod" open><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic active" data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/01/index.html">Module 01</a><i>/</i><span>Foundation models</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 01 · Topic 7 of 9</span><h1>Foundation Models, and How to Choose One</h1><p class="lead">The industry builds a few huge general models and everyone adapts them. Your real decision is which one to use for which job, and the honest answer comes from measuring, not from leaderboards. You'll race two models on a real TrainCrest task and let the numbers decide.</p><div class="chips"><span class="chip">Frontier · small · open-weight</span><span class="chip">Model selection</span><span class="chip">Drill 01.11</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 20 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Build once, adapt many times.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A foundation model is a large model trained on broad data that can be adapted, through prompting, grounding or fine-tuning, to a wide range of downstream tasks. LLMs such as the GPT, Claude, Llama and Phi families are foundation models.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Instead of one model per task, there are a few huge general models, and everyone adapts them. The same model can summarise a ticket, write SQL, translate Spanish and draft an email. You choose a foundation model, then shape it with prompts and data.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A foundation model is a <strong>fresh graduate from a top university</strong>: broadly trained, quick to learn, not yet specialised. You don't send them back to university for every new task. You give them a brief (prompt), reference material (RAG) and, for long-term roles, some on-the-job training (fine-tuning).</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 300" role="img" aria-labelledby="fm-t fm-d">
+      <title id="fm-t">One foundation model, many tasks</title>
+      <desc id="fm-d">A foundation model in the centre connects to six tasks: summarise tickets, write code, translate, extract fields, answer policy questions and draft emails. Underneath, three ways to adapt it: prompting, grounding and fine-tuning.</desc>
+      <ellipse cx="450" cy="130" rx="130" ry="56" class="s-violet"/><text x="450" y="126" class="t-h mid">Foundation model</text><text x="450" y="148" class="t-s mid">broad, general, pre-trained</text>
+      <rect x="40" y="30" width="190" height="44" rx="10" class="s-surface"/><text x="135" y="57" class="t mid">Summarise tickets</text>
+      <rect x="40" y="108" width="190" height="44" rx="10" class="s-surface"/><text x="135" y="135" class="t mid">Write and explain code</text>
+      <rect x="40" y="186" width="190" height="44" rx="10" class="s-surface"/><text x="135" y="213" class="t mid">Translate Spanish ↔ English</text>
+      <rect x="670" y="30" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="57" class="t mid">Extract invoice fields</text>
+      <rect x="670" y="108" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="135" class="t mid">Answer policy questions</text>
+      <rect x="670" y="186" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="213" class="t mid">Draft learner emails</text>
+      <path d="M322 110 L234 56" class="s-line"/><path d="M320 130 H234" class="s-line"/><path d="M322 150 L234 206" class="s-line"/>
+      <path d="M578 110 L666 56" class="s-line"/><path d="M580 130 H666" class="s-line"/><path d="M578 150 L666 206" class="s-line"/>
+      <rect x="200" y="250" width="150" height="36" rx="9" class="s-blue"/><text x="275" y="273" class="t-b mid">Prompting</text>
+      <rect x="375" y="250" width="150" height="36" rx="9" class="s-teal"/><text x="450" y="273" class="t-b mid">Grounding (RAG)</text>
+      <rect x="550" y="250" width="150" height="36" rx="9" class="s-amber"/><text x="625" y="273" class="t-b mid">Fine-tuning</text>
+      <text x="110" y="273" class="t-s">adapt it by →</text>
+    </svg>
+  </div>
+  <figcaption><b>The economics of GenAI.</b> Providers spend a fortune on training; you spend minutes adapting.</figcaption>
+</figure>
+
+<h3>The model landscape, simplified</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Tier</th><th>Examples (at the time of writing)</th><th>How you use it</th></tr></thead>
+    <tbody>
+      <tr><td>Proprietary, frontier</td><td>OpenAI GPT-6 / GPT-5.x families, Anthropic Claude Opus and Sonnet</td><td>API (Azure Foundry, OpenAI, Anthropic). Most capable, priciest.</td></tr>
+      <tr><td>Proprietary, small and fast</td><td>"mini", "nano", "luna" tiers, Claude Haiku</td><td>Same APIs, far cheaper and faster. Often enough for classification, extraction, routing.</td></tr>
+      <tr><td>Open-weight</td><td>Meta Llama, Microsoft Phi, Mistral, DeepSeek, gpt-oss</td><td>Run yourself (Ollama, your GPUs) or hosted in Foundry. Full control; you operate it.</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="callout note">
+  <div class="c-label">Name check</div>
+  <p>Model names change every few months. In the last year Azure retired whole families and added new tiers such as GPT-5.6 Sol, Terra and Luna. Don't memorise names: learn the <strong>tiers</strong>, and check the Foundry model catalogue and its retirement schedule when you start a project.</p>
+</div>
+
+<h3>How to choose: the questions that matter</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Question</th><th>Why it matters</th><th>Leans towards</th></tr></thead>
+    <tbody>
+      <tr><td>How hard is the task?</td><td>Multi-step reasoning, tricky code and nuanced writing need capable models</td><td>Frontier for hard reasoning; small for classify, extract, route</td></tr>
+      <tr><td>How fast must it answer?</td><td>Chat users notice delays before the first word</td><td>Small models, streaming, low reasoning effort</td></tr>
+      <tr><td>How many calls a day?</td><td>Cost = volume × tokens × price</td><td>Small models for high volume; route only hard cases up</td></tr>
+      <tr><td>How much context?</td><td>Long documents need big windows</td><td>Large-context models, or better retrieval</td></tr>
+      <tr><td>Which inputs?</td><td>Images, audio, PDFs</td><td>Multimodal models (next topic)</td></tr>
+      <tr><td>Where may data be processed?</td><td>Regulation and contracts</td><td>Data Zone or regional deployments, or self-hosted open-weight</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Many products quietly use several models. GitHub Copilot, for example, lets you pick between models from different providers for chat. Production systems often <strong>route</strong>: a small, cheap model handles routine requests and a larger one handles the hard ones (Module 11). Teams pick models from their own evaluation results, because public benchmarks rarely match a company's actual tasks.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Use the biggest, newest model. Best is best."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Use the <strong>smallest model that passes my evaluation</strong> for this task, and keep the model name in configuration so I can switch when a better or cheaper one ships."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"How do you choose a model?" <strong>"Task difficulty, latency, cost at our volume, context length, modality and data residency, validated with an evaluation set on our own data."</strong></p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Let measurement, not marketing, pick the model.</p></div></div>
+
+<div class="drill" id="d01-11" data-title="Same prompt, two models: measure, then extend the benchmark" data-time="~20 min" data-steps="run,write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 01.11</span><h3>Same prompt, two models: measure, then extend the benchmark</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Ollama · Claude (optional)</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> compare latency, tokens and quality on a real support task, then have your assistant turn the script into a small, repeatable benchmark.</p>
+    <p class="lab-note"><b>Before you start:</b> you need a second model. Deploy a larger model in the same Foundry resource (for example a "sol" tier or <code>gpt-5.4</code>) as <code>chat-big</code>, or have Ollama running. Add <code>COMPARE_DEPLOYMENT=chat-big</code> and/or <code>COMPARE_WITH_OLLAMA=1</code> to <code>.env</code>.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Race the models</h4>
+        <pre class="code" data-file="lab01_11_compare.py"><code>"""Drill 01.11: one prompt, several models. Compare latency, tokens and quality."""
+import os
+import time
+
+from openai import OpenAI
+
+from llm import get_client, MODEL
+
+targets = [("main", get_client(), MODEL)]
+if os.getenv("COMPARE_DEPLOYMENT"):
+    targets.append(("compare", get_client(), os.environ["COMPARE_DEPLOYMENT"]))
+if os.getenv("COMPARE_WITH_OLLAMA") == "1":
+    local = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+    targets.append(("local", local, os.getenv("OLLAMA_MODEL", "llama3.2")))
+
+PROMPT = ("A learner writes: 'My course starts in 5 days but I have a family emergency. "
+          "I want my full $1,200 back!!' TrainCrest's policy: no refund within 7 days of the start "
+          "date, but one free reschedule. Reply as a kind support agent in under 80 words.")
+
+for label, client, model in targets:
+    start = time.perf_counter()
+    r = client.chat.completions.create(model=model, messages=[{"role": "user", "content": PROMPT}])
+    secs = time.perf_counter() - start
+    u = r.usage
+    print(f"\n=== {label} · {model} · {secs:.1f}s · {u.prompt_tokens} in / {u.completion_tokens} out")
+    print(r.choices[0].message.content.strip())</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_11_compare.py</code></pre>
+        <p>Run it twice (latency varies). Score each answer 1–5: follows the policy (no refund, offers a reschedule), kind tone, under 80 words.</p>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Turn it into a benchmark</h4>
+        <p>One run proves little. Ask your assistant to extend the script: several runs per model, averages, and a table you could paste into a design document.</p>
+        <div class="template-box"><pre><code>Goal:        extend #lab01_11_compare.py into …
+Context:     it already builds a list of (label, client, model) targets
+Constraints: N runs per model; measure …; estimate cost from …;
+             keep the existing targets logic; no new dependencies
+Done when:   it prints a markdown table with one row per model</code></pre></div>
+        <p class="hint"><b>Hint:</b> ask for <code>--runs 3</code>, averages of latency, input tokens and output tokens, an estimated cost using <code>PRICE_IN_PER_M</code> / <code>PRICE_OUT_PER_M</code> from <code>.env</code>, and the shortest answer printed under the table for a quick quality check.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Extend #lab01_11_compare.py into a small benchmark. Keep the existing targets logic.
+Add argparse with --runs (default 3). For each target, call the model --runs times with PROMPT
+and record latency, prompt_tokens and completion_tokens. Then print a markdown table with
+columns: target | model | avg latency (s) | avg tokens in | avg tokens out | est. $ per call,
+where cost uses PRICE_IN_PER_M and PRICE_OUT_PER_M from .env (USD per 1M tokens, defaults
+0.40 and 1.60). Under the table, print each target's first answer. No new dependencies.</code></pre></div>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>The table has one row per target and plausible numbers (latency in seconds, not milliseconds).</li><li>On a reasoning model, output tokens are much higher than the visible answer suggests: they include hidden reasoning tokens, which you pay for.</li><li>Decide: for this focused task, is the bigger model worth its cost and latency? Write one sentence, as you would in a design review.</li></ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · add Claude to the race</div>
+      <div class="alt-body">
+<pre class="code" data-file="compare_claude.py"><code>import time
+from claude_llm import client, CLAUDE_MODEL, FALLBACK, text_of
+from lab01_11_compare import PROMPT   <span class="c"># reuse the same prompt (this also runs the main race)</span>
+
+start = time.perf_counter()
+msg = client.beta.messages.create(model=CLAUDE_MODEL, max_tokens=4000,
+                                  messages=[{"role": "user", "content": PROMPT}], **FALLBACK)
+print(f"claude · {time.perf_counter() - start:.1f}s · {msg.usage.input_tokens} in / {msg.usage.output_tokens} out")
+print(text_of(msg))</code></pre>
+      </div>
+    </div>
+    <p class="lab-clean"><b>Clean up:</b> if you created <code>chat-big</code> only for this drill, delete the deployment.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-11"> I've completed Drill 01.11</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Model choice.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Traincrest Assist must classify 25,000 tickets a month into 7 categories. Which tier first, and why?</summary><div><p>A <strong>small, cheap model</strong>: focused task, high volume, latency matters. Validate on labelled samples and move up a tier only if it fails your quality bar.</p></div></details>
+  <details><summary>2. Why keep the model name in configuration rather than in code?</summary><div><p>Models are retired and replaced every few months. Configuration lets you <strong>switch or A/B test</strong> without a code change (and Module 12 adds model fallbacks).</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>The best model is the smallest one that passes your evaluation. Measure it.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m01-fm"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/01/training-inference.html"><small>Previous</small><span>← 01 · Training vs inference</span></a><a class="next" href="../../modules/01/multimodal.html"><small>Next</small><span>01 · Multimodal AI →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

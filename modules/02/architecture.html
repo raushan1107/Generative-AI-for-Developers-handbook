@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API-Based Architecture</title>
+<meta name="description" content="Module 02, topic 1: why the model is always called from a backend, what the backend is responsible for, and a drill where your AI assistant builds a FastAPI proxy that keeps the key off the browser.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m02-arch">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic active" data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/02/index.html">Module 02</a><i>/</i><span>API-based app architecture</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 02 · Topic 1 of 9</span><h1>API-Based AI Application Architecture</h1><p class="lead">You rent the model by the token, and your backend does the renting. The browser never talks to the model directly, because that would ship your key to every visitor. You'll have your AI assistant build a tiny backend proxy, then prove the key never reaches the browser.</p><div class="chips"><span class="chip">Backend proxy</span><span class="chip">Secrets stay server-side</span><span class="chip">FastAPI</span><span class="chip">Drill 02.1</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The backend is the bouncer.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>In an API-based GenAI application, the model runs as a managed cloud service. The application's backend builds the request (instructions, context and user input), calls the model endpoint over HTTPS, and processes the response before returning it to the client.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>The user talks to your app; your <strong>backend</strong> talks to the model. The browser or mobile app never calls the model directly, because to do that it would need your key, and anything in a browser is public.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 300" role="img" aria-labelledby="ar-t ar-d">
+      <title id="ar-t">Where the LLM call belongs</title>
+      <desc id="ar-d">Correct: browser or mobile app calls your backend, which holds the key, builds the prompt, calls the LLM endpoint and returns the processed answer. Wrong, crossed out: browser JavaScript calls the LLM endpoint directly with the key embedded.</desc>
+      <text x="20" y="30" class="t-m t-green">DO THIS</text>
+      <rect x="20" y="44" width="170" height="80" rx="12" class="s-surface"/><text x="105" y="76" class="t-b mid">Browser / mobile</text><text x="105" y="96" class="t-s mid">user types a question</text>
+      <rect x="290" y="34" width="330" height="100" rx="12" class="s-blue"/><text x="455" y="62" class="t-b mid">Your backend (API)</text><text x="455" y="82" class="t-s mid">auth the user · build prompt · add data</text><text x="455" y="100" class="t-s mid">call LLM · validate · log · count cost</text><text x="455" y="122" class="t-m mid t-blue">KEY LIVES HERE (env / Key Vault)</text>
+      <rect x="720" y="44" width="220" height="80" rx="12" class="s-violet"/><text x="830" y="76" class="t-b mid">LLM endpoint</text><text x="830" y="96" class="t-s mid">Azure OpenAI in Foundry</text>
+      <path d="M190 74 H284" class="s-arrow-accent" marker-end="url(#ah-a)"/><path d="M284 100 H196" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M620 74 H714" class="s-arrow-accent" marker-end="url(#ah-a)"/><path d="M714 100 H626" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="20" y="190" class="t-m t-rose">NEVER THIS</text>
+      <rect x="20" y="204" width="260" height="70" rx="12" class="s-rose"/><text x="150" y="232" class="t-b mid">Browser JavaScript</text><text x="150" y="252" class="t-s mid">const key = "sk-…" // visible to all</text>
+      <rect x="720" y="204" width="220" height="70" rx="12" class="s-surface2"/><text x="830" y="244" class="t-b mid">LLM endpoint</text>
+      <path d="M280 239 H714" class="s-dash" marker-end="url(#ah)"/>
+      <path d="M470 220 L530 258 M530 220 L470 258" class="s-arrow" style="stroke:var(--rose);stroke-width:3"/>
+      <text x="500" y="292" class="t-s mid">anyone can open dev tools, copy the key and spend your money</text>
+    </svg>
+  </div>
+  <figcaption><b>The backend is the bouncer.</b> It holds the key, decides what the model sees, checks what comes back and keeps the bill. In Module 08 this grows into an LLM gateway.</figcaption>
+</figure>
+
+<div class="terms">
+  <div class="term"><b>Secrets</b><span>Keys or managed identity stay server-side. Users never see them.</span></div>
+  <div class="term"><b>Prompt assembly</b><span>System instructions, history and retrieved data are added by your code, not typed by the user.</span></div>
+  <div class="term"><b>Guardrails</b><span>Input checks, output validation, per-user limits, content safety (Module 10).</span></div>
+  <div class="term"><b>Observability</b><span>Latency, tokens, cost, request IDs and errors logged on every call.</span></div>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Every serious AI product puts a service layer between users and the model. Larger organisations go further with an <strong>AI gateway</strong> in front of all model traffic (Azure API Management offers AI gateway features), giving one place for keys, quotas per team, caching, logging and failover between models. Your little FastAPI proxy in this drill is the same idea in 30 lines.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>A hackathon React app with the key in a variable like <code>VITE_OPENAI_KEY</code> or <code>REACT_APP_OPENAI_KEY</code>. Front-end build tools <em>inline</em> those values into the JavaScript bundle. The "hidden" key is in plain text for anyone who opens developer tools.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"We call the model from a <strong>backend service</strong>, never from the client, so credentials stay server-side and we get one place for <strong>prompt assembly, guardrails, logging and rate limiting</strong>."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Build the bouncer, then try to find the key from the browser.</p></div></div>
+
+<div class="drill" id="d02-1" data-title="Hide the key behind a backend proxy" data-time="~20 min" data-steps="ask,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.1</span><h3>Hide the key behind a backend proxy</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · AI assistant</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> a web page that asks the model questions through your own backend, with proof that the key never reaches the browser.</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Have your assistant build the backend and the page</h4>
+        <div class="prompt-box"><pre><code>In this folder, create a minimal FastAPI app in lab02_01_proxy.py and a page lab02_01_index.html.
+- Reuse get_client() and MODEL from #llm.py. Never read or expose the API key in any other way.
+- GET / serves lab02_01_index.html.
+- POST /api/ask accepts JSON {"question": str} (1 to 2000 characters, validated with Pydantic),
+  calls the chat model with a short system prompt ("You help TrainCrest learners. Be brief."),
+  and returns {"answer": str}.
+- The HTML page has a textarea, an Ask button and an answer area, and uses fetch() to call
+  /api/ask. Plain HTML and JavaScript, no frameworks, no keys.
+Tell me the uvicorn command to run it.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it fixes the file names, reuses your existing helper instead of letting the assistant invent its own key handling, states the API contract exactly (path, JSON shape, validation), and repeats the security requirement twice.</div>
+        <details class="solution"><summary>Reference solution (if your assistant gets stuck)</summary><div>
+          <pre class="code" data-file="lab02_01_proxy.py"><code>"""Drill 02.1 (reference solution): a backend between the browser and the model,
+so the API key never leaves the server.
+
+Run:  uvicorn lab02_01_proxy:app --reload     then open http://127.0.0.1:8000
+"""
+from pathlib import Path
+
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from pydantic import BaseModel, Field
+
+from llm import get_client, MODEL
+
+app = FastAPI(title="Drill 02.1 · backend proxy")
+client = get_client()  <span class="c"># the key is read from .env on the server only</span>
+
+
+class Question(BaseModel):
+    question: str = Field(min_length=1, max_length=2000)
+
+
+@app.get("/")
+def page():
+    return FileResponse(Path(__file__).with_name("lab02_01_index.html"))
+
+
+@app.post("/api/ask")
+def ask(q: Question):
+    r = client.chat.completions.create(model=MODEL, messages=[
+        {"role": "system", "content": "You help TrainCrest learners. Be brief and friendly."},
+        {"role": "user", "content": q.question},
+    ])
+    return {"answer": r.choices[0].message.content}</code></pre>
+          <pre class="code" data-file="lab02_01_index.html"><code>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;Ask TrainCrest&lt;/title&gt;
+&lt;style&gt;
+  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
+  textarea { width: 100%; height: 90px; font: inherit; }
+  #answer { white-space: pre-wrap; background: #f4f4f8; padding: 12px; border-radius: 8px; min-height: 40px; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Ask TrainCrest&lt;/h1&gt;
+&lt;textarea id="q" placeholder="Ask a question about your course..."&gt;&lt;/textarea&gt;
+&lt;p&gt;&lt;button id="send"&gt;Ask&lt;/button&gt;&lt;/p&gt;
+&lt;div id="answer"&gt;&lt;/div&gt;
+&lt;script&gt;
+  // No API key anywhere in this file: the browser only talks to our own backend.
+  document.getElementById("send").addEventListener("click", async () =&gt; {
+    const out = document.getElementById("answer");
+    out.textContent = "Thinking...";
+    const res = await fetch("/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: document.getElementById("q").value }),
+    });
+    const data = await res.json();
+    out.textContent = res.ok ? data.answer : "Error: " + JSON.stringify(data);
+  });
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="term"><code><span class="ps">$ </span>uvicorn lab02_01_proxy:app --reload</code></pre>
+        <p>Open <code>http://127.0.0.1:8000</code> and ask "What is an exam voucher?". Also open <code>http://127.0.0.1:8000/docs</code>: FastAPI generated interactive API documentation for you.</p>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Try to steal the key from the browser</h4>
+        <ul class="verify-list">
+          <li>View the page source (<kbd>Ctrl</kbd>+<kbd>U</kbd>): no key, no model endpoint.</li>
+          <li>Developer tools › Network › click the <code>/api/ask</code> request: the browser only talks to <code>127.0.0.1</code>, and the headers contain no key.</li>
+          <li>Send an empty question from <code>/docs</code>: you get a 422 validation error, and the model is never called (free!).</li>
+        </ul>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Try this:</b> ask your assistant to add a simple per-IP limit of 10 questions per minute. That's your first guardrail, and a preview of Module 10.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-1"> I've completed Drill 02.1</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Quick ones.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A teammate says "the key is in an environment variable in our React app, so it's safe". Is it?</summary><div><p>No. Front-end build tools bake environment variables into the public JavaScript bundle. Move the call to a <strong>backend</strong> and regenerate the key.</p></div></details>
+  <details><summary>2. Name two things besides hiding the key that the backend gives you.</summary><div><p>Any two of: <strong>prompt assembly</strong>, input validation and guardrails, per-user rate limits, logging and cost tracking, output checks.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Users talk to your backend; your backend talks to the model. Everything that matters (keys, prompts, guardrails, logs) lives in between.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m02-arch"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/02/index.html"><small>Previous</small><span>← 02 · Overview and mental map</span></a><a class="next" href="../../modules/02/authentication.html"><small>Next</small><span>02 · Authentication and API keys →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vector Databases</title>
+<meta name="description" content="Module 05, topic 4 and the module&#x27;s hands-on exercise: what a vector database adds beyond a list of vectors (approximate nearest-neighbour indexes such as HNSW, persistence, filtering, hybrid search, scale and security), the options on Azure and locally, a from-scratch vector store built with an AI assistant, and a semantic search system on Azure AI Search with Chroma as the open alternative.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m05-vdb">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod"><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic active" data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part II</span><i>/</i><a href="../../modules/05/index.html">Module 05</a><i>/</i><span>Vector databases</span></nav>
+  <span class="kind-pill">Learn · Do · Check · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 05 · Topic 4 of 8</span><h1>Vector Databases</h1><p class="lead">You could keep vectors in a Python list and compare against every one. That works for a few thousand items, and you'll build exactly that first, with tests. Then you'll move the catalogue into a real vector database, Azure AI Search, which adds fast approximate search, filters, keyword search and persistence. This page holds the module's hands-on exercise.</p><div class="chips"><span class="chip">Exact vs approximate (HNSW)</span><span class="chip">Azure AI Search · Chroma</span><span class="chip">Drill 05.4</span><span class="chip">Exercise · Drill 05.5</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 50 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>A list of vectors is a prototype. A vector database is a product.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A <strong>vector database</strong> (or a search service with vector support) stores embeddings together with their text and metadata, and answers <strong>nearest-neighbour queries</strong> quickly at scale, usually with an <strong>approximate nearest neighbour (ANN)</strong> index such as <strong>HNSW</strong>. Most also provide metadata filtering, keyword (full-text) search, hybrid ranking, persistence, updates and access control.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Comparing a question with every stored vector is like reading every book in a library to find the right one. A vector index is the library's floor plan: go to the right section, then the right shelf, and only compare with the books there.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Finding the nearest open pharmacy. You could measure the distance to every pharmacy in the country (exact, slow). Or you could check your neighbourhood first, then the next one out (approximate, fast, and almost always right). HNSW works like that: a layered map of shortcuts, from "roughly the right region" down to "the closest few".</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 270" role="img" aria-labelledby="vd-t vd-d">
+      <title id="vd-t">Exact search versus approximate search</title>
+      <desc id="vd-d">On the left, exact search compares the query with every stored vector: always correct, but time grows with the number of vectors. On the right, approximate search with an HNSW graph starts at a coarse top layer, hops towards the query, then descends to finer layers, comparing only a small number of vectors: fast at millions of items and nearly always finds the true nearest neighbours.</desc>
+      <rect x="16" y="20" width="440" height="230" rx="14" class="s-surface"/>
+      <text x="36" y="48" class="t-b">Exact (flat): compare with everything</text>
+      <circle cx="236" cy="150" r="8" class="s-rose"/><text x="300" y="48" class="t-s">red = the query</text>
+      <path d="M236 150 L80 90 M236 150 L130 210 M236 150 L330 80 M236 150 L400 190 M236 150 L180 80 M236 150 L300 220 M236 150 L90 160 M236 150 L380 120" class="s-dash"/>
+      <circle cx="80" cy="90" r="5" class="s-blue"/><circle cx="130" cy="210" r="5" class="s-blue"/><circle cx="330" cy="80" r="5" class="s-blue"/><circle cx="400" cy="190" r="5" class="s-blue"/><circle cx="180" cy="80" r="5" class="s-blue"/><circle cx="300" cy="220" r="5" class="s-blue"/><circle cx="90" cy="160" r="5" class="s-blue"/><circle cx="380" cy="120" r="5" class="s-blue"/>
+      <text x="36" y="238" class="t-s">always right · time grows with every item added</text>
+      <rect x="504" y="20" width="440" height="230" rx="14" class="s-surface"/>
+      <text x="524" y="48" class="t-b">Approximate (HNSW): hop through layers</text>
+      <text x="524" y="80" class="t-m">LAYER 2</text><circle cx="640" cy="76" r="5" class="s-blue"/><circle cx="840" cy="76" r="5" class="s-blue"/><path d="M640 76 H840" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="524" y="130" class="t-m">LAYER 1</text><circle cx="760" cy="126" r="5" class="s-blue"/><circle cx="840" cy="126" r="5" class="s-blue"/><circle cx="900" cy="126" r="5" class="s-blue"/><path d="M840 82 V120" class="s-arrow" marker-end="url(#ah)"/><path d="M840 126 H894" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="524" y="182" class="t-m">LAYER 0</text><circle cx="880" cy="178" r="5" class="s-blue"/><circle cx="910" cy="178" r="5" class="s-blue"/><circle cx="850" cy="178" r="5" class="s-blue"/><path d="M900 132 V170" class="s-arrow" marker-end="url(#ah)"/><circle cx="905" cy="200" r="8" class="s-rose"/><text x="770" y="204" class="t-s">query's neighbours</text>
+      <text x="524" y="238" class="t-s">a few dozen comparisons · fast at millions · nearly always right</text>
+    </svg>
+  </div>
+  <figcaption><b>Trade a tiny bit of accuracy for a lot of speed.</b> Under a few thousand items, exact search is fine. Beyond that, ANN indexes like HNSW keep queries fast.</figcaption>
+</figure>
+
+<h3>What a vector database adds</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Need</th><th>A Python list</th><th>A vector database</th></tr></thead>
+    <tbody>
+      <tr><td>Speed at millions of vectors</td><td>Slow (compare with all)</td><td>ANN index (HNSW)</td></tr>
+      <tr><td>Survive a restart</td><td>Save a file yourself</td><td>Persistent, replicated</td></tr>
+      <tr><td>Filter by level, price, language</td><td>Write it yourself</td><td>Filterable fields, applied efficiently</td></tr>
+      <tr><td>Exact words and codes</td><td>No</td><td>Full-text search and hybrid ranking</td></tr>
+      <tr><td>Add, update, delete one document</td><td>Rebuild arrays</td><td>Upsert and delete by key</td></tr>
+      <tr><td>Who can see what</td><td>No</td><td>Keys, roles, and per-document security filters</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Options you'll meet</h3>
+<ul>
+  <li><strong>Azure AI Search:</strong> a managed search service with vector, full-text and hybrid search, filters, and an optional semantic ranker. The main track in this handbook. The <strong>Free</strong> tier (one per subscription) is meant for learning and is enough for these labs.</li>
+  <li><strong>Vectors inside your existing database:</strong> Azure Cosmos DB, Azure Database for PostgreSQL with <code>pgvector</code>, Azure SQL. Good when the data already lives there.</li>
+  <li><strong>Open source:</strong> Chroma (simple, local, great for prototypes), Qdrant, Milvus, Weaviate, and others.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Most companies don't buy a "vector database" as a separate thing first. They add vector search to what they already run: a search service for the website, PostgreSQL for the product catalogue, Cosmos DB for user data. A dedicated vector database earns its place when the scale, latency or features demand it.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Search is a separate team's problem; I just call the search API."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Retrieval quality decides answer quality, so the index is part of my design: what goes in each record, which fields are <strong>filterable</strong>, how text is <strong>analysed</strong> for keywords, and how I <strong>re-index</strong> when content or the embedding model changes."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Storing only vectors. When a search returns <code>id=17, score=0.82</code> you still need the text to show or send to the model, and the metadata to filter. Store the vector <strong>with</strong> its text and the fields you'll filter on, in the same record.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"A vector database stores embeddings with text and metadata and serves <strong>approximate nearest-neighbour</strong> search, typically <strong>HNSW</strong>, plus filtering, hybrid keyword-and-vector ranking, persistence and access control. On Azure I'd use Azure AI Search, or vector support in the database that already holds the data."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Build the simple version with tests, then the module exercise on a real service.</p></div></div>
+
+<div class="drill" id="d05-4" data-title="A tiny vector store from a test spec" data-time="~15 min" data-steps="ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 05.4</span><h3>A tiny vector store from a test spec</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">Offline · no API key</span><span class="badge b-tool">Copilot · Claude Code · Codex</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> understand exactly what a vector store does by having your assistant build a 60-line one that passes a test suite.</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Make the tests pass</h4>
+        <p>Save the spec first. It uses hand-made 3-D vectors, so it needs no model.</p>
+        <pre class="code" data-file="test_vector_store.py"><code>"""Drill 05.4: the spec for vector_store.py. Offline: hand-made 3-D vectors, no model.
+Run:  pytest -q test_vector_store.py"""
+import pytest
+
+from vector_store import VectorStore, matches
+
+
+@pytest.fixture
+def store():
+    s = VectorStore()
+    s.add(ids=["refunds", "labs", "vouchers"],
+          vectors=[[1, 0, 0], [0, 1, 0], [0.7, 0, 0.7]],
+          texts=["Refund rules", "Lab extensions", "Exam vouchers"],
+          metadatas=[{"topic": "billing", "words": 180}, {"topic": "labs", "words": 120},
+                     {"topic": "exams", "words": 90}])
+    return s
+
+
+def test_nearest_first(store):
+    hits = store.search([0.9, 0.1, 0.1], k=2)
+    assert [h["id"] for h in hits] == ["refunds", "vouchers"]
+    assert hits[0]["score"] &gt; hits[1]["score"]
+
+
+def test_length_does_not_matter(store):
+    assert store.search([10, 0, 0], k=1)[0]["score"] == pytest.approx(1.0)
+
+
+def test_filter_before_ranking(store):
+    hits = store.search([1, 0, 0], k=3, where={"words": {"$lte": 120}})
+    assert [h["id"] for h in hits] == ["vouchers", "labs"]
+
+
+def test_matches_operators():
+    meta = {"level": "beginner", "price_usd": 290}
+    assert matches(meta, {"level": "beginner", "price_usd": {"$lte": 300}})
+    assert not matches(meta, {"level": {"$in": ["advanced", "intermediate"]}})
+    assert not matches(meta, {"format": "classroom"})          <span class="c"># missing field never matches</span>
+
+
+def test_save_and_load(store, tmp_path):
+    store.save(tmp_path / "idx")
+    again = VectorStore.load(tmp_path / "idx")
+    assert again.search([0, 1, 0], k=1)[0]["text"] == "Lab extensions"</code></pre>
+        <div class="prompt-box"><pre><code>Create vector_store.py so that #file:test_vector_store.py passes. Don't edit the tests. Use numpy only.
+
+- VectorStore.add(ids, vectors, texts, metadatas=None): normalise each vector to length 1 and keep
+  ids, texts and metadata in parallel lists.
+- search(query_vector, k=3, where=None): cosine similarity via a dot product, apply the `where`
+  filter BEFORE ranking, return dicts {id, score (rounded to 4 places), text, metadata}, best first.
+- matches(metadata, where): every condition must hold; a plain value means equality; support
+  $eq, $ne, $lt, $lte, $gt, $gte and $in; a missing field never matches.
+- save(folder) / load(folder): vectors.npy plus items.json.
+Run pytest -q test_vector_store.py.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> the tests define behaviour; the prompt adds the design choices that make it a <em>correct</em> vector store: normalising at insert time (so a dot product is cosine), filtering before ranking (topic 7 explains why), and storing text and metadata with each vector.</div>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="vector_store.py"><code>"""Drill 05.4 reference solution: a tiny in-memory vector store (about 60 lines).
+Good enough for a few thousand items; a vector database adds indexes (HNSW), scale,
+persistence, security and filtering at speed. The ideas are the same."""
+import json
+from pathlib import Path
+
+import numpy as np
+
+OPS = {"$eq": lambda a, b: a == b, "$ne": lambda a, b: a != b, "$lt": lambda a, b: a &lt; b,
+       "$lte": lambda a, b: a &lt;= b, "$gt": lambda a, b: a &gt; b, "$gte": lambda a, b: a &gt;= b,
+       "$in": lambda a, b: a in b}
+
+
+def matches(metadata: dict, where: dict | None) -&gt; bool:
+    """where={"level": "beginner", "price_usd": {"$lte": 500}}: every condition must hold."""
+    for field, cond in (where or {}).items():
+        value = metadata.get(field)
+        conditions = cond if isinstance(cond, dict) else {"$eq": cond}
+        for op, expected in conditions.items():
+            if value is None or not OPS[op](value, expected):
+                return False
+    return True
+
+
+class VectorStore:
+    def __init__(self):
+        self.ids, self.texts, self.metadatas = [], [], []
+        self.vectors = np.zeros((0, 0), dtype=np.float32)
+
+    def add(self, ids, vectors, texts, metadatas=None):
+        v = np.asarray(vectors, dtype=np.float32)
+        v = v / np.linalg.norm(v, axis=1, keepdims=True)     <span class="c"># unit length: dot product == cosine</span>
+        self.vectors = v if self.vectors.size == 0 else np.vstack([self.vectors, v])
+        self.ids += list(ids)
+        self.texts += list(texts)
+        self.metadatas += list(metadatas or [{} for _ in ids])
+
+    def search(self, query_vector, k=3, where=None):
+        """Top-k by cosine similarity among items whose metadata matches `where` (pre-filtering)."""
+        if not self.ids:
+            return []
+        q = np.asarray(query_vector, dtype=np.float32)
+        scores = self.vectors @ (q / np.linalg.norm(q))
+        allowed = [i for i in range(len(self.ids)) if matches(self.metadatas[i], where)]
+        best = sorted(allowed, key=lambda i: -scores[i])[:k]
+        return [{"id": self.ids[i], "score": round(float(scores[i]), 4), "text": self.texts[i],
+                 "metadata": self.metadatas[i]} for i in best]
+
+    def save(self, folder):
+        folder = Path(folder)
+        folder.mkdir(parents=True, exist_ok=True)
+        np.save(folder / "vectors.npy", self.vectors)
+        (folder / "items.json").write_text(json.dumps(
+            {"ids": self.ids, "texts": self.texts, "metadatas": self.metadatas}, ensure_ascii=False), encoding="utf-8")
+
+    @classmethod
+    def load(cls, folder):
+        folder, store = Path(folder), cls()
+        store.vectors = np.load(folder / "vectors.npy")
+        items = json.loads((folder / "items.json").read_text(encoding="utf-8"))
+        store.ids, store.texts, store.metadatas = items["ids"], items["texts"], items["metadatas"]
+        return store</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_vector_store.py
+<span class="o">.....                                                                    [100%]
+5 passed in 0.23s</span></code></pre>
+        <ul class="verify-list">
+          <li>Read the solution's <code>search()</code>: one matrix multiply scores every item. That's exact search; fine for our 20 courses and 40 help sections.</li>
+          <li>Milestone 5 uses the same idea in <code>LocalIndex</code>, so Traincrest Assist works without any cloud search service.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-4"> I've completed Drill 05.4</label></div>
+</div>
+
+<div class="drill exercise" id="d05-5" data-title="Exercise: a semantic search system on Azure AI Search" data-time="~35 min" data-steps="portal,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 05.5</span><h3>Exercise: a semantic search system on Azure AI Search</h3>
+    <div class="drill-meta"><span class="time">~35 min</span><span class="badge b-exercise">Module 05 exercise</span><span class="badge b-azure">Azure AI Search</span><span class="badge b-azure">Azure OpenAI</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> build a semantic search system using embeddings and a vector database: create an index with a vector field, load the TrainCrest catalogue with its embeddings, and query it by meaning.</p>
+    <ol class="dsteps">
+      <li class="dstep portal"><span class="st">Portal</span><h4>Create the search service</h4>
+        <ol>
+          <li>In the <a href="https://portal.azure.com" target="_blank" rel="noopener noreferrer">Azure portal</a>, create an <strong>Azure AI Search</strong> resource in <code>rg-genai-labs</code>. Name it, for example, <code>srch-genai-labs-&lt;yourinitials&gt;</code> (it must be globally unique).</li>
+          <li>Pricing tier: <strong>Free</strong> (one per subscription; fine for these labs). If you already have a Free service, use it or choose Basic and delete it afterwards.</li>
+          <li>Open the resource. Copy the <strong>Url</strong> from Overview and an <strong>admin key</strong> from Settings → Keys into <code>.env</code> as <code>AZURE_SEARCH_ENDPOINT</code> and <code>AZURE_SEARCH_API_KEY</code>.</li>
+        </ol>
+        <p class="small muted">Admin keys can create and delete indexes. Keep them in <code>.env</code> only. Module 10 replaces keys with Microsoft Entra ID and query-only access for the app.</p>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Index, upload, query</h4>
+        <pre class="code" data-file="lab05_05_azure_search.py"><code>"""Drill 05.5 (and 05.9): the course catalogue in Azure AI Search.
+Run:  python lab05_05_azure_search.py create
+      python lab05_05_azure_search.py upload
+      python lab05_05_azure_search.py query "make my app understand photos" --mode vector
+      python lab05_05_azure_search.py query "AZ-104" --mode keyword
+      python lab05_05_azure_search.py query "cloud admin certification" --mode hybrid --filter "price_usd le 1300"
+Needs AZURE_SEARCH_ENDPOINT, AZURE_SEARCH_API_KEY and an embedding deployment (AZURE_OPENAI_EMBED_DEPLOYMENT)."""
+import argparse
+import os
+
+from azure.core.credentials import AzureKeyCredential
+from azure.search.documents import SearchClient
+from azure.search.documents.indexes import SearchIndexClient
+from azure.search.documents.indexes.models import (HnswAlgorithmConfiguration, SearchableField, SearchField,
+                                                   SearchFieldDataType, SearchIndex, SimpleField, VectorSearch,
+                                                   VectorSearchProfile)
+from azure.search.documents.models import VectorizedQuery
+
+from catalogue import COURSES
+from embed import embed
+
+ENDPOINT = os.getenv("AZURE_SEARCH_ENDPOINT", "")
+INDEX = os.getenv("AZURE_SEARCH_INDEX", "courses")
+credential = AzureKeyCredential(os.getenv("AZURE_SEARCH_API_KEY", ""))
+
+
+def build_index(dims: int) -&gt; SearchIndex:
+    fields = [
+        SimpleField(name="id", type=SearchFieldDataType.String, key=True),
+        SearchableField(name="title", type=SearchFieldDataType.String),
+        SearchableField(name="description", type=SearchFieldDataType.String),
+        SimpleField(name="level", type=SearchFieldDataType.String, filterable=True, facetable=True),
+        SimpleField(name="format", type=SearchFieldDataType.String, filterable=True, facetable=True),
+        SimpleField(name="price_usd", type=SearchFieldDataType.Int32, filterable=True, sortable=True),
+        SearchField(name="contentVector", type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
+                    searchable=True, vector_search_dimensions=dims, vector_search_profile_name="vprofile"),
+    ]
+    vector_search = VectorSearch(
+        algorithms=[HnswAlgorithmConfiguration(name="hnsw")],             <span class="c"># approximate nearest neighbours</span>
+        profiles=[VectorSearchProfile(name="vprofile", algorithm_configuration_name="hnsw")])
+    return SearchIndex(name=INDEX, fields=fields, vector_search=vector_search)
+
+
+def create():
+    dims = embed(["dimension check"]).shape[1]
+    SearchIndexClient(ENDPOINT, credential).create_or_update_index(build_index(dims))
+    print(f"Index '{INDEX}' ready ({dims}-dimension vectors).")
+
+
+def upload():
+    vectors = embed([f"{c['title']}. {c['description']}" for c in COURSES])
+    docs = [{**{k: c[k] for k in ("id", "title", "description", "level", "format", "price_usd")},
+             "contentVector": v.tolist()} for c, v in zip(COURSES, vectors)]
+    results = SearchClient(ENDPOINT, INDEX, credential).merge_or_upload_documents(documents=docs)
+    print(f"Uploaded {sum(r.succeeded for r in results)}/{len(docs)} courses.")
+
+
+def query(text: str, mode: str, filter_: str | None, k: int = 3):
+    search = SearchClient(ENDPOINT, INDEX, credential)
+    vector_queries = None
+    if mode in ("vector", "hybrid"):
+        vector_queries = [VectorizedQuery(vector=embed([text])[0].tolist(), k_nearest_neighbors=k,
+                                          fields="contentVector")]
+    results = search.search(
+        search_text=text if mode in ("keyword", "hybrid") else None,   <span class="c"># hybrid = both, merged with RRF</span>
+        vector_queries=vector_queries, filter=filter_, top=k,
+        select=["id", "title", "level", "price_usd"])
+    print(f"{mode} search: {text!r}" + (f"  filter: {filter_}" if filter_ else ""))
+    for r in results:
+        print(f"  {r['@search.score']:.4f}  {r['id']}  {r['title']}  ({r['level']}, ${r['price_usd']})")
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("action", choices=["create", "upload", "query"])
+    ap.add_argument("text", nargs="?", default="")
+    ap.add_argument("--mode", choices=["keyword", "vector", "hybrid"], default="hybrid")
+    ap.add_argument("--filter", default=None, help="OData filter, e.g. \"level eq 'beginner' and price_usd le 500\"")
+    a = ap.parse_args()
+    {"create": create, "upload": upload}.get(a.action, lambda: query(a.text, a.mode, a.filter))()</code></pre>
+<pre class="term"><code><span class="ps">$ </span>python lab05_05_azure_search.py create
+<span class="ps">$ </span>python lab05_05_azure_search.py upload
+<span class="ps">$ </span>python lab05_05_azure_search.py query "make my app understand photos" --mode vector
+<span class="ps">$ </span>python lab05_05_azure_search.py query "make my app understand photos" --mode keyword</code></pre>
+        <span class="out-label">Typical output (illustrative; your scores will differ)</span>
+<pre class="out"><code>Index 'courses' ready (1536-dimension vectors).
+Uploaded 20/20 courses.
+vector search: 'make my app understand photos'
+  0.…   C108  Computer Vision with Deep Learning  (advanced, $1690)
+  …     (two more courses, lower scores)
+keyword search: 'make my app understand photos'
+  …     (BM25 scores: a different scale)</code></pre>
+        <p>In the portal, open the index: you'll see the <code>contentVector</code> field with 1,536 dimensions and the HNSW profile. Try <strong>Search explorer</strong> with a keyword query too.</p>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list">
+          <li>The vector query should put Computer Vision first although no course says "photos". Keyword search may find it too, only because its description contains "understand"; try <code>"recognise objects in pictures"</code> in both modes and compare.</li>
+          <li>Vector scores are similarities (bigger is better). Write down the score of the best hit; you'll compare it with hybrid scores in Drill 05.9.</li>
+          <li>Re-run <code>upload</code>: it's an upsert (<code>merge_or_upload_documents</code>), so you still have 20 documents, not 40.</li>
+          <li>Keep the service for Drill 05.9 and Milestone 5 (optional). Delete it when you finish Part II if you used a paid tier.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · the same exercise in Chroma, locally</div>
+      <div class="alt-body">
+        <p>No Azure AI Search? Chroma runs in-process and stores the index in a folder. Together with Ollama's <code>nomic-embed-text</code>, the whole exercise is free and offline.</p>
+        <pre class="code" data-file="lab05_05_chroma.py"><code>"""Drill 05.5, open alternative: the same catalogue in Chroma, a local vector database.
+Run:  python lab05_05_chroma.py "make my app understand photos"
+      python lab05_05_chroma.py "hands-on cloud course" --beginner-under 500"""
+import sys
+
+import chromadb
+
+from catalogue import COURSES
+from embed import embed
+
+client = chromadb.PersistentClient(path="chroma_db")          <span class="c"># a folder on disk</span>
+courses = client.get_or_create_collection(name="courses", configuration={"hnsw": {"space": "cosine"}})
+
+if courses.count() == 0:                                      <span class="c"># first run: load the catalogue</span>
+    texts = [f"{c['title']}. {c['description']}" for c in COURSES]
+    courses.add(ids=[c["id"] for c in COURSES], embeddings=embed(texts).tolist(), documents=texts,
+                metadatas=[{"level": c["level"], "format": c["format"], "price_usd": c["price_usd"]} for c in COURSES])
+
+question = sys.argv[1] if len(sys.argv) &gt; 1 else "make my app understand photos"
+where = None
+if "--beginner-under" in sys.argv:
+    limit = int(sys.argv[sys.argv.index("--beginner-under") + 1])
+    where = {"$and": [{"level": "beginner"}, {"price_usd": {"$lte": limit}}]}
+
+res = courses.query(query_embeddings=embed([question]).tolist(), n_results=3, where=where)
+print(f"{question!r}" + (f"  where={where}" if where else ""))
+for cid, dist, meta, doc in zip(res["ids"][0], res["distances"][0], res["metadatas"][0], res["documents"][0]):
+    print(f"  distance {dist:.3f}  {cid}  {doc.split('.')[0]}  ({meta['level']}, ${meta['price_usd']})")</code></pre>
+<pre class="term"><code><span class="ps">$ </span>python lab05_05_chroma.py
+<span class="ps">$ </span>python lab05_05_chroma.py "hands-on cloud course" --beginner-under 500</code></pre>
+        <span class="out-label">Real output (Chroma + nomic-embed-text)</span>
+<pre class="out"><code>'make my app understand photos'
+  distance 0.357  C108  Computer Vision with Deep Learning  (advanced, $1690)
+  distance 0.454  C114  Docker Quick Start  (beginner, $190)
+  distance 0.500  C102  Data Analysis with pandas  (beginner, $690)
+'hands-on cloud course'  where={'$and': [{'level': 'beginner'}, {'price_usd': {'$lte': 500}}]}
+  distance 0.407  C109  AZ-900: Azure Fundamentals  (beginner, $350)
+  distance 0.510  C114  Docker Quick Start  (beginner, $190)
+  distance 0.523  C105  Prompt Engineering for Business Teams  (beginner, $390)</code></pre>
+        <p>Chroma reports <strong>distance</strong> (1 − cosine in a cosine space), so smaller is better, the opposite of Azure's scores.</p>
+      </div>
+    </div>
+    <p class="lab-say"><b>Remember:</b> “Same embeddings, different home. The ideas carry over to any vector database.”</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-5"> I've completed the Module 05 exercise</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Vector databases.</p></div></div>
+<div class="quiz">
+  <details><summary>1. You have 3,000 help sections. Do you need a vector database?</summary><div><p>Not for speed: exact search over 3,000 vectors is a fraction of a millisecond. You might still want one for persistence, filters, keyword search, updates and access control, which is usually why teams adopt one.</p></div></details>
+  <details><summary>2. What does HNSW trade away, and why is that acceptable?</summary><div><p>A tiny chance of missing the true nearest neighbour, in exchange for searching a few dozen vectors instead of millions. The occasional near-miss is usually the second-best match anyway, and retrieval returns several results.</p></div></details>
+  <details><summary>3. Why store text and metadata alongside each vector?</summary><div><p>Results must be shown or sent to the model (the text) and narrowed by business rules (the metadata, for filters). A vector on its own can't do either.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>A vector store compares a query with stored vectors; a vector database does it fast, filtered, persistent and secure. Store every vector with its text and filterable fields.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m05-vdb"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/05/embedding-models.html"><small>Previous</small><span>← 05 · Embedding models</span></a><a class="next" href="../../modules/05/similarity-search.html"><small>Next</small><span>05 · Similarity search →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

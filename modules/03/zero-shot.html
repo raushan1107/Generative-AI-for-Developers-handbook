@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zero-Shot Prompting</title>
+<meta name="description" content="Module 03, topic 4: zero-shot prompting as the default starting point, where it struggles, and drills that generate and verify a test set with your AI assistant and measure a zero-shot baseline.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m03-zero">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic active" data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/03/index.html">Module 03</a><i>/</i><span>Zero-shot prompting</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 03 · Topic 4 of 10</span><h1>Zero-Shot Prompting</h1><p class="lead">Zero-shot means instructions only, no examples. Modern models are good enough that it works for most common tasks, so it's always your first try. But 'works' needs a number: you'll have your AI assistant generate a test set, verify it, and measure a zero-shot baseline you'll try to beat on the next page.</p><div class="chips"><span class="chip">Instructions only</span><span class="chip">Baselines</span><span class="chip">Synthetic test data</span><span class="chip">Drills 03.4 · 03.5</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 8 min · Do 25 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Always try the simplest prompt first, and measure it.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Zero-shot prompting asks the model to perform a task from instructions alone, without worked examples, relying on what it learned in pre-training and instruction tuning.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Describe the task and let the model do it, with no demonstrations. Try this first; add examples only when it isn't consistent enough.</p>
+</div>
+
+<pre class="code" data-file="zero-shot prompt"><code>Classify the TrainCrest learner-support ticket into exactly one category: scheduling, billing,
+exam_voucher, certificate, lab_access, account, other. Reply with the category only, in lowercase.
+
+Ticket: "I was charged twice for the AZ-305 course."</code></pre>
+
+<div class="www">
+  <div><b>What</b>Instructions only, no examples.</div>
+  <div><b>Why</b>Shortest, cheapest prompt; easiest to maintain.</div>
+  <div><b>When</b>Common tasks with obvious categories and formats. Your default first attempt.</div>
+</div>
+
+<div class="callout note">
+  <div class="c-label">Where zero-shot struggles</div>
+  <p>Company-specific conventions ("is a refund request <em>billing</em> or <em>scheduling</em>?"), unusual formats, slang and mixed languages, and borderline cases. In all of these the model has to guess <em>your</em> convention. Examples fix that (next topic).</p>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Before any prompt work, good teams assemble a <strong>test set</strong>: real (anonymised) or synthetic inputs with the expected answers. They measure the simple zero-shot prompt first to get a <strong>baseline</strong>, then every change is a measured improvement or it's reverted. Generating synthetic test data with an LLM is now standard practice, with human review of the labels.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I start <strong>zero-shot</strong> to get a baseline on a labelled test set, then add examples or structure only if the numbers say it's needed."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Generate a test set, verify it, then measure the baseline.</p></div></div>
+
+<div class="drill" id="d03-4" data-title="Generate a labelled test set with AI, then verify it" data-time="~15 min" data-steps="write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 03.4</span><h3>Generate a labelled test set with AI, then verify it</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> 28 realistic, labelled, multilingual tickets in <code>data/eval_tickets.json</code>, checked by code before you trust them.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span>
+        <div class="template-box"><pre><code>Goal:        data/eval_tickets.json with … labelled learner-support tickets
+Context:     labels and house rules are in #tickets.py; company is …
+Constraints: exact JSON shape …; … per label; languages …; include tricky cases for the
+             house rules; must NOT copy or paraphrase TEST_TICKETS
+Done when:   python check_dataset.py prints OK</code></pre></div>
+        <p class="hint"><b>Hint:</b> ask for 4 per label (28 total), a few in Spanish, French or German, and at least two tickets that test each house rule (refunds that mention dates; requests for more lab time). Mention that a checker script will validate it.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Create data/eval_tickets.json: a JSON array of exactly 28 synthetic learner-support tickets for
+TrainCrest, a global technical training company. Each item is {"text": ..., "label": ...} with
+exactly those keys. Use the 7 labels in CATEGORIES from #tickets.py, exactly 4 per label.
+Make them realistic and varied (5-25 words), with 2-3 tickets in Spanish, French or German.
+Include tricky cases for the house rules in tickets.py: refund requests that mention dates
+(label: billing) and requests for more lab time (label: lab_access). Do not copy or paraphrase
+anything in TEST_TICKETS. A checker script will validate the file.</code></pre></div>
+          <p>Reference file if needed: <a href="../../code/genai-labs/data/eval_tickets.json">data/eval_tickets.json</a>.</p>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Check the data with code, then with your eyes</h4>
+        <pre class="code" data-file="check_dataset.py"><code>"""Drill 03.4: verify an AI-generated test set before you trust it."""
+import json
+import sys
+from collections import Counter
+from pathlib import Path
+
+from tickets import CATEGORIES, TEST_TICKETS
+
+path = Path(sys.argv[1] if len(sys.argv) &gt; 1 else "data/eval_tickets.json")
+rows = json.loads(path.read_text(encoding="utf-8"))
+problems = []
+
+for i, row in enumerate(rows):
+    if set(row) != {"text", "label"}:
+        problems.append(f"row {i}: keys should be text and label, got {sorted(row)}")
+    elif row["label"] not in CATEGORIES:
+        problems.append(f"row {i}: unknown label {row['label']!r}")
+    elif not row["text"].strip():
+        problems.append(f"row {i}: empty text")
+
+texts = [r.get("text", "").strip().lower() for r in rows]
+dupes = [t for t, n in Counter(texts).items() if n &gt; 1]
+if dupes:
+    problems.append(f"{len(dupes)} duplicate texts, e.g. {dupes[0]!r}")
+
+test_texts = {t.lower() for t, _ in TEST_TICKETS}
+leaked = [t for t in texts if t in test_texts]
+if leaked:
+    problems.append(f"{len(leaked)} rows copy the fixed test tickets (that would inflate scores)")
+
+counts = Counter(r.get("label") for r in rows)
+print(f"{len(rows)} rows · labels: " + ", ".join(f"{c}={counts.get(c, 0)}" for c in CATEGORIES))
+non_english = sum(1 for t in texts if any(ord(ch) &gt; 127 for ch in t))
+print(f"rows with non-ASCII text (other languages, accents): {non_english}")
+if min(counts.get(c, 0) for c in CATEGORIES) &lt; 3:
+    problems.append("every category needs at least 3 examples")
+
+print("\n".join(problems) if problems else "OK: the dataset passes all checks")
+sys.exit(1 if problems else 0)</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python check_dataset.py</code></pre>
+        <span class="out-label">Real output with the reference file</span>
+<pre class="out"><code>28 rows · labels: scheduling=4, billing=4, exam_voucher=4, certificate=4, lab_access=4, account=4, other=4
+rows with non-ASCII text (other languages, accents): 2
+OK: the dataset passes all checks</code></pre>
+        <ul class="verify-list"><li>The checker prints OK (fix and regenerate until it does: paste its complaints back to your assistant).</li><li>Read every label yourself. Code checks the shape; only a human can check the meaning.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-4"> I've completed Drill 03.4</label></div>
+</div>
+
+<div class="drill" id="d03-5" data-title="Measure the zero-shot baseline" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 03.5</span><h3>Measure the zero-shot baseline</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> a number to beat: zero-shot accuracy on the 12 fixed tickets and on your 28-ticket set.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab03_05_triage.py"><code>"""Drills 03.5 and 03.6: zero-shot vs few-shot ticket triage, scored against labels.
+
+  python lab03_05_triage.py --mode zero              # 03.5: zero-shot baseline
+  python lab03_05_triage.py --mode few               # 03.6: with examples
+  python lab03_05_triage.py --mode both --data data/eval_tickets.json
+"""
+import argparse
+import json
+from collections import Counter
+from pathlib import Path
+
+from llm import get_client, MODEL
+from tickets import CATEGORIES, FEW_SHOT_EXAMPLES, TEST_TICKETS
+
+INSTRUCTIONS = (f"Classify the TrainCrest learner-support ticket into exactly one category: "
+                f"{', '.join(CATEGORIES)}. Reply with the category only, in lowercase.")
+
+client = get_client()
+
+
+def classify(ticket, few_shot):
+    messages = [{"role": "system", "content": INSTRUCTIONS}]
+    if few_shot:
+        for text, label in FEW_SHOT_EXAMPLES:          <span class="c"># examples as user/assistant pairs</span>
+            messages += [{"role": "user", "content": text}, {"role": "assistant", "content": label}]
+    messages.append({"role": "user", "content": ticket})
+    r = client.chat.completions.create(model=MODEL, messages=messages)
+    return r.choices[0].message.content.strip().lower(), r.usage.prompt_tokens
+
+
+def evaluate(dataset, few_shot):
+    print("\n===== FEW-SHOT =====" if few_shot else "\n===== ZERO-SHOT =====")
+    correct, off_list, tokens, mistakes = 0, 0, 0, Counter()
+    for ticket, expected in dataset:
+        got, used = classify(ticket, few_shot)
+        tokens += used
+        correct += got == expected
+        off_list += got not in CATEGORIES
+        if got != expected:
+            mistakes[f"{expected} -&gt; {got}"] += 1
+        print(f" {'✓' if got == expected else '✗'} {got:13} (expected {expected:12}) {ticket[:48]}")
+    n = len(dataset)
+    print(f"Accuracy {correct}/{n} ({correct / n:.0%}) · off-list labels: {off_list} · "
+          f"avg input tokens: {tokens // n}")
+    if mistakes:
+        print("Most common mistakes:", ", ".join(f"{k} x{v}" for k, v in mistakes.most_common(3)))
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--mode", choices=["zero", "few", "both"], default="both")
+parser.add_argument("--data", help="optional JSON file of {text, label} rows instead of the 12 fixed tickets")
+args = parser.parse_args()
+
+data = TEST_TICKETS
+if args.data:
+    data = [(r["text"], r["label"]) for r in json.loads(Path(args.data).read_text(encoding="utf-8"))]
+
+if args.mode in ("zero", "both"):
+    evaluate(data, few_shot=False)
+if args.mode in ("few", "both"):
+    evaluate(data, few_shot=True)</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab03_05_triage.py --mode zero
+<span class="ps">$ </span>python lab03_05_triage.py --mode zero --data data/eval_tickets.json</code></pre>
+        <span class="out-label">Typical result (yours will vary)</span>
+<pre class="out"><code>===== ZERO-SHOT =====
+ ✓ billing       (expected billing     ) I paid for the AZ-305 batch but my card was ch
+ …
+ ✗ scheduling    (expected lab_access  ) My lab ran out yesterday, can I get one more w
+ ✗ scheduling    (expected billing     ) I want a refund, the course starts in 3 days a
+Accuracy 10/12 (83%) · off-list labels: 0 · avg input tokens: 71
+Most common mistakes: lab_access -&gt; scheduling x1, billing -&gt; scheduling x1</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>Write down both accuracies: they're your baseline.</li><li>Look at the mistakes: are they random, or exactly the house rules? (Usually the rules.)</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-5"> I've completed Drill 03.5</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Baselines.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why measure a zero-shot baseline before improving the prompt?</summary><div><p>Without a number you can't tell whether a change <strong>helped, hurt or did nothing</strong>, and you'd keep extra prompt (and cost) that adds no value.</p></div></details>
+  <details><summary>2. Your AI-generated test set passes the checker. Is it trustworthy?</summary><div><p>Only partly. The checker verifies <strong>shape</strong> (keys, labels, counts, leaks). A human must still review whether the <strong>labels are correct</strong>.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Zero-shot first, measured. Its mistakes tell you exactly what to teach next.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m03-zero"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/03/role-prompting.html"><small>Previous</small><span>← 03 · Role prompting</span></a><a class="next" href="../../modules/03/few-shot.html"><small>Next</small><span>03 · Few-shot prompting →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

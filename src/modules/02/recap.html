@@ -1,0 +1,45 @@
+<!--meta
+{"id": "m02-recap", "short": "Module 02 Recap", "h1": "Module 02 Recap and Self-Check", "description": "Module 02 recap: an LLM integration checklist, Traincrest Assist API design decisions, and a six-question self-check on architecture, authentication, roles, parameters, streaming, errors, rate limits and cost.", "lead": "Check what stuck, review the API design decisions Traincrest Assist now carries, and carry one idea into Module 03.", "chips": ["Checklist", "Design decisions", "6 questions"]}
+-->
+<h2 id="checklist">Checklist for any LLM integration</h2>
+<ul class="checklist">
+  <li>The model is called only from the backend; credentials never reach the client (Drill 02.1).</li>
+  <li>Keys live in configuration or a vault, or better, there are no keys (Drill 02.3).</li>
+  <li>I check <code>finish_reason</code> and log request ID, model, usage and latency (Drill 02.4).</li>
+  <li>The app owns conversation history and trims it deliberately (Drills 02.5, 02.6).</li>
+  <li>Parameters are set per feature, and I know which ones my model supports (Drill 02.7).</li>
+  <li>Chat responses stream; I measure time to first token (Drills 02.8, 02.9).</li>
+  <li>Transient errors are retried with backoff and jitter; others fail clearly and kindly (Drills 02.10–02.13).</li>
+  <li>Every call logs tokens and cost, and I can project the monthly bill (Drills 02.14, 02.15).</li>
+</ul>
+
+<h2 id="decisions">Traincrest Assist: the API design</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Requirement</th><th>Design decision</th><th>Why this and not something else</th></tr></thead>
+    <tbody>
+      <tr><td>Learner data and keys must stay safe</td><td>Only the backend calls the model; the web page calls the backend</td><td>A key in a front end is extracted within days</td></tr>
+      <tr><td>No secrets in code</td><td><code>.env</code> in development; managed identity in Azure</td><td>Nothing to leak or rotate in production (Module 12)</td></tr>
+      <tr><td>Remember the conversation</td><td>Per-session history, last 6 exchanges resent</td><td>The API is stateless; trimming caps cost and latency</td></tr>
+      <tr><td>Feels fast</td><td>Stream chat replies over SSE; target first word under 1.5 s</td><td>Users judge speed by the first word</td></tr>
+      <tr><td>Survive busy periods</td><td>SDK retries (3 attempts) with backoff; bulk summaries queued later</td><td>Interactive users get retries; batch work stays out of their lane</td></tr>
+      <tr><td>Never show raw errors</td><td>Exceptions mapped to friendly messages; details logged with a turn ID</td><td>Errors leak internals and scare learners</td></tr>
+      <tr><td>Predictable monthly bill</td><td>Tokens and $ cost logged per turn; budget alert on the resource group</td><td>Pilot usage drives the projection, not a demo</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="quiz">Self-check</h2>
+<div class="quiz">
+  <details><summary>1. A front-end developer puts the Azure OpenAI key in a Vite environment variable "so it's not in the code". What's wrong, and what's the fix?</summary><div><p>Build tools inline it into the public JavaScript bundle, so it's <strong>public</strong>. Call the model from a <strong>backend</strong> (or use managed identity there) and regenerate the key.</p></div></details>
+  <details><summary>2. Traincrest Assist returns HTTP 200 but the answer stops mid-sentence. What happened, and how should the code react?</summary><div><p><code>finish_reason</code> is <strong>length</strong>. Don't present it as complete; raise the cap, ask for brevity, or lower reasoning effort. Milestone 2 records it in the <code>done</code> event and the log, so you can spot it.</p></div></details>
+  <details><summary>3. Which errors should ChatService retry, and where does that retry happen?</summary><div><p>429, 5xx, timeouts and connection errors. In Milestone 2 the <strong>SDK</strong> retries them (<code>max_retries=3</code>); ChatService only maps what's left after retries to friendly messages.</p></div></details>
+  <details><summary>4. Why does Milestone 2 send its own <code>delta</code>/<code>done</code>/<code>error</code> events instead of forwarding Azure's raw chunks?</summary><div><p>So the front end doesn't depend on one provider's format, and the backend can add its own data (cost, prompt version) and switch models freely.</p></div></details>
+  <details><summary>5. A nightly summarisation job slows down daytime chat with 429s. What's the right fix?</summary><div><p>Run it through a <strong>queue or batch API</strong> at a steady rate, ideally on separate capacity, instead of competing with interactive traffic.</p></div></details>
+  <details><summary>6. Monthly cost doubled after a prompt change. What's the first number you check?</summary><div><p><strong>Input tokens per turn</strong> in the logs. A longer system prompt is paid on every turn and multiplied by history.</p></div></details>
+</div>
+
+<div class="callout takeaway">
+  <div class="c-label">Carry this into Module 03</div>
+  <p>Traincrest Assist v0.2 is a solid pipe: safe, fast and resilient. What flows through it, the instructions, is still one vague sentence. Next you'll learn to write prompts that make behaviour clear, consistent and testable, including JSON your code can route on.</p>
+</div>

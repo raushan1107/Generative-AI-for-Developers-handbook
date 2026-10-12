@@ -1,0 +1,63 @@
+<!--meta
+{"id": "m03-role", "short": "Role Prompting", "h1": "Role Prompting", "description": "Module 03, topic 3: what assigning the model a role changes (tone, audience, perspective) and what it doesn't (knowledge), and a drill comparing four roles with and without facts.", "lead": "Telling the model who it is changes how it talks. It doesn't change what it knows. 'You are TrainCrest's senior certification expert' doesn't give it TrainCrest's policies. You'll prove both halves of that sentence in one drill.", "chips": ["Persona", "Tone and audience", "Not knowledge", "Drill 03.3"], "time": "Learn 8 min · Do 12 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The costume, not the script.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Role prompting assigns the model a persona or perspective (for example "You are a senior support agent at TrainCrest") to shape its tone, vocabulary, level of detail and focus for the task.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Give an actor a doctor's costume and they'll speak like a doctor, walk like a doctor and use the right words. You still wouldn't let them operate. The role is the costume. The knowledge has to come from the script you hand over: the context.</p>
+</div>
+
+<div class="two-col">
+  <div><h4>Roles help with</h4><ul><li>Tone and register (warm, formal, playful)</li><li>Audience level (learner vs engineer)</li><li>Perspective (reviewer, critic, tester)</li><li>A consistent persona across a conversation</li></ul></div>
+  <div><h4>Roles don't help with</h4><ul><li>Facts the model doesn't have</li><li>Accuracy on hard reasoning ("world-class mathematician" adds little)</li><li>A format you never specified</li><li>Security: a role is not a boundary</li></ul></div>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Product assistants nearly always have a short persona ("You are Contoso's helpful billing assistant…"), but the bulk of their system prompt is rules, context and format. Roles are also used deliberately for <em>perspective</em>: teams ask one model to act as a strict code reviewer or a sceptical evaluator of another model's answer, which you'll see again in evaluation (Module 09).</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Three paragraphs of flattering persona ("the world's greatest, most experienced, award-winning…") and one line of actual task. Spend those words on context, constraints and examples instead.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Role prompting shapes <strong>style and perspective</strong>, not knowledge. I use a short role in the system message and put the facts in the context."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Four roles, same question.</p></div></div>
+
+<div class="drill" id="d03-3" data-title="What a role changes, and what it doesn't" data-time="~12 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 03.3</span><h3>What a role changes, and what it doesn't</h3>
+    <div class="drill-meta"><span class="time">~12 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> show that a role changes tone and audience, while only the context supplies facts.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab03_03_roles.py" data-src="code/genai-labs/lab03_03_roles.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab03_03_roles.py</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Mark each answer for tone and facts</h4>
+        <ul class="verify-list">
+          <li>"Certification expert, no facts" sounds confident and is generic or wrong about the Retake Pass: the costume without the script.</li>
+          <li>The two roles <em>with</em> facts give the same facts (one free retake, 15% of course price, buy before the course ends, refunded if cancelled) in completely different styles.</li>
+          <li>"No role" is fine but generic. The role earned its place only once facts were present.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-3"> I've completed Drill 03.3</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>One question.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A colleague adds "You are a world-renowned warranty lawyer" to fix wrong policy answers. Will it work?</summary><div><p>No. A role changes <strong>style</strong>, not <strong>knowledge</strong>. Put the actual policy in the context (and later retrieve it with RAG).</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>One line of role, many lines of context. The role sets the voice; the context sets the facts.</p></div>

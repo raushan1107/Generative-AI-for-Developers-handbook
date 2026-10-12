@@ -1,0 +1,162 @@
+<!--meta
+{"id": "home", "layout": "home", "description": "A hands-on handbook for software developers: build, integrate and ship Generative AI applications with Azure OpenAI, Claude, ChatGPT and AI coding assistants. Written by Raushan Ranjan (MCT), RR Skillverse."}
+-->
+<section class="home-hero">
+  <span class="eyebrow">RR Skillverse · Hands-on handbook</span>
+  <h1>Build real GenAI applications, one hands-on step at a time.</h1>
+  <p class="lead">This isn't a book you read; it's a workshop you do. Every concept is explained simply, linked to how real products use it, and practised straight away: you run code, prompt your AI coding assistant, write prompts of your own and verify the result. By the end of Part V you've built and shipped a production-grade AI assistant.</p>
+  <p class="byline">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a>, Microsoft Certified Trainer · RR Skillverse</p>
+  <div class="hero-actions">
+    <a class="btn primary" href="modules/01/index.html">Start Module 01</a>
+    <a class="btn" href="setup/index.html">Set up your lab</a>
+    <a class="btn" href="start/how-it-works.html">How this handbook works</a>
+  </div>
+</section>
+
+<div class="section-head">
+  <h2>Three ways you practise</h2>
+  <p>Short drills build each skill. One progressive project ties them together. A capstone proves you can do it alone.</p>
+</div>
+<div class="cards">
+  <div class="card t-drill">
+    <span class="num">TRACK 1 · DRILLS</span>
+    <h3>A drill for every topic</h3>
+    <p>10–20 minute exercises right after each concept, in a scratch folder called <code>genai-labs</code>. Small, focused, safe to break. See a token, hit a 429, catch a prompt injection.</p>
+    <p><a href="labs/index.html">Browse all drills →</a></p>
+  </div>
+  <div class="card t-build">
+    <span class="num">TRACK 2 · THE BUILD</span>
+    <h3>Traincrest Assist, module by module</h3>
+    <p>One real application that grows a milestone at a time: a CLI, then a streaming web app, then prompts as code, RAG, tools, agents, evaluation, security and deployment.</p>
+    <p><a href="project/index.html">See the roadmap →</a></p>
+  </div>
+  <div class="card t-cap">
+    <span class="num">TRACK 3 · CAPSTONE</span>
+    <h3>A new problem, your design</h3>
+    <p>In Part V you get a different business problem and a brief, not instructions. You design, build, evaluate and present a production-ready GenAI app.</p>
+    <p><a href="capstone/index.html">About the capstone →</a></p>
+  </div>
+</div>
+
+<div class="section-head">
+  <h2>Every lab mixes six kinds of steps</h2>
+  <p>Sometimes you paste code. Sometimes you prompt an AI assistant. Sometimes you write the prompt yourself. You always verify.</p>
+</div>
+<div class="legend">
+  <div><span class="badge b-run">Run</span><br>Copy the code we give you, run it, read the output. The fastest way to see a concept work.</div>
+  <div><span class="badge b-ask">Ask AI</span><br>Paste a ready-made prompt into GitHub Copilot, Claude Code or Codex in VS Code. We explain why the prompt works and what you should get.</div>
+  <div><span class="badge b-write">Your prompt</span><br>Write the prompt yourself from a template and a hint, then compare with ours. This is where prompt engineering becomes a habit.</div>
+  <div><span class="badge b-verify">Verify</span><br>Tests, commands and checklists that prove the result is right. AI-written code is a draft until you've verified it.</div>
+  <div><span class="badge b-nocode">No-code</span><br>Try the idea in the Foundry playground, ChatGPT or Claude.ai first. Great for building intuition before coding.</div>
+  <div><span class="badge b-think">Think</span><br>Short design exercises: pick the pattern, choose the model, spot the trap. Answers are hidden until you've committed to yours.</div>
+</div>
+
+<div class="section-head">
+  <h2>The map of the course</h2>
+  <p>Five parts, twelve modules. Traincrest Assist grows in every module.</p>
+</div>
+<figure class="diagram" style="margin-top:0">
+  <div class="frame">
+    <svg viewBox="0 0 1000 360" role="img" aria-labelledby="hm-t hm-d">
+      <title id="hm-t">Course map</title>
+      <desc id="hm-d">Five parts from left to right: Foundations with modules 1 to 3, Connect with modules 4 and 5, Ground and act with modules 6 and 7, Build it right with modules 8 to 10, and Ship it with modules 11 and 12. Below them, a bar shows Traincrest Assist growing through milestones 1 to 12, and the capstone at the end of Part V.</desc>
+      <rect x="10" y="20" width="186" height="210" rx="14" class="s-blue"/>
+      <text x="26" y="46" class="t-m t-blue">PART I</text>
+      <text x="26" y="68" class="t-b">Foundations</text>
+      <rect x="24" y="84" width="158" height="38" rx="9" class="s-surface"/><text x="36" y="108" class="t"><tspan class="t-m">01</tspan> Intro to GenAI</text>
+      <rect x="24" y="130" width="158" height="38" rx="9" class="s-surface"/><text x="36" y="154" class="t"><tspan class="t-m">02</tspan> LLM APIs</text>
+      <rect x="24" y="176" width="158" height="38" rx="9" class="s-surface"/><text x="36" y="200" class="t"><tspan class="t-m">03</tspan> Prompting</text>
+
+      <rect x="208" y="20" width="186" height="210" rx="14" class="s-teal"/>
+      <text x="224" y="46" class="t-m t-teal">PART II</text>
+      <text x="224" y="68" class="t-b">Connect</text>
+      <rect x="222" y="84" width="158" height="38" rx="9" class="s-surface2"/><text x="234" y="108" class="t"><tspan class="t-m">04</tspan> Structured out</text>
+      <rect x="222" y="130" width="158" height="38" rx="9" class="s-surface2"/><text x="234" y="154" class="t"><tspan class="t-m">05</tspan> Embeddings</text>
+
+      <rect x="406" y="20" width="186" height="210" rx="14" class="s-violet"/>
+      <text x="422" y="46" class="t-m t-violet">PART III</text>
+      <text x="422" y="68" class="t-b">Ground and act</text>
+      <rect x="420" y="84" width="158" height="38" rx="9" class="s-surface2"/><text x="432" y="108" class="t"><tspan class="t-m">06</tspan> RAG</text>
+      <rect x="420" y="130" width="158" height="38" rx="9" class="s-surface2"/><text x="432" y="154" class="t"><tspan class="t-m">07</tspan> AI agents</text>
+
+      <rect x="604" y="20" width="186" height="210" rx="14" class="s-amber"/>
+      <text x="620" y="46" class="t-m t-amber">PART IV</text>
+      <text x="620" y="68" class="t-b">Build it right</text>
+      <rect x="618" y="84" width="158" height="38" rx="9" class="s-surface2"/><text x="630" y="108" class="t"><tspan class="t-m">08</tspan> Architecture</text>
+      <rect x="618" y="130" width="158" height="38" rx="9" class="s-surface2"/><text x="630" y="154" class="t"><tspan class="t-m">09</tspan> Evaluation</text>
+      <rect x="618" y="176" width="158" height="38" rx="9" class="s-surface2"/><text x="630" y="200" class="t"><tspan class="t-m">10</tspan> Security</text>
+
+      <rect x="802" y="20" width="186" height="210" rx="14" class="s-rose"/>
+      <text x="818" y="46" class="t-m t-rose">PART V</text>
+      <text x="818" y="68" class="t-b">Ship it</text>
+      <rect x="816" y="84" width="158" height="38" rx="9" class="s-surface2"/><text x="828" y="108" class="t"><tspan class="t-m">11</tspan> Cost &amp; speed</text>
+      <rect x="816" y="130" width="158" height="38" rx="9" class="s-surface2"/><text x="828" y="154" class="t"><tspan class="t-m">12</tspan> Production</text>
+      <rect x="816" y="176" width="158" height="38" rx="9" class="s-amber"/><text x="895" y="200" class="t-b mid">★ Capstone</text>
+
+      <rect x="10" y="248" width="978" height="58" rx="12" class="s-green"/>
+      <text x="26" y="282" class="t-b">Traincrest Assist</text>
+      <text x="190" y="272" class="t-s">M1 CLI · M2 streaming web app · M3 prompts as code · M4 tools · M5 semantic search · M6 RAG</text>
+      <text x="190" y="292" class="t-s">M7 agent · M8 LLM gateway · M9 evaluation · M10 guardrails · M11 cost and speed · M12 deployed</text>
+      <path d="M10 326 H988" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="499" y="350" class="t-s mid">from your first API call to a deployed, evaluated, secured product</text>
+    </svg>
+  </div>
+  <figcaption><b>Read left to right.</b> White modules are available now; grey ones are being written. Each module adds a milestone to Traincrest Assist.</figcaption>
+</figure>
+
+<div class="section-head">
+  <h2>Start with Part I</h2>
+  <p>Foundations: how LLMs think, how to call them like a professional, and how to write prompts that behave.</p>
+</div>
+<div class="page-cards">
+  <a class="page-card" href="setup/index.html"><span class="pc-tag">Before you begin · ~30 min</span><b>Lab setup</b><ul><li>Azure or open track · VS Code · AI coding assistant · smoke test</li></ul></a>
+  <a class="page-card" href="modules/01/index.html"><span class="pc-tag">Module 01 · 9 topics · 13 drills</span><b>Introduction to Generative AI</b><ul><li>Tokens, generation, training vs inference, model choice, multimodal</li></ul></a>
+  <a class="page-card" href="modules/02/index.html"><span class="pc-tag">Module 02 · 9 topics · 15 drills</span><b>Working with LLM APIs</b><ul><li>Auth, roles, parameters, streaming, errors, retries, cost</li></ul></a>
+  <a class="page-card" href="modules/03/index.html"><span class="pc-tag">Module 03 · 10 topics · 13 drills</span><b>Prompt Engineering</b><ul><li>Few-shot, chain-of-thought, templates, JSON output, injection</li></ul></a>
+</div>
+
+<div class="section-head">
+  <h2>What you'll have built by the end of Part I</h2>
+  <p>A real, tested service, not a notebook demo.</p>
+</div>
+<figure class="diagram" style="margin-top:0">
+  <div class="frame">
+    <svg viewBox="0 0 960 250" role="img" aria-labelledby="hb-t hb-d">
+      <title id="hb-t">Traincrest Assist after milestone 3</title>
+      <desc id="hb-d">A browser chat UI streams from a FastAPI backend. The backend has a chat service with memory, a versioned prompt library, a triage endpoint returning validated JSON, an output guard and structured logging with cost. It calls Azure OpenAI. Tests and a reliability check run against it.</desc>
+      <rect x="16" y="70" width="150" height="100" rx="12" class="s-surface"/>
+      <text x="91" y="104" class="t-b mid">Chat UI</text>
+      <text x="91" y="124" class="t-s mid">streams answers</text>
+      <text x="91" y="142" class="t-s mid">word by word</text>
+      <rect x="220" y="24" width="470" height="200" rx="14" class="s-blue"/>
+      <text x="236" y="50" class="t-b">FastAPI backend · /api/chat · /api/triage</text>
+      <rect x="236" y="66" width="140" height="62" rx="9" class="s-surface"/><text x="306" y="92" class="t-b mid">Chat service</text><text x="306" y="112" class="t-s mid">memory · retries</text>
+      <rect x="388" y="66" width="140" height="62" rx="9" class="s-surface"/><text x="458" y="92" class="t-b mid">Prompt library</text><text x="458" y="112" class="t-s mid">versioned</text>
+      <rect x="540" y="66" width="136" height="62" rx="9" class="s-surface"/><text x="608" y="92" class="t-b mid">Triage</text><text x="608" y="112" class="t-s mid">validated JSON</text>
+      <rect x="236" y="142" width="214" height="62" rx="9" class="s-surface"/><text x="343" y="168" class="t-b mid">Output guard</text><text x="343" y="188" class="t-s mid">blocks URLs, phones…</text>
+      <rect x="462" y="142" width="214" height="62" rx="9" class="s-surface"/><text x="569" y="168" class="t-b mid">JSON logs + $ cost</text><text x="569" y="188" class="t-s mid">per turn, per version</text>
+      <rect x="760" y="70" width="184" height="100" rx="12" class="s-violet"/>
+      <text x="852" y="106" class="t-b mid">Azure OpenAI</text>
+      <text x="852" y="126" class="t-s mid">or OpenAI / Ollama</text>
+      <path d="M166 120 H214" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <path d="M690 120 H754" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+    </svg>
+  </div>
+  <figcaption><b>Milestone 3.</b> Streaming chat with memory and friendly errors, prompts as versioned code, JSON triage you can route on, an output guard, cost per turn, and tests. Parts II–V turn it into a grounded, tool-using, evaluated, deployed product.</figcaption>
+</figure>
+
+<div class="section-head">
+  <h2>About the author</h2>
+</div>
+<div class="author-card">
+  <span class="avatar" aria-hidden="true">RR</span>
+  <div>
+    <h3>Raushan Ranjan</h3>
+    <p>Microsoft Certified Trainer (MCT) and creator of RR Skillverse, training developer and engineering teams on Azure, AI and modern application development. This handbook is written the way I teach: simple first, precise second, and always hands-on.</p>
+    <div class="links">
+      <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Website</a>
+      <a href="https://linkedin.com/in/raushanranjan" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://github.com/raushan1107" target="_blank" rel="noopener noreferrer">GitHub</a>
+    </div>
+  </div>
+</div>

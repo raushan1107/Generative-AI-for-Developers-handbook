@@ -1,0 +1,114 @@
+<!--meta
+{"id": "how", "short": "How This Handbook Works", "h1": "How This Handbook Works", "description": "How the Generative AI for Developers handbook is organised: Learn, Do, Check pages, three practice tracks, step types, and the rules for working with AI coding assistants.", "lead": "Five minutes here saves you an hour later. You'll learn how every page is laid out, how the three practice tracks fit together, what each kind of lab step means, and the few rules that keep AI-assisted coding honest.", "chips": ["Learn · Do · Check", "Drills · Build · Capstone", "Copilot · Claude Code · Codex"]}
+-->
+<h2 id="pages">Every topic page: Learn, Do, Check</h2>
+<p>Each topic has its own short page, so you can open exactly what you need in class. Every topic page follows the same three steps, shown as numbered banners:</p>
+<div class="cards">
+  <div class="card"><span class="num">1 · LEARN</span><h3>The idea, made simple</h3><p>A precise definition, the same idea in plain words, an everyday analogy, a diagram, how real products use it, and the developer mindset shift.</p></div>
+  <div class="card"><span class="num">2 · DO</span><h3>Drills, straight away</h3><p>One or two hands-on drills that make the idea visible: run code, prompt your AI assistant, write a prompt, verify the result.</p></div>
+  <div class="card"><span class="num">3 · CHECK</span><h3>Prove you've got it</h3><p>Two or three quick questions with hidden answers, and a one-line takeaway to carry forward.</p></div>
+</div>
+<p>Each module also has an <strong>Overview</strong> page (mental map and page list), a <strong>Build</strong> page (the Traincrest Assist milestone) and a <strong>Recap</strong> page (checklist and self-check). Tick <em>Mark this page as done</em> at the bottom of a page and the sidebar shows a ✓, saved in your own browser.</p>
+
+<h2 id="tracks">Three practice tracks</h2>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 270" role="img" aria-labelledby="tr-t tr-d">
+      <title id="tr-t">How the three tracks fit together</title>
+      <desc id="tr-d">For every module, drills come first and teach individual skills in the genai-labs folder. Then the build milestone applies them to Traincrest Assist in its own folder. After Module 12, the capstone applies everything to a new problem with only a brief.</desc>
+      <text x="20" y="28" class="t-m t-accent">FOR EVERY MODULE</text>
+      <rect x="20" y="40" width="250" height="120" rx="12" class="s-teal"/>
+      <text x="40" y="68" class="t-b">1 · Drills</text>
+      <text x="40" y="90" class="t-s">one per topic, 10–20 min each</text>
+      <text x="40" y="110" class="t-s">folder: genai-labs/</text>
+      <text x="40" y="130" class="t-s">isolated, safe to break</text>
+      <rect x="320" y="40" width="270" height="120" rx="12" class="s-violet"/>
+      <text x="340" y="68" class="t-b">2 · Build milestone</text>
+      <text x="340" y="90" class="t-s">the module's skills applied to</text>
+      <text x="340" y="110" class="t-s">Traincrest Assist</text>
+      <text x="340" y="130" class="t-s">folder: traincrest-assist/</text>
+      <path d="M270 100 H314" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <path d="M590 100 Q620 100 620 130 V190 Q620 205 600 205 H60 Q40 205 40 190 V166" class="s-dash" marker-end="url(#ah)"/>
+      <text x="330" y="226" class="t-s mid">next module: new drills, next milestone, the same project keeps growing</text>
+      <rect x="660" y="40" width="220" height="120" rx="12" class="s-amber"/>
+      <text x="680" y="68" class="t-b">3 · Capstone (Part V)</text>
+      <text x="680" y="90" class="t-s">a different problem</text>
+      <text x="680" y="110" class="t-s">a brief, not instructions</text>
+      <text x="680" y="130" class="t-s">design, build, evaluate, demo</text>
+      <path d="M590 70 H654" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="622" y="60" class="t-s mid">after M12</text>
+    </svg>
+  </div>
+  <figcaption><b>Drills teach, the build applies, the capstone proves.</b> If you fall behind on the build, every milestone page has the complete reference code, so you can catch up and keep going.</figcaption>
+</figure>
+
+<h2 id="steps">The six step types</h2>
+<p>Labs deliberately mix how you work. Real developers paste code, prompt AI assistants, write their own prompts and verify everything. Each step in a drill is tagged:</p>
+<div class="legend">
+  <div><span class="badge b-run">Run</span><br>Copy the code, run it, read the output. Code blocks show the file name; use the Copy button.</div>
+  <div><span class="badge b-ask">Ask AI</span><br>Paste a prompt into your AI coding assistant. You'll see <em>why the prompt works</em>, <em>what you should get</em> and a reference solution if your assistant gets stuck.</div>
+  <div><span class="badge b-write">Your prompt</span><br>Write the prompt yourself from a template and a hint. Then open <em>Compare with my prompt</em> and see what you missed.</div>
+  <div><span class="badge b-verify">Verify</span><br>Run tests or commands, or tick a checklist. Never skip it: it's where you find out whether the AI's code actually works.</div>
+  <div><span class="badge b-nocode">No-code</span><br>Try it in the Foundry playground, ChatGPT or Claude.ai. Fast intuition before code.</div>
+  <div><span class="badge b-think">Think</span><br>A short design decision. Commit to an answer before opening the hidden one.</div>
+</div>
+
+<h2 id="ai-assistants">Working with AI coding assistants</h2>
+<p>You'll use an AI assistant inside VS Code throughout this course: <strong>GitHub Copilot</strong> (Chat, in agent mode), <strong>Claude Code</strong> (VS Code extension or terminal) or <strong>OpenAI Codex</strong> (IDE extension or terminal). Any one is enough; the prompts work in all three. Setup is in <a href="../setup/workstation.html">Workstation and AI assistant</a>.</p>
+<p>Using them is itself part of the curriculum. Every prompt you send an assistant is a small prompt-engineering exercise, which is exactly what Module 03 teaches.</p>
+
+<h3>The prompt template you'll see everywhere</h3>
+<div class="template-box" data-title="Coding-assistant prompt template"><pre><code>Goal:        what to build or change, in one sentence
+Context:     which files or folder, what already exists
+Constraints: language, libraries, style, things it must NOT do
+Done when:   how you will verify it (tests pass, command output, behaviour)</code></pre></div>
+
+<h3>Five rules for AI-assisted coding</h3>
+<ol class="steps">
+  <li><strong>Never paste secrets into a prompt.</strong> Keys stay in <code>.env</code>. If an assistant asks for your key, say no.</li>
+  <li><strong>Read the diff before you accept it.</strong> Agent modes can edit several files at once. Skim every change.</li>
+  <li><strong>Run the Verify step.</strong> Code that looks right is still a draft until the tests or checks pass.</li>
+  <li><strong>Iterate with evidence.</strong> If it fails, paste the exact error back: "pytest fails with … fix it without changing the tests".</li>
+  <li><strong>Use the reference solution as a last resort,</strong> and then compare: what did your assistant do differently, and why?</li>
+</ol>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams that get value from coding assistants treat them like a fast junior colleague: clear task, relevant files as context, explicit constraints and a definition of done. That's the same Context → Task → Constraints → Output structure you'll formalise in Module 03.</p>
+</div>
+
+<h2 id="folders">Your two folders</h2>
+<div class="two-col">
+  <div>
+    <h4><code>genai-labs/</code>: drills</h4>
+    <p>A flat scratch folder. One file per drill (<code>lab01_05_tokens.py</code>), plus the shared helpers <code>llm.py</code> and <code>claude_llm.py</code>. Created in <a href="../setup/helpers.html">Helpers and smoke test</a>.</p>
+  </div>
+  <div>
+    <h4><code>traincrest-assist/</code>: the build</h4>
+    <p>A real project with an <code>app/</code> package, a web UI, tests and data. It grows with every milestone. Created in <a href="../modules/01/build.html">Build: Milestone 1</a>.</p>
+  </div>
+</div>
+
+<h2 id="case">The case: TrainCrest and Traincrest Assist</h2>
+<div class="case">
+  <div class="case-head"><b>TrainCrest</b><span>· a technical training company (scenario, data and policies here are fictional)</span></div>
+  <div class="case-body">
+    <p>TrainCrest runs instructor-led and self-paced courses in cloud, AI, data and security for learners in many countries. Learner support handles about <strong>25,000 requests a month</strong> by email and chat, mostly in English but also in Spanish, Hindi, Arabic, Japanese and more. A 35-person team answers questions about schedules, payments, lab environments, exam vouchers and certificates. First responses take 11 hours on average.</p>
+    <p>Leadership wants <strong>Traincrest Assist</strong>: an AI assistant that answers policy questions correctly, checks enrolments and vouchers, finds the right course, raises tickets, and hands over to humans safely, at a predictable cost. Enrolment IDs look like <code>TC-10293</code>.</p>
+  </div>
+</div>
+
+<h2 id="pacing">Suggested pacing</h2>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Part</th><th>Modules</th><th>Drills (approx.)</th><th>Build milestones</th></tr></thead>
+    <tbody>
+      <tr><td>I · Foundations</td><td>01, 02, 03</td><td>41</td><td>1 → 3</td></tr>
+      <tr><td>II · Connect</td><td>04, 05</td><td>coming soon</td><td>4 → 5</td></tr>
+      <tr><td>III · Ground and act</td><td>06, 07</td><td>coming soon</td><td>6 → 7</td></tr>
+      <tr><td>IV · Build it right</td><td>08, 09, 10</td><td>coming soon</td><td>8 → 10</td></tr>
+      <tr><td>V · Ship it</td><td>11, 12 + capstone</td><td>coming soon</td><td>11 → 12</td></tr>
+    </tbody>
+  </table>
+</div>
+<p class="small muted">In an instructor-led class, the trainer picks the drills that matter most for the group; everything else is there for self-paced practice.</p>

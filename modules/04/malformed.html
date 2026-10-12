@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handling Malformed Responses</title>
+<meta name="description" content="Module 04, topic 7: every way a structured reply goes wrong (truncation, refusal, content filter, invalid JSON, rule failures, bad tool calls), how to detect each one, when retrying helps, and a chaos drill that tests a robust wrapper against a misbehaving fake model.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m04-malformed">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod" open><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic active" data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part II</span><i>/</i><a href="../../modules/04/index.html">Module 04</a><i>/</i><span>Handling malformed responses</span></nav>
+  <span class="kind-pill">Learn · Do · Check · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 04 · Topic 7 of 7</span><h1>Handling Malformed Responses</h1><p class="lead">Even with strict schemas, replies go wrong: cut off at the token limit, refused, blocked by a content filter, or wrapped in chatter by a model that doesn't support strict mode. Production code doesn't hope these won't happen. It names each failure, detects it, and decides: retry, repair, fall back or escalate. You'll prove yours does, with a fake model built to misbehave.</p><div class="chips"><span class="chip">finish_reason</span><span class="chip">Refusals and filters</span><span class="chip">Retry only when it helps</span><span class="chip">Drill 04.10</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Name every failure, then handle each one on purpose.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A <strong>malformed response</strong> is any model output your code can't safely use as intended: incomplete, refused, filtered, unparseable, schema-invalid, rule-invalid, or a tool call with a bad name or arguments. <strong>Handling</strong> it means detecting the specific case (mostly from <code>finish_reason</code>, <code>refusal</code> and validation errors) and applying a deliberate policy for it.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>"It didn't work" isn't one problem. A reply that ran out of space needs more space; a refusal needs a different response to the user, not a retry; garbage needs a second try with the error shown. Different failures, different fixes.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A delivery driver comes back with your parcel. If the address was smudged, you rewrite it and send it again. If the van was full, you send a bigger van. If the recipient refused it, sending it again won't help. A good dispatcher checks <em>why</em> it came back before doing anything.</p>
+</div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>What went wrong</th><th>How you detect it</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td>Cut off at the token limit</td><td><code>finish_reason == "length"</code>; <code>parse()</code> raises <code>LengthFinishReasonError</code></td><td>Retry once with a larger <code>max_completion_tokens</code>, or ask for less. Never parse a cut-off JSON.</td></tr>
+      <tr><td>Refusal</td><td><code>message.refusal</code> is set</td><td>Don't retry the same request. Show a safe message, log it, maybe escalate.</td></tr>
+      <tr><td>Content filter</td><td><code>finish_reason == "content_filter"</code>; <code>ContentFilterFinishReasonError</code>; or a 400 error from the filter on the prompt</td><td>Don't retry unchanged. Safe message; review if it's a false positive.</td></tr>
+      <tr><td>Not JSON at all, or wrapped in fences and chatter</td><td><code>ValidationError</code> / <code>json.JSONDecodeError</code> (non-strict models and JSON mode)</td><td>Light extraction (strip fences, take <code>{...}</code>), then one repair round with the error</td></tr>
+      <tr><td>Valid JSON, breaks a rule</td><td>Pydantic validator error</td><td>One repair round with the message; then fall back</td></tr>
+      <tr><td>Tool call: unknown name or bad arguments</td><td>Dispatcher returns <code>{"error": ...}</code></td><td>Send the error back as the tool result; the loop limit caps retries</td></tr>
+      <tr><td>Empty answer after tools</td><td><code>content</code> empty and no <code>tool_calls</code></td><td>Retry once or use a fallback message</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Retry only when retrying can help</h3>
+<ul>
+  <li><strong>Worth retrying:</strong> truncation (with more room), invalid or rule-breaking output (with the error), transient API errors (the SDK retries 429 and 5xx for you, Module 02).</li>
+  <li><strong>Not worth retrying:</strong> refusals, content-filter blocks, authentication errors. Same input, same outcome, double the bill.</li>
+  <li><strong>Always bounded:</strong> one repair round is usually enough; two at most. After that the problem is your prompt, schema or model choice, and the logs should tell you so.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams running document extraction at scale typically see a small but steady fraction of replies needing repair, and a far smaller fraction refused or filtered. They track each outcome separately on a dashboard. A jump in "truncated" usually means documents got longer; a jump in "invalid" after a deploy usually means someone changed the prompt or the schema.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Wrap the call in try/except and retry three times."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Each failure has a <strong>name and a cause</strong>. I return a typed outcome (ok, refused, blocked, truncated, invalid), retry only the ones a retry can fix, and count each one."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Ignoring <code>finish_reason</code>. A reply cut off at the limit can still <em>look</em> fine in prose ("Your refund will be"), and in JSON mode it fails with a confusing parse error. Check why the model stopped before you read what it wrote.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I check <code>finish_reason</code> and <code>refusal</code> first, validate second, and map every case to an outcome: truncation gets more tokens, invalid output gets one repair with the error, refusals and filter blocks get a safe response and no retry. All bounded, all logged."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Break things on purpose.</p></div></div>
+
+<div class="drill" id="d04-10" data-title="Chaos drill: a fake model that misbehaves in every way" data-time="~20 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 04.10</span><h3>Chaos drill: a fake model that misbehaves in every way</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-tool">Offline · no API key</span><span class="badge b-tool">pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> test a wrapper that turns every common failure into a clear outcome, without waiting for a real model to fail.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The wrapper</h4>
+        <p><code>structured_call()</code> does by hand what <code>parse()</code> partly does for you, so you can see each decision. It also works with JSON-mode-only providers, because it extracts and validates the JSON itself.</p>
+        <pre class="code" data-file="robust.py"><code>"""Drill 04.10: one function that turns every way a structured reply can go wrong
+into a clear outcome your code can act on. .parse() does part of this for you;
+here you see all of it, and it also works with providers that lack strict mode."""
+import re
+from dataclasses import dataclass
+from typing import Any, Optional
+
+from pydantic import BaseModel, ValidationError
+
+from schema_lint import strict_schema
+
+FENCE = re.compile(r"^```(?:json)?\s*|\s*```$")
+
+
+@dataclass
+class Outcome:
+    status: str                  <span class="c"># ok | refused | blocked | truncated | invalid</span>
+    value: Optional[Any] = None  <span class="c"># the validated model instance when status == "ok"</span>
+    detail: str = ""
+    attempts: int = 0
+
+
+def extract_json(text: str) -&gt; str:
+    """Forgive the usual wrapping: code fences and a sentence before or after the object."""
+    text = FENCE.sub("", text.strip())
+    start, end = text.find("{"), text.rfind("}")
+    return text[start:end + 1] if start != -1 and end &gt; start else text
+
+
+def structured_call(client, model: str, messages: list, schema: type[BaseModel],
+                    max_tokens: int = 600, max_attempts: int = 2) -&gt; Outcome:
+    response_format = {"type": "json_schema",
+                       "json_schema": {"name": schema.__name__, "strict": True, "schema": strict_schema(schema)}}
+    messages, problem = list(messages), ""
+    for attempt in range(1, max_attempts + 1):
+        r = client.chat.completions.create(model=model, messages=messages, response_format=response_format,
+                                           max_completion_tokens=max_tokens)
+        choice = r.choices[0]
+        refusal = getattr(choice.message, "refusal", None)
+        if refusal:                                   <span class="c"># the model declined: don't retry, don't parse</span>
+            return Outcome("refused", detail=refusal, attempts=attempt)
+        if choice.finish_reason == "content_filter":  <span class="c"># the platform's safety filter cut the reply</span>
+            return Outcome("blocked", detail="content filter", attempts=attempt)
+        if choice.finish_reason == "length":          <span class="c"># ran out of tokens: the JSON is cut off</span>
+            problem = f"truncated at {max_tokens} tokens"
+            max_tokens *= 2                           <span class="c"># one retry with more room, then give up</span>
+            continue
+        text = choice.message.content or ""
+        try:
+            return Outcome("ok", value=schema.model_validate_json(extract_json(text)), attempts=attempt)
+        except ValidationError as e:
+            first = e.errors()[0]
+            problem = f"{'.'.join(map(str, first['loc'])) or 'output'}: {first['msg']}"
+            messages += [{"role": "assistant", "content": text},
+                         {"role": "user", "content": f"Invalid ({problem}). Return only the corrected JSON object."}]
+    status = "truncated" if problem.startswith("truncated") else "invalid"
+    return Outcome(status, detail=problem, attempts=max_attempts)</code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Unleash the chaos</h4>
+        <pre class="code" data-file="lab04_10_chaos.py"><code>"""Drill 04.10: chaos test. A fake model misbehaves in every common way;
+robust.structured_call must turn each case into the right outcome. Offline, no API key."""
+from types import SimpleNamespace as NS
+from typing import Literal
+
+from pydantic import BaseModel
+
+from robust import structured_call
+
+
+class Reply(BaseModel):
+    category: Literal["billing", "scheduling", "other"]
+    urgent: bool
+
+
+GOOD = '{"category": "billing", "urgent": false}'
+
+
+def says(content=None, finish="stop", refusal=None):
+    return NS(choices=[NS(message=NS(content=content, refusal=refusal), finish_reason=finish)])
+
+
+class FakeModel:
+    """Plays back a list of canned responses, one per call."""
+    def __init__(self, *responses):
+        self.responses = list(responses)
+        self.chat = NS(completions=NS(create=lambda **kw: self.responses.pop(0)))
+
+
+SCENARIOS = {
+    "clean JSON": [says(GOOD)],
+    "fenced JSON": [says("```json\n" + GOOD + "\n```")],
+    "sentence + JSON": [says("Sure! Here it is: " + GOOD + " Hope that helps.")],
+    "wrong value, then fixed": [says('{"category": "refund", "urgent": false}'), says(GOOD)],
+    "garbage twice": [says("I think it's billing."), says("billing, not urgent")],
+    "cut off, then fixed": [says('{"category": "bil', finish="length"), says(GOOD)],
+    "cut off twice": [says('{"cat', finish="length"), says('{"category"', finish="length")],
+    "refusal": [says(refusal="I can't help with that request.")],
+    "content filter": [says(None, finish="content_filter")],
+}
+
+if __name__ == "__main__":
+    print(f"{'scenario':&lt;26}{'status':&lt;11}{'tries':&lt;7}detail / value")
+    for name, responses in SCENARIOS.items():
+        out = structured_call(FakeModel(*responses), "fake", [{"role": "user", "content": "x"}], Reply)
+        shown = out.value.model_dump() if out.value else out.detail
+        print(f"{name:&lt;26}{out.status:&lt;11}{out.attempts:&lt;7}{shown}")</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab04_10_chaos.py</code></pre>
+        <span class="out-label">Output (exact)</span>
+<pre class="out"><code>scenario                  status     tries  detail / value
+clean JSON                ok         1      {'category': 'billing', 'urgent': False}
+fenced JSON               ok         1      {'category': 'billing', 'urgent': False}
+sentence + JSON           ok         1      {'category': 'billing', 'urgent': False}
+wrong value, then fixed   ok         2      {'category': 'billing', 'urgent': False}
+garbage twice             invalid    2      output: Invalid JSON: expected value at line 1 column 1
+cut off, then fixed       ok         2      {'category': 'billing', 'urgent': False}
+cut off twice             truncated  2      truncated at 1200 tokens
+refusal                   refused    1      I can't help with that request.
+content filter            blocked    1      content filter</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="code" data-file="test_robust.py"><code>"""Tests for robust.py, using the chaos scenarios. Run:  pytest -q test_robust.py"""
+import pytest
+
+from lab04_10_chaos import SCENARIOS, FakeModel, Reply
+from robust import extract_json, structured_call
+
+EXPECTED = {
+    "clean JSON": ("ok", 1), "fenced JSON": ("ok", 1), "sentence + JSON": ("ok", 1),
+    "wrong value, then fixed": ("ok", 2), "garbage twice": ("invalid", 2),
+    "cut off, then fixed": ("ok", 2), "cut off twice": ("truncated", 2),
+    "refusal": ("refused", 1), "content filter": ("blocked", 1),
+}
+
+
+@pytest.mark.parametrize("name", list(SCENARIOS))
+def test_each_failure_mode_has_a_clear_outcome(name):
+    out = structured_call(FakeModel(*SCENARIOS[name]), "fake", [{"role": "user", "content": "x"}], Reply)
+    assert (out.status, out.attempts) == EXPECTED[name]
+    assert (out.value is not None) == (out.status == "ok")
+
+
+def test_extract_json():
+    assert extract_json('```json\n{"a": 1}\n```') == '{"a": 1}'
+    assert extract_json('Here: {"a": {"b": 2}} done') == '{"a": {"b": 2}}'</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_robust.py</code></pre>
+        <ul class="verify-list">
+          <li><code>10 passed</code>: nine scenarios plus the extraction helper.</li>
+          <li>Refusal and content filter used <strong>one</strong> try each: no wasted retries.</li>
+          <li>Truncation retried with twice the token budget (600, then 1200) before giving up.</li>
+        </ul>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Add a scenario</h4>
+        <p>Add a tenth scenario to <code>SCENARIOS</code> and <code>EXPECTED</code>: the model returns valid JSON with an <strong>extra key</strong>, <code>{"category": "billing", "urgent": false, "note": "hi"}</code>. What outcome do you expect with the <code>Reply</code> model as written? What changes if you add <code>model_config = ConfigDict(extra="forbid")</code>?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>As written, Pydantic <strong>ignores</strong> extra keys by default, so the outcome is <code>ok</code> on the first try and <code>note</code> is silently dropped. With <code>extra="forbid"</code>, the first reply fails validation, the wrapper repairs once, and the outcome depends on the second reply. With strict structured outputs the extra key can't appear at all, but providers without strict mode can send it, so decide deliberately: ignore (tolerant) or forbid (strict). Milestone 3's <code>Triage</code> chose forbid.</p></div></details>
+      </li>
+    </ol>
+    <p class="lab-say"><b>Remember:</b> “Don't wait for production to show you how replies fail. Write the failures yourself and test against them.”</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-10"> I've completed Drill 04.10</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Malformed responses.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Your extraction job's "truncated" count doubled overnight. First thing to check?</summary><div><p>Whether inputs got longer (new document type, bigger attachments) or someone lowered <code>max_completion_tokens</code> or changed the schema to ask for more fields. Truncation is about <strong>room</strong>, not quality.</p></div></details>
+  <details><summary>2. Why not retry a refusal three times?</summary><div><p>The same input will almost always be refused again: three times the cost and latency for the same result. Handle it: safe message to the user, log it, escalate if it looks like a false positive.</p></div></details>
+  <details><summary>3. With strict structured outputs, which failures can still happen?</summary><div><p>Truncation, refusals, content-filter blocks, <strong>rule</strong> failures your validators catch, and wrong-but-valid values. Strict mode removes "not JSON" and "wrong shape", nothing else.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Check why the model stopped, validate what it wrote, and give every failure a name, a bounded policy and a counter.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m04-malformed"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/04/validation.html"><small>Previous</small><span>← 04 · Validating model outputs</span></a><a class="next" href="../../modules/04/build.html"><small>Next</small><span>04 · Build: Milestone 4 →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

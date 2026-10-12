@@ -1,0 +1,147 @@
+<!--meta
+{"id": "m02-build", "short": "Build: Milestone 2", "h1": "Build · Milestone 2: A Streaming Chat Service", "description": "Traincrest Assist milestone 2 (Module 02 hands-on exercise): a FastAPI service with user input, LLM integration, streaming over server-sent events, conversation memory, error handling, retries, structured logging and cost, plus a web chat UI built with an AI coding assistant.", "lead": "Version 0.2 turns the CLI into a real service: a FastAPI backend that streams answers to a browser chat, remembers the conversation, survives failures with friendly messages, retries what's transient, and logs latency, tokens and cost for every turn. You write the backend; your AI assistant builds the UI to your contract.", "chips": ["Module 02 exercise", "FastAPI + SSE", "Memory · errors · retries", "JSON logs + cost", "≈ 60 min"], "time": "Plan 10 min · Build 40 min · Verify 15 min"}
+-->
+<div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From a terminal toy to a service.</p></div></div>
+
+<div class="case">
+  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 2</span></div>
+  <div class="case-body">
+    <p>The pilot team liked v0.1 but can't use it: it forgets context, freezes while thinking and dies on the first network blip. Build v0.2 as a web service with a chat page. Required: <strong>user input</strong>, <strong>LLM API integration</strong>, <strong>a streaming response</strong>, <strong>error handling</strong> and <strong>basic logging</strong>, plus conversation memory and a cost figure per turn so finance can plan.</p>
+  </div>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 300" role="img" aria-labelledby="b2-t b2-d">
+      <title id="b2-t">Traincrest Assist v0.2</title>
+      <desc id="b2-d">The browser chat page posts to /api/chat on the FastAPI backend and receives server-sent events. main.py hands the request to ChatService in chat.py, which keeps per-session history, builds the messages with the system prompt from prompts.py, streams from the model through llm.py with retries, maps errors to friendly messages, and writes JSON log lines with cost through logging_utils.py.</desc>
+      <rect x="16" y="90" width="170" height="120" rx="12" class="s-surface"/><text x="101" y="122" class="t-b mid">web/index.html</text><text x="101" y="144" class="t-s mid">chat page</text><text x="101" y="162" class="t-s mid">reads SSE events</text><text x="101" y="180" class="t-s mid">delta · done · error</text>
+      <rect x="236" y="20" width="520" height="260" rx="14" class="s-blue"/>
+      <text x="252" y="46" class="t-b">FastAPI backend (uvicorn app.main:app)</text>
+      <rect x="252" y="60" width="150" height="60" rx="9" class="s-surface"/><text x="327" y="86" class="t-b mid">main.py</text><text x="327" y="104" class="t-s mid">/api/chat · /reset</text>
+      <rect x="420" y="60" width="320" height="120" rx="9" class="s-surface"/><text x="580" y="84" class="t-b mid">chat.py · ChatService</text>
+      <text x="436" y="108" class="t-s">• per-session history, trimmed to 6 pairs</text>
+      <text x="436" y="126" class="t-s">• system prompt + history → stream</text>
+      <text x="436" y="144" class="t-s">• errors → friendly messages</text>
+      <text x="436" y="162" class="t-s">• done event: TTFT, tokens, cost</text>
+      <rect x="252" y="196" width="150" height="66" rx="9" class="s-surface"/><text x="327" y="222" class="t-b mid">prompts.py</text><text x="327" y="240" class="t-s mid">SYSTEM_PROMPT</text>
+      <rect x="420" y="196" width="150" height="66" rx="9" class="s-amber"/><text x="495" y="222" class="t-b mid">llm.py</text><text x="495" y="240" class="t-s mid">3 retries · 60s</text>
+      <rect x="590" y="196" width="150" height="66" rx="9" class="s-surface"/><text x="665" y="222" class="t-b mid">logging_utils</text><text x="665" y="240" class="t-s mid">JSON lines · $</text>
+      <rect x="806" y="110" width="140" height="80" rx="12" class="s-violet"/><text x="876" y="146" class="t-b mid">Azure OpenAI</text><text x="876" y="166" class="t-s mid">"chat"</text>
+      <path d="M186 130 H230" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="208" y="122" class="t-s mid">POST</text>
+      <path d="M230 172 H192" class="s-arrow" marker-end="url(#ah)"/><text x="208" y="188" class="t-s mid">SSE</text>
+      <path d="M402 90 H414" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M570 229 Q790 240 806 180" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+    </svg>
+  </div>
+  <figcaption><b>The web layer stays thin.</b> All the GenAI logic lives in <code>ChatService</code>, which the CLI and the web app share and which can be tested with a fake model.</figcaption>
+</figure>
+
+<span class="out-label">Files after this milestone (new or changed)</span>
+<pre class="out"><code>traincrest-assist/
+├── requirements.txt          + fastapi, uvicorn
+├── .env.example              + MAX_TURNS_KEPT, PRICE_IN_PER_M, PRICE_OUT_PER_M, LOG_FILE
+├── app/
+│   ├── config.py             + memory, price and log settings
+│   ├── llm.py                + retries and timeout
+│   ├── prompts.py            NEW  the system prompt lives here now
+│   ├── logging_utils.py      NEW  JSON log lines and cost
+│   ├── chat.py               NEW  ChatService: memory, streaming, errors, logging
+│   └── main.py               NEW  FastAPI: /, /api/chat (SSE), /api/reset, /api/health
+├── web/index.html            NEW  chat page (built with your AI assistant)
+└── cli.py                    now uses ChatService and streams</code></pre>
+
+<div class="phase do" id="build"><span class="ph-num">2</span><div><h2>Build</h2><p>Backend by hand, UI by prompt.</p></div></div>
+
+<div class="drill exercise" id="b02-1" data-title="Milestone 2: streaming chat service with memory, errors and logging" data-time="~60 min" data-steps="run,ask,verify">
+  <div class="drill-head"><span class="drill-id">Milestone 2</span><h3>Streaming chat service with memory, errors and logging</h3>
+    <div class="drill-meta"><span class="time">~60 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · AI assistant</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> the Module 02 hands-on exercise. A small AI-powered application with user input, LLM API integration, a streaming response, error handling and basic logging.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Settings and model access</h4>
+        <p>Add <code>fastapi</code> and <code>uvicorn</code> to <code>requirements.txt</code> and install them. Add the new keys to <code>.env</code> (see <code>.env.example</code> below). Then update the two existing files:</p>
+        <pre class="code" data-file=".env.example" data-src="code/traincrest-assist/m02/.env.example"></pre>
+        <pre class="code" data-file="app/config.py" data-src="code/traincrest-assist/m02/app/config.py"></pre>
+        <pre class="code" data-file="app/llm.py" data-src="code/traincrest-assist/m02/app/llm.py"></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Prompts and logging get their own homes</h4>
+        <pre class="code" data-file="app/prompts.py" data-src="code/traincrest-assist/m02/app/prompts.py"></pre>
+        <pre class="code" data-file="app/logging_utils.py" data-src="code/traincrest-assist/m02/app/logging_utils.py"></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>The heart: ChatService</h4>
+        <p>Everything from this module meets here: history trimming (Drill 02.6), streaming with the empty-chunk guard (Drill 02.8), the error mapping (Drill 02.11), and usage and cost (Drill 02.14). Read it top to bottom before you run it.</p>
+        <pre class="code" data-file="app/chat.py" data-src="code/traincrest-assist/m02/app/chat.py"></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>The web API</h4>
+        <pre class="code" data-file="app/main.py" data-src="code/traincrest-assist/m02/app/main.py"></pre>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Have your assistant build the chat page to your contract</h4>
+        <div class="prompt-box"><pre><code>Create web/index.html: a single-file chat page (HTML, CSS and vanilla JavaScript, no frameworks,
+no external files) for "Traincrest Assist". Contract with the backend in #app/main.py:
+- On load, create sessionId = crypto.randomUUID().
+- On submit, POST /api/chat with JSON {session_id, message}. The response is server-sent events:
+  lines "data: {json}" separated by a blank line. Read it with fetch + response.body.getReader()
+  + TextDecoder, buffering until "\n\n".
+- Event types: {"type":"delta","text"} append text to the current assistant bubble;
+  {"type":"replace","text"} replace the bubble's text; {"type":"error","message"} show the message
+  styled as an error; {"type":"done","ttft_s","total_s","tokens_in","tokens_out"} show a small
+  grey line under the bubble with those numbers.
+- If fetch fails or the status isn't OK, show a friendly error in the bubble.
+- A "New chat" button POSTs /api/reset {session_id}, makes a new sessionId and clears the log.
+- Disable Send while a reply is streaming. Use textContent, never innerHTML, for message text.
+Dark, clean design; user bubbles on the right, assistant on the left.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it's a contract, not a wish. It names the exact endpoint, payload, wire format and every event type (including <code>replace</code>, which Milestone 3 needs), says how to parse a streamed body, and includes a security rule: <code>textContent</code> instead of <code>innerHTML</code>, so model output can never inject HTML or scripts into the page.</div>
+        <details class="solution"><summary>Reference solution (if your assistant gets stuck)</summary><div>
+          <pre class="code" data-file="web/index.html" data-src="code/traincrest-assist/m02/web/index.html"></pre>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Upgrade the CLI to share the same service</h4>
+        <pre class="code" data-file="cli.py" data-src="code/traincrest-assist/m02/cli.py"></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Run it and try to break it</h4>
+        <pre class="term"><code><span class="ps">$ </span>uvicorn app.main:app --reload</code></pre>
+        <ul class="verify-list">
+          <li><strong>Streaming:</strong> open <code>http://127.0.0.1:8000</code>, ask "How should I prepare for my first cloud certification?". Words appear within about a second.</li>
+          <li><strong>Memory:</strong> "Hi, I'm Mei, enrolled in AZ-305." then "Which course am I in, and what's my name?"</li>
+          <li><strong>New chat:</strong> click it, ask "What's my name?": forgotten, as designed.</li>
+          <li><strong>Friendly errors:</strong> set <code>AZURE_OPENAI_DEPLOYMENT=nope</code>, restart, send a message: a calm "temporarily unavailable" message, no stack trace. Restore it.</li>
+          <li><strong>Network failure:</strong> disconnect Wi-Fi mid-conversation and send a message: "couldn't reach the AI service". Reconnect; the next message works.</li>
+          <li><strong>Logging:</strong> open <code>assist.log</code>: one JSON line per turn with TTFT, tokens and <code>cost_usd</code>; errors logged with a code, never your key.</li>
+          <li><strong>API docs:</strong> open <code>/docs</code> and send an empty message: 422, and the model is never called.</li>
+          <li><strong>CLI:</strong> <code>python cli.py</code> streams the same way.</li>
+        </ul>
+        <span class="out-label">Expected log lines</span>
+<pre class="out"><code>{"ts": "2026-10-12T10:41:07", "turn": "3fa9c1d2", "session": "6b1f0c2a", "level": "info", "model": "chat", "finish_reason": "stop", "ttft_s": 0.62, "total_s": 2.9, "tokens_in": 58, "tokens_out": 74, "cost_usd": 0.000142}
+{"ts": "2026-10-12T10:42:02", "turn": "9c4d2e10", "session": "6b1f0c2a", "level": "error", "error": "unreachable", "detail": "Connection error."}</code></pre>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Stretch (Ask AI):</b> "Write tests/test_chat.py that tests ChatService with a fake client object (no network): streaming deltas then a done event, a RateLimitError producing a friendly error event and removing the unanswered question from history, and history trimmed to MAX_TURNS_KEPT pairs." Testing GenAI code with a fake model is a skill you'll use from Module 09 on.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="b02-1"> I've completed Milestone 2</label></div>
+</div>
+
+<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>What v0.2 fixed, and what's next.</p></div></div>
+<ul class="checklist">
+  <li>Remembers the conversation (last 6 exchanges) per browser session.</li>
+  <li>Streams answers to a web page and the CLI, with time to first word shown.</li>
+  <li>Retries transient errors automatically; every failure shows a calm message.</li>
+  <li>Logs one JSON line per turn with latency, tokens and cost.</li>
+  <li>The key never leaves the server.</li>
+</ul>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Still wrong in v0.2</th><th>Fixed in</th></tr></thead>
+    <tbody>
+      <tr><td>Still doesn't know TrainCrest's policies</td><td>M03 (policy in a structured prompt), M06 (RAG)</td></tr>
+      <tr><td>Can't triage tickets into data the team can route</td><td>M03 (JSON triage)</td></tr>
+      <tr><td>One vague prompt string, no versions, no tests</td><td>M03 (prompts as code)</td></tr>
+      <tr><td>Can't look up enrolments or vouchers</td><td>M04 (tools)</td></tr>
+      <tr><td>History lives in memory; a restart loses it</td><td>M08 (architecture)</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="callout note">
+  <div class="c-label">Fell behind? Catch up here</div>
+  <p>The complete reference code for this milestone is in <a href="../../code/traincrest-assist/m02/app/chat.py"><code>code/traincrest-assist/m02/</code></a>. Copy it over your project, keep your <code>.env</code>, install the requirements and carry on.</p>
+</div>

@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training vs Inference</title>
+<meta name="description" content="Module 01, topic 6: how models are trained (pre-training, instruction tuning, alignment), what inference is, knowledge cutoffs, and when to use prompting, RAG or fine-tuning, with two drills.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m01-train">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod" open><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic active" data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/01/index.html">Module 01</a><i>/</i><span>Training vs inference</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 01 · Topic 6 of 9</span><h1>Training vs Inference</h1><p class="lead">Training is school: expensive, done once by the model provider. Inference is the interview: every API call your app makes. Your app only ever does inference, so new knowledge has to arrive through the prompt. You'll prove it, and then practise choosing between prompting, RAG and fine-tuning.</p><div class="chips"><span class="chip">Pre-training</span><span class="chip">Alignment</span><span class="chip">Knowledge cutoff</span><span class="chip">Prompt vs RAG vs fine-tune</span><span class="chip">Drills 01.9 · 01.10</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 20 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>School happens once; interviews happen on every call.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Training</strong> adjusts a model's parameters on large datasets so it learns to predict tokens well; the model provider does it at huge cost. <strong>Inference</strong> uses the trained, frozen model to generate output for a new input: what happens on every API call.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Training is <em>going to school</em>: years of study, very expensive. Inference is <em>answering a question in an interview</em>: quick, cheap per question, using only what was learned at school plus what's written in front of you. Your app only ever does inference.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 280" role="img" aria-labelledby="tr-t tr-d">
+      <title id="tr-t">From training to inference</title>
+      <desc id="tr-d">The provider pre-trains on huge text collections, instruction-tunes the model to follow requests, and aligns it with human feedback. A knowledge cutoff follows. Then your app runs inference on every call, using frozen weights plus whatever you put in the prompt.</desc>
+      <text x="20" y="28" class="t-m t-accent">DONE BY THE MODEL PROVIDER · MONTHS · VERY EXPENSIVE</text>
+      <rect x="20" y="44" width="210" height="96" rx="12" class="s-blue"/><text x="125" y="72" class="t-b mid">1 · Pre-training</text><text x="125" y="94" class="t-s mid">trillions of tokens of text</text><text x="125" y="110" class="t-s mid">and code; learns language</text><text x="125" y="126" class="t-s mid">"predict the next token"</text>
+      <rect x="260" y="44" width="200" height="96" rx="12" class="s-teal"/><text x="360" y="72" class="t-b mid">2 · Instruction tuning</text><text x="360" y="94" class="t-s mid">examples of instructions</text><text x="360" y="110" class="t-s mid">and good answers; learns</text><text x="360" y="126" class="t-s mid">to follow requests</text>
+      <rect x="490" y="44" width="200" height="96" rx="12" class="s-violet"/><text x="590" y="72" class="t-b mid">3 · Alignment</text><text x="590" y="94" class="t-s mid">human feedback (RLHF)</text><text x="590" y="110" class="t-s mid">and safety training;</text><text x="590" y="126" class="t-s mid">helpful, honest, harmless</text>
+      <path d="M230 92 H254" class="s-arrow" marker-end="url(#ah)"/><path d="M460 92 H484" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M720 30 V250" class="s-arrow-accent" style="stroke-dasharray:6 5"/>
+      <text x="728" y="44" class="t-m t-accent">KNOWLEDGE</text><text x="728" y="60" class="t-m t-accent">CUTOFF</text><text x="728" y="78" class="t-s">weights frozen</text>
+      <text x="20" y="190" class="t-m t-accent">DONE BY YOUR APP · EVERY CALL · SECONDS · PAY PER TOKEN</text>
+      <rect x="20" y="204" width="400" height="56" rx="12" class="s-surface"/><text x="220" y="228" class="t-b mid">Your prompt + any facts you add</text><text x="220" y="246" class="t-s mid">the only "new" knowledge the model gets</text>
+      <path d="M420 232 H756" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="762" y="174" width="180" height="86" rx="12" class="s-amber"/><text x="852" y="206" class="t-b mid">4 · Inference</text><text x="852" y="226" class="t-s mid">frozen model generates</text><text x="852" y="242" class="t-s mid">an answer</text>
+      <path d="M690 92 Q760 100 840 168" class="s-dash" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption><b>School, then interviews.</b> After the cutoff, the only way to give a model new or private knowledge at inference time is to put it in the prompt: the whole idea behind RAG (Module 06).</figcaption>
+</figure>
+
+<h3>Three ways to give a model your knowledge</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Approach</th><th>What it changes</th><th>Effort and cost</th><th>Use it when</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Prompting</td><td>Instructions and examples in each request</td><td>Minutes, almost free</td><td>Always first. Tone, format, behaviour (Module 03).</td></tr>
+      <tr><td>2 · RAG (grounding)</td><td>Fetches relevant facts at request time and adds them to the prompt</td><td>Days; needs search infrastructure</td><td>The model needs <em>your</em> or <em>fresh</em> facts: policies, catalogues, records (Module 06).</td></tr>
+      <tr><td>3 · Fine-tuning</td><td>Adjusts the model's weights with your examples</td><td>Weeks; data, cost, re-evaluation</td><td>A consistent style or narrow skill prompting can't reach. Rarely for facts.</td></tr>
+      <tr><td>Training from scratch</td><td>Builds a new model</td><td>Months, serious money</td><td>Almost never for an application team.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Almost every enterprise "chat with your documents" product uses retrieval, not fine-tuning: help-centre bots, HR policy assistants, internal knowledge search. Documents change weekly, retrieval picks up the change instantly, and answers can cite their source. Fine-tuning shows up for narrower jobs: a consistent house writing style, a specialised classification, or making a small model behave like a bigger one on one task.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>"Let's fine-tune the model on our policy documents so it knows our refund policy." Fine-tuning teaches <em>patterns and style</em>, not reliable facts, and the policy will change next quarter. For facts that change, use RAG: update the document and the next answer is right.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"<strong>Training</strong> creates the weights; <strong>inference</strong> uses them. Our apps do inference only, so new knowledge comes in through the <strong>prompt</strong>, usually via RAG, not by retraining."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Prove the model's knowledge is frozen, then practise the prompt/RAG/fine-tune decision.</p></div></div>
+
+<div class="drill" id="d01-9" data-title="Frozen knowledge vs handed-over facts" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 01.9</span><h3>Frozen knowledge vs handed-over facts</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> watch a hallucination disappear when you put the facts in the prompt: a tiny preview of RAG, with zero training.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab01_09_frozen_knowledge.py"><code>"""Drill 01.9: knowledge from training vs knowledge handed over in the prompt."""
+from llm import get_client, MODEL
+
+client = get_client()
+
+
+def ask(messages):
+    r = client.chat.completions.create(model=MODEL, messages=messages)
+    return r.choices[0].message.content.strip()
+
+
+question = "What is TrainCrest's refund policy if I cancel 10 days before my course starts?"
+
+print("1) WITHOUT the facts:\n", ask([{"role": "user", "content": question}]))
+
+POLICY = """TrainCrest cancellation policy (fictional, effective 1 October 2026)
+- Cancel 14 or more days before the start date: 100% refund.
+- Cancel 7 to 13 days before the start date: 50% refund.
+- Cancel less than 7 days before: no refund, but one free reschedule."""
+
+RULES = "Answer only from the policy provided. If the policy doesn't cover it, say so."
+
+print("\n2) WITH the facts in the prompt:\n", ask([
+    {"role": "system", "content": RULES},
+    {"role": "user", "content": f"Policy:\n{POLICY}\n\nQuestion: {question}"},
+]))
+
+print("\n3) A question the policy doesn't cover:\n", ask([
+    {"role": "system", "content": RULES},
+    {"role": "user", "content": f"Policy:\n{POLICY}\n\nQuestion: Can I transfer my seat to a colleague?"},
+]))</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_09_frozen_knowledge.py</code></pre>
+        <span class="out-label">Expected output (abridged)</span>
+<pre class="out"><code>1) WITHOUT the facts:
+ I don't have TrainCrest's specific policy. Many training providers refund in full if you cancel
+ 7-14 days ahead... please check your enrolment terms.
+
+2) WITH the facts in the prompt:
+ Cancelling 10 days before the start date falls in the 7-13 day window, so you'd get a 50% refund.
+
+3) A question the policy doesn't cover:
+ The policy provided doesn't mention transferring a seat, so I can't confirm that.</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>Answer 1 is a guess or a generic deflection: the weights never saw TrainCrest's policy.</li><li>Answer 2 is specific and correct (50%) with no training at all: only the <strong>prompt</strong> changed.</li><li>Answer 3 refuses to invent. Now delete the system message from call 3 and run again: does it start guessing? That one sentence is a guardrail.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-9"> I've completed Drill 01.9</label></div>
+</div>
+
+<div class="drill" id="d01-10" data-title="Prompt, RAG or fine-tune? Five decisions" data-time="~10 min" data-steps="think,ask">
+  <div class="drill-head"><span class="drill-id">Drill 01.10</span><h3>Prompt, RAG or fine-tune? Five decisions</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-think">Design</span><span class="badge b-tool">AI assistant as reviewer</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> practise the decision you'll make on every GenAI project, then use an AI assistant as a sparring partner to challenge your reasoning.</p>
+    <ol class="dsteps">
+      <li class="dstep think"><span class="st">Think</span><h4>Decide each case before opening the answers</h4>
+        <ol>
+          <li>Traincrest Assist must answer questions about the refund policy, which changes every quarter.</li>
+          <li>All replies must use TrainCrest's friendly tone and sign off with "Happy learning!".</li>
+          <li>Learners ask about courses launched last week, after the model's knowledge cutoff.</li>
+          <li>TrainCrest wants a cheap small model to classify 25,000 tickets a month as accurately as a big model does, and has 20,000 labelled historical tickets.</li>
+          <li>Trainers want answers grounded in the exact wording of each course's lab guide, with a citation.</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li><strong>RAG.</strong> Changing facts: retrieve the current policy at request time.</li>
+            <li><strong>Prompting.</strong> Tone and a sign-off are instructions in the system prompt.</li>
+            <li><strong>RAG.</strong> New facts after the cutoff must come from retrieval (the course catalogue).</li>
+            <li><strong>Fine-tuning</strong> is a reasonable candidate: a narrow skill, lots of labelled data, cost pressure. Try few-shot prompting first and measure.</li>
+            <li><strong>RAG with citations.</strong> Grounding plus source attribution (Module 06).</li>
+          </ol>
+        </div></details>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Have an AI challenge your weakest answer</h4>
+        <div class="prompt-box" data-tools="ChatGPT · Claude · Copilot Chat"><pre><code>I'm learning when to use prompting, RAG or fine-tuning for LLM apps. For this scenario I chose
+&lt;your choice&gt; because &lt;your reason&gt;:
+"&lt;paste one scenario&gt;"
+Play a sceptical senior engineer. Give the strongest argument against my choice, one risk I
+haven't considered, and what I should measure to decide. Under 150 words.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it gives a role with a job (challenge, not agree), your actual reasoning to critique, and a tight output shape. Asking a model to argue against you is a great way to avoid confirmation bias.</div>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-10"> I've completed Drill 01.10</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Quick decisions.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A colleague wants to fine-tune a model on the course catalogue so it "knows" prices. Good idea?</summary><div><p>No. Prices change, and fine-tuning doesn't reliably store facts. <strong>Retrieve</strong> current prices (search or a tool call) at request time.</p></div></details>
+  <details><summary>2. What is a knowledge cutoff, and how do apps answer questions about events after it?</summary><div><p>The date the training data ends. Apps add <strong>fresh information to the prompt</strong>: retrieved documents, tool results or web search.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Your app can't teach the model; it can only brief it. Prompt first, retrieve facts second, fine-tune last.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m01-train"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/01/generation.html"><small>Previous</small><span>← 01 · How LLMs generate responses</span></a><a class="next" href="../../modules/01/foundation-models.html"><small>Next</small><span>01 · Foundation models →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

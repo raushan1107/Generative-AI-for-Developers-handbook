@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Function Calling</title>
+<meta name="description" content="Module 04, topic 4: function (tool) calling end to end: tool definitions, tool_calls, running the function, tool messages with tool_call_id, tool_choice, parallel calls and strict tools, with drills for a first call by hand and steering tool choice.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m04-tools">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod" open><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic active" data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part II</span><i>/</i><a href="../../modules/04/index.html">Module 04</a><i>/</i><span>Function calling</span></nav>
+  <span class="kind-pill">Learn · Do · Check · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 04 · Topic 4 of 7</span><h1>Function Calling: Letting the Model Ask Your Code</h1><p class="lead">Function calling is how a model gets things it can't know (today's price, Diego's booking) and asks for things it can't do (create a ticket). The model never runs your code. It replies with a request: 'please call find_courses with these arguments'. Your code runs it and sends the result back. You'll do every step by hand once, so nothing about it is magic.</p><div class="chips"><span class="chip">tools and tool_calls</span><span class="chip">tool_call_id</span><span class="chip">tool_choice · parallel calls</span><span class="chip">Drills 04.5 · 04.6</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 25 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The model asks; your code answers.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Function calling</strong> (also <strong>tool calling</strong>) lets you describe functions to the model as JSON Schemas (<code>tools=[...]</code>). When the model decides one is needed, it returns <code>tool_calls</code> (a function name plus JSON arguments) instead of, or before, a text answer. Your application executes the function and returns the result in a <code>tool</code> message, and the model continues with that information.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>You give the model a menu of things your app can do. It can't press the buttons itself; it can only say "I'd like this one, with these settings". You check the request, press the button, and tell it what happened.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A new call-centre agent on day one has no system access. When a customer asks about their order, the agent writes a request slip, "look up order status for order 4471", and passes it to a supervisor who has the access. The supervisor checks the customer is allowed to see it, looks it up, and hands back the answer. The agent then explains it to the customer in friendly words. The model is the agent; your code is the supervisor.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 330" role="img" aria-labelledby="fc-t fc-d">
+      <title id="fc-t">One function call, step by step</title>
+      <desc id="fc-d">Step 1: your app sends the messages and the tool definitions. Step 2: the model replies with finish_reason tool_calls and a call to find_courses with arguments level beginner and max price 300. Step 3: your app validates the arguments and runs the real function against the catalogue. Step 4: your app appends the assistant message with the tool call and a tool message with the result, linked by tool_call_id, and calls the model again. Step 5: the model writes the final answer using the result.</desc>
+      <rect x="20" y="20" width="200" height="290" rx="14" class="s-surface"/><text x="120" y="46" class="t-h mid">Your app</text>
+      <rect x="740" y="20" width="200" height="290" rx="14" class="s-violet"/><text x="840" y="46" class="t-h mid">Model</text>
+      <path d="M220 80 H734" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="478" y="72" class="t-b mid">1 · messages + tools=[find_courses, ...]</text>
+      <path d="M740 128 H226" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="478" y="120" class="t-s mid">2 · tool_calls: find_courses({"level": "beginner", "max_price_usd": 300})</text>
+      <rect x="250" y="146" width="460" height="54" rx="10" class="s-teal"/>
+      <text x="480" y="168" class="t-b mid">3 · your code validates the arguments, runs the function</text>
+      <text x="480" y="188" class="t-s mid">find_courses(...) → [{"id": "C101", "price_usd": 290}, ...]</text>
+      <path d="M220 236 H734" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="478" y="228" class="t-b mid">4 · + assistant(tool_calls) + tool(tool_call_id, result)</text>
+      <path d="M740 282 H226" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="478" y="274" class="t-b mid">5 · "Yes: Python Foundations (C101), $290, self-paced."</text>
+    </svg>
+  </div>
+  <figcaption><b>Two model calls, one function call in between.</b> The <code>tool_call_id</code> links each result to the request that asked for it.</figcaption>
+</figure>
+
+<h3>The parts you control</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Setting</th><th>What it does</th><th>Use it when</th></tr></thead>
+    <tbody>
+      <tr><td><code>tools=[...]</code></td><td>Names, descriptions and JSON Schemas of your functions</td><td>Always. Descriptions decide when the model picks a tool.</td></tr>
+      <tr><td><code>"strict": true</code></td><td>Arguments must match the schema exactly (same rules as structured outputs)</td><td>Default for production tools. <code>openai.pydantic_function_tool()</code> sets it.</td></tr>
+      <tr><td><code>tool_choice="auto"</code></td><td>The model decides: a tool, or a text answer</td><td>Normal chat (the default)</td></tr>
+      <tr><td><code>tool_choice="none"</code></td><td>Never call a tool this turn</td><td>Summing up, or after a tool limit is reached</td></tr>
+      <tr><td><code>tool_choice="required"</code> or a named function</td><td>Must call some tool, or that tool</td><td>Pipelines where a step must happen (e.g. always classify)</td></tr>
+      <tr><td><code>parallel_tool_calls</code></td><td>Allow several calls in one reply</td><td>Independent lookups. Azure doesn't support it together with strict tools, so set it to <code>False</code> when <code>strict</code> is on.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li><code>function.arguments</code> is a <strong>JSON string</strong>, not a dict. Parse and validate it (Pydantic does both).</li>
+  <li>When the model wants tools, <code>finish_reason</code> is <code>"tool_calls"</code> and <code>content</code> is often empty.</li>
+  <li>Send back the assistant message <em>with</em> its <code>tool_calls</code>, then one <code>tool</code> message per call, in the same order, with the matching <code>tool_call_id</code>. Missing one is a 400 error.</li>
+  <li>Tool definitions count as input tokens on <strong>every</strong> call. Ten verbose tools can cost more than the question.</li>
+  <li>Reasoning models: on Azure, Chat Completions with tools may require <code>reasoning_effort="none"</code>; Microsoft recommends the Responses API for tools plus reasoning. The drills' <code>llm_tools.TOOL_EXTRAS</code> handles this from <code>.env</code>.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Booking assistants call availability and pricing APIs, banking assistants call balance and transaction lookups, and IT help desks call "reset password" or "open incident" functions. Behind every one is the same loop you'll build here, plus a rule that the model only <em>proposes</em> and the backend <em>decides</em>.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"My functions are called by my code, with arguments I constructed."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Some of my functions are now requested by a model, with arguments it <strong>made up from a conversation</strong>. Each one is a public endpoint: validate everything, check permissions, and keep the menu short."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Thinking "the model called <code>delete_account</code>" means the model did something. It didn't: <strong>your code</strong> did, because your loop executed whatever was requested. Never expose a function you wouldn't want an anonymous user to trigger with arguments of their choosing.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"With function calling the model returns a <strong>structured request</strong>: function name and JSON arguments. The application validates and executes it, returns the result as a <code>tool</code> message linked by <code>tool_call_id</code>, and the model uses it in its answer. The model never executes code."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>One call by hand, then steer which tool gets picked.</p></div></div>
+
+<div class="drill" id="d04-5" data-title="Your first function call, step by step" data-time="~15 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 04.5</span><h3>Your first function call, step by step</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · Pydantic</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> perform the five steps of the diagram yourself, with nothing hidden in a framework.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The catalogue your app already has</h4>
+        <p>A plain Python function over <code>data/courses.json</code>. No AI in here: this is "your existing business logic".</p>
+        <pre class="code" data-file="catalogue.py"><code>"""The TrainCrest course catalogue (fictional), used by Module 04 and 05 drills."""
+import json
+from pathlib import Path
+
+COURSES = json.loads((Path(__file__).parent / "data" / "courses.json").read_text(encoding="utf-8"))
+
+
+def find_courses(level=None, max_price_usd=None, course_format=None, text=None):
+    """Plain keyword filter over the catalogue: the kind of function your app already has."""
+    hits = []
+    for c in COURSES:
+        if level and c["level"] != level:
+            continue
+        if max_price_usd is not None and c["price_usd"] &gt; max_price_usd:
+            continue
+        if course_format and c["format"] != course_format:
+            continue
+        if text and text.lower() not in (c["title"] + " " + c["description"]).lower():
+            continue
+        hits.append({k: c[k] for k in ("id", "title", "level", "format", "price_usd")})
+    return hits
+
+
+def get_course(course_id):
+    return next((c for c in COURSES if c["id"] == course_id.upper()), None)</code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Expose it as a tool and complete one round trip</h4>
+        <pre class="code" data-file="lab04_05_first_tool.py"><code>"""Drill 04.5: your first function call, one step at a time.
+The model never runs code. It asks YOU to run a function; you send back the result."""
+import json
+from typing import Literal, Optional
+
+import openai
+from pydantic import BaseModel, Field
+
+from catalogue import find_courses
+from llm import MODEL, get_client
+from llm_tools import TOOL_EXTRAS
+
+
+class FindCourses(BaseModel):
+    """Search the TrainCrest catalogue. Use it for any question about courses, levels or prices."""
+    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
+    max_price_usd: Optional[int] = Field(default=None, description="Highest price the learner will pay, in USD")
+    text: Optional[str] = Field(default=None, description="One keyword to look for in titles and descriptions, e.g. 'python'")
+
+
+TOOLS = [openai.pydantic_function_tool(FindCourses, name="find_courses")]
+
+
+def main():
+    client = get_client()
+    messages = [
+        {"role": "system", "content": "You are Traincrest Assist. Use tools for catalogue facts; never guess prices."},
+        {"role": "user", "content": "Is there a beginner Python course under $300?"},
+    ]
+
+    <span class="c"># Step 1: send the question AND the tool descriptions.</span>
+    first = client.chat.completions.create(model=MODEL, messages=messages, tools=TOOLS, **TOOL_EXTRAS)
+    msg = first.choices[0].message
+    print("1) finish_reason:", first.choices[0].finish_reason)
+    if not msg.tool_calls:
+        print("The model answered without a tool:", msg.content)
+        return
+
+    <span class="c"># Step 2: the model asked for a call. Run it ourselves.</span>
+    messages.append(msg)                          <span class="c"># the assistant turn that contains tool_calls</span>
+    for call in msg.tool_calls:
+        print(f"2) model asks: {call.function.name}({call.function.arguments})")
+        <span class="c"># Validate before you call: strict mode guarantees the shape on Azure/OpenAI, but not every</span>
+        <span class="c"># provider enforces it, and a model can still send values your function can't use.</span>
+        args = FindCourses.model_validate_json(call.function.arguments)
+        result = find_courses(**args.model_dump())
+        print(f"   we ran it:  {len(result)} result(s)")
+        messages.append({"role": "tool", "tool_call_id": call.id, "content": json.dumps(result)})
+
+    <span class="c"># Step 3: send the results back; the model writes the final answer.</span>
+    final = client.chat.completions.create(model=MODEL, messages=messages, tools=TOOLS, **TOOL_EXTRAS)
+    print("3) answer:", final.choices[0].message.content)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab04_05_first_tool.py</code></pre>
+        <span class="out-label">Real run (small local model through Ollama); yours will differ in wording</span>
+<pre class="out"><code>1) finish_reason: tool_calls
+2) model asks: find_courses({"max_price_usd":300,"text":"python","level":"beginner"})
+   we ran it:  1 result(s)
+3) answer: Yes, there is a beginner Python course for under $300. It's called "Python Foundations"
+   and it's self-paced with a price of $290.</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list">
+          <li>The price in the answer ($290) came from <strong>your</strong> data via the tool, not from the model's memory.</li>
+          <li>Print <code>messages</code> before step 3: you'll see the assistant turn with <code>tool_calls</code> and the <code>tool</code> turn with the same <code>tool_call_id</code>.</li>
+          <li>Why validate with <code>FindCourses.model_validate_json</code> before calling? On my first local run the model sent an extra argument, <code>catalog_type</code>, and a plain <code>find_courses(**args)</code> crashed. Strict mode prevents that on Azure; validation protects you everywhere.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · the same round trip with Claude</div>
+      <div class="alt-body">
+        <p>Same idea, different message shapes: Claude returns <code>tool_use</code> content blocks, and you reply with a <code>tool_result</code> block in a user message.</p>
+<pre class="code" data-file="first_tool_claude.py"><code>import json
+import openai
+from claude_llm import client, CLAUDE_MODEL, FALLBACK, text_of
+from catalogue import find_courses
+from lab04_05_first_tool import FindCourses        <span class="c"># the __main__ guard stops its own run</span>
+
+tool = {"name": "find_courses", "description": FindCourses.__doc__,
+        "input_schema": openai.pydantic_function_tool(FindCourses)["function"]["parameters"]}
+messages = [{"role": "user", "content": "Is there a beginner Python course under $300?"}]
+msg = client.beta.messages.create(model=CLAUDE_MODEL, max_tokens=2000, tools=[tool],
+                                  messages=messages, **FALLBACK)
+if msg.stop_reason == "tool_use":
+    messages.append({"role": "assistant", "content": msg.content})
+    results = [{"type": "tool_result", "tool_use_id": b.id,
+                "content": json.dumps(find_courses(**FindCourses.model_validate(b.input).model_dump()))}
+               for b in msg.content if b.type == "tool_use"]
+    messages.append({"role": "user", "content": results})
+    msg = client.beta.messages.create(model=CLAUDE_MODEL, max_tokens=2000, tools=[tool],
+                                      messages=messages, **FALLBACK)
+print(text_of(msg))</code></pre>
+      </div>
+    </div>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-5"> I've completed Drill 04.5</label></div>
+</div>
+
+<div class="drill" id="d04-6" data-title="Steer the choice: tool_choice and parallel calls" data-time="~10 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 04.6</span><h3>Steer the choice: tool_choice and parallel calls</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> see how descriptions and <code>tool_choice</code> decide which tool runs, and when parallel calls help.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Four questions, three tools, several settings</h4>
+        <pre class="code" data-file="lab04_06_tool_choice.py"><code>"""Drill 04.6: which tool does the model pick, and how do you steer it?
+Run:  python lab04_06_tool_choice.py                 (tool_choice="auto")
+      python lab04_06_tool_choice.py none            (never call a tool)
+      python lab04_06_tool_choice.py required        (must call some tool)
+      python lab04_06_tool_choice.py get_course      (must call this one)
+      python lab04_06_tool_choice.py auto --parallel (allow several calls in one turn)"""
+import json
+import sys
+from typing import Literal, Optional
+
+import openai
+from pydantic import BaseModel, Field
+
+from llm import MODEL, get_client
+from llm_tools import TOOL_EXTRAS
+
+
+class FindCourses(BaseModel):
+    """Search the catalogue by level, budget or keyword."""
+    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
+    max_price_usd: Optional[int] = None
+    text: Optional[str] = None
+
+
+class GetCourse(BaseModel):
+    """Full details of one course by its ID, like C104."""
+    course_id: str = Field(description="Course ID such as C104")
+
+
+class GetVoucherStatus(BaseModel):
+    """Exam voucher status for the signed-in learner's enrolment."""
+    enrolment_id: str = Field(description="Like TC-12345")
+
+
+QUESTIONS = [
+    "What does C104 cover?",
+    "Has my voucher for TC-10293 been issued?",
+    "Compare C110 and C111 for me.",
+    "Thanks, that's all!",
+]
+
+choice = sys.argv[1] if len(sys.argv) &gt; 1 and not sys.argv[1].startswith("--") else "auto"
+parallel = "--parallel" in sys.argv
+tools = [openai.pydantic_function_tool(FindCourses, name="find_courses"),
+         openai.pydantic_function_tool(GetCourse, name="get_course"),
+         openai.pydantic_function_tool(GetVoucherStatus, name="get_voucher_status")]
+if parallel:
+    for t in tools:                    <span class="c"># strict tools can't be combined with parallel calls</span>
+        t["function"]["strict"] = False
+tool_choice = choice if choice in ("auto", "none", "required") else {"type": "function", "function": {"name": choice}}
+
+client = get_client()
+print(f"tool_choice={choice}  parallel_tool_calls={parallel}\n")
+for q in QUESTIONS:
+    r = client.chat.completions.create(
+        model=MODEL, messages=[{"role": "user", "content": q}], tools=tools,
+        tool_choice=tool_choice, parallel_tool_calls=parallel, **TOOL_EXTRAS)
+    calls = r.choices[0].message.tool_calls or []
+    picked = ", ".join(f"{c.function.name}({json.loads(c.function.arguments)})" for c in calls) or "no tool (text answer)"
+    print(f"{q:&lt;42} -&gt; {picked}")</code></pre>
+<pre class="term"><code><span class="ps">$ </span>python lab04_06_tool_choice.py
+<span class="ps">$ </span>python lab04_06_tool_choice.py none
+<span class="ps">$ </span>python lab04_06_tool_choice.py get_course
+<span class="ps">$ </span>python lab04_06_tool_choice.py auto --parallel</code></pre>
+        <span class="out-label">Typical result with an Azure deployment (yours will differ)</span>
+<pre class="out"><code>tool_choice=auto  parallel_tool_calls=False
+What does C104 cover?                      -> get_course({'course_id': 'C104'})
+Has my voucher for TC-10293 been issued?   -> get_voucher_status({'enrolment_id': 'TC-10293'})
+Compare C110 and C111 for me.              -> get_course({'course_id': 'C110'})
+Thanks, that's all!                        -> no tool (text answer)
+
+tool_choice=auto  parallel_tool_calls=True
+...
+Compare C110 and C111 for me.              -> get_course({'course_id': 'C110'}), get_course({'course_id': 'C111'})</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read your results</h4>
+        <ol>
+          <li>With <code>none</code>, what did the model say about the voucher? Is that safe?</li>
+          <li>With <code>get_course</code> forced, what happened to "Thanks, that's all!"?</li>
+          <li>Without parallel calls, how does the model still compare two courses?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>With no tools allowed, a good model says it can't check; a weaker one invents a status. That's why the system prompt must say "never guess a status" <em>and</em> your loop should keep tools available when facts are needed.</li>
+            <li>A forced tool is called even when it makes no sense (often with a made-up ID). Force a tool only for pipeline steps that must always happen.</li>
+            <li>It asks for C110, gets the result, then asks for C111 in the next round. That's why real assistants run a <strong>loop</strong> (next topic). Parallel calls save a round trip for independent lookups, but on Azure they can't be combined with strict tools.</li>
+          </ol>
+          <p class="small muted">Local servers may ignore <code>tool_choice</code>: the small Ollama model I tested still answered in text when <code>required</code> was set. Test the settings you rely on with the model you'll ship.</p>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-6"> I've completed Drill 04.6</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Function calling.</p></div></div>
+<div class="quiz">
+  <details><summary>1. The model returned a tool call. Has anything happened in your system yet?</summary><div><p>No. A tool call is a <strong>request</strong>. Nothing happens until your code chooses to execute it.</p></div></details>
+  <details><summary>2. You get a 400 error on the second call: "tool_call_id ... not found". Likely cause?</summary><div><p>You sent a <code>tool</code> message without first appending the <strong>assistant message that contains the matching tool_calls</strong>, or the IDs don't match.</p></div></details>
+  <details><summary>3. The model keeps picking <code>find_courses</code> when users ask about a specific course ID. What do you change first?</summary><div><p>The tool <strong>descriptions</strong>: say clearly when to use each one ("Full details of one course by its ID, like C104"). Descriptions are how the model chooses.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>The model writes the request; your code is the only thing that ever acts.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m04-tools"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/04/schema-outputs.html"><small>Previous</small><span>← 04 · Schema-based generation</span></a><a class="next" href="../../modules/04/app-logic.html"><small>Next</small><span>04 · Connecting LLMs to app logic →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

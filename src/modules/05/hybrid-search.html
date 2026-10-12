@@ -1,0 +1,173 @@
+<!--meta
+{"id": "m05-hybrid", "short": "Hybrid Search", "h1": "Hybrid Search: Keywords and Vectors Together", "description": "Module 05, topic 8: keyword ranking with BM25, vector ranking, merging them with Reciprocal Rank Fusion, analyzers, rerankers, hybrid queries in Azure AI Search, and a drill that measures keyword, vector and hybrid search on TrainCrest's help centre.", "lead": "Vector search understands paraphrases and misses exact details; keyword search nails exact words and misses paraphrases. Hybrid search runs both and merges the rankings, so each covers the other's blind spots. You'll build it from scratch with BM25 and Reciprocal Rank Fusion, measure it honestly, and see why the keyword side needs a proper analyzer.", "chips": ["BM25", "Reciprocal Rank Fusion", "Analyzers and rerankers", "Drill 05.9"], "time": "Learn 12 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Two imperfect searches, one good one.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Hybrid search</strong> runs a <strong>keyword</strong> (full-text) search and a <strong>vector</strong> search for the same query and merges the two ranked lists into one, commonly with <strong>Reciprocal Rank Fusion (RRF)</strong>: each document scores <code>1 / (k + rank)</code> in each list (k is usually 60), and the scores are added. Azure AI Search runs hybrid queries this way when you send both <code>search_text</code> and a vector query.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Ask two experts: a librarian who matches exact words and a friend who gets what you mean. Anything both of them suggest goes to the top; anything only one suggests still makes the list, lower down.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Two judges score a talent show on different scales: one out of 10, one out of 100. You can't add their scores. But you can add their <em>placings</em>: first place from both judges beats first from one and fifth from the other. RRF combines rankings, not scores, which is exactly why it works for BM25 and cosine, whose numbers aren't comparable.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 300" role="img" aria-labelledby="hy-t hy-d">
+      <title id="hy-t">Reciprocal Rank Fusion of keyword and vector rankings</title>
+      <desc id="hy-d">For the query "what costs $49?", the keyword list ranks "How long labs stay open" first because it contains "$49"; the vector list ranks "Prices and currency" first and "How long labs stay open" second. RRF gives each document 1 divided by 60 plus its rank in each list and adds them. "How long labs stay open" gets 1/61 plus 1/62, about 0.0325, and wins; "Prices and currency" appears only in the vector list, so it gets 1/61, about 0.0164.</desc>
+      <text x="20" y="32" class="t-b">"what costs $49?"</text>
+      <rect x="20" y="48" width="280" height="150" rx="12" class="s-amber"/>
+      <text x="36" y="74" class="t-m t-amber">KEYWORD (BM25)</text>
+      <text x="36" y="100" class="t-s">1  How long labs stay open  ($49)</text>
+      <text x="36" y="122" class="t-s">2  Paying in instalments</text>
+      <text x="36" y="144" class="t-s">3  Retake Pass</text>
+      <text x="36" y="184" class="t-s">exact words, codes, numbers</text>
+      <rect x="340" y="48" width="280" height="150" rx="12" class="s-violet"/>
+      <text x="356" y="74" class="t-m t-violet">VECTOR (COSINE)</text>
+      <text x="356" y="100" class="t-s">1  Prices and currency</text>
+      <text x="356" y="122" class="t-s">2  How long labs stay open</text>
+      <text x="356" y="144" class="t-s">3  Paying in instalments</text>
+      <text x="356" y="184" class="t-s">meaning, paraphrases</text>
+      <path d="M300 123 H330" class="s-line"/><path d="M620 123 H654" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="660" y="48" width="284" height="150" rx="12" class="s-green"/>
+      <text x="676" y="74" class="t-m t-green">RRF: Σ 1 / (60 + rank)</text>
+      <text x="676" y="100" class="t-s">labs stay open: 1/61 + 1/62 ≈ 0.0325</text>
+      <text x="676" y="122" class="t-s">prices: 1/61 only ≈ 0.0164</text>
+      <text x="676" y="144" class="t-s">→ "How long labs stay open" wins</text>
+      <text x="676" y="184" class="t-s">ranks, not raw scores</text>
+      <text x="480" y="236" class="t-s mid">agreement between the two lists rises to the top; a strong hit in only one list still counts</text>
+      <text x="480" y="260" class="t-s mid">optional next step: a reranker (Azure's semantic ranker) re-reads the top results and reorders them</text>
+    </svg>
+  </div>
+  <figcaption><b>Merge positions, not scores.</b> BM25 scores and cosine similarities live on different scales; RRF only needs each document's rank.</figcaption>
+</figure>
+
+<h3>The pieces</h3>
+<ul>
+  <li><strong>BM25</strong> is the classic keyword ranking: a word counts more when it's frequent in the document, rare across the collection, and the document is short. Exact codes (<code>LAB-503</code>), names and numbers (<code>$49</code>) are its strength.</li>
+  <li><strong>Analyzers</strong> prepare text for keyword search: lower-casing, splitting words, removing filler words, and <strong>stemming</strong> ("discounts" → "discount"). Azure AI Search has language analyzers such as <code>en.microsoft</code>. A poor analyzer makes the keyword side noisy, and hybrid inherits the noise (the drill shows this).</li>
+  <li><strong>RRF</strong> merges any number of ranked lists with <code>Σ 1/(k + rank)</code>. Some services let you weight the vector side more or less heavily.</li>
+  <li><strong>Rerankers</strong> (Azure's <em>semantic ranker</em>, or a cross-encoder model) read the query and each of the top results together and reorder them. They improve precision at extra cost and latency; availability depends on the service tier, so check before you rely on it.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Hybrid retrieval, often followed by a reranker, is the common default for production RAG systems, because real questions mix both kinds: "error LAB-503 after the 7-day extension" has an exact code <em>and</em> a concept. Search teams tune it with a test set exactly like the one in this drill, and look at the misses one by one.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Keyword search is old; vector search replaces it."</p></div>
+  <div><h5>GenAI developer view</h5><p>"They fail on <strong>different</strong> queries. I run both, merge by rank, give the keyword side a proper analyzer, and decide with <strong>measured</strong> hit rates, including the queries where hybrid loses."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Adding raw scores: <code>0.7 × cosine + 0.3 × bm25</code>. BM25 scores can be 0 or 25; cosine sits between about 0.2 and 0.9 depending on the model. The bigger scale silently dominates. Merge by rank (RRF) or normalise carefully, and test.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Hybrid search combines <strong>BM25 keyword</strong> and <strong>vector</strong> retrieval and fuses the rankings with <strong>Reciprocal Rank Fusion</strong>, so exact terms and paraphrases are both covered. A semantic reranker can then reorder the top results. I validate it on a labelled query set."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Build it, measure it, and look at the losses too.</p></div></div>
+
+<div class="drill" id="d05-9" data-title="Keyword, vector and hybrid: measured on the help centre" data-time="~25 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 05.9</span><h3>Keyword, vector and hybrid: measured on the help centre</h3>
+    <div class="drill-meta"><span class="time">~25 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-azure">Azure AI Search optional</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> implement BM25 + vector + RRF, run eight deliberately different queries over the 40 help sections, and see which method gets each one right.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Hybrid in about 40 lines</h4>
+        <pre class="code" data-file="hybrid.py" data-src="code/genai-labs/hybrid.py"></pre>
+        <pre class="code" data-file="test_hybrid.py" data-src="code/genai-labs/test_hybrid.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_hybrid.py
+<span class="o">....                                                                     [100%]
+4 passed in 0.10s</span></code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Eight queries, three methods</h4>
+        <pre class="code" data-file="lab05_09_hybrid.py" data-src="code/genai-labs/lab05_09_hybrid.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_09_hybrid.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama); yours will differ</span>
+<pre class="out"><code>'LAB-503'  (want: Common problems)
+  keyword  OK   Common problems            in top 3: yes
+  vector   OK   Common problems            in top 3: yes
+  hybrid   OK   Common problems            in top 3: yes
+
+'what costs $49?'  (want: How long labs stay open)
+  keyword  OK   How long labs stay open    in top 3: yes
+  vector   MISS Prices and currency        in top 3: yes
+  hybrid   OK   How long labs stay open    in top 3: yes
+
+'breakout rooms'  (want: Live online)
+  keyword  OK   Live online                in top 3: yes
+  vector   MISS Common problems            in top 3: yes
+  hybrid   OK   Live online                in top 3: yes
+
+'one billing cycle'  (want: When the money arrives)
+  keyword  OK   When the money arrives     in top 3: yes
+  vector   MISS Paying in instalments      in top 3: yes
+  hybrid   OK   When the money arrives     in top 3: yes
+
+'Is there a discount for a team of 12?'  (want: Group discounts)
+  keyword  OK   Group discounts            in top 3: yes
+  vector   OK   Group discounts            in top 3: yes
+  hybrid   OK   Group discounts            in top 3: yes
+
+'can I use a screen reader?'  (want: Adjustments)
+  keyword  MISS (no match)                 in top 3: no
+  vector   OK   Adjustments                in top 3: yes
+  hybrid   OK   Adjustments                in top 3: yes
+
+'money back if the trainer is ill'  (want: If TrainCrest cancels)
+  keyword  MISS When the money arrives     in top 3: yes
+  vector   OK   If TrainCrest cancels      in top 3: yes
+  hybrid   OK   If TrainCrest cancels      in top 3: yes
+
+'Docker'  (want: no match)
+  keyword  OK   (no match)                 in top 3: yes
+  vector   MISS Ways to pay                in top 3: no
+  hybrid   MISS Ways to pay                in top 3: no
+
+Right section first:  keyword 6/8, vector 4/8, hybrid 7/8
+Right section in top 3: keyword 7/8, vector 7/8, hybrid 7/8</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Read it like a search engineer</h4>
+        <ul class="verify-list">
+          <li><strong>Keyword wins</strong> on exact details ("$49", "breakout rooms", "one billing cycle"); <strong>vector wins</strong> on paraphrases ("screen reader" vs "screen-reader friendly", "trainer is ill" vs "If TrainCrest cancels").</li>
+          <li><strong>Hybrid</strong> gets the right section first in 7 of 8, more than either alone, because each list rescues the other.</li>
+          <li>Even the small local model found <code>LAB-503</code> by vector here: on a tiny corpus, codes often still work. With thousands of similar error codes, vectors blur them; that's where keyword search earns its place.</li>
+          <li>Optional, Azure: <code>python lab05_05_azure_search.py query "certification for cloud admins" --mode hybrid</code>. Hybrid scores are small numbers (RRF sums like 0.03), not similarities.</li>
+        </ul>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Two lessons from the losses</h4>
+        <ol>
+          <li><strong>"Docker":</strong> nothing in the help centre is about Docker. Keyword search correctly found nothing; vector and hybrid returned <em>Ways to pay</em>. What should Traincrest Assist do with that result?</li>
+          <li><strong>The analyzer:</strong> in <code>hybrid.py</code>, replace the body of <code>tokenize()</code> with just <code>return re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", text.lower())</code> (no stop words, no plural folding) and run the drill again. What happens to hybrid?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>Treat it as "no good match": when keyword search finds nothing and the best vector score is low for this model, say the help centre doesn't cover it (or search the catalogue instead). Never pass a weak match to a model as if it were the answer; Module 06 builds this into the RAG prompt and the retrieval code.</li>
+            <li>On my run, without the analyzer, filler words like "is", "a" and "can" matched random sections: keyword search lost "team of 12" and "screen reader", and hybrid fell to <strong>5/8 first and 5/8 in the top 3</strong>, worse than vector alone. With the analyzer: 7/8. The keyword half of hybrid is only as good as its text processing, which is why Milestone 5's Azure index uses the <code>en.microsoft</code> analyzer.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+    <p class="lab-say"><b>Remember:</b> “Hybrid isn't magic. It's two searches that fail differently, merged by rank, and proven on your own questions.”</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-9"> I've completed Drill 05.9</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Hybrid search.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why does RRF use ranks instead of the raw scores?</summary><div><p>BM25 scores and cosine similarities are on different, query-dependent scales. Ranks are comparable across both, so no list dominates just because its numbers are bigger.</p></div></details>
+  <details><summary>2. A query is "LAB-409 after my free extension". Which side finds what?</summary><div><p>Keyword search matches the exact code <code>LAB-409</code>; vector search matches the idea of lab extensions. Hybrid puts sections that match both at the top.</p></div></details>
+  <details><summary>3. When would you add a reranker?</summary><div><p>When the right result is usually in the top 10 but not first, and precision at the top matters (a search page or a RAG prompt with few slots), and you can afford the extra latency and cost. Measure before and after.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Run keyword and vector search, merge them by rank, give the keyword side a real analyzer, and measure wins and losses on your own questions.</p></div>

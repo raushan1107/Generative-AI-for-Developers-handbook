@@ -1,0 +1,129 @@
+<!--meta
+{"id": "m05-sim", "short": "Vector Similarity", "h1": "Vector Similarity: Cosine, Dot Product and Distance", "description": "Module 05, topic 2: cosine similarity, dot product and Euclidean distance, why they agree on normalised vectors, why scores are relative, and a drill that computes them by hand and on real embeddings, including a cross-language check.", "lead": "Once texts are vectors, 'how similar are these?' is arithmetic. There are three common ways to do it, and on the normalised vectors embedding models produce, they rank results the same way. The harder lesson is reading the numbers: a 0.67 can be a strong match for one model and a weak one for another.", "chips": ["Cosine · dot · Euclidean", "Scores are relative", "Drill 05.2"], "time": "Learn 10 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Same direction, similar meaning.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Vector similarity</strong> measures how close two embeddings are. <strong>Cosine similarity</strong> is the cosine of the angle between them (1 = same direction, 0 = unrelated, −1 = opposite). The <strong>dot product</strong> multiplies matching dimensions and adds them up. <strong>Euclidean distance</strong> is the straight-line distance (0 = identical). For vectors normalised to length 1, cosine equals the dot product, and all three produce the same ranking.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Picture each embedding as an arrow from the centre. Similar texts point in nearly the same direction. Cosine asks "how aligned are the arrows?", ignoring how long they are.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Two hikers set off from the same car park. One walks 2 km north-east, the other 5 km north-east. They're far apart in distance, but they're heading the same way. Cosine cares about the heading, not how far each walked, which is why it's the usual choice for comparing meaning.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 280" role="img" aria-labelledby="cs-t cs-d">
+      <title id="cs-t">Cosine similarity as an angle</title>
+      <desc id="cs-d">Three arrows from one origin. The arrows for "refund" and "money back" point almost the same way, with a small angle and cosine close to 1. The arrow for "lab quota" points in a very different direction, with a wide angle and a low cosine. A note says that on vectors of length 1, cosine equals the dot product.</desc>
+      <circle cx="160" cy="230" r="4" class="s-surface2"/>
+      <path d="M160 230 L440 70" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="448" y="66" class="t-b">"refund"</text>
+      <path d="M160 230 L460 110" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="468" y="112" class="t-b">"money back"</text>
+      <path d="M160 230 L250 40" class="s-arrow" marker-end="url(#ah)"/><text x="196" y="34" class="t-b">"lab quota"</text>
+      <path d="M262 172 Q270 180 274 184" class="s-line"/><text x="290" y="200" class="t-s">small angle → cosine ≈ 0.99</text>
+      <text x="30" y="110" class="t-s">wide angle → cosine ≈ 0.22</text>
+      <rect x="600" y="40" width="340" height="200" rx="14" class="s-surface"/>
+      <text x="620" y="70" class="t-b">On unit-length vectors</text>
+      <text x="620" y="96" class="t-s">cosine(a, b) = a · b   (just the dot product)</text>
+      <text x="620" y="120" class="t-s">Euclidean² = 2 − 2 × cosine</text>
+      <text x="620" y="144" class="t-s">→ all three give the same ranking</text>
+      <text x="620" y="180" class="t-b">So in practice</text>
+      <text x="620" y="204" class="t-s">normalise once when you store vectors,</text>
+      <text x="620" y="222" class="t-s">then rank with one matrix multiply</text>
+    </svg>
+  </div>
+  <figcaption><b>Direction is meaning.</b> Embedding models return (or you make) unit-length vectors, so a dot product gives you cosine similarity for the price of a multiplication.</figcaption>
+</figure>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Measure</th><th>Range</th><th>Higher means</th><th>Where you'll meet it</th></tr></thead>
+    <tbody>
+      <tr><td>Cosine similarity</td><td>−1 to 1</td><td>More similar</td><td>The default for text embeddings; Chroma's <code>cosine</code> space, Azure AI Search's <code>cosine</code> metric</td></tr>
+      <tr><td>Dot product</td><td>Any</td><td>More similar</td><td>Fastest; equals cosine when vectors are normalised</td></tr>
+      <tr><td>Euclidean (L2) distance</td><td>0 to ∞</td><td><strong>Less</strong> similar</td><td>Some vector databases' default; Chroma reports <em>distance</em> = 1 − cosine in cosine space</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout note">
+  <div class="c-label">Scores are relative, not absolute</div>
+  <p>Every model spreads its scores differently. With one model, a paraphrase might score 0.67 and an unrelated sentence 0.35; with another, 0.85 and 0.20. So don't hard-code "0.8 means a match". Compare <strong>rankings</strong>, and if you need a cut-off, set it per model from measurements on your own data.</p>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Duplicate-ticket detectors and "related articles" widgets are built on exactly this: embed, compute cosine against recent items, show the top few above a threshold tuned on labelled examples. Teams re-tune that threshold whenever they change embedding model, because the score distribution moves.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Similarity is string distance: shared characters, edit distance."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Similarity is the <strong>angle between meaning vectors</strong>. 'Refund' and 'money back' share no letters and still point the same way. I read scores as rankings, and calibrate any threshold per model."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Mixing up similarity and distance. Chroma returns <em>distances</em> (smaller is better); Azure AI Search returns <em>scores</em> (bigger is better). Sorting the wrong way round gives you the least relevant results first, and the code runs without complaint.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Cosine similarity measures the <strong>angle</strong> between vectors, ignoring magnitude. On normalised embeddings it equals the dot product, and ranks the same as Euclidean distance. Scores are <strong>model-specific</strong>, so I compare rankings and calibrate thresholds on labelled data."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>By hand first, then on real vectors.</p></div></div>
+
+<div class="drill" id="d05-2" data-title="Similarity by hand, then across languages" data-time="~15 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 05.2</span><h3>Similarity by hand, then across languages</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · numpy</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> implement the three measures, prove cosine ignores length, then read a real similarity matrix that includes a Spanish sentence.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The three measures in a few lines</h4>
+        <pre class="code" data-file="similarity.py" data-src="code/genai-labs/similarity.py"></pre>
+        <pre class="code" data-file="lab05_02_similarity.py" data-src="code/genai-labs/lab05_02_similarity.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_02_similarity.py --toy</code></pre>
+        <span class="out-label">Output (exact)</span>
+<pre class="out"><code>refund vs money_back       cosine=0.991  dot=0.740  euclidean=0.141
+refund vs money_back_long  cosine=0.991  dot=1.480  euclidean=0.762
+refund vs lab_quota        cosine=0.220  dot=0.180  euclidean=1.131</code></pre>
+        <p>Same direction, twice the length: cosine doesn't move, dot product doubles, distance grows. That's why we normalise.</p>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Real embeddings</h4>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_02_similarity.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama); yours will differ</span>
+<pre class="out"><code>               money    refund reembolso     quota   sandbox   weather
+money           1.00      0.67      0.40      0.37      0.39      0.34
+refund          0.67      1.00      0.35      0.40      0.32      0.35
+reembolso       0.40      0.35      1.00      0.33      0.32      0.29
+quota           0.37      0.40      0.33      1.00      0.33      0.25
+sandbox         0.39      0.32      0.32      0.33      1.00      0.28
+weather         0.34      0.35      0.29      0.25      0.28      1.00</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list">
+          <li>The diagonal is 1.00 and the matrix is symmetric: run <code>pytest -q test_similarity.py</code> to confirm the maths (4 tests).</li>
+          <li>"money back" and "refund" are the strongest pair (0.67) with no shared words.</li>
+          <li>Notice how narrow this model's range is: unrelated pairs still score 0.25 to 0.40. A fixed "0.5 = match" rule would be meaningless here.</li>
+        </ul>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>The Spanish sentence</h4>
+        <p>"¿Cómo puedo obtener un reembolso?" means "How can I get a refund?". With nomic-embed-text it scored only 0.35 against "refund". Run the same script on your Azure <code>text-embedding-3-small</code> deployment. What do you expect, and what does it mean for TrainCrest, whose learners write in many languages?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p><code>nomic-embed-text</code> is trained mostly on English, so translations don't land close together. The <code>text-embedding-3</code> models are trained on many languages and are expected to place the Spanish sentence much nearer the English ones; check the actual numbers on your deployment rather than assuming. For a multilingual help centre, the embedding model's <strong>language coverage</strong> is a selection criterion, tested with your own sentences (next topic).</p></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-2"> I've completed Drill 05.2</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Similarity.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Your vectors are normalised. Which is cheapest to compute and gives the same ranking as cosine?</summary><div><p>The <strong>dot product</strong>: on unit vectors it <em>is</em> cosine.</p></div></details>
+  <details><summary>2. A colleague sets "show related articles if cosine > 0.8" and nothing ever shows. Likely reason?</summary><div><p>That model's scores rarely reach 0.8. Thresholds are <strong>model-specific</strong>: measure the score distribution on labelled pairs and pick the cut-off from data.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Normalise, use cosine (a dot product), trust rankings over raw scores, and calibrate thresholds per model.</p></div>

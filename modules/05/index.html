@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Embeddings and Semantic Search</title>
+<meta name="description" content="Module 05 overview: embeddings, vector similarity, embedding models, vector databases, similarity search, chunking, metadata filtering and hybrid search, with 9 drills and Traincrest Assist milestone 5.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-overview" data-page="m05">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod"><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview active" data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part II</span><i>/</i><a href="../../modules/05/index.html">Module 05</a></nav>
+  <span class="kind-pill">Overview · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 05 · Overview</span><h1>Embeddings and Semantic Search: Finding by Meaning</h1><p class="lead">Learners don't use your words. They ask for 'a cheap intro to containers' when your catalogue says 'Docker Quick Start', and 'money back if the trainer is ill' when your help centre says 'If TrainCrest cancels'. In this module you'll turn text into vectors, so software can find things by what they mean, not by which letters they share.</p><div class="chips"><span class="chip">8 topics</span><span class="chip">9 drills</span><span class="chip">Milestone 5</span><span class="chip">≈ 5 hours hands-on</span></div></header>
+<div class="content">
+
+<h2 id="map">The mental map: two pipelines</h2>
+<p>Every semantic search system, from a help-centre search box to the retrieval step of a RAG chatbot, is two pipelines that share one embedding model. The module walks through both.</p>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 330" role="img" aria-labelledby="m5-t m5-d">
+      <title id="m5-t">Indexing and query pipelines for semantic search</title>
+      <desc id="m5-d">Indexing pipeline, run ahead of time: documents such as courses and help articles are split into chunks, each chunk is turned into a vector by the embedding model, and the vectors are stored with their text and metadata in a vector index. Query pipeline, run for every search: the user's question is embedded with the same model, the index finds the nearest vectors, optionally filtered by metadata and combined with keyword matching, and returns the top results.</desc>
+      <text x="20" y="34" class="t-m">INDEXING · AHEAD OF TIME</text>
+      <rect x="20" y="48" width="160" height="70" rx="12" class="s-surface"/><text x="100" y="78" class="t-b mid">documents</text><text x="100" y="98" class="t-s mid">courses, help articles</text>
+      <path d="M180 83 H214" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="220" y="48" width="150" height="70" rx="12" class="s-amber"/><text x="295" y="78" class="t-b mid">chunk</text><text x="295" y="98" class="t-s mid">topic 6</text>
+      <path d="M370 83 H404" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="410" y="48" width="170" height="70" rx="12" class="s-violet"/><text x="495" y="78" class="t-b mid">embedding model</text><text x="495" y="98" class="t-s mid">topics 1 and 3</text>
+      <path d="M580 83 H614" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="620" y="48" width="320" height="70" rx="12" class="s-blue"/><text x="780" y="76" class="t-b mid">vector index</text><text x="780" y="96" class="t-s mid">vector + text + metadata (topic 4)</text>
+      <text x="20" y="184" class="t-m">QUERY · EVERY SEARCH</text>
+      <rect x="20" y="198" width="160" height="70" rx="12" class="s-surface"/><text x="100" y="226" class="t-b mid">question</text><text x="100" y="246" class="t-s mid">"cheap intro to containers"</text>
+      <path d="M180 233 H404" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="410" y="198" width="170" height="70" rx="12" class="s-violet"/><text x="495" y="228" class="t-b mid">same model</text><text x="495" y="248" class="t-s mid">one query vector</text>
+      <path d="M580 233 H614" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="620" y="198" width="320" height="70" rx="12" class="s-teal"/><text x="780" y="222" class="t-b mid">nearest neighbours</text><text x="780" y="242" class="t-s mid">similarity (2, 5) · filters (7)</text><text x="780" y="258" class="t-s mid">+ keywords = hybrid (8)</text>
+      <path d="M780 118 V192" class="s-dash" marker-end="url(#ah)"/>
+      <text x="790" y="160" class="t-s">searches</text>
+      <text x="780" y="304" class="t-b mid">→ Docker Quick Start, Kubernetes, ...</text>
+      <path d="M780 268 V284" class="s-line"/>
+    </svg>
+  </div>
+  <figcaption><b>Index once, query many times.</b> The one rule that joins them: documents and questions must be embedded by the same model, or the numbers can't be compared.</figcaption>
+</figure>
+<div class="callout takeaway">
+  <div class="c-label">Takeaway</div>
+  <p>An embedding turns meaning into a position in space. Similar meanings land close together, so "find similar" becomes "find nearby", which computers do very fast.</p>
+</div>
+
+<h2 id="why">Why this module matters</h2>
+<p>Milestone 4 gave Traincrest Assist a <code>search_courses</code> tool, but it only matches exact words. Ask for "a cheap intro to containers" and the keyword <code>containers</code> finds Kubernetes for Developers ($1,190), not Docker Quick Start ($190), whose description says "container images". And the ten help-centre articles, with the answers to most learner questions, are invisible to it. Embeddings fix both, and they are the foundation of Module 06 (RAG).</p>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A library shelves books by meaning: cookery near nutrition, travel guides near maps. A librarian asked for "something about eating well on a budget" walks to the right corner even though no title contains those words. Embeddings give your software that kind of map, built from text, with thousands of directions instead of a few shelves.</p>
+</div>
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Search means <code>LIKE '%word%'</code>, or a full-text index with keywords."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Search means <strong>meaning first</strong>: embed, find the nearest, filter by metadata, and still mix in keywords for exact codes and names. Then <strong>measure</strong> hit rates, because 'looks good' isn't a metric."</p></div>
+</div>
+
+<h2 id="pages">Pages and drills in this module</h2>
+<div class="page-cards"><a class="page-card k-topic" href="../../modules/05/embeddings.html"><span class="pc-tag">Learn · Do · Check</span><b>What are embeddings?</b><ul><li><span class="mono">05.1</span> Your first embeddings <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/05/similarity.html"><span class="pc-tag">Learn · Do · Check</span><b>Vector similarity</b><ul><li><span class="mono">05.2</span> Similarity by hand, then across languages <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/05/embedding-models.html"><span class="pc-tag">Learn · Do · Check</span><b>Embedding models</b><ul><li><span class="mono">05.3</span> Compare embedding settings on your own questions <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/05/vector-databases.html"><span class="pc-tag">Learn · Do · Check</span><b>Vector databases</b><ul><li><span class="mono">05.4</span> A tiny vector store from a test spec <span class="muted">· ~15 min</span></li><li><span class="mono">05.5</span> Exercise: a semantic search system on Azure AI Search <span class="muted">· ~35 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/05/similarity-search.html"><span class="pc-tag">Learn · Do · Check</span><b>Similarity search</b><ul><li><span class="mono">05.6</span> Keyword vs semantic search on the course catalogue <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/05/chunking.html"><span class="pc-tag">Learn · Do · Check</span><b>Chunking strategies</b><ul><li><span class="mono">05.7</span> Chunkers compared: let the hit rate decide <span class="muted">· ~25 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/05/metadata-filtering.html"><span class="pc-tag">Learn · Do · Check</span><b>Metadata filtering</b><ul><li><span class="mono">05.8</span> Pre-filter vs post-filter <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/05/hybrid-search.html"><span class="pc-tag">Learn · Do · Check</span><b>Hybrid search</b><ul><li><span class="mono">05.9</span> Keyword, vector and hybrid: measured on the help centre <span class="muted">· ~25 min</span></li></ul></a>
+<a class="page-card k-build" href="../../modules/05/build.html"><span class="pc-tag">Traincrest Assist</span><b>Build: Milestone 5</b><ul><li><span class="mono">M5</span> Milestone 5: index, hybrid search service, API and semantic tool <span class="muted">· ~60 min</span></li></ul></a>
+<a class="page-card k-recap" href="../../modules/05/recap.html"><span class="pc-tag">Check</span><b>Recap and self-check</b></a></div>
+
+<h2 id="kit">Lab kit for Module 05</h2>
+<ul>
+  <li><strong>Azure:</strong> deploy an embedding model in your Foundry project (deployment name <code>embed</code>, for example <code>text-embedding-3-small</code>), and in Drill 05.5 create an <strong>Azure AI Search</strong> service (the Free tier is enough for these labs; one per subscription).</li>
+  <li><strong>Free, local alternative:</strong> <code>ollama pull nomic-embed-text</code> and set <code>LLM_PROVIDER=ollama</code>. Many real outputs on these pages come from it, so you can compare.</li>
+  <li><strong>Install:</strong> <code>pip install numpy rank_bm25 azure-search-documents chromadb</code>.</li>
+  <li><strong>Add to your <code>.env</code>:</strong>
+<pre class="code" data-file=".env (add these lines)"><code><span class="c"># Module 05: embedding model (on Azure, the deployment name)</span>
+AZURE_OPENAI_EMBED_DEPLOYMENT=embed
+OPENAI_EMBED_MODEL=text-embedding-3-small
+OLLAMA_EMBED_MODEL=nomic-embed-text
+<span class="c"># Drill 05.5: Azure AI Search (endpoint and admin key from the portal)</span>
+AZURE_SEARCH_ENDPOINT=https://&lt;search-service-name&gt;.search.windows.net
+AZURE_SEARCH_API_KEY=&lt;admin key&gt;
+AZURE_SEARCH_INDEX=courses</code></pre></li>
+  <li><strong>New files in <code>genai-labs/</code>:</strong> <code>embed.py</code> (batched embeddings with a small disk cache), <code>data/help/</code> (ten fictional help-centre articles), <code>data/help_questions.json</code> (20 questions with known answers). Module 06 reuses all of them.</li>
+  <li><strong>Cost:</strong> embeddings are cheap (a few cents for everything in this module), and the cache means re-runs cost nothing.</li>
+  <li><strong>Build:</strong> Milestone 5 gives Traincrest Assist a search index over courses and help sections, hybrid search with filters, a <code>/api/search</code> endpoint and a semantic <code>search_courses</code> tool.</li>
+</ul>
+
+</div>
+<nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/04/recap.html"><small>Previous</small><span>← 04 · Recap and self-check</span></a><a class="next" href="../../modules/05/embeddings.html"><small>Next</small><span>05 · What are embeddings? →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

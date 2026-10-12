@@ -1,0 +1,126 @@
+<!--meta
+{"id": "setup-azure", "short": "Azure Foundry Setup", "h1": "Azure: a Foundry Resource and Your First Model", "description": "Lab setup step 2: create a Microsoft Foundry resource and deploy a chat model, through the portal or with an Azure CLI script written by your AI coding assistant.", "lead": "You'll rent a model the way enterprises do: create a Foundry resource, deploy a small chat model under the name chat, and collect an endpoint and a key. Do it through the portal, or have your AI assistant write the Azure CLI script for you and verify it.", "chips": ["Microsoft Foundry", "Azure OpenAI", "Azure CLI", "Deployment types"], "time": "≈ 10 min"}
+-->
+<h2 id="learn">What you're creating</h2>
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Microsoft Foundry is Azure's platform for building generative AI applications and agents. A Foundry resource hosts model deployments (including Azure OpenAI models) and projects, and exposes them through secure, metered API endpoints.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Foundry is where you rent a model in Azure. You pick a model from a catalogue, give your copy a name (a <strong>deployment</strong>), and Azure gives you a URL and a key. Your code calls that URL and you pay for the tokens you use.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A food court. The <strong>catalogue</strong> is the list of restaurants. A <strong>deployment</strong> is a table booked at one of them under a name you choose ("chat"). The <strong>endpoint and key</strong> are the table number and your token. You order (send prompts) and pay per plate (per token). An empty table costs nothing.</p>
+</div>
+<div class="callout note">
+  <div class="c-label">Name check</div>
+  <p>Azure AI Studio became Azure AI Foundry, which is now <strong>Microsoft Foundry</strong> (portal: <code>ai.azure.com</code>). Azure OpenAI Service is now offered as Azure OpenAI models inside Foundry. Older articles use the old names, and portal menus move. If a button isn't where a step says, use the search box.</p>
+</div>
+
+<h3>Deployment types, and why the architect in you should care</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Deployment type</th><th>Where prompts are processed</th><th>Use it for</th></tr></thead>
+    <tbody>
+      <tr><td>Global Standard</td><td>Any Azure region with capacity</td><td>Labs, prototypes, most workloads. Widest model choice, best price.</td></tr>
+      <tr><td>Data Zone Standard</td><td>Inside a data zone (for example the EU or the US)</td><td>Data must stay within a geography, but you still want pooled capacity.</td></tr>
+      <tr><td>Standard (regional)</td><td>Only the resource's region</td><td>Strict residency needs. Fewer models available.</td></tr>
+      <tr><td>Provisioned (PTU)</td><td>Reserved capacity, paid hourly</td><td>High, steady production traffic needing predictable latency. Never for labs.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="do">Create it: pick one of two paths</h2>
+
+<div class="drill" id="d00-1" data-title="Create a Foundry resource and deploy 'chat' in the portal" data-time="~10 min" data-steps="portal,verify">
+  <div class="drill-head"><span class="drill-id">Drill 00.1</span><h3>Path A: create it in the Foundry portal</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Microsoft Foundry</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> a live chat deployment named <code>chat</code>, its endpoint and a key.</p>
+    <ol class="dsteps">
+      <li class="dstep portal"><span class="st">Portal</span><h4>Create a project</h4><p>Go to <code>ai.azure.com</code>, sign in, and choose <strong>Create project</strong>. Name it <code>proj-genai-labs</code>; under advanced options create a resource group <code>rg-genai-labs</code> and pick a region. This creates a <strong>Foundry resource</strong> (it holds keys and deployments) and a project inside it. You need Contributor rights on the subscription or resource group.</p></li>
+      <li class="dstep portal"><span class="st">Portal</span><h4>Deploy a small chat model as <code>chat</code></h4><p>Open the model catalogue (search <strong>Models</strong>), pick a small, cheap chat model (at the time of writing <code>gpt-5.4-mini</code> or <code>gpt-6-luna</code>; any current "mini"/"luna" tier works) and choose <strong>Deploy</strong>. Set the deployment name to exactly <code>chat</code>, keep <strong>Global Standard</strong>, and lower tokens-per-minute to about 20K so a runaway loop can't burn money.</p></li>
+      <li class="dstep nocode"><span class="st">No-code</span><h4>Say hello in the playground</h4><p>Open the chat playground, select <code>chat</code>, and ask <em>"Hello, who are you?"</em>.</p></li>
+      <li class="dstep portal"><span class="st">Portal</span><h4>Copy endpoint and key</h4><p>On the resource or project overview, copy one <strong>API key</strong> and the <strong>Azure OpenAI endpoint</strong> (<code>https://&lt;resource-name&gt;.openai.azure.com/</code>). You'll paste them into <code>.env</code> on the <a href="helpers.html">helpers page</a>.</p></li>
+      <li class="dstep verify"><span class="st">Verify</span><ul class="verify-list"><li>The playground answered.</li><li>The deployment name is exactly <code>chat</code> (lowercase).</li><li>You have the endpoint and one key in a safe place (not in a chat or a document).</li></ul></li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d00-1"> I've completed Drill 00.1</label></div>
+</div>
+
+<div class="drill" id="d00-2" data-title="Have your AI assistant write the Azure CLI script, then verify it" data-time="~15 min" data-steps="write,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 00.2</span><h3>Path B: have your AI assistant write the Azure CLI script</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure CLI</span><span class="badge b-tool">Copilot · Claude Code · Codex</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> experience the course in miniature. You describe infrastructure in plain English, a model writes the code, and <em>you</em> verify it before trusting it.</p>
+    <p class="lab-note"><b>Before you start:</b> install the <a href="https://learn.microsoft.com/cli/azure/install-azure-cli" target="_blank" rel="noopener">Azure CLI</a>, run <code>az login</code>, and set up an AI assistant (see <a href="workstation.html">Workstation and AI assistant</a>). Open an empty folder in VS Code.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Write the prompt yourself</h4>
+        <p>Ask your assistant for a script that creates the resource group, the Foundry resource and the <code>chat</code> deployment. Use the template; fill every line.</p>
+        <div class="template-box"><pre><code>Goal:        a script that creates …
+Context:     I'm logged in with az login; OS/shell is …
+Constraints: names …, region …, model …, deployment type …, capacity …;
+             idempotent where possible; no secrets printed or saved
+Done when:   I can list the deployment with an az command you also give me</code></pre></div>
+        <p class="hint"><b>Hint:</b> name the shell (PowerShell or bash), the exact resource names (<code>rg-genai-labs</code>, a globally unique resource name like <code>aif-genai-yourinitials</code>), the deployment name <code>chat</code>, the model (<code>gpt-5.4-mini</code>), <strong>GlobalStandard</strong> with a capacity of 20 (20K tokens per minute), and ask for verification commands too.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Goal: Write a PowerShell script (create_foundry.ps1) that uses the Azure CLI to create everything
+I need for my GenAI labs.
+
+Context: I'm already logged in with `az login`. I'm on Windows, using PowerShell 7.
+
+Constraints:
+- Resource group: rg-genai-labs in eastus2
+- Foundry (Azure AI Services) resource: aif-genai-rr (kind AIServices, SKU S0, custom domain = same name)
+- Model deployment named "chat": model gpt-5.4-mini, model format OpenAI,
+  SKU GlobalStandard, capacity 20 (20K tokens per minute)
+- Put names in variables at the top. Stop on the first error.
+- Do NOT print or save API keys. Print only the endpoint at the end.
+
+Done when: give me separate az commands to verify the resource group, the resource and the
+deployment exist (table output), and explain what each script line does in one comment.</code></pre></div>
+        </div></details>
+        <div class="why"><b>Why this works:</b> every blank that the model would otherwise guess (shell, names, model, SKU, capacity) is filled in, and "Done when" forces it to hand you a way to check its own work. That's the prompt design framework you'll study in Module 03.</div>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Read the script, then run it</h4>
+        <p>Read every line before running it. You're the reviewer. It should look broadly like the reference below (yours may differ in style). If the model version is rejected, ask your assistant to look up valid versions with <code>az cognitiveservices account list-models</code>.</p>
+        <details class="solution"><summary>Reference script (PowerShell)</summary><div>
+<pre class="code" data-file="create_foundry.ps1"><code><span class="c"># Names and settings</span>
+$rg       = "rg-genai-labs"
+$location = "eastus2"
+$name     = "aif-genai-rr"          <span class="c"># must be globally unique</span>
+$ErrorActionPreference = "Stop"
+
+az group create --name $rg --location $location --output none
+
+az cognitiveservices account create --name $name --resource-group $rg `
+  --location $location --kind AIServices --sku S0 --custom-domain $name --yes --output none
+
+az cognitiveservices account deployment create --name $name --resource-group $rg `
+  --deployment-name chat --model-name gpt-5.4-mini --model-version 2026-03-17 `
+  --model-format OpenAI --sku-name GlobalStandard --sku-capacity 20 --output none
+
+az cognitiveservices account show --name $name --resource-group $rg --query properties.endpoint -o tsv</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Prove it exists</h4>
+<pre class="term"><code><span class="ps">$ </span>az group show -n rg-genai-labs -o table
+<span class="ps">$ </span>az cognitiveservices account list -g rg-genai-labs -o table
+<span class="ps">$ </span>az cognitiveservices account deployment list -g rg-genai-labs -n aif-genai-rr -o table</code></pre>
+        <ul class="verify-list"><li>The deployment list shows <code>chat</code> with your model and <code>GlobalStandard</code>.</li><li>The script never printed a key.</li><li>Get a key safely: <code>az cognitiveservices account keys list -g rg-genai-labs -n aif-genai-rr --query key1 -o tsv</code>, straight into <code>.env</code>.</li></ul>
+      </li>
+    </ol>
+    <p class="lab-say"><b>Remember:</b> “The assistant wrote the script; you were the engineer. Reviewing and verifying is the job.”</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d00-2"> I've completed Drill 00.2</label></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>In code, <code>model=</code> must be the <strong>deployment name</strong> (<code>chat</code>), not the model name (<code>gpt-5.4-mini</code>). Mixing them up gives a 404 "deployment not found". It's the most common first-day error in every batch.</p>
+</div>
+
+<h2 id="keyless">Optional: keyless sign-in with Microsoft Entra ID</h2>
+<p>Keys are simple, which is why the labs use them. In production you'd rather have no key at all: the app signs in with its identity and Azure checks its role. You'll do this hands-on in Drill 02.3; the quick version is <code>az login</code>, the <em>Cognitive Services OpenAI User</em> role on the resource, and <code>DefaultAzureCredential</code> in code.</p>

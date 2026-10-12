@@ -1,0 +1,117 @@
+<!--meta
+{"id": "m02-cost", "short": "Managing API Costs", "h1": "Managing API Costs", "description": "Module 02, topic 9: how LLM costs are calculated, a worked monthly projection for TrainCrest, the cost levers in order, and drills that build a cost meter and a usage report with your AI assistant.", "lead": "Every token in and out is metered. One call costs a fraction of a cent; 25,000 learners chatting four turns each, with a bloated prompt on an expensive model, is a real monthly bill. You'll do the maths once, build a cost meter, and have your assistant turn the logs into a usage report.", "chips": ["Cost formula", "Monthly projection", "Cost levers", "Drills 02.14 · 02.15"], "time": "Learn 12 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>A taxi meter that runs on words.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>LLM API cost per call is <strong>input tokens × input price + output tokens × output price</strong> (prices usually per million tokens), where output includes hidden reasoning tokens. Total cost scales with volume, prompt size, conversation length and model choice.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>It's a taxi meter that runs on tokens, with the meter running faster for output than input. The good news: most of the bill comes from a few things you control.</p>
+</div>
+
+<h3>Do the maths once (illustrative prices)</h3>
+<p>Say your model costs <strong>$0.40 per million input tokens</strong> and <strong>$1.60 per million output tokens</strong> (check your model's current price). TrainCrest has 25,000 conversations a month, averaging 4 turns: 100,000 turns.</p>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Scenario</th><th>Per turn</th><th>Monthly tokens</th><th>Monthly cost</th></tr></thead>
+    <tbody>
+      <tr><td>Lean prompt, short answers</td><td>1,500 in · 250 out</td><td>150M in · 25M out</td><td>$60 + $40 = <strong>$100</strong></td></tr>
+      <tr><td>Bloated 6,000-token prompt</td><td>7,500 in · 250 out</td><td>750M in · 25M out</td><td>$300 + $40 = <strong>$340</strong></td></tr>
+      <tr><td>Bloated prompt, model 10× the price</td><td>same</td><td>same</td><td><strong>$3,400</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Same feature, a 34× difference, from two decisions: prompt size and model choice.</p>
+
+<h3>The cost levers, easiest first</h3>
+<ol class="steps">
+  <li><strong>Measure.</strong> Log usage per call with a feature name. You can't optimise what you can't see.</li>
+  <li><strong>Choose the smallest model that passes your quality bar</strong> (Drill 01.11, Module 11).</li>
+  <li><strong>Trim the prompt</strong>: remove repeated instructions, send only relevant documents, trim history.</li>
+  <li><strong>Cap the output</strong> with <code>max_completion_tokens</code> and instructions like "under 80 words".</li>
+  <li><strong>Lower reasoning effort</strong> for simple tasks; hidden reasoning is billed as output.</li>
+  <li><strong>Cache and batch</strong> repeated and non-urgent work (Module 11).</li>
+  <li><strong>Set budgets and alerts</strong> so surprises arrive by email, not on the invoice.</li>
+</ol>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams running AI features at scale track cost per feature and per user, set quotas so one heavy user can't run up the bill, and use provider discounts: prompt caching for repeated prompt prefixes, batch APIs for overnight work, and committed capacity for steady high volume. Many discover that a long, repeated system prompt is their single biggest cost line.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Testing cost with a three-message demo and multiplying. Real conversations are longer, history is resent every turn, and a few power users send ten times the average. Project from real logged usage after a pilot.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Cost is <strong>input × input price + output × output price</strong>, times volume. My biggest levers are <strong>model choice, prompt size, history trimming and output caps</strong>, and I log usage per feature."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Meter it, then report on it.</p></div></div>
+
+<div class="drill" id="d02-14" data-title="A cost meter: tokens to dollars to a monthly projection" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.14</span><h3>A cost meter: tokens → dollars → monthly projection</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> measure how prompt size and brevity change the projected bill, and log each call to <code>usage.jsonl</code> for the next drill.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <p>Put your model's real prices in <code>.env</code> (<code>PRICE_IN_PER_M</code>, <code>PRICE_OUT_PER_M</code>), then:</p>
+        <pre class="code" data-file="lab02_14_cost_meter.py" data-src="code/genai-labs/lab02_14_cost_meter.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_14_cost_meter.py</code></pre>
+        <span class="out-label">Expected shape (numbers depend on model and price)</span>
+<pre class="out"><code>bloated prompt              1561 in ·  212 out (0 reasoning) · $0.00096/turn · ~$96/month
+lean prompt                   41 in ·  205 out (0 reasoning) · $0.00034/turn · ~$34/month
+lean + 'under 60 words'       47 in ·   78 out (0 reasoning) · $0.00014/turn · ~$14/month</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>The bloated system prompt is paid on <em>every turn</em>: boilerplate is the most expensive text you'll write.</li><li>Brevity cut output tokens, the pricier ones.</li><li><code>usage.jsonl</code> exists with three JSON lines. Run the script two more times to give the next drill more data.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-14"> I've completed Drill 02.14</label></div>
+</div>
+
+<div class="drill" id="d02-15" data-title="Build a usage report from your logs with your AI assistant" data-time="~15 min" data-steps="ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.15</span><h3>Build a usage report from your logs</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> turn raw usage logs into the table a product owner actually asks for: "what does each feature cost, per call and per month?"</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span>
+        <div class="prompt-box"><pre><code>#usage.jsonl has one JSON object per line with keys: ts, label, model, tokens_in, tokens_out,
+cost_usd. Write usage_report.py (standard library only) that reads it (path argument, default
+usage.jsonl), groups by label, and prints a table with: label, number of calls, average tokens
+in, average tokens out, average $ per call, and projected $ per month for --turns-per-month
+(default 100000). Sort by average cost per call, most expensive first. Skip blank lines.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> the exact input schema, the exact output columns, the default volume and the sort order. A real example file for context means the assistant doesn't have to guess the data shape.</div>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="usage_report.py" data-src="code/genai-labs/usage_report.py"></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>python usage_report.py</code></pre>
+        <span class="out-label">Expected shape</span>
+<pre class="out"><code>label                      calls   avg in  avg out  avg $/call    $/month
+bloated prompt                 3     1561      209     0.00096         96
+lean prompt                    3       41      201     0.00034         34
+lean + 'under 60 words'        3       47       80     0.00014         14</code></pre>
+        <ul class="verify-list"><li>Calls per label match the number of times you ran Drill 02.14.</li><li>The most expensive label is at the top.</li></ul>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Try this:</b> multiply by a four-times-longer real conversation (history is resent every turn) and a model with ten times the price. That's why Module 11 exists.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-15"> I've completed Drill 02.15</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Money.</p></div></div>
+<div class="quiz">
+  <details><summary>1. The projected bill doubled after a prompt change. Where do you look first?</summary><div><p>The usage logs: <strong>prompt_tokens per turn</strong>. A longer system prompt is paid on every turn, and history multiplies it.</p></div></details>
+  <details><summary>2. Name three cost levers that don't require changing the model.</summary><div><p>Any three of: trim the prompt, trim history, cap output, lower reasoning effort, cache repeated work, batch non-urgent work.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Log usage on every call. The bill is decided by prompt size, output length and model choice, all of which you control.</p></div>

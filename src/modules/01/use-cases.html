@@ -1,0 +1,91 @@
+<!--meta
+{"id": "m01-uses", "short": "Developer Use Cases", "h1": "Common GenAI Use Cases for Developers", "description": "Module 01, topic 9: the handful of patterns behind most GenAI features (generate, transform, extract, search, ground, act), real-world examples, and a drill that maps feature requests to patterns.", "lead": "Most GenAI features are built from a handful of patterns. Learn to see the pattern behind a feature request and you know the architecture, the risks and which module of this course you need. Then test your eye against a model's.", "chips": ["Generate · transform · extract", "Search · ground · act", "Drill 01.13"], "time": "Learn 10 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Many products, a few patterns.</p></div></div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Use case</th><th>What the model does</th><th>Pattern</th><th>Built in</th></tr></thead>
+    <tbody>
+      <tr><td>Code generation</td><td>Writes functions, tests, SQL and scripts from a description</td><td>Generate</td><td>02, 03</td></tr>
+      <tr><td>Code explanation and refactoring</td><td>Explains legacy code, proposes cleaner versions</td><td>Transform</td><td>03</td></tr>
+      <tr><td>Chatbots and virtual assistants</td><td>Multi-turn conversation with a persona</td><td>Generate + memory</td><td>02, 07</td></tr>
+      <tr><td>Document summarisation</td><td>Shortens long text for a specific reader</td><td>Transform</td><td>03</td></tr>
+      <tr><td>Information extraction</td><td>Pulls names, amounts and dates into JSON</td><td>Extract</td><td>03, 04</td></tr>
+      <tr><td>Semantic search</td><td>Finds by meaning, not keywords</td><td>Search (embeddings)</td><td>05</td></tr>
+      <tr><td>Recommendation</td><td>"Learners who asked this also took…" by meaning</td><td>Search + similarity</td><td>05</td></tr>
+      <tr><td>Content generation</td><td>Course descriptions, emails, marketing drafts</td><td>Generate + templates</td><td>03</td></tr>
+      <tr><td>Customer-support automation</td><td>Answers from policies, checks records, raises tickets</td><td>Ground + act (RAG, tools, agents)</td><td>06, 07</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>The patterns are <strong>kitchen techniques</strong>: boil, fry, grill, bake. Thousands of dishes, a handful of techniques. "Support bot", "HR helpdesk" and "legal Q&amp;A" look different on the menu, but in the kitchen they're the same dish: <em>ground the model in documents, let it call a few tools</em>.</p>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <ul>
+    <li><strong>Coding assistants</strong> (GitHub Copilot, Claude Code, Codex): generate and transform code, with your files as context, and increasingly <em>act</em> by running commands and tests.</li>
+    <li><strong>Office copilots</strong>: summarise meetings and email threads (transform), draft documents (generate), answer from your files (ground).</li>
+    <li><strong>Support assistants</strong> in help-desk products: answer from knowledge articles (ground), look up orders or accounts (act), hand over to a human with a summary (transform).</li>
+    <li><strong>Document AI</strong> in finance and insurance: extract fields from invoices, claims and contracts into structured data (extract), often from scans (multimodal).</li>
+  </ul>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"The business wants 'an AI chatbot'. Let's pick a framework."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Which patterns are inside that request? Generate, transform, extract, search, ground, act. Each brings its own architecture, risks and tests."</p></div>
+</div>
+
+<div class="callout takeaway">
+  <div class="c-label">Takeaway</div>
+  <p>Translate every GenAI idea into patterns: <em>generate, transform, extract, search, ground, act</em>, and spot the parts that are <em>not GenAI</em> at all.</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Map feature requests to patterns, then compare with a model.</p></div></div>
+
+<div class="drill" id="d01-13" data-title="Pattern spotting: map eight feature requests" data-time="~15 min" data-steps="think,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 01.13</span><h3>Pattern spotting: map eight feature requests</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-think">Design</span><span class="badge b-azure">Azure OpenAI</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> recognise patterns quickly, including the ones that shouldn't use an LLM at all.</p>
+    <ol class="dsteps">
+      <li class="dstep think"><span class="st">Think</span><h4>Your answers first</h4>
+        <p>For each TrainCrest request pick one: <strong>generate, transform, extract, search, ground, act, not-genai</strong>.</p>
+        <ol>
+          <li>Write a first draft of a course description from the trainer's bullet notes.</li>
+          <li>Turn a 40-message support thread into a 3-line summary for the next agent.</li>
+          <li>Pull learner name, enrolment ID and course from incoming emails into the CRM.</li>
+          <li>Let learners find courses by describing a goal: "I want to automate Excel reports".</li>
+          <li>Answer "Can I get a refund?" from the current policy document, with a citation.</li>
+          <li>When a learner asks, look up their real exam voucher status and resend it.</li>
+          <li>Calculate the refund amount from the cancellation date and course price.</li>
+          <li>Translate course announcements into Spanish and Japanese.</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>Generate</li><li>Transform</li><li>Extract</li><li>Search (embeddings)</li><li>Ground (RAG)</li><li>Act (tool calling)</li>
+            <li><strong>Not GenAI.</strong> Exact arithmetic and business rules belong in code. (The model can <em>call</em> that code: Module 04.)</li>
+            <li>Transform</li>
+          </ol>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Ask the model to classify the same requests</h4>
+        <pre class="code" data-file="lab01_13_patterns.py" data-src="code/genai-labs/lab01_13_patterns.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_13_patterns.py</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>Where did you, the model and my answers disagree? Usually on 5 (search vs ground) and 7 (not-genai).</li><li>Notice the model needed definitions of "ground", "act" and "not-genai" in the system prompt to answer consistently. Unclear categories confuse models just as they confuse people (Module 03).</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-13"> I've completed Drill 01.13</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>One more.</p></div></div>
+<div class="quiz">
+  <details><summary>1. "Build an AI assistant for our HR policies that can also book leave." Which patterns are inside?</summary><div><p><strong>Ground</strong> (answer from HR policy documents), <strong>act</strong> (call the leave-booking system, ideally with confirmation), plus <strong>generate</strong> for the conversation itself.</p></div></details>
+</div>

@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System, User, Assistant</title>
+<meta name="description" content="Module 02, topic 4: message roles, why the API is stateless, how chat memory really works, and drills that build memory by hand and a tested history-trimming function with your AI assistant.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m02-roles">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic active" data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/02/index.html">Module 02</a><i>/</i><span>System, user, assistant messages</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 02 · Topic 4 of 9</span><h1>System, User and Assistant Messages</h1><p class="lead">The model remembers nothing between calls. Chat 'memory' is your app resending the conversation every single time, with a system message on top that sets the rules. You'll prove it, then write the tested trimming function that keeps memory affordable.</p><div class="chips"><span class="chip">Roles</span><span class="chip">Stateless API</span><span class="chip">Conversation memory</span><span class="chip">Drills 02.5 · 02.6</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 25 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Memory is just resending.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Chat APIs take a list of messages, each with a <strong>role</strong>. The <strong>system</strong> (or <strong>developer</strong>) message sets the model's behaviour and rules; <strong>user</strong> messages carry the end user's input; <strong>assistant</strong> messages are the model's previous replies. The API is stateless, so the relevant conversation must be sent with every request.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>The system message is the job description, written by you. User messages are what the learner says. Assistant messages are what the model said earlier. The model remembers nothing between calls, so your app keeps the transcript and sends it back every time. That's the whole "memory" of a chatbot.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A call centre where every agent has total amnesia. Each time the customer speaks, a <em>new</em> agent picks up. To make it work, the supervisor hands each one a sheet: the <strong>role card</strong> on top ("You're a TrainCrest support agent; be kind; never promise refunds"), then the <strong>transcript so far</strong>, then the newest sentence. The agent reads it all, replies once, and is gone. The sheet gets longer every turn.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 330" role="img" aria-labelledby="hi-t hi-d">
+      <title id="hi-t">The messages array grows every turn</title>
+      <desc id="hi-d">Turn 1 sends the system message and the first user message. Turn 2 resends both plus the first assistant reply and a new user message. Turn 3 resends everything plus another pair. Input tokens grow from about 60 to 190 to 330.</desc>
+      <text x="20" y="28" class="t-m t-accent">REQUEST · TURN 1</text>
+      <rect x="20" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="34" y="62" class="t">system: You are Traincrest Assist…</text>
+      <rect x="20" y="80" width="280" height="34" rx="8" class="s-blue"/><text x="34" y="102" class="t">user: Hi, I'm Diego</text>
+      <text x="20" y="300" class="t-m">≈ 60 TOKENS IN</text>
+      <text x="340" y="28" class="t-m t-accent">REQUEST · TURN 2</text>
+      <rect x="340" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="354" y="62" class="t">system: You are Traincrest Assist…</text>
+      <rect x="340" y="80" width="280" height="34" rx="8" class="s-blue"/><text x="354" y="102" class="t">user: Hi, I'm Diego</text>
+      <rect x="340" y="120" width="280" height="34" rx="8" class="s-green"/><text x="354" y="142" class="t">assistant: Hello Diego! How…</text>
+      <rect x="340" y="160" width="280" height="34" rx="8" class="s-blue"/><text x="354" y="182" class="t">user: My lab won't start</text>
+      <text x="340" y="300" class="t-m">≈ 190 TOKENS IN</text>
+      <text x="660" y="28" class="t-m t-accent">REQUEST · TURN 3</text>
+      <rect x="660" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="674" y="62" class="t">system: You are Traincrest Assist…</text>
+      <rect x="660" y="80" width="280" height="34" rx="8" class="s-blue"/><text x="674" y="102" class="t">user: Hi, I'm Diego</text>
+      <rect x="660" y="120" width="280" height="34" rx="8" class="s-green"/><text x="674" y="142" class="t">assistant: Hello Diego! How…</text>
+      <rect x="660" y="160" width="280" height="34" rx="8" class="s-blue"/><text x="674" y="182" class="t">user: My lab won't start</text>
+      <rect x="660" y="200" width="280" height="34" rx="8" class="s-green"/><text x="674" y="222" class="t">assistant: Sorry! Try restarting…</text>
+      <rect x="660" y="240" width="280" height="34" rx="8" class="s-blue"/><text x="674" y="262" class="t">user: Done. What's my name?</text>
+      <text x="660" y="300" class="t-m">≈ 330 TOKENS IN · AND GROWING</text>
+      <path d="M300 160 H334" class="s-arrow" marker-end="url(#ah)"/><path d="M620 200 H654" class="s-arrow" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption><b>Memory is just resending.</b> Each turn resends everything before it, so cost and latency grow with conversation length. Long chats need trimming or summarising; the system message must survive every trim.</figcaption>
+</figure>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>The system message has the strongest influence on behaviour: rules, persona, tone and boundaries go there.</li>
+  <li>Newer OpenAI reasoning models also accept a <strong>developer</strong> role that works like system. Don't send both in one request.</li>
+  <li>Claude's API takes the system prompt as a separate <code>system</code> parameter, and its <code>messages</code> list starts with a user turn.</li>
+  <li>You can write assistant messages yourself to show the model an example exchange: few-shot prompting (Module 03).</li>
+  <li>A user can write <em>anything</em>, including "ignore your instructions". User content is never trusted (Modules 03 and 10).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>When ChatGPT or Claude.ai "remember" a long conversation, the application is managing history for you: resending recent turns, and for very long chats summarising or dropping older ones. Some products also keep separate long-term "memories" (facts about you) that they insert into the system context. Under the hood it's always the same thing: deciding what goes into the next request.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Chat apps have sessions. The server remembers the conversation."</p></div>
+  <div><h5>GenAI developer view</h5><p>"The model is stateless. <strong>I</strong> own conversation state: where it's stored, how much I resend, what I trim, and that the system message always comes first."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"How does a chatbot remember context?" <strong>"It doesn't; the app resends conversation history in the messages array on each call, trimmed or summarised to fit the context window and control cost."</strong></p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Build memory by hand, then write the tested function that keeps it affordable.</p></div></div>
+
+<div class="drill" id="d02-5" data-title="Roles and memory by hand" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.5</span><h3>Roles and memory by hand</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> prove the API is stateless, build memory yourself, watch input tokens grow, and see how strongly the system message and example turns steer the model.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab02_05_memory.py"><code>"""Drill 02.5: the API is stateless. You build the memory."""
+from llm import get_client, MODEL
+
+client = get_client()
+SYSTEM = {"role": "system", "content": "You are Traincrest Assist, TrainCrest's learner-support assistant. One short sentence per reply."}
+
+
+def chat(messages):
+    r = client.chat.completions.create(model=MODEL, messages=messages)
+    return r.choices[0].message.content.strip(), r.usage.prompt_tokens
+
+
+<span class="c"># 1) Two independent calls: the second knows nothing about the first</span>
+print("1) No memory")
+print("   ", chat([SYSTEM, {"role": "user", "content": "Hi, I'm Diego. I'm enrolled in the AZ-305 course."}])[0])
+print("   ", chat([SYSTEM, {"role": "user", "content": "Which course am I enrolled in?"}])[0])
+
+<span class="c"># 2) Same questions, but we keep and resend the history ourselves</span>
+print("\n2) Memory = resending history")
+history = [SYSTEM]
+for turn in ["Hi, I'm Diego. I'm enrolled in the AZ-305 course.", "Which course am I enrolled in?", "And what's my name?"]:
+    history.append({"role": "user", "content": turn})
+    reply, tokens_in = chat(history)
+    history.append({"role": "assistant", "content": reply})
+    print(f"   [{tokens_in:4} tokens in] {turn}\n                     -&gt; {reply}")
+
+<span class="c"># 3) The system message steers everything</span>
+print("\n3) Swap the system message")
+grumpy = [{"role": "system", "content": "You are a grumpy pirate. One sentence."},
+          {"role": "user", "content": "When does my course start?"}]
+print("   ", chat(grumpy)[0])
+
+<span class="c"># 4) Assistant messages you write yourself teach a pattern</span>
+print("\n4) Teach a format with example turns")
+pattern = [SYSTEM,
+           {"role": "user", "content": "Status of TC-10001"},
+           {"role": "assistant", "content": "STATUS: CONFIRMED | STARTS: 12 Jan"},
+           {"role": "user", "content": "Status of TC-10002"},
+           {"role": "assistant", "content": "STATUS: WAITLISTED | STARTS: 2 Feb"},
+           {"role": "user", "content": "Status of TC-10293"}]
+print("   ", chat(pattern)[0])</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_05_memory.py</code></pre>
+        <span class="out-label">Expected output (abridged)</span>
+<pre class="out"><code>1) No memory
+    Hi Diego, welcome! How can I help with your AZ-305 course?
+    I don't have access to your enrolment details. Could you share your enrolment ID?
+
+2) Memory = resending history
+   [  47 tokens in] Hi, I'm Diego. I'm enrolled in the AZ-305 course.
+                     -&gt; Hi Diego! How can I help with your AZ-305 course today?
+   [  78 tokens in] Which course am I enrolled in?
+                     -&gt; You're enrolled in the AZ-305 course.
+   [ 101 tokens in] And what's my name?
+                     -&gt; Your name is Diego.
+
+3) Swap the system message
+    Arr, how should I know when yer course starts? Check yer enrolment, landlubber!
+
+4) Teach a format with example turns
+    STATUS: CONFIRMED | STARTS: 9 Mar</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list">
+          <li>Part 1: zero memory. Part 2: memory appeared only because <em>you</em> resent history, and input tokens grew every turn.</li>
+          <li>Part 3: one line of system message changed the whole persona.</li>
+          <li>Part 4 should worry you. The model invented a status and date for TC-10293 because the pattern made it plausible. That's why lookups must be <strong>tool calls</strong> (Module 04), never generated text.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-5"> I've completed Drill 02.5</label></div>
+</div>
+
+<div class="drill" id="d02-6" data-title="Write a tested history-trimming function" data-time="~15 min" data-steps="write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.6</span><h3>Write a tested history-trimming function</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · pytest</span><span class="badge b-tool">no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> a small, correct, tested utility that keeps the system message and the last N exchanges. Milestone 2 uses the same rule.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Ask for tests first, then the function</h4>
+        <div class="template-box"><pre><code>Goal:        history.py with trim_history(messages, max_turns) and test_history.py
+Context:     messages are dicts with "role" and "content"; the first may be a system message
+Constraints: keep the system message; keep the last … user/assistant pairs; never start the
+             kept turns with …; return a new list (don't …); raise … if max_turns &lt; 0
+Done when:   pytest -q test_history.py passes, with tests for these edge cases: …</code></pre></div>
+        <p class="hint"><b>Hint:</b> list the edge cases yourself: short history unchanged, no system message, history ending with a new user question, and "doesn't modify the input". Ask for the tests <em>before</em> the implementation; it stops the assistant writing tests that merely mirror its own code.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>First write test_history.py (pytest), then history.py, for a function
+trim_history(messages, max_turns) -> list. messages is a list of {"role", "content"} dicts; the
+first may be a system message. Rules: keep the system message if present; keep only the last
+max_turns user/assistant pairs (max_turns * 2 messages); the kept turns must never start with an
+assistant message; return a NEW list without modifying the input; raise ValueError if max_turns
+is negative. Test these cases: keeps system + last pairs; short history unchanged; works without
+a system message; history ending in a new user question still starts with a user message;
+input list is not modified. Run pytest and show me the output.</code></pre></div>
+        </div></details>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="history.py"><code>"""Drill 02.6 (reference solution): keep the system message and the most recent turns."""
+
+
+def trim_history(messages, max_turns):
+    """Return a NEW list with the system message (if first) plus the last `max_turns`
+    user/assistant pairs. The kept turns never start with an assistant message."""
+    if max_turns &lt; 0:
+        raise ValueError("max_turns must be &gt;= 0")
+    system = [m for m in messages[:1] if m["role"] == "system"]
+    rest = messages[len(system):]
+    kept = rest[-(max_turns * 2):] if max_turns else []
+    while kept and kept[0]["role"] != "user":
+        kept = kept[1:]
+    return system + kept</code></pre>
+          <pre class="code" data-file="test_history.py"><code>"""Tests for history.trim_history. Run with:  pytest -q test_history.py"""
+from history import trim_history
+
+SYS = {"role": "system", "content": "You are Traincrest Assist."}
+
+
+def turns(n):
+    out = []
+    for i in range(n):
+        out += [{"role": "user", "content": f"u{i}"}, {"role": "assistant", "content": f"a{i}"}]
+    return out
+
+
+def test_keeps_system_and_last_pairs():
+    result = trim_history([SYS] + turns(5), max_turns=2)
+    assert result[0] == SYS
+    assert [m["content"] for m in result[1:]] == ["u3", "a3", "u4", "a4"]
+
+
+def test_short_history_is_unchanged():
+    messages = [SYS] + turns(1)
+    assert trim_history(messages, max_turns=6) == messages
+
+
+def test_never_starts_with_assistant():
+    messages = [SYS] + turns(3) + [{"role": "user", "content": "new question"}]
+    result = trim_history(messages, max_turns=2)
+    assert result[1]["role"] == "user"
+    assert result[-1]["content"] == "new question"
+
+
+def test_works_without_system_message():
+    assert trim_history(turns(3), max_turns=1) == turns(3)[-2:]
+
+
+def test_does_not_modify_input():
+    messages = [SYS] + turns(4)
+    snapshot = list(messages)
+    trim_history(messages, max_turns=1)
+    assert messages == snapshot</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_history.py</code></pre>
+        <span class="out-label">Expected</span>
+<pre class="out"><code>.....                                                                    [100%]
+5 passed in 0.03s</code></pre>
+        <ul class="verify-list"><li>All tests pass.</li><li>Break the function on purpose (for example, remove the "never start with assistant" loop) and confirm a test fails. A test that can't fail protects nothing.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-6"> I've completed Drill 02.6</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Roles and state.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A learner says "I told you my enrolment ID five messages ago!" and the bot doesn't know it. Likely cause?</summary><div><p>The history was <strong>trimmed</strong> (or never sent), so that message wasn't in the request. Fixes: keep more turns, summarise older turns, or pull key facts like the enrolment ID into the system context (Module 07).</p></div></details>
+  <details><summary>2. Where should "Never promise refunds" go: system or user message?</summary><div><p>The <strong>system</strong> message. Rules belong to you, not to the user's turn, and the system message has the strongest influence.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>The model is stateless; your app is the memory. Decide deliberately what you resend.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m02-roles"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/02/lifecycle.html"><small>Previous</small><span>← 02 · Request/response lifecycle</span></a><a class="next" href="../../modules/02/parameters.html"><small>Next</small><span>02 · Temperature and parameters →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

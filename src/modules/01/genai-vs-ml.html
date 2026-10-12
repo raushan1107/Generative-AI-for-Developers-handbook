@@ -1,0 +1,134 @@
+<!--meta
+{"id": "m01-vsml", "short": "GenAI vs Traditional ML", "h1": "Generative AI vs Traditional AI/ML", "description": "Module 01, topic 2: where generative AI sits inside AI and machine learning, when classic ML or plain code is the better choice, and a drill that trains a real classifier and races it against an LLM.", "lead": "GenAI didn't replace machine learning; it sits inside it. Knowing where it sits tells you when an LLM is the right tool, and when a classic model or a plain if-statement is faster, cheaper and more reliable. You'll prove it by racing the two on the same tickets.", "chips": ["AI ⊃ ML ⊃ DL ⊃ GenAI", "Choosing the tool", "Drill 01.3"], "time": "Learn 10 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Russian dolls, and how to pick the right doll.</p></div></div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 330" role="img" aria-labelledby="nest-t nest-d">
+      <title id="nest-t">Where generative AI sits</title>
+      <desc id="nest-d">Nested boxes: artificial intelligence contains machine learning, which contains deep learning, which contains generative AI, which contains large language models. Each layer has an example.</desc>
+      <rect x="20" y="20" width="860" height="290" rx="18" class="s-surface2"/>
+      <text x="44" y="50" class="t-b">Artificial Intelligence</text>
+      <text x="44" y="70" class="t-s">any technique that makes machines act smart: rules, search, ML</text>
+      <text x="44" y="290" class="t-s">e.g. rule-based fraud checks, route planning</text>
+      <rect x="250" y="84" width="610" height="210" rx="16" class="s-blue"/>
+      <text x="272" y="112" class="t-b">Machine Learning</text>
+      <text x="272" y="132" class="t-s">learns patterns from data instead of hand-written rules</text>
+      <text x="272" y="276" class="t-s">e.g. churn prediction, demand forecasting</text>
+      <rect x="470" y="146" width="370" height="132" rx="14" class="s-teal"/>
+      <text x="490" y="172" class="t-b">Deep Learning</text>
+      <text x="490" y="190" class="t-s">many-layered neural networks</text>
+      <text x="490" y="264" class="t-s">e.g. face unlock</text>
+      <rect x="640" y="198" width="184" height="66" rx="12" class="s-violet"/>
+      <text x="732" y="220" class="t-b mid">Generative AI</text>
+      <rect x="672" y="230" width="120" height="26" rx="8" class="s-amber"/>
+      <text x="732" y="248" class="t-b mid">LLMs</text>
+    </svg>
+  </div>
+  <figcaption><b>Russian dolls.</b> Every LLM is generative AI, every GenAI model is deep learning, and so on outwards. But not every problem needs the innermost doll.</figcaption>
+</figure>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Aspect</th><th>Traditional ML</th><th>Generative AI (LLMs)</th></tr></thead>
+    <tbody>
+      <tr><td>Output</td><td>A label, a number or a score</td><td>Open-ended content: text, code, images</td></tr>
+      <tr><td>Training</td><td>You train a model on <em>your</em> labelled data</td><td>You usually <em>use</em> a pre-trained model through an API</td></tr>
+      <tr><td>Data needed</td><td>Hundreds to thousands of labelled examples per task</td><td>Zero to a handful of examples, written in the prompt</td></tr>
+      <tr><td>Tasks per model</td><td>One</td><td>Thousands</td></tr>
+      <tr><td>Speed and cost per prediction</td><td>Milliseconds, almost free</td><td>Hundreds of milliseconds to seconds, pay per token</td></tr>
+      <tr><td>Handles new wording or languages</td><td>Poorly, unless trained on them</td><td>Well, out of the box</td></tr>
+      <tr><td>Main failure</td><td>Wrong prediction</td><td>Fluent, confident, wrong answer (hallucination)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Most production systems are <strong>hybrids</strong>. Card-fraud scoring and product recommendations are still classic ML because they need millisecond decisions on structured data at huge volume. LLMs sit on top for the language parts: explaining a decision to a customer, summarising a case for an analyst, understanding a free-text complaint. Search products work the same way: classic ranking finds results, a language model writes the summary.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Using an LLM for everything. Calculating tax, validating an email address, checking whether an enrolment ID exists, sorting a list: these have <strong>exact answers</strong>. Plain code does them perfectly, instantly and for free. Use the LLM for the fuzzy part (understanding the learner's message) and code for the exact part (looking up the enrolment). Module 04 wires the two together.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"We need a model, so we need a data scientist, a labelled dataset and three months."</p></div>
+  <div><h5>GenAI developer view</h5><p>"A pre-trained model already understands language, so I can prototype with a prompt this afternoon. If volume, latency or cost demand it later, I can train a small classic model, using the LLM to help label the data."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"When would you <em>not</em> use an LLM?" Say: <strong>"When the task has an exact answer, needs millisecond latency at high volume, or is a narrow classification with plenty of labelled data. There, plain code or a small classic model is cheaper, faster and more predictable."</strong></p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Generate training data with AI, train a real classifier, and race it against an LLM.</p></div></div>
+
+<div class="drill" id="d01-3" data-title="Train a classic classifier, then race it against an LLM" data-time="~20 min" data-steps="write,verify,run,think">
+  <div class="drill-head"><span class="drill-id">Drill 01.3</span><h3>Train a classic classifier, then race it against an LLM</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">scikit-learn · AI assistant</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> feel the difference in data needs, speed, cost and robustness between classic ML and an LLM, on the same 12 support tickets.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Create the shared ticket file</h4>
+        <p>This file holds 12 labelled test tickets and TrainCrest's house rules. Module 03 reuses it.</p>
+        <pre class="code" data-file="tickets.py" data-src="code/genai-labs/tickets.py"></pre>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Ask your assistant to generate training data</h4>
+        <p>Classic ML needs labelled examples. Instead of writing 40 by hand, have your AI assistant generate them. Write the prompt yourself:</p>
+        <div class="template-box"><pre><code>Goal:        create data/train_tickets.json with … labelled support tickets
+Context:     the categories are in #tickets.py; the company is …
+Constraints: format …; how many per category …; style …;
+             must NOT copy or paraphrase the tickets in TEST_TICKETS
+Done when:   …</code></pre></div>
+        <p class="hint"><b>Hint:</b> ask for a JSON array of objects with exactly <code>text</code> and <code>label</code>, 6 per category (42 total), short realistic messages, varied wording, English only (that's deliberate: you'll see why later), and a quick check you can run.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Create data/train_tickets.json: a JSON array of 42 synthetic learner-support tickets for
+TrainCrest, an online technical training company. Each item is {"text": ..., "label": ...}
+with exactly those two keys. Use the 7 labels in CATEGORIES from #tickets.py, exactly
+6 tickets per label. Messages should be short (5-20 words), realistic and varied in wording.
+English only. Do not copy or paraphrase anything in TEST_TICKETS. Afterwards, give me a
+one-line Python command that prints the count per label.</code></pre></div>
+          <p>If your assistant struggles, use the reference file: <a href="../../code/genai-labs/data/train_tickets.json">data/train_tickets.json</a>.</p>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Check the generated data before training on it</h4>
+        <pre class="term"><code><span class="ps">$ </span>python -c "import json,collections; d=json.load(open('data/train_tickets.json',encoding='utf-8')); print(len(d), collections.Counter(x['label'] for x in d))"</code></pre>
+        <ul class="verify-list"><li>42 rows, 6 per label, only the 7 known labels.</li><li>Skim 10 rows: are the labels actually right? Generated data can be wrong too.</li></ul>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Race the two approaches</h4>
+        <pre class="code" data-file="lab01_03_classic_vs_llm.py" data-src="code/genai-labs/lab01_03_classic_vs_llm.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_03_classic_vs_llm.py</code></pre>
+        <span class="out-label">Expected output (classic ML column is real output with the reference data; the LLM column varies)</span>
+<pre class="out"><code>ticket                                         expected      classic ML    LLM
+I paid for the AZ-305 batch but my card was    billing       billing       billing
+…
+Quiero cambiar mi curso al grupo del próximo   scheduling    account       scheduling
+I want a refund, the course starts in 3 days   billing       account       scheduling
+…
+Classic ML: 10/12 correct · trained in 0.02s on 42 examples · all predictions in 1.0 ms · $0 per call
+LLM:        11/12 correct · no training · 6.3s for all · 812 tokens</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read the results like an engineer</h4>
+        <p>Answer before opening: (1) Why did classic ML miss the Spanish ticket? (2) Why might the LLM miss the refund ticket? (3) TrainCrest gets 25,000 tickets a month. Which approach would you put in production, and why?</p>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>Classic ML only knows the words it was trained on, and the training data was English only. The LLM understood Spanish for free.</li>
+            <li>"Refund… course starts in 3 days" mentions dates, so it <em>sounds</em> like scheduling. TrainCrest's house rule says refunds are billing. The LLM can't know a house rule you didn't tell it; Module 03 fixes this with few-shot examples.</li>
+            <li>It depends, and that's the real answer. The LLM is more robust to wording and language with zero training; classic ML is thousands of times faster and free per call. A common production pattern: an LLM to label historical tickets, then a small classic model for high-volume routing, with the LLM as a fallback for low-confidence cases.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-3"> I've completed Drill 01.3</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Pick the right tool.</p></div></div>
+<div class="quiz">
+  <details><summary>1. TrainCrest wants to block sign-ups with an invalid email address. LLM or code?</summary><div><p><strong>Code.</strong> It's an exact rule with a known answer. An LLM would be slower, cost money and occasionally be wrong.</p></div></details>
+  <details><summary>2. Learners write free-text complaints in 12 languages and you have no labelled data. Classic ML or an LLM to start?</summary><div><p>An <strong>LLM</strong>: no training data needed and it handles many languages. Revisit with classic ML later if volume and cost justify it.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>The best GenAI developers are the ones who know when not to use GenAI.</p></div>

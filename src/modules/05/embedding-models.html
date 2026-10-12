@@ -1,0 +1,120 @@
+<!--meta
+{"id": "m05-models", "short": "Embedding Models", "h1": "Embedding Models: Choosing and Using One", "description": "Module 05, topic 3: how to choose an embedding model (quality on your data, languages, dimensions, input limits, cost, hosting), shortened dimensions, task prefixes, the cost of switching, and a drill comparing settings on TrainCrest help questions.", "lead": "There are dozens of embedding models, and leaderboards rank them on other people's data. What matters is how well one finds the right answer in your data, in your users' languages, at a size and price you can live with. You'll compare settings on TrainCrest's own help questions and learn why switching models later means re-embedding everything.", "chips": ["Selection criteria", "Dimensions and storage", "Task prefixes", "Drill 05.3"], "time": "Learn 10 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Pick on your data, not on a leaderboard.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>An <strong>embedding model</strong> is a neural network trained to map text (and sometimes images or code) to vectors so that related inputs are close together. Models differ in <strong>quality</strong> for a domain and language, <strong>dimensions</strong>, <strong>maximum input length</strong>, <strong>cost</strong> and <strong>where they run</strong>.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>All embedding models do the same job, like all translators do. Some are better with legal text, some with Spanish, some are cheaper, some run on your laptop. You choose by testing on your own material.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Choosing a map for a hiking trip. A world atlas, a country road map and a detailed trail map all show the same land at different detail, size and price. The best map isn't the most detailed one; it's the one that gets <em>you</em> to <em>your</em> trail without weighing down your bag.</p>
+</div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Model</th><th>Dimensions</th><th>Where</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>text-embedding-3-small</code></td><td>1,536 (can shorten)</td><td>Azure OpenAI, OpenAI</td><td>The sensible default: cheap, multilingual, good quality</td></tr>
+      <tr><td><code>text-embedding-3-large</code></td><td>3,072 (can shorten)</td><td>Azure OpenAI, OpenAI</td><td>Higher quality, several times the price and storage</td></tr>
+      <tr><td><code>text-embedding-ada-002</code></td><td>1,536</td><td>Azure OpenAI, OpenAI</td><td>Older generation; you'll meet it in existing systems</td></tr>
+      <tr><td><code>nomic-embed-text</code></td><td>768</td><td>Local (Ollama)</td><td>Free and private; mostly English; works best with task prefixes</td></tr>
+      <tr><td>Others in the Foundry catalog</td><td>Varies</td><td>Microsoft Foundry</td><td>Including multilingual and domain models from other providers</td></tr>
+    </tbody>
+  </table>
+</div>
+<p class="small muted">Names, prices and retirement dates change. Check the model catalog and retirement schedule before you build on one.</p>
+
+<h3>The choices that matter</h3>
+<ul>
+  <li><strong>Quality on your data:</strong> build 20 to 50 real questions with known answers (like <code>data/help_questions.json</code>) and measure how often the right document comes first. That number beats any leaderboard.</li>
+  <li><strong>Languages:</strong> if users write in Spanish and Hindi, test in Spanish and Hindi (Drill 05.2 showed a mostly-English model missing a Spanish paraphrase).</li>
+  <li><strong>Dimensions and storage:</strong> 1,536 float32 numbers take about 6 KB, so a million chunks is about 6 GB of vectors before indexes. The <code>text-embedding-3</code> models accept a <code>dimensions</code> parameter to return shorter vectors (for example 256) that keep most of the quality.</li>
+  <li><strong>Input length:</strong> text-embedding-3 accepts up to 8,191 tokens per input, but retrieval usually works better on shorter, focused chunks (topic 6).</li>
+  <li><strong>Task prefixes:</strong> some models (like <code>nomic-embed-text</code>) expect <code>search_query: </code> on questions and <code>search_document: </code> on documents. Skipping them still works, just less well.</li>
+  <li><strong>Switching cost:</strong> changing model means <strong>re-embedding every document</strong>. Store the model name with the index and plan re-indexing like a database migration.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams usually start with a cheap general model, build a small labelled test set from real user questions, and only move to a bigger or specialised model when the test set shows a real gain. Large indexes often use shortened vectors to cut storage and latency, accepting a small quality loss measured on that same test set.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Pick the top model on the benchmark and move on."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Benchmarks shortlist; <strong>my test set decides</strong>. I weigh hit rate against cost, size and languages, record the model with the index, and treat a model change as a migration."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Changing the <code>dimensions</code> setting (or the deployment behind <code>embed</code>) for new documents only. Old and new vectors no longer match in size or space, and the index either errors or quietly returns nonsense. Any change to the model or its settings means rebuilding the whole index.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I choose an embedding model by <strong>measuring retrieval on our own labelled questions</strong>, considering language coverage, dimensions (storage and latency), input limits and cost. Changing models requires re-embedding the corpus, so the model is versioned with the index."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Measure, don't guess.</p></div></div>
+
+<div class="drill" id="d05-3" data-title="Compare embedding settings on your own questions" data-time="~15 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 05.3</span><h3>Compare embedding settings on your own questions</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Ollama optional</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> match six learner questions (one in Spanish) to the right help article, and compare full-size vectors, shortened vectors and task prefixes.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Six questions, ten articles</h4>
+        <p>The ten fictional help-centre articles are in <code>data/help/</code>; Module 06 reuses them.</p>
+        <pre class="code" data-file="lab05_03_models.py" data-src="code/genai-labs/lab05_03_models.py"></pre>
+<pre class="term"><code><span class="ps">$ </span>python lab05_03_models.py
+<span class="ps">$ </span>python lab05_03_models.py --dims 256 1536      <span class="o"># Azure / OpenAI text-embedding-3 only</span></code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama)</span>
+<pre class="out"><code>nomic-embed-text dims=768   (2.9s, cached calls are instant)
+  OK  0.70  Can I get my money back if I cancel next week? -> refunds-and-cancellations
+  OK  0.59  The sandbox won't start, what do I do?         -> labs-and-sandboxes
+  OK  0.60  My certificate has a typo in my surname        -> certificates
+  OK  0.61  Can my company pay in three parts?             -> payments-and-invoices
+  OK  0.66  Do you offer captions for deaf learners?       -> accessibility
+  OK  0.71  ¿Cuánto tiempo es válido mi voucher de examen? -> exam-vouchers
+  6/6 questions matched the right article</code></pre>
+        <p>With Ollama, also try the task prefixes the model was trained with:</p>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_03_models.py --prefix</code></pre>
+<pre class="out"><code>nomic-embed-text dims=768 +prefix   (4.6s, cached calls are instant)
+  OK  0.73  Can I get my money back if I cancel next week? -> refunds-and-cancellations
+  OK  0.67  The sandbox won't start, what do I do?         -> labs-and-sandboxes
+  OK  0.67  My certificate has a typo in my surname        -> certificates
+  OK  0.66  Can my company pay in three parts?             -> payments-and-invoices
+  OK  0.71  Do you offer captions for deaf learners?       -> accessibility
+  OK  0.69  ¿Cuánto tiempo es válido mi voucher de examen? -> exam-vouchers
+  6/6 questions matched the right article</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>What did you learn, and what didn't you?</h4>
+        <ol>
+          <li>Prefixes raised most scores but didn't change any answer. Is that an improvement?</li>
+          <li>On Azure, did 256 dimensions get the same 6/6 as 1,536? What would you save at a million chunks?</li>
+          <li>Is 6/6 on six questions enough to choose a model?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>Higher scores alone aren't the goal; correct <em>rankings</em> are. A wider gap between the right article and the rest does make retrieval more robust on harder questions, so it's worth keeping, but prove it on a bigger set.</li>
+            <li>If shortened vectors keep the same hits, you store about a sixth of the data (roughly 1 KB instead of 6 KB per chunk, about 5 GB saved per million chunks) and search faster.</li>
+            <li>No. Six easy questions, each answered by a whole article, is a smoke test. Drill 05.7 uses 20 questions with a required phrase in the retrieved chunk; real projects use hundreds of real user questions.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-3"> I've completed Drill 05.3</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Choosing models.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Two models score 92% and 94% on a public leaderboard. How do you choose for TrainCrest?</summary><div><p>Run both on <strong>TrainCrest's own labelled questions</strong>, in the languages learners use, and weigh the hit rate against cost, dimensions and hosting. Leaderboard gaps that small often vanish or reverse on your data.</p></div></details>
+  <details><summary>2. You want to move from <code>text-embedding-3-small</code> to <code>-large</code>. What has to happen?</summary><div><p>Re-embed <strong>every</strong> document with the new model, build a new index (dimensions change from 1,536 to 3,072), switch queries over at the same moment, and compare hit rates before and after.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Choose the embedding model with your own test set, version it with your index, and budget a re-index for every change.</p></div>

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Working with LLM APIs</title>
+<meta name="description" content="Module 02 overview: API-based architecture, authentication, the request lifecycle, message roles, parameters, streaming, error handling, rate limits, retries and cost, with 15 drills and Traincrest Assist milestone 2.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-overview" data-page="m02">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview active" data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/02/index.html">Module 02</a></nav>
+  <span class="kind-pill">Overview</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 02 · Overview</span><h1>Working with LLM APIs: Calling the Model Like a Professional</h1><p class="lead">Traincrest Assist v0.1 worked until it didn't: it forgot names, froze while thinking and would crash on the first network blip. The fix isn't a better model. It's treating the LLM as what it really is: a slow, metered, rate-limited HTTPS API that sometimes fails. By the end of this module, v0.2 streams in a browser and survives failures.</p><div class="chips"><span class="chip">9 topics</span><span class="chip">15 drills</span><span class="chip">Milestone 2</span><span class="chip">≈ 5 hours hands-on</span></div></header>
+<div class="content">
+
+<h2 id="map">The mental map</h2>
+<p>Every LLM call in every app you'll ever build goes through four stages. In class I draw them as four circles and refuse to move on until everyone can say what goes wrong at each one.</p>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 360" role="img" aria-labelledby="m2-t m2-d">
+      <title id="m2-t">The four stages of an LLM API call</title>
+      <desc id="m2-d">Your backend authenticates with a key or token, sends a request with messages and parameters, receives the response as a stream, and handles errors such as 429 rate limits with retries. Each stage lists what can go wrong and which topic covers it. Cost is counted from token usage on every call.</desc>
+      <rect x="20" y="130" width="130" height="90" rx="12" class="s-surface"/><text x="85" y="162" class="t-b mid">Your backend</text><text x="85" y="182" class="t-s mid">Python, Node,</text><text x="85" y="198" class="t-s mid">.NET, Java…</text>
+      <circle cx="250" cy="175" r="64" class="s-blue"/><text x="250" y="160" class="t-m mid t-blue">1</text><text x="250" y="180" class="t-b mid">Authenticate</text><text x="250" y="198" class="t-s mid">key or token</text>
+      <circle cx="420" cy="175" r="64" class="s-teal"/><text x="420" y="160" class="t-m mid t-teal">2</text><text x="420" y="180" class="t-b mid">Send request</text><text x="420" y="198" class="t-s mid">JSON body</text>
+      <circle cx="590" cy="175" r="64" class="s-violet"/><text x="590" y="160" class="t-m mid t-violet">3</text><text x="590" y="180" class="t-b mid">Stream</text><text x="590" y="198" class="t-s mid">tokens arrive</text>
+      <circle cx="760" cy="175" r="64" class="s-amber"/><text x="760" y="160" class="t-m mid t-amber">4</text><text x="760" y="180" class="t-b mid">Handle errors</text><text x="760" y="198" class="t-s mid">retry or fail well</text>
+      <path d="M150 175 H182" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M314 175 H352" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <path d="M484 175 H522" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <path d="M654 175 H692" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <path d="M760 239 Q760 300 590 300 Q440 300 430 243" class="s-dash" marker-end="url(#ah)"/>
+      <text x="595" y="322" class="t-s mid">retry with backoff (429, 5xx, timeouts)</text>
+      <text x="250" y="70" class="t-s mid">401 bad key</text><text x="250" y="86" class="t-s mid">403 not allowed</text><text x="250" y="104" class="t-m mid t-blue">TOPIC 2</text>
+      <text x="420" y="70" class="t-s mid">400 bad parameter</text><text x="420" y="86" class="t-s mid">404 wrong deployment</text><text x="420" y="104" class="t-m mid t-teal">TOPICS 3 · 4 · 5</text>
+      <text x="590" y="70" class="t-s mid">cut off (length)</text><text x="590" y="86" class="t-s mid">content filtered</text><text x="590" y="104" class="t-m mid t-violet">TOPIC 6</text>
+      <text x="760" y="70" class="t-s mid">429 too many</text><text x="760" y="86" class="t-s mid">500/503, timeouts</text><text x="760" y="104" class="t-m mid t-amber">TOPICS 7 · 8</text>
+      <rect x="850" y="130" width="96" height="90" rx="12" class="s-green"/><text x="898" y="164" class="t-b mid">$ Cost</text><text x="898" y="184" class="t-s mid">tokens ×</text><text x="898" y="200" class="t-s mid">price · T9</text>
+      <path d="M824 175 H846" class="s-arrow" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption><b>Authenticate, send, stream, handle errors.</b> The labels above each circle are what goes wrong at that stage. And every call, successful or not, has a token bill attached.</figcaption>
+</figure>
+
+<h2 id="why">An API like no other</h2>
+<p>You've called hundreds of REST APIs. An LLM API looks like one more: <code>POST</code> some JSON, get JSON back. Its behaviour breaks several assumptions you've built up over the years.</p>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Property</th><th>A typical REST API</th><th>An LLM API</th><th>What it forces you to do</th></tr></thead>
+    <tbody>
+      <tr><td>Latency</td><td>50–200 ms</td><td>1–30+ seconds</td><td>Stream, show progress, set generous timeouts</td></tr>
+      <tr><td>Determinism</td><td>Same request, same response</td><td>Same request, different response</td><td>Validate outputs; test with datasets, not one example</td></tr>
+      <tr><td>Billing</td><td>Per call, or flat</td><td>Per token; input and output priced differently</td><td>Count tokens, cap output, watch prompt size</td></tr>
+      <tr><td>Rate limits</td><td>Requests per second</td><td>Tokens per minute <em>and</em> requests per minute</td><td>Back off and retry; queue background work</td></tr>
+      <tr><td>State</td><td>Often session-based</td><td>Stateless: resend the conversation every time</td><td>Manage history yourself</td></tr>
+      <tr><td>"Success"</td><td>200 means it worked</td><td>200 can still be truncated, filtered or wrong</td><td>Check <code>finish_reason</code>; validate content</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A normal API is a <strong>vending machine</strong>: press B4, get the same snack in a second, every time. An LLM API is a <strong>busy restaurant kitchen</strong>: your order takes a while, the dish tastes slightly different each time, the bill depends on how much you ordered, and on a Saturday night the kitchen says "come back in ten minutes". You don't stop going to the restaurant. You just order differently.</p>
+</div>
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"It's an HTTP call. Wrap it in try/except, done."</p></div>
+  <div><h5>GenAI developer view</h5><p>"It's a <strong>slow, probabilistic, metered, rate-limited</strong> dependency. I design the UX for latency, the code for retries, the budget for tokens, and the tests for variability."</p></div>
+</div>
+
+<h2 id="pages">Pages and drills in this module</h2>
+<div class="page-cards"><a class="page-card k-topic" href="../../modules/02/architecture.html"><span class="pc-tag">Learn · Do · Check</span><b>API-based app architecture</b><ul><li><span class="mono">02.1</span> Hide the key behind a backend proxy <span class="muted">· ~20 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/02/authentication.html"><span class="pc-tag">Learn · Do · Check</span><b>Authentication and API keys</b><ul><li><span class="mono">02.2</span> See the wire: one call with raw HTTP and a key <span class="muted">· ~10 min</span></li><li><span class="mono">02.3</span> Go keyless: write the role assignment with AI, then call with your identity <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/02/lifecycle.html"><span class="pc-tag">Learn · Do · Check</span><b>Request/response lifecycle</b><ul><li><span class="mono">02.4</span> Build a response inspector with your AI assistant <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/02/roles.html"><span class="pc-tag">Learn · Do · Check</span><b>System, user, assistant messages</b><ul><li><span class="mono">02.5</span> Roles and memory by hand <span class="muted">· ~10 min</span></li><li><span class="mono">02.6</span> Write a tested history-trimming function <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/02/parameters.html"><span class="pc-tag">Learn · Do · Check</span><b>Temperature and parameters</b><ul><li><span class="mono">02.7</span> Parameter playground: which knobs does your model have? <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/02/streaming.html"><span class="pc-tag">Learn · Do · Check</span><b>Streaming responses</b><ul><li><span class="mono">02.8</span> Streaming vs waiting: measure time to first token <span class="muted">· ~10 min</span></li><li><span class="mono">02.9</span> Look at the raw server-sent events <span class="muted">· ~10 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/02/errors.html"><span class="pc-tag">Learn · Do · Check</span><b>Error handling</b><ul><li><span class="mono">02.10</span> Break it on purpose: read every kind of error <span class="muted">· ~10 min</span></li><li><span class="mono">02.11</span> Build a tested error-to-message mapper <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/02/rate-limits.html"><span class="pc-tag">Learn · Do · Check</span><b>Rate limits and retries</b><ul><li><span class="mono">02.12</span> Hit a real 429 and recover with backoff <span class="muted">· ~15 min</span></li><li><span class="mono">02.13</span> Write a tested retry decorator with backoff and jitter <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/02/cost.html"><span class="pc-tag">Learn · Do · Check</span><b>Managing API costs</b><ul><li><span class="mono">02.14</span> A cost meter: tokens to dollars to a monthly projection <span class="muted">· ~10 min</span></li><li><span class="mono">02.15</span> Build a usage report from your logs with your AI assistant <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-build" href="../../modules/02/build.html"><span class="pc-tag">Traincrest Assist</span><b>Build: Milestone 2</b><ul><li><span class="mono">M2</span> Milestone 2: streaming chat service with memory, errors and logging <span class="muted">· ~60 min</span></li></ul></a>
+<a class="page-card k-recap" href="../../modules/02/recap.html"><span class="pc-tag">Check</span><b>Recap and self-check</b></a></div>
+
+<h2 id="kit">Lab kit for Module 02</h2>
+<ul>
+  <li><strong>You'll need:</strong> the <code>genai-labs</code> folder and your <code>chat</code> deployment; for Drill 02.12, permission to lower the deployment's tokens-per-minute limit temporarily; for Drill 02.3, the Azure CLI.</li>
+  <li><strong>New packages:</strong> <code>fastapi</code>, <code>uvicorn</code> and <code>pytest</code> (already in <code>requirements.txt</code>).</li>
+  <li><strong>Unit tests without an API:</strong> Drills 02.6, 02.11 and 02.13 have you build tested utilities (history trimming, error mapping, retries) that the milestone reuses.</li>
+  <li><strong>Build:</strong> Milestone 2 turns Traincrest Assist into a FastAPI service with a streaming web chat.</li>
+</ul>
+
+</div>
+<nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/01/recap.html"><small>Previous</small><span>← 01 · Recap and self-check</span></a><a class="next" href="../../modules/02/architecture.html"><small>Next</small><span>02 · API-based app architecture →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

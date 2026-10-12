@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Is Prompt Engineering?</title>
+<meta name="description" content="Module 03, topic 1: prompt engineering as specifying and testing, everything the model reads is the prompt, and a drill comparing a vague and a specified prompt to your AI coding assistant.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m03-what">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic active" data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/03/index.html">Module 03</a><i>/</i><span>What is prompt engineering?</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 03 · Topic 1 of 10</span><h1>What Is Prompt Engineering?</h1><p class="lead">Prompt engineering is half writing and half testing: specify the task so clearly that the model can't misunderstand it, then check over many inputs that it really doesn't. You'll feel the difference first on your own AI coding assistant, with a vague request and a specified one.</p><div class="chips"><span class="chip">Specify + test</span><span class="chip">The whole request is the prompt</span><span class="chip">Drill 03.1</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 8 min · Do 20 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Half writing, half testing.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Prompt engineering is the practice of designing, testing and refining the inputs given to a language model (instructions, context, examples and output specifications) so that it reliably produces outputs that meet a defined requirement.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Write instructions so clear that the model can't misunderstand them, then check, over many inputs, that it really doesn't.</p>
+</div>
+
+<h3>Everything the model reads is the prompt</h3>
+<p>Beginners think the prompt is the user's question. For a developer, the prompt is the <em>entire request</em>, and you control most of it.</p>
+<div class="terms">
+  <div class="term"><b>System message</b><span>Your standing instructions: role, rules, tone, output format. Written once, versioned.</span></div>
+  <div class="term"><b>Examples</b><span>Sample inputs and ideal outputs that show the pattern (few-shot).</span></div>
+  <div class="term"><b>Context / data</b><span>Policies, documents, records: facts the model should use (RAG, Module 06).</span></div>
+  <div class="term"><b>User message</b><span>The input for this request: the only part you don't write, and the only part you shouldn't trust.</span></div>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>The system prompts behind well-known AI products are long, carefully structured documents: role, capabilities, rules, formatting, safety behaviour, often thousands of words, maintained by teams and changed through review. Some companies have published theirs. Nobody gets there by tweaking a sentence until a demo works; they get there by specifying and testing.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Judging a prompt by one run. Models sample, so one great answer proves very little. Run on <strong>several inputs, several times</strong>, and count: how often valid, how often correct, how long. That habit alone puts you ahead of most teams.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Prompt engineering is <strong>specifying</strong> the task (context, task, constraints, examples, output format) and <strong>testing</strong> it across a set of inputs. I treat prompts like code: versioned, reviewed and regression-tested."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Prompt your coding assistant two ways and compare what you get.</p></div></div>
+
+<div class="drill" id="d03-1" data-title="Vague vs specified: prompt your coding assistant two ways" data-time="~20 min" data-steps="ask,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 03.1</span><h3>Vague vs specified: prompt your coding assistant two ways</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-tool">Copilot · Claude Code · Codex</span><span class="badge b-tool">pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> feel, on a tool you use every day, how much a specified prompt changes the result, and that it's the same skill you'll use on the model inside your app.</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Prompt A: the vague version</h4>
+        <p>In a new folder <code>prompt-test-a</code>, send:</p>
+        <div class="prompt-box" data-title="Prompt A · vague"><pre><code>write an email validation function</code></pre></div>
+        <p>Note what you got: which language, what rules, any tests, how it reports failures.</p>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Prompt B: the specified version</h4>
+        <p>In a new folder <code>prompt-test-b</code>, send:</p>
+        <div class="prompt-box" data-title="Prompt B · specified"><pre><code>Context: TrainCrest's sign-up form needs a simple, explainable email check (not full RFC 5322).
+Task: write validate_email(address: str) -> tuple[bool, str] in validate_email.py, returning
+(is_valid, reason).
+Rules, in this order: strip surrounding whitespace; empty -> "empty"; longer than 254 chars ->
+"too long"; contains a space -> "contains spaces"; not exactly one "@" -> "must contain exactly
+one @"; nothing before "@" -> "missing name before @"; domain without a dot, starting or ending
+with a dot, or containing ".." -> "invalid domain"; otherwise (True, "ok").
+Constraints: standard library only, no regex, type hints, a docstring listing the rules.
+Output: also write test_validate_email.py with pytest covering 3 valid addresses and every
+invalid reason. Run the tests and show me the result.</code></pre></div>
+        <div class="why"><b>Why prompt B works:</b> context (why and for whom), the exact signature and return shape, every rule in order, constraints, and an output that includes its own verification. That's the prompt design framework applied to a coding assistant.</div>
+        <details class="solution"><summary>Reference result for prompt B</summary><div>
+          <pre class="code" data-file="validate_email.py"><code>"""Drill 03.1 (reference result of the *specified* prompt): a small, testable email validator."""
+
+
+def validate_email(address: str) -&gt; tuple[bool, str]:
+    """Return (is_valid, reason). Rules, deliberately simple and explicit:
+    - surrounding whitespace is ignored; spaces inside are not allowed
+    - exactly one '@', with a non-empty part on both sides
+    - the domain contains a dot, doesn't start or end with one, and has no '..'
+    - at most 254 characters in total
+    """
+    if not isinstance(address, str):
+        return False, "not a string"
+    value = address.strip()
+    if not value:
+        return False, "empty"
+    if len(value) &gt; 254:
+        return False, "too long"
+    if " " in value:
+        return False, "contains spaces"
+    if value.count("@") != 1:
+        return False, "must contain exactly one @"
+    local, domain = value.split("@")
+    if not local:
+        return False, "missing name before @"
+    if "." not in domain or domain.startswith(".") or domain.endswith(".") or ".." in domain:
+        return False, "invalid domain"
+    return True, "ok"</code></pre>
+          <pre class="code" data-file="test_validate_email.py"><code>"""Tests for validate_email. Run with:  pytest -q test_validate_email.py"""
+import pytest
+
+from validate_email import validate_email
+
+
+@pytest.mark.parametrize("address", [
+    "asha@traincrest.example",
+    "  diego.r@mail.example.org ",
+    "mei+courses@learn.example",
+])
+def test_valid(address):
+    assert validate_email(address) == (True, "ok")
+
+
+@pytest.mark.parametrize("address, reason", [
+    ("", "empty"),
+    ("no-at-sign.example", "must contain exactly one @"),
+    ("two@@signs.example", "must contain exactly one @"),
+    ("@traincrest.example", "missing name before @"),
+    ("asha@localhost", "invalid domain"),
+    ("asha@.example", "invalid domain"),
+    ("asha@traincrest..example", "invalid domain"),
+    ("asha kumar@traincrest.example", "contains spaces"),
+    ("a" * 250 + "@x.example", "too long"),
+])
+def test_invalid(address, reason):
+    assert validate_email(address) == (False, reason)</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>cd prompt-test-b
+<span class="ps">$ </span>pytest -q</code></pre>
+        <ul class="verify-list"><li>Prompt B's tests pass (12 cases in the reference).</li><li>Try Prompt B's tests against Prompt A's function. Most of them fail: not because A is "wrong", but because nobody told it what "right" meant.</li></ul>
+      </li>
+      <li class="dstep think"><span class="st">Think</span>
+        <p>Which of the five framework blocks (context, task, constraints, examples, output format) did prompt A leave entirely to the assistant's imagination?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>All five. It had no context (why, for whom), a vague task (no signature or return shape), no constraints (language, libraries, rules), no examples and no output format (tests? explanation?). Prompt B filled every one.</p></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-1"> I've completed Drill 03.1</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Two questions.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Which part of a request is the only one you shouldn't trust, and why?</summary><div><p>The <strong>user message</strong>: anyone can write anything in it, including instructions that try to override yours (topic 10).</p></div></details>
+  <details><summary>2. A prompt gave a perfect answer in your demo. Is it ready?</summary><div><p>Not yet. One run proves little; test it on <strong>many inputs, several times</strong>, and count the results.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Whether you're prompting the model in your app or the assistant in your editor, the skill is the same: specify, then verify.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m03-what"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/03/index.html"><small>Previous</small><span>← 03 · Overview and mental map</span></a><a class="next" href="../../modules/03/clear-instructions.html"><small>Next</small><span>03 · Clear instructions and context →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

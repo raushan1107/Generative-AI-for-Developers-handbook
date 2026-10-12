@@ -1,0 +1,134 @@
+<!--meta
+{"id": "m02-rate", "short": "Rate Limits and Retries", "h1": "Rate Limits and Retries", "description": "Module 02, topic 8: tokens and requests per minute, 429s, retry-after, exponential backoff with jitter, and drills that trigger a real 429 and build a tested retry decorator with your AI assistant.", "lead": "Your deployment has a token budget per minute. Spend it and the API says 429, slow down. The right answer is to wait a bit, then longer, with a little randomness, so a thousand clients don't retry at the same instant. You'll hit a real 429, then write the reusable retry decorator.", "chips": ["TPM · RPM", "429 · retry-after", "Backoff + jitter", "Drills 02.12 · 02.13"], "time": "Learn 10 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Wait longer each time, never in lockstep.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Rate limits cap how much a client can use an endpoint in a time window, typically as <strong>tokens per minute (TPM)</strong> and <strong>requests per minute (RPM)</strong>. Exceeding them returns HTTP 429. <strong>Exponential backoff with jitter</strong> retries after progressively longer, randomised waits.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A toll plaza with a fixed number of booths. When the queue is full, cars are turned back. If every turned-back car returns at exactly the same moment, the jam repeats. If each driver waits a different, growing amount of time (one minute, then two, then four, plus a random few seconds), the traffic smooths out. That random few seconds is the <strong>jitter</strong>.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 220" role="img" aria-labelledby="bo-t bo-d">
+      <title id="bo-t">Exponential backoff with jitter</title>
+      <desc id="bo-d">A failed request at zero seconds, a retry after about one second that fails, a retry after about two more seconds that fails, and a retry after about four more seconds, or the server's retry-after, that succeeds.</desc>
+      <path d="M40 150 H920" class="s-line" marker-end="url(#ah)"/>
+      <circle cx="60" cy="150" r="14" class="s-rose"/><text x="60" y="155" class="t-b mid">✕</text><text x="60" y="186" class="t-s mid">429</text>
+      <path d="M74 120 Q120 90 166 120" class="s-dash" marker-end="url(#ah)"/><text x="120" y="84" class="t-s mid">1s + jitter</text>
+      <circle cx="180" cy="150" r="14" class="s-rose"/><text x="180" y="155" class="t-b mid">✕</text><text x="180" y="186" class="t-s mid">429</text>
+      <path d="M194 120 Q290 60 386 120" class="s-dash" marker-end="url(#ah)"/><text x="290" y="60" class="t-s mid">2s + jitter</text>
+      <circle cx="400" cy="150" r="14" class="s-rose"/><text x="400" y="155" class="t-b mid">✕</text><text x="400" y="186" class="t-s mid">503</text>
+      <path d="M414 120 Q610 30 806 120" class="s-dash" marker-end="url(#ah)"/><text x="610" y="40" class="t-s mid">4s + jitter (or the server's retry-after)</text>
+      <circle cx="820" cy="150" r="14" class="s-green"/><text x="820" y="155" class="t-b mid">✓</text><text x="820" y="186" class="t-s mid">200 OK</text>
+      <text x="480" y="210" class="t-s mid">cap the wait (e.g. 30s) and the attempts (e.g. 5), then fail gracefully</text>
+    </svg>
+  </div>
+  <figcaption><b>If the server sends <code>retry-after</code>, it knows best: use it.</b></figcaption>
+</figure>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>On Azure you assign <strong>TPM per deployment</strong> within your quota, and an RPM limit is derived from it. Limits count the <em>maximum</em> output tokens you request, so a huge <code>max_completion_tokens</code> eats budget even if unused.</li>
+  <li>Responses carry headers like <code>x-ratelimit-remaining-tokens</code>; 429s often include <code>retry-after</code>.</li>
+  <li>The OpenAI and Anthropic Python SDKs <strong>already retry</strong> 408, 409, 429 and 5xx twice with backoff by default. Tune <code>max_retries</code>; don't wrap a second blind retry loop around it.</li>
+  <li>For bulk work (summarising 25,000 tickets), don't retry harder: <strong>queue</strong> it and process at a steady rate, or use a batch API (Modules 08, 11).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Provider limits are tiered: new accounts get small limits that grow with usage and spend, and capacity for popular models can be scarce at peak times. Production teams monitor TPM utilisation, keep separate deployments (or quotas) for interactive and batch traffic, and use a gateway to spread load across regions or deployments when one is saturated.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"429? Retry in a loop until it works."</p></div>
+  <div><h5>GenAI developer view</h5><p>"429 is a capacity signal. Retry interactive calls with <strong>backoff and jitter</strong>, size TPM for peak traffic, cap output tokens, and move bulk work to a <strong>queue or batch</strong>."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I handle 429s with <strong>exponential backoff plus jitter</strong>, honouring <strong>retry-after</strong>, with a cap on attempts, and I separate interactive traffic from batch work."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Hit a real limit, then package the fix.</p></div></div>
+
+<div class="drill" id="d02-12" data-title="Hit a real 429 and recover with backoff" data-time="~15 min" data-steps="portal,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.12</span><h3>Hit a real 429 and recover with backoff</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI · Foundry</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> read your remaining budget from headers, trigger a real 429, and recover with your own backoff.</p>
+    <ol class="dsteps">
+      <li class="dstep portal"><span class="st">Portal</span><p>In Foundry, open your <code>chat</code> deployment, choose <strong>Edit</strong>, and lower tokens per minute to about 1K–2K. <strong>You'll restore it at the end.</strong></p></li>
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab02_12_rate_limits.py" data-src="code/genai-labs/lab02_12_rate_limits.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_12_rate_limits.py</code></pre>
+        <span class="out-label">Expected (abridged)</span>
+<pre class="out"><code>x-ratelimit-limit-tokens: 1000
+x-ratelimit-remaining-tokens: 984
+x-ratelimit-limit-requests: 6
+x-ratelimit-remaining-requests: 5
+
+request  1 ok · 231 tokens
+request  2 ok · 228 tokens
+   attempt 1: RateLimitError, waiting 47.3s
+request  3 ok · 236 tokens
+…</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>You saw at least one <code>RateLimitError</code> and the script recovered.</li><li>The wait came from the server's <code>retry-after</code>, often longer than your own backoff would guess.</li><li><strong>Restore the deployment's TPM limit.</strong></li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-12"> I've completed Drill 02.12</label></div>
+</div>
+
+<div class="drill" id="d02-13" data-title="Write a tested retry decorator with backoff and jitter" data-time="~15 min" data-steps="write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.13</span><h3>Write a tested retry decorator with backoff and jitter</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · pytest</span><span class="badge b-tool">no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> turn the loop from Drill 02.12 into a reusable decorator, with tests that run in milliseconds because the sleep is injected.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span>
+        <div class="template-box"><pre><code>Goal:        retry.py with a decorator retry(...) and test_retry.py
+Context:     generic: it retries any function that raises the given exception types
+Constraints: parameters …; wait formula …; jitter …; cap …; re-raise after …;
+             make the sleep function injectable so tests don't actually sleep
+Done when:   pytest passes tests for: success after failures, giving up, not retrying
+             other exceptions, and the cap</code></pre></div>
+        <p class="hint"><b>Hint:</b> the key design trick is <code>sleep=time.sleep</code> as a parameter. Tests pass <code>sleep=waits.append</code> and then assert on the recorded waits.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Write retry.py with a decorator retry(retry_on, max_attempts=5, base=1.0, cap=30.0,
+sleep=time.sleep). It retries the wrapped function when it raises one of retry_on. Between
+attempts it waits min(cap, base * 2**(attempt-1)) seconds plus random jitter of up to 25% of
+that wait, and re-raises the last exception after max_attempts. Use functools.wraps. Then write
+test_retry.py (pytest) that injects sleep=waits.append so nothing really sleeps, and tests:
+succeeds after 2 failures with waits in [1, 1.25] and [2, 2.5]; gives up after max_attempts;
+does not retry other exception types; waits never exceed cap * 1.25. Run the tests.</code></pre></div>
+        </div></details>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="retry.py" data-src="code/genai-labs/retry.py"></pre>
+          <pre class="code" data-file="test_retry.py" data-src="code/genai-labs/test_retry.py"></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_retry.py</code></pre>
+        <span class="out-label">Expected</span>
+<pre class="out"><code>....                                                                     [100%]
+4 passed in 0.02s</code></pre>
+        <ul class="verify-list"><li>The tests take milliseconds: no real sleeping.</li><li>Use it: decorate a function that calls the model with <code>@retry((openai.RateLimitError, openai.APIConnectionError, openai.InternalServerError))</code>.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-13"> I've completed Drill 02.13</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Limits.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why add random jitter to backoff waits?</summary><div><p>So many clients that failed together <strong>don't retry together</strong> and cause the same overload again.</p></div></details>
+  <details><summary>2. A nightly job summarising 25,000 tickets keeps hitting 429s and slowing the chat. What do you change?</summary><div><p>Move it to a <strong>queue or batch API</strong> with a steady processing rate, ideally on separate capacity, instead of retrying harder.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Back off politely, honour retry-after, and keep bulk work out of the interactive lane.</p></div>

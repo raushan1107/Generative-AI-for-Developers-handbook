@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Is Generative AI?</title>
+<meta name="description" content="Module 01, topic 1: what generative AI is, how it differs from models that only judge, real-world examples, and two drills: a first no-code conversation and one brief turned into text, code and JSON.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m01-genai">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod" open><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic active" data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/01/index.html">Module 01</a><i>/</i><span>What is Generative AI?</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 01 · Topic 1 of 9</span><h1>What Is Generative AI?</h1><p class="lead">Older AI judged things: spam or not spam, cat or dog. Generative AI makes things: a reply, a function, a summary, an image. Learn what that really means, then see it with your own eyes in two drills.</p><div class="chips"><span class="chip">Generative vs discriminative</span><span class="chip">Real-world examples</span><span class="chip">Drills 01.1 · 01.2</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Generators vs judges, and why it matters to your code.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Generative AI is a class of AI models that create new content (text, code, images, audio or video) by learning the patterns of their training data and producing new outputs that follow those patterns, usually in response to a prompt.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Older AI mostly <em>judged</em>: "is this email spam?", "is this a cat?". Generative AI <em>makes</em>: "write a reply to this email", "draw a cat riding a scooter". It learned what good text or images look like, and produces new ones on request.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A <strong>food critic</strong> tastes a pizza and says "good" or "bad". That's traditional, discriminative AI. A <strong>chef</strong> who has tasted ten thousand pizzas makes you a new one that has never existed, in the style you asked for. Same knowledge of food, completely different job.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 250" role="img" aria-labelledby="gd-t gd-d">
+      <title id="gd-t">Discriminative versus generative models</title>
+      <desc id="gd-d">Top row: a discriminative model takes an email and outputs a label, spam. Bottom row: a generative model takes a prompt asking for a polite reply and outputs a brand-new paragraph.</desc>
+      <text x="20" y="30" class="t-m t-accent">DISCRIMINATIVE · JUDGES</text>
+      <rect x="20" y="44" width="220" height="62" rx="10" class="s-surface"/><text x="130" y="70" class="t-b mid">An email</text><text x="130" y="90" class="t-s mid">"You won $10,000!!! Click…"</text>
+      <rect x="330" y="44" width="200" height="62" rx="10" class="s-blue"/><text x="430" y="72" class="t-b mid">Classifier</text><text x="430" y="92" class="t-s mid">traditional ML</text>
+      <rect x="620" y="44" width="260" height="62" rx="10" class="s-rose"/><text x="750" y="72" class="t-b mid">Label: SPAM (97%)</text><text x="750" y="92" class="t-s mid">picks from fixed options</text>
+      <path d="M240 75 H324" class="s-arrow" marker-end="url(#ah)"/><path d="M530 75 H614" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="20" y="150" class="t-m t-accent">GENERATIVE · CREATES</text>
+      <rect x="20" y="164" width="220" height="62" rx="10" class="s-surface"/><text x="130" y="190" class="t-b mid">A prompt</text><text x="130" y="210" class="t-s mid">"Reply kindly, offer a reschedule"</text>
+      <rect x="330" y="164" width="200" height="62" rx="10" class="s-violet"/><text x="430" y="192" class="t-b mid">LLM</text><text x="430" y="212" class="t-s mid">generative model</text>
+      <rect x="620" y="164" width="260" height="62" rx="10" class="s-green"/><text x="750" y="190" class="t-b mid">New text, never seen before</text><text x="750" y="210" class="t-s mid">"Hi Omar, I'm sorry to hear…"</text>
+      <path d="M240 195 H324" class="s-arrow" marker-end="url(#ah)"/><path d="M530 195 H614" class="s-arrow" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption><b>Choose from a list vs write something new.</b> A discriminative model's output is one of a few fixed answers. A generative model's output is open-ended, which is exactly why it's powerful and why it needs guardrails.</figcaption>
+</figure>
+
+<div class="www">
+  <div><b>What</b>Models that produce new text, code, images or audio from a prompt.</div>
+  <div><b>Why</b>Language is the interface to most work: emails, documents, code, tickets, reports.</div>
+  <div><b>When</b>Tasks with many acceptable answers: drafting, summarising, explaining, extracting, conversing.</div>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>You already use generative AI daily. A coding assistant completing your function, an email client drafting a reply, a meeting app writing minutes, a support widget answering in full sentences: all of these generate new text from a prompt the product builds for you. Behind each one is a developer who decided what goes into that prompt, which is what you're learning to do.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"My functions return values I can predict and test exactly."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Generative output is open-ended. I test for <strong>properties</strong> (valid format, right facts, right tone) across many runs, not for one exact string."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>Asked "what is generative AI?", say: <strong>"Models that generate new content by learning patterns from data, as opposed to models that only classify or predict a label."</strong> Then give one example of each. Interviewers like the contrast more than the definition.</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Meet the model's quirks, then make it generate three very different things.</p></div></div>
+
+<div class="drill" id="d01-1" data-title="First conversation: notice the weirdness" data-time="~10 min" data-steps="nocode,think">
+  <div class="drill-head"><span class="drill-id">Drill 01.1</span><h3>First conversation: notice the weirdness</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-nocode">Foundry playground</span><span class="badge b-tool">or ChatGPT / Claude.ai</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> before any code, experience the four behaviours this module explains: variety, confident errors, frozen knowledge and no memory.</p>
+    <ol class="dsteps">
+      <li class="dstep nocode"><span class="st">No-code</span><h4>Open a chat window</h4><p>Use the chat playground in Microsoft Foundry with your <code>chat</code> deployment, or ChatGPT or Claude.ai.</p></li>
+      <li class="dstep nocode"><span class="st">No-code</span><h4>Run five tiny experiments</h4>
+        <ol>
+          <li><strong>Variety:</strong> "Suggest a name for an online tech training company." Regenerate three times.</li>
+          <li><strong>Confident errors:</strong> "What is TrainCrest's refund policy if I cancel 10 days before my course?" (TrainCrest's policy here is fictional.)</li>
+          <li><strong>Arithmetic:</strong> "What is 48,739 × 6,218? Answer with the number only." (Correct: 303,059,102.)</li>
+          <li><strong>Frozen knowledge:</strong> "What's today's date, and what was the biggest tech news this week?"</li>
+          <li><strong>No memory:</strong> say "My name is Mei." Then start a <em>new</em> chat and ask "What's my name?"</li>
+        </ol>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Explain each result before you read on</h4><p>Write one sentence per experiment: <em>why</em> did the model behave like that?</p>
+        <details class="solution"><summary>Compare with my explanations</summary><div>
+          <ul>
+            <li>Different names each time: the model <strong>samples</strong> from probabilities (topic 5).</li>
+            <li>An invented policy or a polite deflection: without facts, it produces <em>plausible</em> text (topic 5). Newer models guess less often, but never rely on it.</li>
+            <li>Arithmetic may be slightly off: numbers are chopped into tokens (topic 4). Chat apps often run a hidden calculator tool; the raw API doesn't.</li>
+            <li>Date and news unknown or guessed: knowledge is frozen at a cutoff (topic 6). Apps that answer correctly add web search around the model.</li>
+            <li>The new chat forgot Mei: each request starts with an empty context (topic 4). Chat apps resend history for you; in Module 02 you'll do it yourself.</li>
+          </ul>
+        </div></details>
+      </li>
+    </ol>
+    <p class="lab-say"><b>Remember:</b> “Everything weird you just saw comes from one fact: it's predicting the next token from what's in front of it right now.”</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-1"> I've completed Drill 01.1</label></div>
+</div>
+
+<div class="drill" id="d01-2" data-title="One brief, three outputs, and test the generated code" data-time="~10 min" data-steps="run,ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 01.2</span><h3>One brief, three outputs, and test the generated code</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · AI assistant</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> see one model generate marketing text, working code and structured data from the same brief, then treat generated code the way a professional does: test it.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Create and run the script</h4>
+        <pre class="code" data-file="lab01_02_one_brief.py"><code>"""Drill 01.2: one model, one brief, three very different kinds of output."""
+from llm import get_client, MODEL
+
+client = get_client()
+
+BRIEF = ("TrainCrest is launching a 3-day online course, 'Generative AI for Developers', "
+         "starting on 20 March 2027, priced at $1,200, with hands-on labs on Azure.")
+
+TASKS = {
+    "Marketing text": "Write a 40-word announcement for LinkedIn.",
+    "Python code": "Write a Python function days_until_start(today: date) -&gt; int for this course. Code only.",
+    "JSON record": 'Return only JSON with keys "title", "start_date" (YYYY-MM-DD), "price_usd", "format".',
+}
+
+for label, task in TASKS.items():
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[{"role": "user", "content": f"{BRIEF}\n\n{task}"}],
+    )
+    print(f"\n===== {label} =====")
+    print(response.choices[0].message.content.strip())</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_02_one_brief.py</code></pre>
+        <span class="out-label">Expected output (abridged; yours will differ)</span>
+<pre class="out"><code>===== Marketing text =====
+New course alert! 'Generative AI for Developers' starts 20 March 2027: 3 days of hands-on Azure labs...
+
+===== Python code =====
+from datetime import date
+def days_until_start(today: date) -> int:
+    return (date(2027, 3, 20) - today).days
+
+===== JSON record =====
+{"title": "Generative AI for Developers", "start_date": "2027-03-20", "price_usd": 1200, "format": "online"}</code></pre>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Turn the generated function into tested code</h4>
+        <p>Copy the generated function into a new file <code>course_dates.py</code>. Then ask your assistant:</p>
+        <div class="prompt-box"><pre><code>In #course_dates.py there is a function days_until_start(today). Write pytest tests in
+test_course_dates.py covering: a date well before the start, the day before, the start day
+itself (expect 0) and a date after the start (expect a negative number). Use fixed dates,
+not date.today(). Then run pytest and show me the result. Don't modify course_dates.py.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it names the file and function, lists the exact cases including edge cases, forbids flaky <code>date.today()</code>, and stops the assistant from "fixing" the code to fit its own tests.</div>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_course_dates.py</code></pre>
+        <ul class="verify-list"><li>All four tests pass, or a failing test shows the generated code was wrong (it happens: that's the lesson).</li><li>The JSON output parses: save it as <code>record.json</code> and run <code>python -m json.tool record.json</code>. If the model wrapped it in <code>```json</code> fences, it won't parse as-is (Module 03 fixes that).</li></ul>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Try this:</b> change the brief's start date and run again. Does the generated code update the date? Generation follows the prompt, not a database.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-2"> I've completed Drill 01.2</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Two questions before you move on.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A spam filter and a reply-drafting assistant both use AI. Which is generative, and why?</summary><div><p>The <strong>reply drafter</strong>: it creates new text. The spam filter is discriminative: it picks one of a fixed set of labels.</p></div></details>
+  <details><summary>2. Why did Drill 01.2 ask you to test the generated function?</summary><div><p>Generated code is <strong>plausible</strong>, not guaranteed correct. Tests turn "looks right" into "is right", the same habit you'll apply to every AI-generated artefact.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Generative AI writes new content from patterns. Your job as a developer is to decide what it should generate, and to check that it did.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m01-genai"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/01/index.html"><small>Previous</small><span>← 01 · Overview and mental map</span></a><a class="next" href="../../modules/01/genai-vs-ml.html"><small>Next</small><span>01 · GenAI vs traditional AI/ML →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

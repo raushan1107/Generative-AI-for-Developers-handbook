@@ -1,0 +1,55 @@
+<!--meta
+{"id": "m04", "short": "Structured Outputs and Function Calling", "h1": "Structured Outputs and Function Calling: From Text to Actions", "description": "Module 04 overview: why structured outputs matter, JSON mode, schema-based generation, function calling, connecting LLMs to application logic, validation and handling malformed responses, with 10 drills and Traincrest Assist milestone 4.", "lead": "So far the model has produced words for people to read. In this module it starts producing data for your code to use, and asking your code to do things: check an enrolment, quote a refund, raise a ticket. That's the moment a chatbot becomes part of an application, and the moment reliability stops being optional.", "chips": ["7 topics", "10 drills", "Milestone 4", "≈ 5 hours hands-on"]}
+-->
+<h2 id="map">The mental map: the reliability ladder</h2>
+<p>Every rung up this ladder hands one more guarantee from "the model will probably do it" to "the system makes sure of it". The whole module climbs it, one rung per topic.</p>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 400" role="img" aria-labelledby="m4-t m4-d">
+      <title id="m4-t">The reliability ladder for model output</title>
+      <desc id="m4-d">Five rungs from bottom to top. Free text: readable by people, parsed by regex, breaks often. JSON mode: always valid JSON, but keys and types can drift. Structured outputs: the reply matches your JSON Schema exactly. Validators: your code checks business rules such as ID formats, ranges and dates. Function calling: the model asks for an action, your code decides and runs it. On the right, an arrow shows guarantees moving from the model's goodwill to your code.</desc>
+      <rect x="40" y="316" width="560" height="62" rx="12" class="s-surface2"/>
+      <text x="64" y="342" class="t-m">1 · FREE TEXT</text><text x="64" y="364" class="t-s">"It costs $290..." → a regex guesses → breaks on the next phrasing</text>
+      <rect x="80" y="244" width="560" height="62" rx="12" class="s-amber"/>
+      <text x="104" y="270" class="t-m t-amber">2 · JSON MODE</text><text x="104" y="292" class="t-s">always valid JSON → but which keys? which types? not guaranteed</text>
+      <rect x="120" y="172" width="560" height="62" rx="12" class="s-blue"/>
+      <text x="144" y="198" class="t-m t-blue">3 · STRUCTURED OUTPUTS</text><text x="144" y="220" class="t-s">your JSON Schema is enforced → exact keys, types and enums</text>
+      <rect x="160" y="100" width="560" height="62" rx="12" class="s-teal"/>
+      <text x="184" y="126" class="t-m t-teal">4 · VALIDATORS IN YOUR CODE</text><text x="184" y="148" class="t-s">business rules → TC-12345 format, dates in the future, amounts we produced</text>
+      <rect x="200" y="28" width="560" height="62" rx="12" class="s-violet"/>
+      <text x="224" y="54" class="t-m t-violet">5 · FUNCTION CALLING</text><text x="224" y="76" class="t-s">the model asks for an action → your code checks identity, runs it, returns data</text>
+      <path d="M840 370 V40" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="860" y="210" class="t-b">your code</text><text x="860" y="228" class="t-s">guarantees</text><text x="860" y="244" class="t-s">more</text>
+      <text x="860" y="370" class="t-s">hope</text>
+    </svg>
+  </div>
+  <figcaption><b>Climb as high as the job needs.</b> A summary for a person can stay on rung 1. Anything your code reads needs rung 3 or above; anything that changes data needs rung 5 with your code in charge.</figcaption>
+</figure>
+<div class="callout takeaway">
+  <div class="c-label">Takeaway</div>
+  <p>The model proposes; your code disposes. Use the API to guarantee the <strong>shape</strong>, your validators to guarantee the <strong>rules</strong>, and your own functions to do anything that <strong>matters</strong>.</p>
+</div>
+
+<h2 id="why">Why this module changes what you build</h2>
+<p>In Milestone 3, Traincrest Assist triaged messages into JSON, and we still needed a repair loop because the model sometimes wrapped its answer in code fences. Worse, when Diego asked "how much do I get back if I cancel?", Assist could only recite policy: it couldn't see his booking, so it couldn't give him a number. Both problems have the same cure: stop treating the model as a text generator and start treating it as a <strong>component with a contract</strong>.</p>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A hotel concierge doesn't walk into the kitchen and cook your dinner. They fill in a room-service form with fixed boxes (dish, quantity, room number) and hand it to the kitchen. The kitchen checks the room is real, cooks, and sends back a receipt the concierge reads to you. Structured outputs are the form. Function calling is handing it to the kitchen. Your code is the kitchen: it decides what actually gets made.</p>
+</div>
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Functions have typed parameters. Callers either pass valid arguments or get a compile error."</p></div>
+  <div><h5>GenAI developer view</h5><p>"My caller is a model. It can send the wrong type, an invented ID or somebody else's ID. I <strong>publish a schema</strong>, let the API enforce the shape, <strong>validate the rules</strong> myself, and never let the model decide <em>whose</em> data a function touches."</p></div>
+</div>
+
+<h2 id="pages">Pages and drills in this module</h2>
+<!--MODULE_PAGES:04-->
+
+<h2 id="kit">Lab kit for Module 04</h2>
+<ul>
+  <li><strong>New files in <code>genai-labs/</code>:</strong> <code>catalogue.py</code> and <code>data/courses.json</code> (20 fictional TrainCrest courses), used here and in Module 05.</li>
+  <li><strong>Install:</strong> <code>pip install pydantic</code> (already there if you did Part I's labs with FastAPI).</li>
+  <li><strong>Many drills run offline.</strong> Drills 04.1, 04.4, 04.7 (tests), 04.8, 04.9 and 04.10 need no API key, so you can practise the hard parts anywhere and get exact outputs.</li>
+  <li><strong>New helper, <code>llm_tools.py</code>:</strong> if a tool drill fails with <em>"Function tools with reasoning_effort are not supported"</em>, your deployment is a reasoning model that wants the Responses API for tools. For these drills, add <code>TOOLS_REASONING_EFFORT=none</code> to <code>.env</code>; this helper passes it on every tool request. Or use a non-reasoning deployment.
+    <pre class="code" data-file="llm_tools.py" data-src="code/genai-labs/llm_tools.py"></pre></li>
+  <li><strong>Build:</strong> Milestone 4 gives Traincrest Assist strict tools (catalogue search, the learner's enrolments, voucher status, refund and reschedule quotes, support tickets) and moves triage to structured outputs.</li>
+</ul>

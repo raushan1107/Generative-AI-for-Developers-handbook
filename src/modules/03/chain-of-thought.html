@@ -1,0 +1,78 @@
+<!--meta
+{"id": "m03-cot", "short": "Chain-of-Thought", "h1": "Chain-of-Thought Considerations", "description": "Module 03, topic 6: step-by-step reasoning, how reasoning models changed it, keeping reasoning separate from answers, and a drill on a multi-step refund case.", "lead": "Because the model writes one token at a time, it 'thinks' by writing. Give it room to work step by step, or use a reasoning model that does it silently, and multi-step answers get better. You'll compare a direct and a step-by-step answer on a refund case, and keep the reasoning away from the learner.", "chips": ["Step-by-step", "Reasoning models", "Reasoning vs answer", "Drill 03.7"], "time": "Learn 10 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Show your working, but not to the customer.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Chain-of-thought (CoT) prompting asks a model to produce intermediate reasoning steps before its final answer, which can improve accuracy on multi-step problems such as arithmetic, logic and policy application. Reasoning models perform this kind of reasoning internally before responding.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Maths exams at school: "show your working". A student who writes each step makes fewer mistakes, and when they're wrong the teacher can see where. Reasoning models are students who always do rough work on a hidden sheet: you see only the final answer, but you're charged for the sheet.</p>
+</div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Model type</th><th>How to get step-by-step reasoning</th><th>Watch out for</th></tr></thead>
+    <tbody>
+      <tr><td>Non-reasoning chat model</td><td>Ask for it: "Work through it step by step inside &lt;reasoning&gt;, then give the answer inside &lt;answer&gt;."</td><td>More output tokens and latency; you must separate reasoning from the answer</td></tr>
+      <tr><td>Reasoning model</td><td>Built in. Raise <code>reasoning_effort</code> for harder problems; no need for "think step by step"</td><td>Hidden reasoning tokens are billed. Over-prescribing steps can make results worse; state the goal and constraints instead.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Rules for CoT in an application</h3>
+<ul>
+  <li><strong>Separate thinking from answering.</strong> Reasoning in one field or tag, the final answer in another; show users only the answer.</li>
+  <li><strong>Don't use visible CoT where it isn't needed.</strong> Classifying "charged twice" doesn't need five steps.</li>
+  <li><strong>Reasoning isn't proof.</strong> Convincing steps can still be wrong. Verify critical results in code (dates, amounts) or with evaluation.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Reasoning models made explicit CoT prompting far less necessary: products now expose an "effort" or "thinking" setting instead. Where teams still ask for visible reasoning, it's usually for <strong>auditability</strong>, for example storing why an AI recommended a refund decision for a human reviewer, never shown to the customer.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Showing raw reasoning to the customer: "Step 1: the learner seems annoyed. Step 2: policy says no refund…". Reasoning is a working note for your system, not customer text.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"CoT helps on <strong>multi-step</strong> problems by giving the model room to reason. With reasoning models it's internal and controlled by <strong>reasoning effort</strong>. In apps I keep reasoning separate from the answer and verify critical results in code."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>A refund case with two rules and an add-on.</p></div></div>
+
+<div class="drill" id="d03-7" data-title="Chain-of-thought on a multi-step refund case" data-time="~15 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 03.7</span><h3>Chain-of-thought on a multi-step refund case</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Ollama shows the gap best</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> compare direct and step-by-step answers, and extract only the customer-facing part.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab03_07_cot.py" data-src="code/genai-labs/lab03_07_cot.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab03_07_cot.py</code></pre>
+        <p>Then run it again with <code>LLM_PROVIDER=ollama</code>.</p>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Check against the correct answer</h4>
+        <p>Cancelled on 9 March for a 20 March start: <strong>11 days</strong> before, so the 7–13 day rule applies: <strong>50% of $1,200 = $600</strong>. The Retake Pass is refunded in full: <strong>$180</strong>. Total <strong>$780</strong>, not the $1,380 requested.</p>
+        <ul class="verify-list"><li>On a reasoning model both versions are usually right; compare output tokens (hidden reasoning is included).</li><li>On a small local model the direct answer is often fooled by the learner's request or miscounts days; step by step does better.</li><li>"Shown to the learner" contains only the answer, never the reasoning.</li></ul>
+      </li>
+      <li class="dstep think"><span class="st">Think</span>
+        <p>Which part of this task should never be left to the model in production?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>The <strong>date arithmetic and the money</strong>. Code should compute "11 days, 50%, $780" exactly; the model should explain the result kindly. In Module 04 the model calls a <code>refund_quote()</code> function instead of doing maths.</p></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-7"> I've completed Drill 03.7</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Reasoning.</p></div></div>
+<div class="quiz">
+  <details><summary>1. You ask a reasoning model to "think step by step" and print its reasoning to learners. What's wrong?</summary><div><p>It already reasons internally, so you add visible tokens and cost; and reasoning isn't customer text. Keep <strong>reasoning separate from the answer</strong>, and tune <code>reasoning_effort</code> instead.</p></div></details>
+  <details><summary>2. When is visible reasoning still useful?</summary><div><p>For <strong>auditability</strong> and debugging: storing why a decision was suggested, for a human reviewer, not for the end user.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Let the model reason, keep the reasoning backstage, and let code do the exact maths.</p></div>

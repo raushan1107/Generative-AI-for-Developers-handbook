@@ -1,0 +1,111 @@
+<!--meta
+{"id": "m01-mm", "short": "Multimodal AI", "h1": "Multimodal AI", "description": "Module 01, topic 8: models that understand images, documents and audio alongside text, what they cost, and a drill that sends a real error screenshot to the model for diagnosis.", "lead": "Real-world input is messy: screenshots of errors, photos of receipts, scanned forms, voice notes. Multimodal models read them together with your text. You'll send a screenshot of a real error to your model and get a support-ready diagnosis back.", "chips": ["Text + images", "Documents", "Audio", "Drill 01.12"], "time": "Learn 8 min · Do 12 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>One model, several senses.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Multimodal models accept and/or produce more than one type of data (modality), such as text, images, audio and video, within a single model, for example answering a text question about an image.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Early LLMs only read text. Many current models can also <em>look</em> at a screenshot or a scanned PDF, and some can <em>listen</em> and <em>speak</em>. For you, it means a learner can paste a screenshot of a lab error and the assistant can understand it, with no separate image system.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 230" role="img" aria-labelledby="mm-t mm-d">
+      <title id="mm-t">Multimodal inputs and outputs</title>
+      <desc id="mm-d">Text, images, documents and audio flow into one multimodal model. Out come text answers and structured data; images and speech need specialised models.</desc>
+      <rect x="20" y="20" width="170" height="40" rx="9" class="s-blue"/><text x="105" y="45" class="t-b mid">Text</text>
+      <rect x="20" y="70" width="170" height="40" rx="9" class="s-teal"/><text x="105" y="95" class="t-b mid">Screenshots / photos</text>
+      <rect x="20" y="120" width="170" height="40" rx="9" class="s-amber"/><text x="105" y="145" class="t-b mid">Documents / PDFs</text>
+      <rect x="20" y="170" width="170" height="40" rx="9" class="s-rose"/><text x="105" y="195" class="t-b mid">Audio</text>
+      <rect x="330" y="60" width="240" height="110" rx="16" class="s-violet"/><text x="450" y="108" class="t-h mid">Multimodal model</text><text x="450" y="130" class="t-s mid">one model, several senses</text>
+      <rect x="710" y="30" width="170" height="40" rx="9" class="s-surface"/><text x="795" y="55" class="t mid">Text answer</text>
+      <rect x="710" y="80" width="170" height="40" rx="9" class="s-surface"/><text x="795" y="105" class="t mid">Structured JSON</text>
+      <rect x="710" y="130" width="170" height="40" rx="9" class="s-surface"/><text x="795" y="155" class="t mid">Image (image models)</text>
+      <rect x="710" y="180" width="170" height="40" rx="9" class="s-surface"/><text x="795" y="205" class="t mid">Speech (audio models)</text>
+      <path d="M190 40 Q260 50 326 90" class="s-arrow" marker-end="url(#ah)"/><path d="M190 90 Q260 95 326 108" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M190 140 Q260 135 326 124" class="s-arrow" marker-end="url(#ah)"/><path d="M190 190 Q260 180 326 142" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M570 92 Q640 70 706 50" class="s-arrow" marker-end="url(#ah)"/><path d="M570 108 H706" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M570 128 Q640 140 706 150" class="s-dash" marker-end="url(#ah)"/><path d="M570 144 Q640 180 706 200" class="s-dash" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption><b>Many senses, one model.</b> Solid lines are what typical chat models do today (text and images in; text or JSON out). Dashed outputs need specialised image or audio models.</figcaption>
+</figure>
+
+<div class="www">
+  <div><b>What</b>One model that understands text plus images, documents or audio.</div>
+  <div><b>Why</b>Users send screenshots, photos, scans and voice notes, not tidy text.</div>
+  <div><b>When</b>Error screenshots, receipts and invoices, ID or form extraction, damage photos, voice assistants.</div>
+</div>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>Images are converted into tokens too, so a large image costs input tokens like text; apps often resize images first.</li>
+  <li>Not every model is multimodal. Check the model's <strong>input modalities</strong> in the catalogue before designing around images.</li>
+  <li>Image and speech <em>generation</em> usually need separate, specialised models.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Support tools let customers attach screenshots and let the assistant read them; expense apps read receipt photos; insurers triage damage photos; coding assistants accept a screenshot of a UI bug or a whiteboard sketch. In each case the value is skipping a separate OCR or vision pipeline and reasoning over the image and the text together.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Multimodal means <strong>several input or output types in one model</strong>. A learner pastes a screenshot of a lab error, and the same model that chats with them reads the error and suggests the fix."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Diagnose a real error from a screenshot.</p></div></div>
+
+<div class="drill" id="d01-12" data-title="Read a screenshot: diagnose an error from an image" data-time="~12 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 01.12</span><h3>Read a screenshot: diagnose an error from an image</h3>
+    <div class="drill-meta"><span class="time">~12 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> send an image and a question in one request and get a useful, support-style answer.</p>
+    <p class="lab-note"><b>Before you start:</b> create a real error to photograph. In a terminal run <code>python -c "import requests; requests.get('http://localhost:9')"</code>, take a screenshot of the error, and save it as <code>screenshot.png</code> in your lab folder. Check that your model lists images as an input modality.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab01_12_vision.py" data-src="code/genai-labs/lab01_12_vision.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_12_vision.py screenshot.png</code></pre>
+        <span class="out-label">Expected output (abridged)</span>
+<pre class="out"><code>1) The error is a requests ConnectionError: "Failed to establish a new connection... Connection refused".
+2) Likely cause: nothing is listening on localhost port 9, the service isn't running or the port is wrong.
+3) Next step: check the service is started and the URL/port matches its configuration.
+
+input tokens (text + image): 1214</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>The model read text from the image correctly (compare with your screen).</li><li>Note the input token count: the image cost far more tokens than your question.</li><li>Try a photo of something non-technical (a receipt, a whiteboard). Is the answer still sensible?</li></ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · Claude or a local vision model</div>
+      <div class="alt-body">
+<pre class="code" data-file="vision_claude.py"><code>import base64
+from claude_llm import client, CLAUDE_MODEL, FALLBACK, text_of
+
+image_b64 = base64.b64encode(open("screenshot.png", "rb").read()).decode()
+msg = client.beta.messages.create(
+    model=CLAUDE_MODEL, max_tokens=4000,
+    messages=[{"role": "user", "content": [
+        {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": image_b64}},
+        {"type": "text", "text": "What is this error, the likely cause, and the next step? Be brief."},
+    ]}],
+    **FALLBACK,
+)
+print(text_of(msg))</code></pre>
+        <p>On Ollama, <code>llama3.2</code> is text-only: pull a vision model (for example <code>ollama pull llama3.2-vision</code>) and set <code>OLLAMA_MODEL</code> to it.</p>
+      </div>
+    </div>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-12"> I've completed Drill 01.12</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>One question.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Your vision feature works but costs more than expected. Where would you look first?</summary><div><p>Image <strong>input tokens</strong>: large images cost many tokens. Resize or crop images before sending, and send them only when they're needed.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Multimodal models remove whole pipelines (OCR, image classifiers), but images are paid for in tokens like everything else.</p></div>

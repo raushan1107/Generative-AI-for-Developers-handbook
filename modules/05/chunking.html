@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chunking Strategies</title>
+<meta name="description" content="Module 05, topic 6: why documents are split into chunks before embedding, fixed-size with overlap, sentence-based and structure-based chunking, chunk size trade-offs, keeping context in each chunk, and a drill that measures four strategies on 20 help-centre questions.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m05-chunk">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod"><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic active" data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part II</span><i>/</i><a href="../../modules/05/index.html">Module 05</a><i>/</i><span>Chunking strategies</span></nav>
+  <span class="kind-pill">Learn · Do · Check · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 05 · Topic 6 of 8</span><h1>Chunking Strategies</h1><p class="lead">You don't embed a whole manual as one vector; its meaning would blur into 'something about everything'. You cut it into chunks, and how you cut decides what can be found. Too small and a chunk loses its context; too big and the answer drowns. You'll measure four strategies on TrainCrest's help centre and let the hit rate decide.</p><div class="chips"><span class="chip">Fixed · sentences · headings</span><span class="chip">Size and overlap</span><span class="chip">Measure hit rate</span><span class="chip">Drill 05.7</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 25 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>How you cut decides what you find.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Chunking</strong> splits documents into smaller passages that are embedded and indexed separately. Common strategies are <strong>fixed-size</strong> (a number of characters or tokens, often with <strong>overlap</strong>), <strong>sentence or paragraph</strong> based, and <strong>structure-based</strong> (by headings, sections, pages or code functions). Each chunk keeps a link to its source document.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>One vector per whole article means one blurry summary. One vector per section means a sharp vector for "how much do I get back?" and another for "when does the money arrive?", so a question can land on exactly the right one.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Index cards for a cookbook. One card per book ("Italian food") won't help you find the risotto. One card per word is useless too. One card per recipe, with the book title on top, is just right: specific enough to find, complete enough to cook from.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 280" role="img" aria-labelledby="ch-t ch-d">
+      <title id="ch-t">Three ways to chunk the same article</title>
+      <desc id="ch-d">The refunds article is split three ways. Fixed-size chunks of about 300 characters cut across sections and sometimes through the middle of a rule, with some overlap between neighbours. Sentence-based chunks keep whole sentences but can still mix sections. Heading-based chunks follow the article's own sections, and each chunk starts with the article and section title, so it makes sense on its own.</desc>
+      <text x="20" y="34" class="t-m">FIXED 300 CHARS</text>
+      <rect x="20" y="44" width="290" height="44" rx="8" class="s-amber"/><text x="32" y="70" class="t-s">...start date is the first day of...</text>
+      <rect x="20" y="96" width="290" height="44" rx="8" class="s-amber"/><text x="32" y="122" class="t-s">...class. ## How much you get back...</text>
+      <rect x="20" y="148" width="290" height="44" rx="8" class="s-amber"/><text x="32" y="174" class="t-s">...days: 100% refund. - Cancel 7...</text>
+      <text x="20" y="214" class="t-s">cuts through rules and sections</text>
+      <text x="335" y="34" class="t-m">SENTENCES (≤ 400 CHARS)</text>
+      <rect x="335" y="44" width="290" height="44" rx="8" class="s-blue"/><text x="347" y="70" class="t-s">Cancel 14+ days before... 100% refund.</text>
+      <rect x="335" y="96" width="290" height="44" rx="8" class="s-blue"/><text x="347" y="122" class="t-s">Cancel 7 to 13 days... 50% refund.</text>
+      <rect x="335" y="148" width="290" height="44" rx="8" class="s-blue"/><text x="347" y="174" class="t-s">## How to cancel  Open My Learning...</text>
+      <text x="335" y="214" class="t-s">whole sentences · sections can still mix</text>
+      <text x="650" y="34" class="t-m">BY HEADINGS</text>
+      <rect x="650" y="44" width="290" height="62" rx="8" class="s-green"/><text x="662" y="68" class="t-b">Refunds › How much you get back</text><text x="662" y="88" class="t-s">14+ days: 100%. 7–13 days: 50%. Under 7...</text>
+      <rect x="650" y="114" width="290" height="62" rx="8" class="s-green"/><text x="662" y="138" class="t-b">Refunds › When the money arrives</text><text x="662" y="158" class="t-s">Refunds go back to the original payment...</text>
+      <text x="650" y="200" class="t-s">one idea per chunk · titles give context</text>
+      <text x="480" y="258" class="t-s mid">same article, three cuttings · which one finds the answer most often? measure it</text>
+    </svg>
+  </div>
+  <figcaption><b>Follow the document's own structure when it has one.</b> Fixed-size chunking is the fallback for text without structure.</figcaption>
+</figure>
+
+<h3>The trade-offs</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Choice</th><th>Smaller</th><th>Larger</th></tr></thead>
+    <tbody>
+      <tr><td>Chunk size</td><td>Precise matches, but may lose context ("it costs $49" — what does?)</td><td>More context, but the vector blurs and the answer is diluted</td></tr>
+      <tr><td>Overlap</td><td>Less duplication, but a rule split at a boundary can be lost</td><td>Safer boundaries, more chunks to store and embed</td></tr>
+      <tr><td>Context header</td><td>Shorter chunks</td><td>"Labs › How long labs stay open" makes the chunk understandable alone</td></tr>
+    </tbody>
+  </table>
+</div>
+<ul>
+  <li><strong>Structure first:</strong> markdown headings, HTML sections, PDF pages, code functions, FAQ question-answer pairs. Fixed-size windows are for walls of text.</li>
+  <li><strong>Add context to each chunk:</strong> the document and section title (and maybe a date or product) at the top. It helps both retrieval and the model that reads it later.</li>
+  <li><strong>Keep the source:</strong> store <code>source</code> (file, URL, page) with every chunk. Module 06 uses it for citations.</li>
+  <li><strong>Re-chunking means re-embedding:</strong> treat the chunking strategy like the embedding model: versioned, measured, rebuilt deliberately.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams building "chat with our documentation" bots typically spend more time on chunking and cleaning than on prompts: stripping navigation menus from web pages, keeping tables intact, splitting PDFs by section rather than by page, and adding titles to every chunk. Azure AI Search can chunk for you with built-in skills during indexing, but you still choose the strategy and measure it.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Split the text every 1,000 characters and index it."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Chunks are the <strong>units of retrieval</strong>. I cut along the document's meaning, give each chunk its context, keep its source, and pick size and overlap by <strong>measuring hit rate</strong> on real questions."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Judging chunking by eye ("these chunks look reasonable") instead of by retrieval. Drill 05.7's fixed 800-character chunks look tidy, put the right chunk in the top 3 every time, and still put it <em>first</em> only 15 times out of 20.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I chunk by the document's structure where possible, add document and section titles to each chunk, use fixed-size windows with overlap as a fallback, store the source for citations, and choose size and overlap by <strong>measuring retrieval hit rate</strong> on labelled questions."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Four strategies, 20 questions, one table of numbers.</p></div></div>
+
+<div class="drill" id="d05-7" data-title="Chunkers compared: let the hit rate decide" data-time="~25 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 05.7</span><h3>Chunkers compared: let the hit rate decide</h3>
+    <div class="drill-meta"><span class="time">~25 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> implement three chunkers, test them, then measure which one most often retrieves the chunk that actually contains the answer.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Three chunkers</h4>
+        <pre class="code" data-file="chunkers.py"><code>"""Drill 05.7: three ways to cut documents into chunks before embedding them."""
+import re
+from pathlib import Path
+
+HELP_DIR = Path(__file__).parent / "data" / "help"
+
+
+def load_articles():
+    """{"refunds-and-cancellations": "# Refunds and cancellations\n...", ...}"""
+    return {p.stem: p.read_text(encoding="utf-8") for p in sorted(HELP_DIR.glob("*.md"))}
+
+
+def fixed_size(text, size=300, overlap=50):
+    """Windows of about `size` characters, cut at word boundaries, overlapping by about `overlap`."""
+    words, chunks, start = text.split(), [], 0
+    while start &lt; len(words):
+        end, length = start, 0
+        while end &lt; len(words) and length + len(words[end]) + 1 &lt;= size:
+            length += len(words[end]) + 1
+            end += 1
+        end = max(end, start + 1)
+        chunks.append(" ".join(words[start:end]))
+        if end &gt;= len(words):
+            break
+        back, kept = end, 0                       <span class="c"># step back far enough to repeat ~overlap characters</span>
+        while back &gt; start + 1 and kept &lt; overlap:
+            back -= 1
+            kept += len(words[back]) + 1
+        start = back
+    return chunks
+
+
+def by_sentences(text, max_chars=400):
+    """Whole sentences, packed together until the next one would pass max_chars."""
+    sentences = re.split(r"(?&lt;=[.!?])\s+|\n+", text)
+    chunks, current = [], ""
+    for s in (s.strip() for s in sentences):
+        if not s:
+            continue
+        if current and len(current) + len(s) + 1 &gt; max_chars:
+            chunks.append(current)
+            current = s
+        else:
+            current = f"{current} {s}".strip()
+    if current:
+        chunks.append(current)
+    return chunks
+
+
+def by_headings(markdown):
+    """One chunk per '## ' section, each starting with 'Article title &gt; Section title'
+    so the chunk still makes sense on its own."""
+    title = re.search(r"^# (.+)$", markdown, re.M)
+    title = title.group(1).strip() if title else ""
+    parts = re.split(r"^## ", markdown, flags=re.M)
+    intro = re.sub(r"^# .+$", "", parts[0], flags=re.M).strip()
+    chunks = [f"{title}\n{intro}"] if intro else []
+    for part in parts[1:]:
+        heading, _, body = part.partition("\n")
+        chunks.append(f"{title} &gt; {heading.strip()}\n{body.strip()}")
+    return chunks
+
+
+STRATEGIES = {
+    "fixed 300 chars": lambda t: fixed_size(t, 300, 50),
+    "fixed 800 chars": lambda t: fixed_size(t, 800, 100),
+    "sentences 400": lambda t: by_sentences(t, 400),
+    "by headings": by_headings,
+}</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Test them offline</h4>
+        <pre class="code" data-file="test_chunkers.py"><code>"""Tests for chunkers.py (offline). Run:  pytest -q test_chunkers.py"""
+from chunkers import by_headings, by_sentences, fixed_size, load_articles
+
+MD = "# Labs\n\nIntro line.\n\n## How long\nThirty days. One free extension.\n\n## Problems\nQuota exceeded.\n"
+
+
+def test_fixed_size_respects_size_and_overlaps():
+    text = " ".join(f"word{i}" for i in range(200))
+    chunks = fixed_size(text, size=100, overlap=20)
+    assert all(len(c) &lt;= 100 for c in chunks)
+    assert chunks[0].split()[-1] in chunks[1]                 <span class="c"># the end of one chunk starts the next</span>
+    assert chunks[-1].endswith("word199")
+
+
+def test_sentences_are_never_cut():
+    chunks = by_sentences("One. Two two. Three three three.", max_chars=15)
+    assert chunks == ["One. Two two.", "Three three three."]
+
+
+def test_headings_keep_their_context():
+    chunks = by_headings(MD)
+    assert chunks[0] == "Labs\nIntro line."
+    assert chunks[1].startswith("Labs &gt; How long\n") and "free extension" in chunks[1]
+    assert len(chunks) == 3
+
+
+def test_every_article_has_a_title_and_sections():
+    for name, md in load_articles().items():
+        assert md.startswith("# "), name
+        assert len(by_headings(md)) &gt;= 3, name</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_chunkers.py
+<span class="o">....                                                                     [100%]
+4 passed in 0.03s</span></code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Measure: 20 questions with known answers</h4>
+        <p>Each question in <code>data/help_questions.json</code> names its article and a phrase the retrieved chunk must contain, for example <em>"How much do I get back if I cancel 10 days before the class?"</em> → <code>refunds-and-cancellations</code>, must contain <code>50% refund</code>. A hit means the right article <strong>and</strong> the phrase.</p>
+        <pre class="code" data-file="lab05_07_chunking.py"><code>"""Drill 05.7: which chunking strategy finds the answer most often?
+For each question we know the article and a phrase the retrieved chunk must contain."""
+import json
+from pathlib import Path
+
+import numpy as np
+
+from chunkers import STRATEGIES, load_articles
+from embed import embed
+
+QUESTIONS = json.loads((Path(__file__).parent / "data" / "help_questions.json").read_text(encoding="utf-8"))
+articles = load_articles()
+q_vectors = embed([q["question"] for q in QUESTIONS])
+q_vectors /= np.linalg.norm(q_vectors, axis=1, keepdims=True)
+
+print(f"{'strategy':&lt;17}{'chunks':&gt;7}{'avg chars':&gt;10}{'hit@1':&gt;7}{'hit@3':&gt;7}")
+for name, chunker in STRATEGIES.items():
+    chunks = [(source, text) for source, md in articles.items() for text in chunker(md)]
+    vectors = embed([text for _, text in chunks])
+    vectors /= np.linalg.norm(vectors, axis=1, keepdims=True)
+    hit1 = hit3 = 0
+    misses = []
+    for q, row in zip(QUESTIONS, q_vectors @ vectors.T):
+        top = np.argsort(-row)[:3]
+        found = [chunks[i][0] == q["source"] and q["must_contain"] in chunks[i][1] for i in top]
+        hit1 += found[0]
+        hit3 += any(found)
+        if not any(found):
+            misses.append(q["question"])
+    avg = sum(len(t) for _, t in chunks) / len(chunks)
+    print(f"{name:&lt;17}{len(chunks):&gt;7}{avg:&gt;10.0f}{hit1:&gt;4}/{len(QUESTIONS)}{hit3:&gt;4}/{len(QUESTIONS)}")
+    for m in misses:
+        print(f"{'':&lt;6}missed: {m}")</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_07_chunking.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama); yours will differ</span>
+<pre class="out"><code>strategy          chunks avg chars  hit@1  hit@3
+fixed 300 chars       40       264  17/20  19/20
+      missed: How can my employer check my certificate is real?
+fixed 800 chars       19       522  15/20  20/20
+sentences 400         30       299  19/20  19/20
+      missed: How long do I have to finish a self-paced course?
+by headings           47       208  19/20  20/20</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read the table</h4>
+        <ol>
+          <li>Why does "fixed 800" have the best top-3 score but the worst top-1?</li>
+          <li>"By headings" has the most chunks and the shortest ones. Why does it still win?</li>
+          <li>Which strategy would you choose for TrainCrest, and what would you check before trusting this table?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>Big chunks almost always <em>contain</em> the answer, but each covers several topics, so its vector is a blend and the most relevant one doesn't always rank first. Fine if you send 3 chunks to a model; poor for a search page that shows the first result.</li>
+            <li>Each chunk is one idea with its title on top ("Payments and invoices › Paying in instalments"), so its vector is sharp and matches the question directly.</li>
+            <li>By headings, because the help centre is well structured markdown. Before trusting it: more and harder questions (real learner wording, other languages), the production embedding model, and re-running after content changes. Twenty questions is a good start, not a final verdict.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Stretch:</b> ask your assistant to add a fifth strategy, <em>"by headings, but split any section longer than 500 characters into sentence chunks that keep the heading"</em>, add it to <code>STRATEGIES</code>, and see if it changes the table.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-7"> I've completed Drill 05.7</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Chunking.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A chunk reads "It costs $49 for 14 more days." Why is that a retrieval problem, and how do you fix it?</summary><div><p>Out of context, nothing says <em>what</em> costs $49, so questions about lab extensions may not match it. Add the context header ("Labs and cloud sandboxes › How long labs stay open") or chunk by section so the subject travels with the fact.</p></div></details>
+  <details><summary>2. Why use overlap with fixed-size chunking?</summary><div><p>So a sentence or rule that straddles a boundary appears whole in at least one chunk. The cost is some duplication in storage and embeddings.</p></div></details>
+  <details><summary>3. You change from 300- to 500-character chunks. What else must happen?</summary><div><p>Re-chunk and <strong>re-embed</strong> the whole corpus, rebuild the index, and re-measure the hit rate to confirm the change helped.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Cut along the document's structure, give every chunk its context and source, and choose the strategy by hit rate, not by eye.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m05-chunk"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/05/similarity-search.html"><small>Previous</small><span>← 05 · Similarity search</span></a><a class="next" href="../../modules/05/metadata-filtering.html"><small>Next</small><span>05 · Metadata filtering →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

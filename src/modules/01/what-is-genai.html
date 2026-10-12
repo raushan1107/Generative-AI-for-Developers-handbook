@@ -1,0 +1,139 @@
+<!--meta
+{"id": "m01-genai", "short": "What Is Generative AI?", "h1": "What Is Generative AI?", "description": "Module 01, topic 1: what generative AI is, how it differs from models that only judge, real-world examples, and two drills: a first no-code conversation and one brief turned into text, code and JSON.", "lead": "Older AI judged things: spam or not spam, cat or dog. Generative AI makes things: a reply, a function, a summary, an image. Learn what that really means, then see it with your own eyes in two drills.", "chips": ["Generative vs discriminative", "Real-world examples", "Drills 01.1 · 01.2"], "time": "Learn 10 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Generators vs judges, and why it matters to your code.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Generative AI is a class of AI models that create new content (text, code, images, audio or video) by learning the patterns of their training data and producing new outputs that follow those patterns, usually in response to a prompt.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Older AI mostly <em>judged</em>: "is this email spam?", "is this a cat?". Generative AI <em>makes</em>: "write a reply to this email", "draw a cat riding a scooter". It learned what good text or images look like, and produces new ones on request.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A <strong>food critic</strong> tastes a pizza and says "good" or "bad". That's traditional, discriminative AI. A <strong>chef</strong> who has tasted ten thousand pizzas makes you a new one that has never existed, in the style you asked for. Same knowledge of food, completely different job.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 250" role="img" aria-labelledby="gd-t gd-d">
+      <title id="gd-t">Discriminative versus generative models</title>
+      <desc id="gd-d">Top row: a discriminative model takes an email and outputs a label, spam. Bottom row: a generative model takes a prompt asking for a polite reply and outputs a brand-new paragraph.</desc>
+      <text x="20" y="30" class="t-m t-accent">DISCRIMINATIVE · JUDGES</text>
+      <rect x="20" y="44" width="220" height="62" rx="10" class="s-surface"/><text x="130" y="70" class="t-b mid">An email</text><text x="130" y="90" class="t-s mid">"You won $10,000!!! Click…"</text>
+      <rect x="330" y="44" width="200" height="62" rx="10" class="s-blue"/><text x="430" y="72" class="t-b mid">Classifier</text><text x="430" y="92" class="t-s mid">traditional ML</text>
+      <rect x="620" y="44" width="260" height="62" rx="10" class="s-rose"/><text x="750" y="72" class="t-b mid">Label: SPAM (97%)</text><text x="750" y="92" class="t-s mid">picks from fixed options</text>
+      <path d="M240 75 H324" class="s-arrow" marker-end="url(#ah)"/><path d="M530 75 H614" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="20" y="150" class="t-m t-accent">GENERATIVE · CREATES</text>
+      <rect x="20" y="164" width="220" height="62" rx="10" class="s-surface"/><text x="130" y="190" class="t-b mid">A prompt</text><text x="130" y="210" class="t-s mid">"Reply kindly, offer a reschedule"</text>
+      <rect x="330" y="164" width="200" height="62" rx="10" class="s-violet"/><text x="430" y="192" class="t-b mid">LLM</text><text x="430" y="212" class="t-s mid">generative model</text>
+      <rect x="620" y="164" width="260" height="62" rx="10" class="s-green"/><text x="750" y="190" class="t-b mid">New text, never seen before</text><text x="750" y="210" class="t-s mid">"Hi Omar, I'm sorry to hear…"</text>
+      <path d="M240 195 H324" class="s-arrow" marker-end="url(#ah)"/><path d="M530 195 H614" class="s-arrow" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption><b>Choose from a list vs write something new.</b> A discriminative model's output is one of a few fixed answers. A generative model's output is open-ended, which is exactly why it's powerful and why it needs guardrails.</figcaption>
+</figure>
+
+<div class="www">
+  <div><b>What</b>Models that produce new text, code, images or audio from a prompt.</div>
+  <div><b>Why</b>Language is the interface to most work: emails, documents, code, tickets, reports.</div>
+  <div><b>When</b>Tasks with many acceptable answers: drafting, summarising, explaining, extracting, conversing.</div>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>You already use generative AI daily. A coding assistant completing your function, an email client drafting a reply, a meeting app writing minutes, a support widget answering in full sentences: all of these generate new text from a prompt the product builds for you. Behind each one is a developer who decided what goes into that prompt, which is what you're learning to do.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"My functions return values I can predict and test exactly."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Generative output is open-ended. I test for <strong>properties</strong> (valid format, right facts, right tone) across many runs, not for one exact string."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>Asked "what is generative AI?", say: <strong>"Models that generate new content by learning patterns from data, as opposed to models that only classify or predict a label."</strong> Then give one example of each. Interviewers like the contrast more than the definition.</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Meet the model's quirks, then make it generate three very different things.</p></div></div>
+
+<div class="drill" id="d01-1" data-title="First conversation: notice the weirdness" data-time="~10 min" data-steps="nocode,think">
+  <div class="drill-head"><span class="drill-id">Drill 01.1</span><h3>First conversation: notice the weirdness</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-nocode">Foundry playground</span><span class="badge b-tool">or ChatGPT / Claude.ai</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> before any code, experience the four behaviours this module explains: variety, confident errors, frozen knowledge and no memory.</p>
+    <ol class="dsteps">
+      <li class="dstep nocode"><span class="st">No-code</span><h4>Open a chat window</h4><p>Use the chat playground in Microsoft Foundry with your <code>chat</code> deployment, or ChatGPT or Claude.ai.</p></li>
+      <li class="dstep nocode"><span class="st">No-code</span><h4>Run five tiny experiments</h4>
+        <ol>
+          <li><strong>Variety:</strong> "Suggest a name for an online tech training company." Regenerate three times.</li>
+          <li><strong>Confident errors:</strong> "What is TrainCrest's refund policy if I cancel 10 days before my course?" (TrainCrest's policy here is fictional.)</li>
+          <li><strong>Arithmetic:</strong> "What is 48,739 × 6,218? Answer with the number only." (Correct: 303,059,102.)</li>
+          <li><strong>Frozen knowledge:</strong> "What's today's date, and what was the biggest tech news this week?"</li>
+          <li><strong>No memory:</strong> say "My name is Mei." Then start a <em>new</em> chat and ask "What's my name?"</li>
+        </ol>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Explain each result before you read on</h4><p>Write one sentence per experiment: <em>why</em> did the model behave like that?</p>
+        <details class="solution"><summary>Compare with my explanations</summary><div>
+          <ul>
+            <li>Different names each time: the model <strong>samples</strong> from probabilities (topic 5).</li>
+            <li>An invented policy or a polite deflection: without facts, it produces <em>plausible</em> text (topic 5). Newer models guess less often, but never rely on it.</li>
+            <li>Arithmetic may be slightly off: numbers are chopped into tokens (topic 4). Chat apps often run a hidden calculator tool; the raw API doesn't.</li>
+            <li>Date and news unknown or guessed: knowledge is frozen at a cutoff (topic 6). Apps that answer correctly add web search around the model.</li>
+            <li>The new chat forgot Mei: each request starts with an empty context (topic 4). Chat apps resend history for you; in Module 02 you'll do it yourself.</li>
+          </ul>
+        </div></details>
+      </li>
+    </ol>
+    <p class="lab-say"><b>Remember:</b> “Everything weird you just saw comes from one fact: it's predicting the next token from what's in front of it right now.”</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-1"> I've completed Drill 01.1</label></div>
+</div>
+
+<div class="drill" id="d01-2" data-title="One brief, three outputs, and test the generated code" data-time="~10 min" data-steps="run,ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 01.2</span><h3>One brief, three outputs, and test the generated code</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · AI assistant</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> see one model generate marketing text, working code and structured data from the same brief, then treat generated code the way a professional does: test it.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Create and run the script</h4>
+        <pre class="code" data-file="lab01_02_one_brief.py" data-src="code/genai-labs/lab01_02_one_brief.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_02_one_brief.py</code></pre>
+        <span class="out-label">Expected output (abridged; yours will differ)</span>
+<pre class="out"><code>===== Marketing text =====
+New course alert! 'Generative AI for Developers' starts 20 March 2027: 3 days of hands-on Azure labs...
+
+===== Python code =====
+from datetime import date
+def days_until_start(today: date) -> int:
+    return (date(2027, 3, 20) - today).days
+
+===== JSON record =====
+{"title": "Generative AI for Developers", "start_date": "2027-03-20", "price_usd": 1200, "format": "online"}</code></pre>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Turn the generated function into tested code</h4>
+        <p>Copy the generated function into a new file <code>course_dates.py</code>. Then ask your assistant:</p>
+        <div class="prompt-box"><pre><code>In #course_dates.py there is a function days_until_start(today). Write pytest tests in
+test_course_dates.py covering: a date well before the start, the day before, the start day
+itself (expect 0) and a date after the start (expect a negative number). Use fixed dates,
+not date.today(). Then run pytest and show me the result. Don't modify course_dates.py.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it names the file and function, lists the exact cases including edge cases, forbids flaky <code>date.today()</code>, and stops the assistant from "fixing" the code to fit its own tests.</div>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_course_dates.py</code></pre>
+        <ul class="verify-list"><li>All four tests pass, or a failing test shows the generated code was wrong (it happens: that's the lesson).</li><li>The JSON output parses: save it as <code>record.json</code> and run <code>python -m json.tool record.json</code>. If the model wrapped it in <code>```json</code> fences, it won't parse as-is (Module 03 fixes that).</li></ul>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Try this:</b> change the brief's start date and run again. Does the generated code update the date? Generation follows the prompt, not a database.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-2"> I've completed Drill 01.2</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Two questions before you move on.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A spam filter and a reply-drafting assistant both use AI. Which is generative, and why?</summary><div><p>The <strong>reply drafter</strong>: it creates new text. The spam filter is discriminative: it picks one of a fixed set of labels.</p></div></details>
+  <details><summary>2. Why did Drill 01.2 ask you to test the generated function?</summary><div><p>Generated code is <strong>plausible</strong>, not guaranteed correct. Tests turn "looks right" into "is right", the same habit you'll apply to every AI-generated artefact.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Generative AI writes new content from patterns. Your job as a developer is to decide what it should generate, and to check that it did.</p></div>

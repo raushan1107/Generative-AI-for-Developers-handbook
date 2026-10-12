@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metadata Filtering</title>
+<meta name="description" content="Module 05, topic 7: combining similarity with hard rules on metadata (level, price, format, language, tenant, permissions), pre-filtering versus post-filtering, filterable fields and OData filters in Azure AI Search, and a drill that shows post-filtering returning nothing.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m05-filter">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod"><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic active" data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part II</span><i>/</i><a href="../../modules/05/index.html">Module 05</a><i>/</i><span>Metadata filtering</span></nav>
+  <span class="kind-pill">Learn · Do · Check · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 05 · Topic 7 of 8</span><h1>Metadata Filtering</h1><p class="lead">Meaning isn't the only rule. A learner wants a beginner course under $500; a German learner needs German articles; a company must only see its own documents. Metadata filters apply those hard rules, and where you apply them matters: filter after ranking and you can end up with nothing at all. You'll see it happen.</p><div class="chips"><span class="chip">Pre- vs post-filtering</span><span class="chip">OData filters</span><span class="chip">Security trimming</span><span class="chip">Drill 05.8</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 8 min · Do 15 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Similarity ranks; filters rule.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Metadata filtering</strong> restricts a vector search to items whose structured fields meet exact conditions (for example <code>level eq 'beginner' and price_usd le 500</code>). With <strong>pre-filtering</strong> the condition is applied before or during the nearest-neighbour search, so you get the top k <em>among matching items</em>. With <strong>post-filtering</strong> you take the top k first and then drop non-matching items, which can leave fewer than k, or none.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Embeddings handle "sounds like what I want". Filters handle "must be true": price, level, language, date, owner. You need both, and the filter should come first.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>House hunting. You tell the agent "something cosy near a park, under $400,000". A good agent first sets aside everything over budget, then shows the three cosiest in what's left. A careless one picks the three cosiest houses in town, then crosses off the ones you can't afford, and ends up showing you nothing.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 250" role="img" aria-labelledby="mf-t mf-d">
+      <title id="mf-t">Post-filtering versus pre-filtering</title>
+      <desc id="mf-d">Post-filtering: rank all twenty courses, take the top three, which are all intermediate and over $1,000, then apply the filter beginner and up to $500; nothing is left. Pre-filtering: apply the filter first, leaving a handful of beginner courses under $500, then rank those and return the top three.</desc>
+      <text x="20" y="32" class="t-m">POST-FILTER: RANK, THEN FILTER</text>
+      <rect x="20" y="44" width="180" height="60" rx="10" class="s-surface"/><text x="110" y="70" class="t-b mid">20 courses</text><text x="110" y="90" class="t-s mid">rank by meaning</text>
+      <path d="M200 74 H238" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="244" y="44" width="220" height="60" rx="10" class="s-blue"/><text x="354" y="70" class="t-b mid">top 3</text><text x="354" y="90" class="t-s mid">all intermediate, $1,190+</text>
+      <path d="M464 74 H502" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="508" y="44" width="200" height="60" rx="10" class="s-amber"/><text x="608" y="70" class="t-b mid">filter</text><text x="608" y="90" class="t-s mid">beginner, ≤ $500</text>
+      <path d="M708 74 H746" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="752" y="44" width="188" height="60" rx="10" class="s-rose"/><text x="846" y="80" class="t-b mid">0 results</text>
+      <text x="20" y="146" class="t-m">PRE-FILTER: FILTER, THEN RANK</text>
+      <rect x="20" y="158" width="180" height="60" rx="10" class="s-surface"/><text x="110" y="184" class="t-b mid">20 courses</text><text x="110" y="204" class="t-s mid">all of them</text>
+      <path d="M200 188 H238" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="244" y="158" width="220" height="60" rx="10" class="s-amber"/><text x="354" y="184" class="t-b mid">filter</text><text x="354" y="204" class="t-s mid">beginner, ≤ $500 → 6 left</text>
+      <path d="M464 188 H502" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="508" y="158" width="200" height="60" rx="10" class="s-blue"/><text x="608" y="184" class="t-b mid">rank by meaning</text><text x="608" y="204" class="t-s mid">among the 6</text>
+      <path d="M708 188 H746" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="752" y="158" width="188" height="60" rx="10" class="s-green"/><text x="846" y="184" class="t-b mid">top 3</text><text x="846" y="204" class="t-s mid">all match the rules</text>
+    </svg>
+  </div>
+  <figcaption><b>Filter first.</b> Pre-filtering always returns the best matches that obey the rules; post-filtering can return nothing.</figcaption>
+</figure>
+
+<h3>What metadata to store</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Field</th><th>Example filter</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Category, level, format</td><td><code>level eq 'beginner'</code></td><td>User choices in the UI</td></tr>
+      <tr><td>Price, date</td><td><code>price_usd le 500</code>, <code>updated ge 2026-01-01</code></td><td>Budgets and freshness</td></tr>
+      <tr><td>Language, region</td><td><code>language eq 'es'</code></td><td>Answer from the right version of a document</td></tr>
+      <tr><td>Kind of document</td><td><code>kind eq 'help'</code></td><td>One index, several collections (Milestone 5 does this)</td></tr>
+      <tr><td>Tenant, permission group</td><td><code>group_ids/any(g: search.in(g, 'sales,all'))</code></td><td><strong>Security trimming</strong>: users only retrieve what they may see (Module 10)</td></tr>
+    </tbody>
+  </table>
+</div>
+<ul>
+  <li><strong>Azure AI Search:</strong> mark fields <code>filterable=True</code> in the index, then pass an OData expression as <code>filter=</code>. For vector queries, filters are applied before the vector search by default.</li>
+  <li><strong>Chroma:</strong> pass <code>where={"$and": [{"level": "beginner"}, {"price_usd": {"$lte": 500}}]}</code>.</li>
+  <li><strong>Never build filter strings from raw user text.</strong> Map UI choices or enum values to filters in code; a filter is a query language, and injection applies.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Enterprise "search your company's documents" products rely on security trimming: every chunk carries the groups allowed to see it, and every query adds a filter for the signed-in user's groups. Without it, a semantic search happily retrieves the salary spreadsheet for anyone who asks about pay.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Filtering is a WHERE clause; I'll add it at the end."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Filters change <strong>which neighbours exist</strong>. I store the fields I'll need, filter <strong>before</strong> ranking, and use filters for permissions, not just preferences."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Asking the model to "only use beginner courses" instead of filtering. It might comply; it might not. Hard rules belong in the query as filters, where they are guaranteed.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I store filterable metadata with each vector and apply <strong>pre-filters</strong> so the top k are the best among items that satisfy the rules. Filters also enforce <strong>security trimming</strong>, so retrieval only returns documents the user is allowed to see."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Watch post-filtering return nothing.</p></div></div>
+
+<div class="drill" id="d05-8" data-title="Pre-filter vs post-filter" data-time="~15 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 05.8</span><h3>Pre-filter vs post-filter</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-azure">Azure AI Search optional</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> run the same search three ways (no filter, post-filter, pre-filter) and see why the order matters.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>With your Drill 05.4 vector store</h4>
+        <pre class="code" data-file="lab05_08_filters.py"><code>"""Drill 05.8: metadata filters. Filter BEFORE ranking (pre-filter) or AFTER (post-filter)?"""
+from catalogue import COURSES
+from embed import embed
+from vector_store import VectorStore, matches
+
+store = VectorStore()
+texts = [f"{c['title']}. {c['description']}" for c in COURSES]
+store.add(ids=[c["id"] for c in COURSES], vectors=embed(texts), texts=[c["title"] for c in COURSES],
+          metadatas=[{"level": c["level"], "format": c["format"], "price_usd": c["price_usd"]} for c in COURSES])
+
+query = "hands-on course about AI and language models"
+where = {"level": "beginner", "price_usd": {"$lte": 500}}
+q = embed([query])[0]
+
+
+def show(title, hits):
+    print(title)
+    for h in hits:
+        m = h["metadata"]
+        print(f"  {h['score']:.2f}  {h['id']}  {h['text']:&lt;40} {m['level']:&lt;13} ${m['price_usd']}")
+    if not hits:
+        print("  (nothing left)")
+
+
+print(f"query: {query!r}\nfilter: {where}\n")
+show("No filter, top 3:", store.search(q, k=3))
+show("\nPost-filter (top 3 first, then filter):", [h for h in store.search(q, k=3) if matches(h["metadata"], where)])
+show("\nPre-filter (filter first, then top 3):", store.search(q, k=3, where=where))</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_08_filters.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama)</span>
+<pre class="out"><code>query: 'hands-on course about AI and language models'
+filter: {'level': 'beginner', 'price_usd': {'$lte': 500}}
+
+No filter, top 3:
+  0.70  C104  Generative AI for Developers             intermediate  $1490
+  0.66  C103  Machine Learning Essentials              intermediate  $1190
+  0.66  C112  AI-102: Azure AI Engineer                intermediate  $1350
+
+Post-filter (top 3 first, then filter):
+  (nothing left)
+
+Pre-filter (filter first, then top 3):
+  0.59  C105  Prompt Engineering for Business Teams    beginner      $390
+  0.51  C101  Python Foundations                       beginner      $290
+  0.49  C109  AZ-900: Azure Fundamentals               beginner      $350</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>The same filter on Azure AI Search</h4>
+        <p>If you built the index in Drill 05.5, the filter is an OData expression on <code>filterable</code> fields:</p>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_05_azure_search.py query "hands-on course about AI and language models" --mode vector --filter "level eq 'beginner' and price_usd le 500"</code></pre>
+        <ul class="verify-list">
+          <li>Azure returns three beginner courses under $500: it pre-filters vector queries by default.</li>
+          <li>Try a filter on a field that isn't filterable, like <code>title eq 'x'</code>: the service rejects it. Filterability is decided when you design the index.</li>
+        </ul>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Where should the filter values come from?</h4>
+        <p>In Milestone 5 the model calls <code>search_courses(query, level, max_price_usd, format)</code>. Who decides those filter values, and how do they become a filter safely?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>The model extracts them from the conversation ("beginner", "under $500"), but only as <strong>typed arguments</strong>: <code>level</code> is a <code>Literal</code> enum and <code>max_price_usd</code> an integer, validated by Pydantic. Code then builds the filter from those values, never by pasting text into a filter string. Permission filters (Module 10) never come from the model at all: they come from the signed-in user, like identity in Module 04.</p></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-8"> I've completed Drill 05.8</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Filters.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Post-filtering returned 1 result instead of 5. Two fixes?</summary><div><p>Switch to <strong>pre-filtering</strong> (filter inside the search), or over-fetch (ask for many more than k, then filter), which is wasteful and still not guaranteed.</p></div></details>
+  <details><summary>2. Why is a filter better than telling the model "only use documents for the Sales team"?</summary><div><p>A filter guarantees the rule: other documents never reach the model. An instruction is a request the model may not follow, and it still exposes the documents to the model.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Store the fields you'll need, filter before ranking, build filters from typed values, and let filters enforce permissions.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m05-filter"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/05/chunking.html"><small>Previous</small><span>← 05 · Chunking strategies</span></a><a class="next" href="../../modules/05/hybrid-search.html"><small>Next</small><span>05 · Hybrid search →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

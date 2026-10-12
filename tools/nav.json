@@ -1,0 +1,149 @@
+{
+  "sections": [
+    {
+      "title": "Start here",
+      "items": [
+        {"id": "home", "title": "Home", "path": "index.html", "kind": "home"},
+        {"id": "how", "title": "How this handbook works", "path": "start/how-it-works.html", "kind": "guide"}
+      ]
+    },
+    {
+      "title": "Lab setup",
+      "items": [
+        {"id": "setup-tracks", "title": "Choose your track", "path": "setup/index.html", "kind": "setup"},
+        {"id": "setup-azure", "title": "Azure: Foundry and a model", "path": "setup/azure-foundry.html", "kind": "setup"},
+        {"id": "setup-workstation", "title": "Workstation and AI assistant", "path": "setup/workstation.html", "kind": "setup"},
+        {"id": "setup-helpers", "title": "Helpers and smoke test", "path": "setup/helpers.html", "kind": "setup"},
+        {"id": "setup-trouble", "title": "Troubleshooting and cost", "path": "setup/troubleshooting.html", "kind": "setup"}
+      ]
+    },
+    {
+      "title": "Part I · Foundations",
+      "part": "I",
+      "modules": [
+        {
+          "num": "01", "title": "Introduction to Generative AI",
+          "pages": [
+            {"id": "m01", "title": "Overview and mental map", "path": "modules/01/index.html", "kind": "overview"},
+            {"id": "m01-genai", "title": "What is Generative AI?", "path": "modules/01/what-is-genai.html", "kind": "topic"},
+            {"id": "m01-vsml", "title": "GenAI vs traditional AI/ML", "path": "modules/01/genai-vs-ml.html", "kind": "topic"},
+            {"id": "m01-llm", "title": "Large Language Models", "path": "modules/01/llms.html", "kind": "topic"},
+            {"id": "m01-tokens", "title": "Tokens and context windows", "path": "modules/01/tokens.html", "kind": "topic"},
+            {"id": "m01-gen", "title": "How LLMs generate responses", "path": "modules/01/generation.html", "kind": "topic"},
+            {"id": "m01-train", "title": "Training vs inference", "path": "modules/01/training-inference.html", "kind": "topic"},
+            {"id": "m01-fm", "title": "Foundation models", "path": "modules/01/foundation-models.html", "kind": "topic"},
+            {"id": "m01-mm", "title": "Multimodal AI", "path": "modules/01/multimodal.html", "kind": "topic"},
+            {"id": "m01-uses", "title": "Developer use cases", "path": "modules/01/use-cases.html", "kind": "topic"},
+            {"id": "m01-build", "title": "Build: Milestone 1", "path": "modules/01/build.html", "kind": "build"},
+            {"id": "m01-recap", "title": "Recap and self-check", "path": "modules/01/recap.html", "kind": "recap"}
+          ]
+        },
+        {
+          "num": "02", "title": "Working with LLM APIs",
+          "pages": [
+            {"id": "m02", "title": "Overview and mental map", "path": "modules/02/index.html", "kind": "overview"},
+            {"id": "m02-arch", "title": "API-based app architecture", "path": "modules/02/architecture.html", "kind": "topic"},
+            {"id": "m02-auth", "title": "Authentication and API keys", "path": "modules/02/authentication.html", "kind": "topic"},
+            {"id": "m02-life", "title": "Request/response lifecycle", "path": "modules/02/lifecycle.html", "kind": "topic"},
+            {"id": "m02-roles", "title": "System, user, assistant messages", "path": "modules/02/roles.html", "kind": "topic"},
+            {"id": "m02-params", "title": "Temperature and parameters", "path": "modules/02/parameters.html", "kind": "topic"},
+            {"id": "m02-stream", "title": "Streaming responses", "path": "modules/02/streaming.html", "kind": "topic"},
+            {"id": "m02-errors", "title": "Error handling", "path": "modules/02/errors.html", "kind": "topic"},
+            {"id": "m02-rate", "title": "Rate limits and retries", "path": "modules/02/rate-limits.html", "kind": "topic"},
+            {"id": "m02-cost", "title": "Managing API costs", "path": "modules/02/cost.html", "kind": "topic"},
+            {"id": "m02-build", "title": "Build: Milestone 2", "path": "modules/02/build.html", "kind": "build"},
+            {"id": "m02-recap", "title": "Recap and self-check", "path": "modules/02/recap.html", "kind": "recap"}
+          ]
+        },
+        {
+          "num": "03", "title": "Prompt Engineering",
+          "pages": [
+            {"id": "m03", "title": "Overview and mental map", "path": "modules/03/index.html", "kind": "overview"},
+            {"id": "m03-what", "title": "What is prompt engineering?", "path": "modules/03/what-is-prompt-engineering.html", "kind": "topic"},
+            {"id": "m03-clear", "title": "Clear instructions and context", "path": "modules/03/clear-instructions.html", "kind": "topic"},
+            {"id": "m03-role", "title": "Role prompting", "path": "modules/03/role-prompting.html", "kind": "topic"},
+            {"id": "m03-zero", "title": "Zero-shot prompting", "path": "modules/03/zero-shot.html", "kind": "topic"},
+            {"id": "m03-few", "title": "Few-shot prompting", "path": "modules/03/few-shot.html", "kind": "topic"},
+            {"id": "m03-cot", "title": "Chain-of-thought", "path": "modules/03/chain-of-thought.html", "kind": "topic"},
+            {"id": "m03-tmpl", "title": "Prompt templates", "path": "modules/03/templates.html", "kind": "topic"},
+            {"id": "m03-struct", "title": "Structured prompts", "path": "modules/03/structured-prompts.html", "kind": "topic"},
+            {"id": "m03-out", "title": "Output constraints", "path": "modules/03/output-constraints.html", "kind": "topic"},
+            {"id": "m03-inject", "title": "Prompt injection awareness", "path": "modules/03/prompt-injection.html", "kind": "topic"},
+            {"id": "m03-build", "title": "Build: Milestone 3", "path": "modules/03/build.html", "kind": "build"},
+            {"id": "m03-recap", "title": "Recap and self-check", "path": "modules/03/recap.html", "kind": "recap"}
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Part II · Connect the model to your app",
+      "part": "II",
+      "modules": [
+        {
+          "num": "04", "title": "Structured Outputs and Function Calling", "draft": true,
+          "pages": [
+            {"id": "m04", "title": "Overview and mental map", "path": "modules/04/index.html", "kind": "overview"},
+            {"id": "m04-why", "title": "Why structured outputs matter", "path": "modules/04/why-structured.html", "kind": "topic"},
+            {"id": "m04-json", "title": "JSON responses", "path": "modules/04/json-mode.html", "kind": "topic"},
+            {"id": "m04-schema", "title": "Schema-based generation", "path": "modules/04/schema-outputs.html", "kind": "topic"},
+            {"id": "m04-tools", "title": "Function calling", "path": "modules/04/function-calling.html", "kind": "topic"},
+            {"id": "m04-logic", "title": "Connecting LLMs to app logic", "path": "modules/04/app-logic.html", "kind": "topic"},
+            {"id": "m04-valid", "title": "Validating model outputs", "path": "modules/04/validation.html", "kind": "topic"},
+            {"id": "m04-malformed", "title": "Handling malformed responses", "path": "modules/04/malformed.html", "kind": "topic"},
+            {"id": "m04-build", "title": "Build: Milestone 4", "path": "modules/04/build.html", "kind": "build"},
+            {"id": "m04-recap", "title": "Recap and self-check", "path": "modules/04/recap.html", "kind": "recap"}
+          ]
+        },
+        {
+          "num": "05", "title": "Embeddings and Semantic Search", "draft": true,
+          "pages": [
+            {"id": "m05", "title": "Overview and mental map", "path": "modules/05/index.html", "kind": "overview"},
+            {"id": "m05-emb", "title": "What are embeddings?", "path": "modules/05/embeddings.html", "kind": "topic"},
+            {"id": "m05-sim", "title": "Vector similarity", "path": "modules/05/similarity.html", "kind": "topic"},
+            {"id": "m05-models", "title": "Embedding models", "path": "modules/05/embedding-models.html", "kind": "topic"},
+            {"id": "m05-vdb", "title": "Vector databases", "path": "modules/05/vector-databases.html", "kind": "topic"},
+            {"id": "m05-search", "title": "Similarity search", "path": "modules/05/similarity-search.html", "kind": "topic"},
+            {"id": "m05-chunk", "title": "Chunking strategies", "path": "modules/05/chunking.html", "kind": "topic"},
+            {"id": "m05-filter", "title": "Metadata filtering", "path": "modules/05/metadata-filtering.html", "kind": "topic"},
+            {"id": "m05-hybrid", "title": "Hybrid search", "path": "modules/05/hybrid-search.html", "kind": "topic"},
+            {"id": "m05-build", "title": "Build: Milestone 5", "path": "modules/05/build.html", "kind": "build"},
+            {"id": "m05-recap", "title": "Recap and self-check", "path": "modules/05/recap.html", "kind": "recap"}
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Part III · Ground it and let it act",
+      "part": "III",
+      "modules": [
+        {"num": "06", "title": "Retrieval-Augmented Generation", "soon": true},
+        {"num": "07", "title": "Building AI Agents", "soon": true}
+      ]
+    },
+    {
+      "title": "Part IV · Build it right",
+      "part": "IV",
+      "modules": [
+        {"num": "08", "title": "AI Application Architecture", "soon": true},
+        {"num": "09", "title": "Evaluating GenAI Applications", "soon": true},
+        {"num": "10", "title": "Security and Responsible AI", "soon": true}
+      ]
+    },
+    {
+      "title": "Part V · Ship it",
+      "part": "V",
+      "modules": [
+        {"num": "11", "title": "Performance and Cost Optimization", "soon": true},
+        {"num": "12", "title": "Productionizing Generative AI", "soon": true}
+      ]
+    },
+    {
+      "title": "Practice",
+      "items": [
+        {"id": "project", "title": "Traincrest Assist: the build", "path": "project/index.html", "kind": "project"},
+        {"id": "labs", "title": "All drills", "path": "labs/index.html", "kind": "labs"},
+        {"id": "capstone", "title": "Capstone project", "path": "capstone/index.html", "kind": "capstone"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+<!--meta
+{"id": "m05-build", "short": "Build: Milestone 5", "h1": "Build · Milestone 5: Search by Meaning", "description": "Traincrest Assist milestone 5: a search index over courses and help-centre sections built with embeddings, local hybrid search (BM25 + vectors + RRF) with metadata pre-filters or Azure AI Search as the backend, a /api/search endpoint, and a semantic search_courses tool with a keyword fallback.", "lead": "Version 0.5 understands what learners mean. An index holds every course and every help-centre section as vectors with text and metadata; a search service runs hybrid search with filters, locally or on Azure AI Search; a new /api/search endpoint exposes it; and the search_courses tool now finds 'a cheap intro to containers'. The help-centre index is also the retrieval layer Module 06 builds RAG on.", "chips": ["Index: 20 courses + 40 sections", "Hybrid + filters", "Local or Azure AI Search", "/api/search", "≈ 60 min"], "time": "Plan 10 min · Build 35 min · Verify 15 min"}
+-->
+<div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From matching words to matching meaning.</p></div></div>
+
+<div class="case">
+  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 5</span></div>
+  <div class="case-body">
+    <p>Learners describe what they want in their own words, and the catalogue tool misses half of it. The support team also wants a search over the ten help-centre articles, both for their own use and as the base for grounded answers next month. Constraints: it must run on a laptop for development, on Azure AI Search in production, and keep working (with plain keyword search) if the embedding service has a bad day.</p>
+  </div>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 330" role="img" aria-labelledby="b5-t b5-d">
+      <title id="b5-t">Traincrest Assist v0.5</title>
+      <desc id="b5-d">Ahead of time, scripts/build_index.py loads 20 courses and the help articles, chunks the articles by heading into 40 sections, embeds everything with the embedding deployment, and saves a local index with vectors, text and metadata, or uploads it to Azure AI Search. At run time, SearchService embeds the query, then the local index pre-filters by kind, level, format and price, ranks by BM25 and by cosine, and merges with RRF; the Azure backend does the same on the service. GET /api/search and the search_courses tool both use SearchService; the tool falls back to keyword filtering if the index or embeddings are unavailable.</desc>
+      <text x="20" y="30" class="t-m">AHEAD OF TIME · python -m scripts.build_index</text>
+      <rect x="20" y="42" width="190" height="66" rx="12" class="s-surface"/><text x="115" y="70" class="t-b mid">courses.json</text><text x="115" y="90" class="t-s mid">+ data/help/*.md</text>
+      <path d="M210 75 H244" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="250" y="42" width="190" height="66" rx="12" class="s-amber"/><text x="345" y="70" class="t-b mid">chunk by heading</text><text x="345" y="90" class="t-s mid">20 + 40 documents</text>
+      <path d="M440 75 H474" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="480" y="42" width="170" height="66" rx="12" class="s-violet"/><text x="565" y="70" class="t-b mid">embed</text><text x="565" y="90" class="t-s mid">EMBED_MODEL</text>
+      <path d="M650 75 H684" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="690" y="42" width="250" height="66" rx="12" class="s-blue"/><text x="815" y="68" class="t-b mid">data/index/ (local)</text><text x="815" y="88" class="t-s mid">or Azure AI Search index</text>
+      <text x="20" y="152" class="t-m">EVERY SEARCH</text>
+      <rect x="20" y="166" width="190" height="60" rx="12" class="s-surface"/><text x="115" y="192" class="t-b mid">GET /api/search</text><text x="115" y="210" class="t-s mid">?q=&amp;kind=&amp;level=</text>
+      <rect x="20" y="240" width="190" height="66" rx="12" class="s-surface"/><text x="115" y="266" class="t-b mid">search_courses tool</text><text x="115" y="286" class="t-s mid">query + typed filters</text>
+      <path d="M210 196 H244" class="s-arrow-accent" marker-end="url(#ah-a)"/><path d="M210 273 H230 V210 H244" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="250" y="166" width="190" height="80" rx="12" class="s-violet"/><text x="345" y="194" class="t-b mid">SearchService</text><text x="345" y="214" class="t-s mid">embed the query</text><text x="345" y="230" class="t-s mid">(same model)</text>
+      <path d="M440 206 H474" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="480" y="150" width="460" height="112" rx="12" class="s-teal"/>
+      <text x="496" y="174" class="t-b">LocalIndex.search() · or AzureIndex (same interface)</text>
+      <text x="496" y="198" class="t-s">1. pre-filter: kind, level, format, max_price_usd</text>
+      <text x="496" y="216" class="t-s">2. rank by BM25 (with a small analyzer) and by cosine</text>
+      <text x="496" y="234" class="t-s">3. merge with RRF → top k with text, source, scores</text>
+      <path d="M815 108 V144" class="s-dash" marker-end="url(#ah)"/>
+      <text x="250" y="322" class="t-s">tool fallback: no index or embedding error → milestone 4 keyword filter, so Assist keeps working</text>
+    </svg>
+  </div>
+  <figcaption><b>Index once, search everywhere.</b> The same service powers the API and the tool, with the backend chosen by one setting.</figcaption>
+</figure>
+
+<span class="out-label">Files after this milestone (new or changed)</span>
+<pre class="out"><code>traincrest-assist/
+├── requirements.txt          + numpy, rank_bm25, azure-search-documents
+├── .env.example              + embedding deployment, SEARCH_BACKEND, INDEX_DIR, AZURE_SEARCH_*
+├── cli.py                    loads the search service
+├── app/
+│   ├── config.py             + EMBED_MODEL, SEARCH_BACKEND, INDEX_DIR, AZURE_SEARCH_*
+│   ├── search.py             NEW  documents, chunking, embeddings, LocalIndex, AzureIndex, SearchService
+│   ├── tools.py              search_courses: semantic + filters, keyword fallback
+│   └── main.py               + GET /api/search; search service at start-up
+├── scripts/
+│   ├── __init__.py
+│   └── build_index.py        NEW  builds data/index/ or the Azure AI Search index
+├── data/help/*.md            NEW  ten help-centre articles (from genai-labs)
+└── tests/
+    ├── fakes.py              + FakeEmbeddings (hashed bag of words, deterministic)
+    └── test_search.py        NEW  documents, hybrid ranking, filters, save/load, tool fallback</code></pre>
+
+<div class="phase do" id="build"><span class="ph-num">2</span><div><h2>Build</h2><p>Settings, the search module, the index, then wire it in.</p></div></div>
+
+<div class="drill exercise" id="b05-1" data-title="Milestone 5: index, hybrid search service, API and semantic tool" data-time="~60 min" data-steps="run,ask,write,verify">
+  <div class="drill-head"><span class="drill-id">Milestone 5</span><h3>Index, hybrid search service, API and semantic tool</h3>
+    <div class="drill-meta"><span class="time">~60 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-azure">Azure AI Search optional</span><span class="badge b-tool">numpy · rank_bm25 · pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> give Traincrest Assist a search index over courses and help sections, hybrid search with filters behind one service, a search API, and a catalogue tool that understands paraphrases.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Settings</h4>
+        <p>Copy <code>data/help/</code> from <code>genai-labs</code>, then add to <code>app/config.py</code> (and the matching lines to <code>.env</code>):</p>
+        <pre class="code" data-file="app/config.py (added)" data-src="code/traincrest-assist/m05/app/config.py" data-lines="30-40"></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>The search module</h4>
+        <p>Everything from this module in one file: chunk by heading (the winner in Drill 05.7), embed in batches, pre-filter, BM25 with a small analyzer, cosine, RRF (Drill 05.9), and the same <code>search()</code> on Azure AI Search. <code>LocalIndex.load()</code> refuses an index built with a different embedding model.</p>
+        <pre class="code" data-file="app/search.py" data-src="code/traincrest-assist/m05/app/search.py"></pre>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>The index builder</h4>
+        <div class="prompt-box"><pre><code>Create scripts/build_index.py (and an empty scripts/__init__.py) for this project, runnable as
+python -m scripts.build_index from the project folder.
+
+- If SEARCH_BACKEND (app.config) is "local": LocalIndex.build(get_client()) from #file:app/search.py,
+  save it, and print how many course and help documents, the vector dimensions and EMBED_MODEL.
+- If it's "azure": create or update an Azure AI Search index named AZURE_SEARCH_INDEX with fields
+  id (key), kind/level/format (filterable strings), title and text (searchable; text uses the
+  en.microsoft analyzer), source, price_usd (filterable, sortable Int32) and contentVector
+  (Collection(Single), dimensions from the embeddings, HNSW profile "vprofile"); then
+  merge_or_upload the documents from load_documents() with their vectors and print how many succeeded.
+- Import the Azure SDK only inside the Azure branch, so local users don't need it configured.
+- Print the elapsed time. No other files.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it reuses the functions that already exist instead of letting the assistant reinvent chunking or embedding, spells out the index schema field by field (filterable versus searchable is the decision that matters), and asks for lazy Azure imports so the local path stays simple.</div>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="scripts/build_index.py" data-src="code/traincrest-assist/m05/scripts/build_index.py"></pre>
+        </div></details>
+        <pre class="term"><code><span class="ps">$ </span>python -m scripts.build_index</code></pre>
+        <span class="out-label">Real output (local backend, nomic-embed-text)</span>
+<pre class="out"><code>Local index: 20 courses + 40 help sections, 768-dimension vectors from nomic-embed-text.
+Done in 5.0s.</code></pre>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Upgrade the <code>search_courses</code> tool</h4>
+        <p>Milestone 4's tool took a single keyword. Write a prompt for your assistant that changes it to take the learner's words plus typed filters, use the search service, and fall back safely.</p>
+        <div class="template-box"><pre><code>Goal: upgrade search_courses in #file:app/tools.py to semantic search
+Context: app/search.py has SearchService.search(query, k, **filters) with filters
+         kind, level, format, max_price_usd
+Constraints: arguments: query (the learner's words) + optional typed filters ...
+             how the service is provided to the tool ...
+             fallback when ...
+             return only id, title, level, format, price_usd
+Done when: pytest -q passes and "cheap intro to containers" returns Docker Quick Start first</code></pre></div>
+        <p class="hint"><b>Hint:</b> tools are plain functions, so give the module a <code>set_search_service()</code> that <code>main.py</code> calls at start-up. Filters must be <code>Literal</code>/<code>int</code> fields, never free text pasted into a filter. Fall back to the Milestone 4 keyword filter when no service is set <em>or</em> the search raises (embedding service down).</p>
+        <details class="solution"><summary>Compare with my version</summary><div>
+          <pre class="code" data-file="app/tools.py (search_courses)" data-src="code/traincrest-assist/m05/app/tools.py" data-lines="60-94"></pre>
+          <p>And in <code>main.py</code>, the service is created at start-up (a missing index is logged, not fatal) and exposed as <code>GET /api/search</code>:</p>
+          <pre class="code" data-file="app/main.py" data-src="code/traincrest-assist/m05/app/main.py"></pre>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Tests with a fake embedding model</h4>
+        <p>Search code needs embeddings, but tests shouldn't call a model. <code>FakeEmbeddings</code> hashes words into a 256-dimension vector: texts that share words get similar vectors. It can't understand meaning, but it's deterministic, which is perfect for testing the plumbing (filters, ranking, save/load, fallbacks).</p>
+        <pre class="code" data-file="tests/fakes.py (FakeEmbeddings)" data-src="code/traincrest-assist/m05/tests/fakes.py" data-lines="62-85"></pre>
+        <pre class="code" data-file="tests/test_search.py" data-src="code/traincrest-assist/m05/tests/test_search.py"></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Evidence</h4>
+<pre class="term"><code><span class="ps">$ </span>pytest -q
+<span class="ps">$ </span>uvicorn app.main:app --reload</code></pre>
+        <span class="out-label">Expected (exact)</span>
+<pre class="out"><code>....................................                                     [100%]
+36 passed in 2.18s</code></pre>
+        <p>In <code>/docs</code>, try <code>GET /api/search</code>. Real results from my local run (nomic-embed-text, local backend):</p>
+<pre class="out"><code>make my app understand photos (course)  -> C108 Computer Vision with Deep Learning, C114 Docker Quick Start, ...
+cheap intro to containers (course)      -> C114 Docker Quick Start, C113 Kubernetes for Developers, ...
+I get error LAB-503 (help)              -> labs-and-sandboxes-2 "Common problems", ...
+Is there a discount for a team of 12? (help) -> corporate-training-2 "Group discounts", ...
+hands-on cloud course, beginner, max $500 -> C109 AZ-900 ($350), C114 Docker ($190), C105 Prompt Eng. ($390)</code></pre>
+        <ul class="verify-list">
+          <li>In the chat, as any learner: "Is there a cheap intro to containers?" The meta line shows <code>tools: search_courses</code> and the answer names Docker Quick Start ($190).</li>
+          <li>"Beginner cloud courses under $400?" The tool is called with <code>level="beginner"</code> and <code>max_price_usd=400</code>, and every course in the answer obeys both.</li>
+          <li>Stop Ollama (or break the embedding deployment name in <code>.env</code>) and ask again: the tool falls back to keyword search; Assist still answers, just less cleverly.</li>
+          <li>Delete <code>data/index/</code> and restart: <code>/api/search</code> returns 503 with "run python -m scripts.build_index", and chat still works.</li>
+          <li>Optional: set <code>SEARCH_BACKEND=azure</code>, rebuild, restart, and repeat. Same answers, now served by Azure AI Search.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="b05-1"> I've completed Milestone 5</label></div>
+</div>
+
+<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where Traincrest Assist stands after Part II.</p></div></div>
+<ul class="checklist">
+  <li>Every course and help section is embedded in an index that records its embedding model.</li>
+  <li>Search is hybrid (BM25 + vectors + RRF) with metadata pre-filters, locally or on Azure AI Search.</li>
+  <li><code>/api/search</code> exposes courses and help sections; <code>search_courses</code> understands paraphrases.</li>
+  <li>Failures degrade gracefully: no index or no embeddings means keyword search, not an error.</li>
+  <li>36 offline tests, including search, run in about two seconds.</li>
+</ul>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Still to do</th><th>Fixed in</th></tr></thead>
+    <tbody>
+      <tr><td>Assist can find help sections but doesn't answer from them; policy still lives in the prompt</td><td>M06 (RAG with citations)</td></tr>
+      <tr><td>No "nothing relevant" threshold: weak matches are returned like strong ones</td><td>M06 (retrieval checks), M09 (measured)</td></tr>
+      <tr><td>The index is rebuilt by hand when content changes</td><td>M08 (architecture), M12 (pipelines)</td></tr>
+      <tr><td>Retrieval quality measured on 20 questions only</td><td>M09 (evaluation)</td></tr>
+      <tr><td>Admin keys for Azure AI Search in <code>.env</code></td><td>M10 (managed identity, least privilege)</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="callout note">
+  <div class="c-label">Fell behind? Catch up here</div>
+  <p>The complete reference code is in <a href="../../code/traincrest-assist/m05/app/search.py"><code>code/traincrest-assist/m05/</code></a>, including tests, help articles and the index builder. Copy it over your project, keep your <code>.env</code>, run <code>pytest -q</code> and <code>python -m scripts.build_index</code>, and you're ready for Part III.</p>
+</div>

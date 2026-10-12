@@ -1,0 +1,112 @@
+<!--meta
+{"id": "m03-struct", "short": "Structured Prompts", "h1": "Structured Prompts", "description": "Module 03, topic 8: organising prompts into labelled sections with headings and tags, delimiting data, and a drill where you rewrite a messy prompt into a structured one and score both automatically.", "lead": "A wall of text makes the model guess where the rules end and the data begins. Headings and tags turn a prompt into a well-organised form, easy for the model to follow and easy for your teammate to edit. You'll rewrite a real messy prompt and let automatic checks score both versions.", "chips": ["Sections", "XML-style tags", "Delimiters", "Drill 03.10"], "time": "Learn 8 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>From a wall of text to a form.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A structured prompt organises content into clearly labelled sections, using markdown headings, XML-style tags or other delimiters, so that instructions, context, examples, input data and output requirements are unambiguous to the model and maintainable by humans.</p>
+</div>
+
+<div class="two-col">
+  <div>
+    <h4>Unstructured</h4>
+<pre class="out"><code>you are a support bot for traincrest and you
+should be nice and here is the lab policy labs
+are available 30 days after the course ends and
+learners can get one free 7 day extension if
+they ask and after that it costs $49 for 14 more
+days and the learner wrote … reply in under 90
+words and dont offer refunds</code></pre>
+  </div>
+  <div>
+    <h4>Structured</h4>
+<pre class="out"><code>## Role
+Traincrest Assist, learner support.
+
+## Policy
+&lt;policy&gt;
+- Labs: 30 days after the course ends.
+- One free 7-day extension on request.
+- Then 14 more days cost $49.
+&lt;/policy&gt;
+
+## Rules
+- Only the policy above. Never offer refunds.
+- Under 90 words, warm.
+
+&lt;learner_message&gt;…&lt;/learner_message&gt;</code></pre>
+  </div>
+</div>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>Markdown headings and XML-style tags both work well with current models; pick one convention as a team.</li>
+  <li><strong>Tags around data</strong> (<code>&lt;policy&gt;</code>, <code>&lt;learner_message&gt;</code>) are also your first defence against prompt injection (topic 10).</li>
+  <li>For <strong>long documents</strong>, put the document first and the task last; models tend to follow the most recent instruction best.</li>
+  <li>You can refer to sections by name: "Using only the facts in &lt;policy&gt;…".</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Provider prompting guides recommend this kind of structure, and production system prompts look like small specifications with headed sections and tagged context blocks. Structure also makes prompts <em>diffable</em>: a reviewer can see that only the Rules section changed in a pull request.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I structure prompts into <strong>labelled sections</strong> (role, policy, rules, examples, input, output format) and wrap untrusted data in <strong>delimiters</strong> so it's never confused with instructions."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Rewrite a messy prompt, then let the checks decide.</p></div></div>
+
+<div class="drill" id="d03-10" data-title="Restructure a messy prompt and score both versions" data-time="~20 min" data-steps="write,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 03.10</span><h3>Restructure a messy prompt and score both versions</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> turn a real "wall of text" prompt into a structured one, and prove it's better with automatic checks, not opinion.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Save the messy prompt</h4>
+        <p>Save as <code>messy_prompt.txt</code>. It uses <code>$message</code> as the placeholder, and <code>$$</code> for a literal dollar sign (Python's <code>string.Template</code> syntax).</p>
+        <pre class="code" data-file="messy_prompt.txt" data-src="code/genai-labs/messy_prompt.txt"></pre>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Write the structured version yourself</h4>
+        <p>Create <code>structured_prompt.txt</code>. This time <em>you</em> are the prompt engineer; no assistant needed. Use this skeleton:</p>
+        <div class="template-box" data-title="Structured prompt skeleton"><pre><code>## Role
+…
+
+## Task
+…
+
+## Policy
+&lt;policy&gt;
+…
+&lt;/policy&gt;
+
+## Rules
+- …
+
+&lt;learner_message&gt;
+$message
+&lt;/learner_message&gt;</code></pre></div>
+        <p class="hint"><b>Hint:</b> keep every fact from the messy version, add what it left implicit (what to do with non-lab questions, no refunds), and remember <code>$$49</code> for a literal "$49".</p>
+        <details class="solution"><summary>Compare with my structured prompt</summary><div>
+          <pre class="code" data-file="structured_prompt.txt" data-src="code/genai-labs/structured_prompt.txt"></pre>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Score both on the same three messages</h4>
+        <pre class="code" data-file="lab03_10_structured.py" data-src="code/genai-labs/lab03_10_structured.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab03_10_structured.py</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>The structured prompt passes at least as many checks as the messy one, usually more (often on "hands off non-lab topics" and "mentions the $49 option").</li><li>Read the replies too. Automatic checks catch obvious failures; your judgement catches tone.</li><li>Run twice. If a check flips between runs, the prompt still leaves room to guess: tighten that rule.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-10"> I've completed Drill 03.10</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Structure.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Name two benefits of tags around data, beyond readability.</summary><div><p>The model can be told <strong>text inside the tags is data, not instructions</strong> (an injection defence), and you can refer to sections by name in your rules.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Structure your prompts like a form: labelled sections, tagged data, rules you can point to.</p></div>

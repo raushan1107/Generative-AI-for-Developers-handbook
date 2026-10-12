@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introduction to Generative AI</title>
+<meta name="description" content="Module 01 overview: what generative AI is, how LLMs turn tokens into answers, training vs inference, foundation and multimodal models, developer use cases, 13 drills and Traincrest Assist milestone 1.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-overview" data-page="m01">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod" open><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview active" data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/01/index.html">Module 01</a></nav>
+  <span class="kind-pill">Overview</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 01 · Overview</span><h1>Introduction to Generative AI: What's Really Happening Behind the Chat Box</h1><p class="lead">You've used ChatGPT or Copilot. It feels like talking to someone who has read everything. But as a developer you can't build on a feeling. This module opens the box: what the model actually does with your words, why it sometimes confidently makes things up, and how to choose the right model, and you'll prove each idea with your own hands.</p><div class="chips"><span class="chip">9 topics</span><span class="chip">13 drills</span><span class="chip">Milestone 1</span><span class="chip">≈ 4 hours hands-on</span></div></header>
+<div class="content">
+
+<h2 id="map">The mental map</h2>
+<p>On the first morning of every batch someone asks me: <em>"Is it actually thinking?"</em> My honest answer is that it's doing something much simpler, and much stranger: <strong>it predicts the next small piece of text, again and again, very fast</strong>. Every page in this module zooms into one part of this picture.</p>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 400" role="img" aria-labelledby="m1-t m1-d">
+      <title id="m1-t">What happens when you send a prompt to an LLM</title>
+      <desc id="m1-d">Your text is split into tokens and placed in the context window. The model predicts a probability for every possible next token; one is picked, appended, and the loop repeats until the answer is complete. Tokens are turned back into text. The model's knowledge comes from training, which happened earlier and is frozen.</desc>
+      <rect x="20" y="40" width="170" height="86" rx="12" class="s-surface"/>
+      <text x="105" y="72" class="t-b mid">Your prompt</text>
+      <text x="105" y="94" class="t-s mid">"Where is my</text>
+      <text x="105" y="110" class="t-s mid">exam voucher?"</text>
+      <rect x="240" y="40" width="150" height="86" rx="12" class="s-teal"/>
+      <text x="315" y="72" class="t-b mid">1 · Tokenize</text>
+      <text x="315" y="94" class="t-s mid">text → token IDs</text>
+      <text x="315" y="112" class="t-m mid t-teal">TOPIC 4</text>
+      <rect x="440" y="24" width="300" height="118" rx="12" class="s-blue"/>
+      <text x="590" y="52" class="t-b mid">2 · Context window</text>
+      <text x="590" y="72" class="t-s mid">instructions + history + your prompt</text>
+      <rect x="460" y="86" width="64" height="22" rx="5" class="s-surface"/>
+      <rect x="530" y="86" width="90" height="22" rx="5" class="s-surface"/>
+      <rect x="626" y="86" width="56" height="22" rx="5" class="s-surface"/>
+      <rect x="688" y="86" width="34" height="22" rx="5" class="s-surface2"/>
+      <text x="590" y="130" class="t-m mid t-blue">TOPIC 4 · LIMITED SIZE</text>
+      <rect x="440" y="200" width="300" height="100" rx="14" class="s-violet"/>
+      <text x="590" y="232" class="t-h mid">3 · The model</text>
+      <text x="590" y="256" class="t-s mid">billions of learned numbers (weights)</text>
+      <text x="590" y="276" class="t-s mid">scores every possible next token</text>
+      <text x="590" y="294" class="t-m mid t-violet">TOPICS 3 · 5</text>
+      <rect x="800" y="200" width="140" height="100" rx="12" class="s-amber"/>
+      <text x="870" y="234" class="t-b mid">4 · Pick one</text>
+      <text x="870" y="256" class="t-s mid">"Your" 62%</text>
+      <text x="870" y="274" class="t-s mid">"I" 21% …</text>
+      <path d="M870 200 V150 Q870 120 840 112 L746 96" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="760" y="176" class="t-s">append &amp; repeat</text>
+      <rect x="20" y="214" width="370" height="72" rx="12" class="s-green"/>
+      <text x="205" y="242" class="t-b mid">5 · Detokenize → answer</text>
+      <text x="205" y="264" class="t-s mid">"Vouchers are issued within 3 business days…"</text>
+      <rect x="440" y="330" width="300" height="52" rx="12" class="s-surface2"/>
+      <text x="590" y="352" class="t-b mid">Training happened earlier</text>
+      <text x="590" y="370" class="t-s mid">knowledge is frozen at a cutoff · topic 6</text>
+      <path d="M190 83 H234" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M390 83 H434" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M590 142 V194" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M740 250 H794" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M590 330 V306" class="s-dash" marker-end="url(#ah)"/>
+      <path d="M440 266 Q420 256 396 252" class="s-arrow" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption><b>One loop explains most of GenAI.</b> Text becomes tokens, tokens fill a limited window, the model scores every possible next token, one is chosen and added, and the loop runs until the answer ends. The model's knowledge was baked in during training and doesn't update by itself.</figcaption>
+</figure>
+
+<div class="callout takeaway">
+  <div class="c-label">Takeaway</div>
+  <p>An LLM doesn't look things up and doesn't "know" in the human sense. It produces the most plausible continuation of the text it was given. Almost every GenAI technique you'll learn (prompting, RAG, tools, evaluation) is a way of making "plausible" also mean "correct and useful".</p>
+</div>
+
+<h2 id="why">Why developers need to understand what's inside</h2>
+<p>A team wired an LLM into their support portal in one afternoon. The demo was magical. Two weeks after launch:</p>
+<blockquote class="voice">"The bot told a learner our refund window is 30 days. It's 14. Legal wants it switched off tonight."<cite>A very real Friday-evening escalation</cite></blockquote>
+<p>Nothing was broken. The code worked exactly as written. The model did what models do: it produced a <em>plausible</em> answer, because 30 days is a common refund window on the internet. Nobody on the team understood that, so nobody designed for it.</p>
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>Software is <strong>deterministic</strong>. Same input, same output. A wrong output means a bug to find.</p></div>
+  <div><h5>GenAI developer view</h5><p>The model is <strong>probabilistic</strong>. Same input can give different outputs, and a wrong answer can come from perfectly working code. You design <em>around</em> the model: give it facts, constrain its output, check its work.</p></div>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Hiring an LLM is like hiring a brilliant new joiner who has read every book in the library but has <strong>never worked at your company</strong>, <strong>forgets every conversation</strong>, and is a little too eager to please. Brilliant at language, bad at saying "I don't know". You wouldn't let them answer customers on their first day without a policy binder and a supervisor. This course is about building that binder and that supervisor.</p>
+</div>
+
+<h2 id="pages">Pages and drills in this module</h2>
+<p>Work through them in order. Each topic page has its drills right after the concept.</p>
+<div class="page-cards"><a class="page-card k-topic" href="../../modules/01/what-is-genai.html"><span class="pc-tag">Learn · Do · Check</span><b>What is Generative AI?</b><ul><li><span class="mono">01.1</span> First conversation: notice the weirdness <span class="muted">· ~10 min</span></li><li><span class="mono">01.2</span> One brief, three outputs, and test the generated code <span class="muted">· ~10 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/01/genai-vs-ml.html"><span class="pc-tag">Learn · Do · Check</span><b>GenAI vs traditional AI/ML</b><ul><li><span class="mono">01.3</span> Train a classic classifier, then race it against an LLM <span class="muted">· ~20 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/01/llms.html"><span class="pc-tag">Learn · Do · Check</span><b>Large Language Models</b><ul><li><span class="mono">01.4</span> Build a toy next-word predictor from scratch <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/01/tokens.html"><span class="pc-tag">Learn · Do · Check</span><b>Tokens and context windows</b><ul><li><span class="mono">01.5</span> See text the way the model sees it <span class="muted">· ~10 min</span></li><li><span class="mono">01.6</span> Build a token-budget CLI with your AI assistant <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/01/generation.html"><span class="pc-tag">Learn · Do · Check</span><b>How LLMs generate responses</b><ul><li><span class="mono">01.7</span> Temperature from scratch: softmax and sampling <span class="muted">· ~10 min</span></li><li><span class="mono">01.8</span> Watch your model pick its next token <span class="muted">· ~10 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/01/training-inference.html"><span class="pc-tag">Learn · Do · Check</span><b>Training vs inference</b><ul><li><span class="mono">01.10</span> Prompt, RAG or fine-tune? Five decisions <span class="muted">· ~10 min</span></li><li><span class="mono">01.9</span> Frozen knowledge vs handed-over facts <span class="muted">· ~10 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/01/foundation-models.html"><span class="pc-tag">Learn · Do · Check</span><b>Foundation models</b><ul><li><span class="mono">01.11</span> Same prompt, two models: measure, then extend the benchmark <span class="muted">· ~20 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/01/multimodal.html"><span class="pc-tag">Learn · Do · Check</span><b>Multimodal AI</b><ul><li><span class="mono">01.12</span> Read a screenshot: diagnose an error from an image <span class="muted">· ~12 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/01/use-cases.html"><span class="pc-tag">Learn · Do · Check</span><b>Developer use cases</b><ul><li><span class="mono">01.13</span> Pattern spotting: map eight feature requests <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-build" href="../../modules/01/build.html"><span class="pc-tag">Traincrest Assist</span><b>Build: Milestone 1</b><ul><li><span class="mono">M1</span> Milestone 1: scaffold and build Traincrest Assist v0.1 <span class="muted">· ~30 min</span></li></ul></a>
+<a class="page-card k-recap" href="../../modules/01/recap.html"><span class="pc-tag">Check</span><b>Recap and self-check</b></a></div>
+
+<h2 id="kit">Lab kit for Module 01</h2>
+<ul>
+  <li><strong>You'll need:</strong> the <code>genai-labs</code> folder from <a href="../../setup/index.html">Lab setup</a> with <code>lab00_hello.py</code> working, your AI coding assistant, and optionally a second deployment (for example <code>chat-big</code>) or Ollama for Drill 01.11.</li>
+  <li><strong>Files you'll create:</strong> <code>tickets.py</code> and <code>data/train_tickets.json</code> (reused in Module 03), plus one script per drill.</li>
+  <li><strong>Build:</strong> Milestone 1 creates the <code>traincrest-assist</code> project, which grows for the rest of the course.</li>
+</ul>
+
+</div>
+<nav class="pager" aria-label="Page navigation"><a class="prev" href="../../setup/troubleshooting.html"><small>Previous</small><span>← Troubleshooting and cost</span></a><a class="next" href="../../modules/01/what-is-genai.html"><small>Next</small><span>01 · What is Generative AI? →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

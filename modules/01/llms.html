@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Large Language Models</title>
+<meta name="description" content="Module 01, topic 3: what a large language model is, the transformer and attention without the maths, and a drill where you build a toy next-word predictor from scratch with your AI assistant.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m01-llm">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod" open><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic active" data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/01/index.html">Module 01</a><i>/</i><span>Large Language Models</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 01 · Topic 3 of 9</span><h1>Large Language Models: A Giant Autocomplete</h1><p class="lead">An LLM is a giant autocomplete trained on a huge amount of text. That sounds too simple to explain code generation, until you build a tiny one yourself in 30 lines and watch it generate text. Then the leap to a real LLM is just scale and attention.</p><div class="chips"><span class="chip">Transformer</span><span class="chip">Attention</span><span class="chip">Parameters</span><span class="chip">Drill 01.4</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 15 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>What's inside the model, without the maths.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A large language model is a deep neural network, usually based on the transformer architecture, trained on very large amounts of text to predict the next token in a sequence. Its learned parameters (often billions) let it understand and generate human language and code.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Your phone keyboard suggests the next word from your last couple of words. An LLM does the same job, but it has learned from a large part of the internet, books and code, and it looks at <em>thousands</em> of previous words at once. That scale is what turns autocomplete into something that can write SQL and explain a refund policy.</p>
+</div>
+
+<h3>The three words in the name</h3>
+<div class="terms">
+  <div class="term"><b>Large</b><span>Billions of parameters (numbers adjusted during training) and trillions of training tokens. Scale is where the surprising abilities come from.</span></div>
+  <div class="term"><b>Language</b><span>It works on text, and anything that can be written as text: code, JSON, SQL, tables, even descriptions of images.</span></div>
+  <div class="term"><b>Model</b><span>A mathematical function: tokens in, probabilities for the next token out. Nothing more, and that's worth remembering.</span></div>
+</div>
+
+<h3>The transformer and attention</h3>
+<p>Almost every modern LLM is a <strong>transformer</strong>, an architecture introduced in the 2017 paper "Attention Is All You Need". Its key trick is <strong>attention</strong>: for every word, the model works out which other words in the text matter for understanding it.</p>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Read: <em>"The laptop didn't fit in the bag because <strong>it</strong> was too big."</em> What is "it"? The laptop. Now: <em>"…because <strong>it</strong> was too small."</em> Now "it" is the bag. You resolved that instantly by <em>paying attention</em> to "big" or "small". Attention lets the model do the same, for every word against every other word, all at once.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 200" role="img" aria-labelledby="att-t att-d">
+      <title id="att-t">Attention resolves what "it" refers to</title>
+      <desc id="att-d">The sentence "The laptop didn't fit in the bag because it was too big", with a strong attention line from "it" to "laptop", a weak line to "bag", and "big" deciding it.</desc>
+      <rect x="20" y="100" width="54" height="34" rx="7" class="s-surface"/><text x="47" y="122" class="t mid">The</text>
+      <rect x="80" y="100" width="80" height="34" rx="7" class="s-blue"/><text x="120" y="122" class="t-b mid">laptop</text>
+      <rect x="166" y="100" width="76" height="34" rx="7" class="s-surface"/><text x="204" y="122" class="t mid">didn't</text>
+      <rect x="248" y="100" width="44" height="34" rx="7" class="s-surface"/><text x="270" y="122" class="t mid">fit</text>
+      <rect x="298" y="100" width="40" height="34" rx="7" class="s-surface"/><text x="318" y="122" class="t mid">in</text>
+      <rect x="344" y="100" width="50" height="34" rx="7" class="s-surface"/><text x="369" y="122" class="t mid">the</text>
+      <rect x="400" y="100" width="56" height="34" rx="7" class="s-surface2"/><text x="428" y="122" class="t mid">bag</text>
+      <rect x="462" y="100" width="88" height="34" rx="7" class="s-surface"/><text x="506" y="122" class="t mid">because</text>
+      <rect x="556" y="100" width="40" height="34" rx="7" class="s-amber"/><text x="576" y="122" class="t-b mid">it</text>
+      <rect x="602" y="100" width="50" height="34" rx="7" class="s-surface"/><text x="627" y="122" class="t mid">was</text>
+      <rect x="658" y="100" width="50" height="34" rx="7" class="s-surface"/><text x="683" y="122" class="t mid">too</text>
+      <rect x="714" y="100" width="56" height="34" rx="7" class="s-teal"/><text x="742" y="122" class="t-b mid">big</text>
+      <path d="M576 100 Q350 10 120 96" class="s-arrow-accent" style="stroke-width:3.2" marker-end="url(#ah-a)"/>
+      <path d="M576 100 Q500 54 432 96" class="s-dash" marker-end="url(#ah)"/>
+      <path d="M742 136 Q660 180 580 138" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="300" y="30" class="t-s">strong attention: "it" = laptop</text>
+      <text x="470" y="66" class="t-s">weak</text>
+      <text x="790" y="172" class="t-s">"big" decides</text>
+    </svg>
+  </div>
+  <figcaption><b>Attention in one picture.</b> When processing "it", the model weighs every other word. "Big" pushes the weight towards "laptop"; change it to "small" and the weight moves to "bag".</figcaption>
+</figure>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>LLMs process <strong>tokens</strong>, not words or characters (next topic).</li>
+  <li>An LLM by itself has <strong>no memory</strong> between calls and <strong>no internet access</strong>. Chat apps add those around the model.</li>
+  <li>Bigger models are usually more capable but slower and pricier. Small models are often good enough for focused tasks.</li>
+  <li>The "chat" models you'll use were further trained to follow instructions and hold conversations (topic 6).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Code completion in your editor is the clearest LLM-as-autocomplete you'll see: the assistant sends the code around your cursor as context and asks the model to continue it. The quality differences between coding tools come largely from <em>what context they send</em> (open files, related symbols, your recent edits), not just from the model.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"An LLM is a <strong>transformer</strong> trained to <strong>predict the next token</strong>; <strong>attention</strong> lets it use the whole context for that prediction." Three bold words, one sentence: a strong answer.</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Build the great-great-grandparent of an LLM from scratch.</p></div></div>
+
+<div class="drill" id="d01-4" data-title="Build a toy next-word predictor from scratch" data-time="~15 min" data-steps="write,run,think">
+  <div class="drill-head"><span class="drill-id">Drill 01.4</span><h3>Build a toy next-word predictor from scratch</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">Pure Python · AI assistant</span><span class="badge b-tool">no API needed</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> understand next-token prediction by building a "bigram" model that learns which word follows which, then generates text by sampling.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Ask your assistant to build it</h4>
+        <div class="template-box"><pre><code>Goal:        a Python script lab01_04_bigram.py that …
+Context:     a tiny corpus of sentences about …; no external libraries
+Constraints: "training" = counting …; predict() returns …; generate() samples …;
+             fixed random seed so runs are repeatable
+Done when:   it prints the next-word probabilities after "the" and 3 generated sentences</code></pre></div>
+        <p class="hint"><b>Hint:</b> a bigram model counts, for each word, which words followed it in the corpus. The probability of the next word is its count divided by the total. Ask for <code>collections.Counter</code> and <code>random.choices</code> with weights.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Write lab01_04_bigram.py, a tiny bigram language model in pure Python (standard library only).
+- CORPUS: about 10 short lowercase sentences about an online course, its labs, exam vouchers
+  and trainers, with "." as separate tokens.
+- "Training": split on whitespace and count, for each word, which words follow it
+  (defaultdict of Counter).
+- predict(word) returns {next_word: probability} from those counts.
+- generate(start, length=12, seed=None) repeatedly samples the next word with random.choices
+  using the probabilities as weights; use random.Random(seed) so runs are repeatable.
+- Print the probabilities after "the" and after "labs", then 3 generated sentences (seeds 0,1,2).
+Keep it under 50 lines with short comments.</code></pre></div>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Run it (or compare with the reference)</h4>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="lab01_04_bigram.py"><code>"""Drill 01.4: a toy next-word predictor. The great-great-grandparent of an LLM."""
+import random
+from collections import Counter, defaultdict
+
+CORPUS = """
+the course starts on monday . the course includes hands-on labs .
+the labs run on azure . the exam voucher arrives after the course .
+the voucher is valid for twelve months . the labs are available for thirty days .
+the course is online . the trainer explains the labs . the learner completes the labs .
+"""
+
+<span class="c"># "Training": count which word follows which.</span>
+words = CORPUS.split()
+next_counts = defaultdict(Counter)
+for current, following in zip(words, words[1:]):
+    next_counts[current][following] += 1
+
+
+def predict(word):
+    """Probability of each possible next word, learned purely by counting."""
+    counts = next_counts[word]
+    total = sum(counts.values())
+    return {w: c / total for w, c in counts.most_common()}
+
+
+def generate(start, length=12, seed=None):
+    """'Inference': repeatedly sample the next word from the predicted probabilities."""
+    rng = random.Random(seed)
+    out = [start]
+    for _ in range(length):
+        probs = predict(out[-1])
+        if not probs:
+            break
+        out.append(rng.choices(list(probs), weights=list(probs.values()))[0])
+    return " ".join(out)
+
+
+print("After 'the': ", {w: f"{p:.0%}" for w, p in predict("the").items()})
+print("After 'labs':", {w: f"{p:.0%}" for w, p in predict("labs").items()})
+print()
+for seed in range(3):
+    print("Generated:", generate("the", seed=seed))</code></pre>
+        </div></details>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_04_bigram.py</code></pre>
+        <span class="out-label">Real output of the reference solution</span>
+<pre class="out"><code>After 'the':  {'course': '33%', 'labs': '33%', 'exam': '8%', 'voucher': '8%', 'trainer': '8%', 'learner': '8%'}
+After 'labs': {'.': '60%', 'run': '20%', 'are': '20%'}
+
+Generated: the trainer explains the course . the voucher arrives after the trainer explains
+Generated: the course is online . the labs run on monday . the labs
+Generated: the learner completes the course is online . the labs run on monday</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>From toy to LLM</h4>
+        <p>Your model generated fluent-looking fragments and nonsense like "the course is online . the labs run on monday" (nobody said that). Answer: what's missing compared with a real LLM?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div>
+          <ul>
+            <li><strong>Context:</strong> yours looks at one previous word; an LLM looks at thousands of tokens, with attention deciding which ones matter.</li>
+            <li><strong>Learned meaning:</strong> yours counts exact words; an LLM learns representations where "voucher" and "coupon" are related.</li>
+            <li><strong>Scale:</strong> 100 words of corpus vs trillions of tokens, and a handful of counts vs billions of parameters.</li>
+            <li><strong>The same job:</strong> both predict a probability for each next token and sample. That part you've now built yourself.</li>
+          </ul>
+          <p>Notice too that it produced <em>plausible but invented</em> combinations. Real LLMs do the same at a much more convincing level: that's hallucination's root.</p>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-4"> I've completed Drill 01.4</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Two quick ones.</p></div></div>
+<div class="quiz">
+  <details><summary>1. What does attention let a transformer do that your bigram model can't?</summary><div><p>Use <strong>the whole context</strong>, weighting which earlier tokens matter for each prediction, instead of only the previous word.</p></div></details>
+  <details><summary>2. Does an LLM look things up on the internet when you call the API?</summary><div><p><strong>No.</strong> It only uses its trained parameters and what's in your request. Web search, when you see it, is a tool the application adds around the model.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Strip away the scale and an LLM is your bigram model's descendant: predict the next token, sample, repeat. Everything else is how well it predicts.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m01-llm"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/01/genai-vs-ml.html"><small>Previous</small><span>← 01 · GenAI vs traditional AI/ML</span></a><a class="next" href="../../modules/01/tokens.html"><small>Next</small><span>01 · Tokens and context windows →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

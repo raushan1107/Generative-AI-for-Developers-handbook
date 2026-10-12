@@ -1,0 +1,147 @@
+<!--meta
+{"id": "m01-fm", "short": "Foundation Models", "h1": "Foundation Models, and How to Choose One", "description": "Module 01, topic 7: what foundation models are, the model landscape (frontier, small, open-weight), the questions for choosing a model, and a drill that measures two models on the same task.", "lead": "The industry builds a few huge general models and everyone adapts them. Your real decision is which one to use for which job, and the honest answer comes from measuring, not from leaderboards. You'll race two models on a real TrainCrest task and let the numbers decide.", "chips": ["Frontier · small · open-weight", "Model selection", "Drill 01.11"], "time": "Learn 12 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Build once, adapt many times.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A foundation model is a large model trained on broad data that can be adapted, through prompting, grounding or fine-tuning, to a wide range of downstream tasks. LLMs such as the GPT, Claude, Llama and Phi families are foundation models.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Instead of one model per task, there are a few huge general models, and everyone adapts them. The same model can summarise a ticket, write SQL, translate Spanish and draft an email. You choose a foundation model, then shape it with prompts and data.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A foundation model is a <strong>fresh graduate from a top university</strong>: broadly trained, quick to learn, not yet specialised. You don't send them back to university for every new task. You give them a brief (prompt), reference material (RAG) and, for long-term roles, some on-the-job training (fine-tuning).</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 300" role="img" aria-labelledby="fm-t fm-d">
+      <title id="fm-t">One foundation model, many tasks</title>
+      <desc id="fm-d">A foundation model in the centre connects to six tasks: summarise tickets, write code, translate, extract fields, answer policy questions and draft emails. Underneath, three ways to adapt it: prompting, grounding and fine-tuning.</desc>
+      <ellipse cx="450" cy="130" rx="130" ry="56" class="s-violet"/><text x="450" y="126" class="t-h mid">Foundation model</text><text x="450" y="148" class="t-s mid">broad, general, pre-trained</text>
+      <rect x="40" y="30" width="190" height="44" rx="10" class="s-surface"/><text x="135" y="57" class="t mid">Summarise tickets</text>
+      <rect x="40" y="108" width="190" height="44" rx="10" class="s-surface"/><text x="135" y="135" class="t mid">Write and explain code</text>
+      <rect x="40" y="186" width="190" height="44" rx="10" class="s-surface"/><text x="135" y="213" class="t mid">Translate Spanish ↔ English</text>
+      <rect x="670" y="30" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="57" class="t mid">Extract invoice fields</text>
+      <rect x="670" y="108" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="135" class="t mid">Answer policy questions</text>
+      <rect x="670" y="186" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="213" class="t mid">Draft learner emails</text>
+      <path d="M322 110 L234 56" class="s-line"/><path d="M320 130 H234" class="s-line"/><path d="M322 150 L234 206" class="s-line"/>
+      <path d="M578 110 L666 56" class="s-line"/><path d="M580 130 H666" class="s-line"/><path d="M578 150 L666 206" class="s-line"/>
+      <rect x="200" y="250" width="150" height="36" rx="9" class="s-blue"/><text x="275" y="273" class="t-b mid">Prompting</text>
+      <rect x="375" y="250" width="150" height="36" rx="9" class="s-teal"/><text x="450" y="273" class="t-b mid">Grounding (RAG)</text>
+      <rect x="550" y="250" width="150" height="36" rx="9" class="s-amber"/><text x="625" y="273" class="t-b mid">Fine-tuning</text>
+      <text x="110" y="273" class="t-s">adapt it by →</text>
+    </svg>
+  </div>
+  <figcaption><b>The economics of GenAI.</b> Providers spend a fortune on training; you spend minutes adapting.</figcaption>
+</figure>
+
+<h3>The model landscape, simplified</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Tier</th><th>Examples (at the time of writing)</th><th>How you use it</th></tr></thead>
+    <tbody>
+      <tr><td>Proprietary, frontier</td><td>OpenAI GPT-6 / GPT-5.x families, Anthropic Claude Opus and Sonnet</td><td>API (Azure Foundry, OpenAI, Anthropic). Most capable, priciest.</td></tr>
+      <tr><td>Proprietary, small and fast</td><td>"mini", "nano", "luna" tiers, Claude Haiku</td><td>Same APIs, far cheaper and faster. Often enough for classification, extraction, routing.</td></tr>
+      <tr><td>Open-weight</td><td>Meta Llama, Microsoft Phi, Mistral, DeepSeek, gpt-oss</td><td>Run yourself (Ollama, your GPUs) or hosted in Foundry. Full control; you operate it.</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="callout note">
+  <div class="c-label">Name check</div>
+  <p>Model names change every few months. In the last year Azure retired whole families and added new tiers such as GPT-5.6 Sol, Terra and Luna. Don't memorise names: learn the <strong>tiers</strong>, and check the Foundry model catalogue and its retirement schedule when you start a project.</p>
+</div>
+
+<h3>How to choose: the questions that matter</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Question</th><th>Why it matters</th><th>Leans towards</th></tr></thead>
+    <tbody>
+      <tr><td>How hard is the task?</td><td>Multi-step reasoning, tricky code and nuanced writing need capable models</td><td>Frontier for hard reasoning; small for classify, extract, route</td></tr>
+      <tr><td>How fast must it answer?</td><td>Chat users notice delays before the first word</td><td>Small models, streaming, low reasoning effort</td></tr>
+      <tr><td>How many calls a day?</td><td>Cost = volume × tokens × price</td><td>Small models for high volume; route only hard cases up</td></tr>
+      <tr><td>How much context?</td><td>Long documents need big windows</td><td>Large-context models, or better retrieval</td></tr>
+      <tr><td>Which inputs?</td><td>Images, audio, PDFs</td><td>Multimodal models (next topic)</td></tr>
+      <tr><td>Where may data be processed?</td><td>Regulation and contracts</td><td>Data Zone or regional deployments, or self-hosted open-weight</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Many products quietly use several models. GitHub Copilot, for example, lets you pick between models from different providers for chat. Production systems often <strong>route</strong>: a small, cheap model handles routine requests and a larger one handles the hard ones (Module 11). Teams pick models from their own evaluation results, because public benchmarks rarely match a company's actual tasks.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Use the biggest, newest model. Best is best."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Use the <strong>smallest model that passes my evaluation</strong> for this task, and keep the model name in configuration so I can switch when a better or cheaper one ships."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"How do you choose a model?" <strong>"Task difficulty, latency, cost at our volume, context length, modality and data residency, validated with an evaluation set on our own data."</strong></p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Let measurement, not marketing, pick the model.</p></div></div>
+
+<div class="drill" id="d01-11" data-title="Same prompt, two models: measure, then extend the benchmark" data-time="~20 min" data-steps="run,write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 01.11</span><h3>Same prompt, two models: measure, then extend the benchmark</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Ollama · Claude (optional)</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> compare latency, tokens and quality on a real support task, then have your assistant turn the script into a small, repeatable benchmark.</p>
+    <p class="lab-note"><b>Before you start:</b> you need a second model. Deploy a larger model in the same Foundry resource (for example a "sol" tier or <code>gpt-5.4</code>) as <code>chat-big</code>, or have Ollama running. Add <code>COMPARE_DEPLOYMENT=chat-big</code> and/or <code>COMPARE_WITH_OLLAMA=1</code> to <code>.env</code>.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Race the models</h4>
+        <pre class="code" data-file="lab01_11_compare.py" data-src="code/genai-labs/lab01_11_compare.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_11_compare.py</code></pre>
+        <p>Run it twice (latency varies). Score each answer 1–5: follows the policy (no refund, offers a reschedule), kind tone, under 80 words.</p>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Turn it into a benchmark</h4>
+        <p>One run proves little. Ask your assistant to extend the script: several runs per model, averages, and a table you could paste into a design document.</p>
+        <div class="template-box"><pre><code>Goal:        extend #lab01_11_compare.py into …
+Context:     it already builds a list of (label, client, model) targets
+Constraints: N runs per model; measure …; estimate cost from …;
+             keep the existing targets logic; no new dependencies
+Done when:   it prints a markdown table with one row per model</code></pre></div>
+        <p class="hint"><b>Hint:</b> ask for <code>--runs 3</code>, averages of latency, input tokens and output tokens, an estimated cost using <code>PRICE_IN_PER_M</code> / <code>PRICE_OUT_PER_M</code> from <code>.env</code>, and the shortest answer printed under the table for a quick quality check.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Extend #lab01_11_compare.py into a small benchmark. Keep the existing targets logic.
+Add argparse with --runs (default 3). For each target, call the model --runs times with PROMPT
+and record latency, prompt_tokens and completion_tokens. Then print a markdown table with
+columns: target | model | avg latency (s) | avg tokens in | avg tokens out | est. $ per call,
+where cost uses PRICE_IN_PER_M and PRICE_OUT_PER_M from .env (USD per 1M tokens, defaults
+0.40 and 1.60). Under the table, print each target's first answer. No new dependencies.</code></pre></div>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>The table has one row per target and plausible numbers (latency in seconds, not milliseconds).</li><li>On a reasoning model, output tokens are much higher than the visible answer suggests: they include hidden reasoning tokens, which you pay for.</li><li>Decide: for this focused task, is the bigger model worth its cost and latency? Write one sentence, as you would in a design review.</li></ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · add Claude to the race</div>
+      <div class="alt-body">
+<pre class="code" data-file="compare_claude.py"><code>import time
+from claude_llm import client, CLAUDE_MODEL, FALLBACK, text_of
+from lab01_11_compare import PROMPT   <span class="c"># reuse the same prompt (this also runs the main race)</span>
+
+start = time.perf_counter()
+msg = client.beta.messages.create(model=CLAUDE_MODEL, max_tokens=4000,
+                                  messages=[{"role": "user", "content": PROMPT}], **FALLBACK)
+print(f"claude · {time.perf_counter() - start:.1f}s · {msg.usage.input_tokens} in / {msg.usage.output_tokens} out")
+print(text_of(msg))</code></pre>
+      </div>
+    </div>
+    <p class="lab-clean"><b>Clean up:</b> if you created <code>chat-big</code> only for this drill, delete the deployment.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-11"> I've completed Drill 01.11</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Model choice.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Traincrest Assist must classify 25,000 tickets a month into 7 categories. Which tier first, and why?</summary><div><p>A <strong>small, cheap model</strong>: focused task, high volume, latency matters. Validate on labelled samples and move up a tier only if it fails your quality bar.</p></div></details>
+  <details><summary>2. Why keep the model name in configuration rather than in code?</summary><div><p>Models are retired and replaced every few months. Configuration lets you <strong>switch or A/B test</strong> without a code change (and Module 12 adds model fallbacks).</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>The best model is the smallest one that passes your evaluation. Measure it.</p></div>

@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rate Limits and Retries</title>
+<meta name="description" content="Module 02, topic 8: tokens and requests per minute, 429s, retry-after, exponential backoff with jitter, and drills that trigger a real 429 and build a tested retry decorator with your AI assistant.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m02-rate">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic active" data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/02/index.html">Module 02</a><i>/</i><span>Rate limits and retries</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 02 · Topic 8 of 9</span><h1>Rate Limits and Retries</h1><p class="lead">Your deployment has a token budget per minute. Spend it and the API says 429, slow down. The right answer is to wait a bit, then longer, with a little randomness, so a thousand clients don't retry at the same instant. You'll hit a real 429, then write the reusable retry decorator.</p><div class="chips"><span class="chip">TPM · RPM</span><span class="chip">429 · retry-after</span><span class="chip">Backoff + jitter</span><span class="chip">Drills 02.12 · 02.13</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 25 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Wait longer each time, never in lockstep.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Rate limits cap how much a client can use an endpoint in a time window, typically as <strong>tokens per minute (TPM)</strong> and <strong>requests per minute (RPM)</strong>. Exceeding them returns HTTP 429. <strong>Exponential backoff with jitter</strong> retries after progressively longer, randomised waits.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A toll plaza with a fixed number of booths. When the queue is full, cars are turned back. If every turned-back car returns at exactly the same moment, the jam repeats. If each driver waits a different, growing amount of time (one minute, then two, then four, plus a random few seconds), the traffic smooths out. That random few seconds is the <strong>jitter</strong>.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 220" role="img" aria-labelledby="bo-t bo-d">
+      <title id="bo-t">Exponential backoff with jitter</title>
+      <desc id="bo-d">A failed request at zero seconds, a retry after about one second that fails, a retry after about two more seconds that fails, and a retry after about four more seconds, or the server's retry-after, that succeeds.</desc>
+      <path d="M40 150 H920" class="s-line" marker-end="url(#ah)"/>
+      <circle cx="60" cy="150" r="14" class="s-rose"/><text x="60" y="155" class="t-b mid">✕</text><text x="60" y="186" class="t-s mid">429</text>
+      <path d="M74 120 Q120 90 166 120" class="s-dash" marker-end="url(#ah)"/><text x="120" y="84" class="t-s mid">1s + jitter</text>
+      <circle cx="180" cy="150" r="14" class="s-rose"/><text x="180" y="155" class="t-b mid">✕</text><text x="180" y="186" class="t-s mid">429</text>
+      <path d="M194 120 Q290 60 386 120" class="s-dash" marker-end="url(#ah)"/><text x="290" y="60" class="t-s mid">2s + jitter</text>
+      <circle cx="400" cy="150" r="14" class="s-rose"/><text x="400" y="155" class="t-b mid">✕</text><text x="400" y="186" class="t-s mid">503</text>
+      <path d="M414 120 Q610 30 806 120" class="s-dash" marker-end="url(#ah)"/><text x="610" y="40" class="t-s mid">4s + jitter (or the server's retry-after)</text>
+      <circle cx="820" cy="150" r="14" class="s-green"/><text x="820" y="155" class="t-b mid">✓</text><text x="820" y="186" class="t-s mid">200 OK</text>
+      <text x="480" y="210" class="t-s mid">cap the wait (e.g. 30s) and the attempts (e.g. 5), then fail gracefully</text>
+    </svg>
+  </div>
+  <figcaption><b>If the server sends <code>retry-after</code>, it knows best: use it.</b></figcaption>
+</figure>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>On Azure you assign <strong>TPM per deployment</strong> within your quota, and an RPM limit is derived from it. Limits count the <em>maximum</em> output tokens you request, so a huge <code>max_completion_tokens</code> eats budget even if unused.</li>
+  <li>Responses carry headers like <code>x-ratelimit-remaining-tokens</code>; 429s often include <code>retry-after</code>.</li>
+  <li>The OpenAI and Anthropic Python SDKs <strong>already retry</strong> 408, 409, 429 and 5xx twice with backoff by default. Tune <code>max_retries</code>; don't wrap a second blind retry loop around it.</li>
+  <li>For bulk work (summarising 25,000 tickets), don't retry harder: <strong>queue</strong> it and process at a steady rate, or use a batch API (Modules 08, 11).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Provider limits are tiered: new accounts get small limits that grow with usage and spend, and capacity for popular models can be scarce at peak times. Production teams monitor TPM utilisation, keep separate deployments (or quotas) for interactive and batch traffic, and use a gateway to spread load across regions or deployments when one is saturated.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"429? Retry in a loop until it works."</p></div>
+  <div><h5>GenAI developer view</h5><p>"429 is a capacity signal. Retry interactive calls with <strong>backoff and jitter</strong>, size TPM for peak traffic, cap output tokens, and move bulk work to a <strong>queue or batch</strong>."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I handle 429s with <strong>exponential backoff plus jitter</strong>, honouring <strong>retry-after</strong>, with a cap on attempts, and I separate interactive traffic from batch work."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Hit a real limit, then package the fix.</p></div></div>
+
+<div class="drill" id="d02-12" data-title="Hit a real 429 and recover with backoff" data-time="~15 min" data-steps="portal,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.12</span><h3>Hit a real 429 and recover with backoff</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI · Foundry</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> read your remaining budget from headers, trigger a real 429, and recover with your own backoff.</p>
+    <ol class="dsteps">
+      <li class="dstep portal"><span class="st">Portal</span><p>In Foundry, open your <code>chat</code> deployment, choose <strong>Edit</strong>, and lower tokens per minute to about 1K–2K. <strong>You'll restore it at the end.</strong></p></li>
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab02_12_rate_limits.py"><code>"""Drill 02.12: rate-limit headers, a real 429, and exponential backoff with jitter."""
+import random
+import time
+
+import openai
+
+from llm import get_client, MODEL
+
+client = get_client().with_options(max_retries=0)   <span class="c"># SDK retries off, so we see the 429s</span>
+
+<span class="c"># A) How much budget is left? Read the headers.</span>
+raw = client.chat.completions.with_raw_response.create(
+    model=MODEL, messages=[{"role": "user", "content": "Hi"}])
+for h in ("x-ratelimit-limit-tokens", "x-ratelimit-remaining-tokens",
+          "x-ratelimit-limit-requests", "x-ratelimit-remaining-requests"):
+    print(f"{h}: {raw.headers.get(h)}")
+raw.parse()   <span class="c"># the normal response object is still available</span>
+
+
+<span class="c"># B) Our own retry loop</span>
+def call_with_backoff(messages, max_attempts=6, base=1.0, cap=30.0):
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return client.chat.completions.create(model=MODEL, messages=messages)
+        except (openai.RateLimitError, openai.InternalServerError, openai.APIConnectionError) as e:
+            if attempt == max_attempts:
+                raise
+            response = getattr(e, "response", None)
+            retry_after = response.headers.get("retry-after") if response is not None else None
+            wait = float(retry_after) if retry_after else min(cap, base * 2 ** (attempt - 1))
+            wait += random.uniform(0, wait * 0.25)   <span class="c"># jitter: don't retry in lockstep</span>
+            print(f"   attempt {attempt}: {type(e).__name__}, waiting {wait:.1f}s")
+            time.sleep(wait)
+
+
+<span class="c"># C) Spend the budget fast to trigger 429s</span>
+print()
+for i in range(12):
+    r = call_with_backoff([{"role": "user", "content": "Write 150 words about cloud certifications."}])
+    print(f"request {i + 1:2} ok · {r.usage.total_tokens} tokens")</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_12_rate_limits.py</code></pre>
+        <span class="out-label">Expected (abridged)</span>
+<pre class="out"><code>x-ratelimit-limit-tokens: 1000
+x-ratelimit-remaining-tokens: 984
+x-ratelimit-limit-requests: 6
+x-ratelimit-remaining-requests: 5
+
+request  1 ok · 231 tokens
+request  2 ok · 228 tokens
+   attempt 1: RateLimitError, waiting 47.3s
+request  3 ok · 236 tokens
+…</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>You saw at least one <code>RateLimitError</code> and the script recovered.</li><li>The wait came from the server's <code>retry-after</code>, often longer than your own backoff would guess.</li><li><strong>Restore the deployment's TPM limit.</strong></li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-12"> I've completed Drill 02.12</label></div>
+</div>
+
+<div class="drill" id="d02-13" data-title="Write a tested retry decorator with backoff and jitter" data-time="~15 min" data-steps="write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.13</span><h3>Write a tested retry decorator with backoff and jitter</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · pytest</span><span class="badge b-tool">no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> turn the loop from Drill 02.12 into a reusable decorator, with tests that run in milliseconds because the sleep is injected.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span>
+        <div class="template-box"><pre><code>Goal:        retry.py with a decorator retry(...) and test_retry.py
+Context:     generic: it retries any function that raises the given exception types
+Constraints: parameters …; wait formula …; jitter …; cap …; re-raise after …;
+             make the sleep function injectable so tests don't actually sleep
+Done when:   pytest passes tests for: success after failures, giving up, not retrying
+             other exceptions, and the cap</code></pre></div>
+        <p class="hint"><b>Hint:</b> the key design trick is <code>sleep=time.sleep</code> as a parameter. Tests pass <code>sleep=waits.append</code> and then assert on the recorded waits.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Write retry.py with a decorator retry(retry_on, max_attempts=5, base=1.0, cap=30.0,
+sleep=time.sleep). It retries the wrapped function when it raises one of retry_on. Between
+attempts it waits min(cap, base * 2**(attempt-1)) seconds plus random jitter of up to 25% of
+that wait, and re-raises the last exception after max_attempts. Use functools.wraps. Then write
+test_retry.py (pytest) that injects sleep=waits.append so nothing really sleeps, and tests:
+succeeds after 2 failures with waits in [1, 1.25] and [2, 2.5]; gives up after max_attempts;
+does not retry other exception types; waits never exceed cap * 1.25. Run the tests.</code></pre></div>
+        </div></details>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="retry.py"><code>"""Drill 02.13 (reference solution): a reusable retry decorator with exponential backoff and jitter."""
+import functools
+import random
+import time
+
+
+def retry(retry_on, max_attempts=5, base=1.0, cap=30.0, sleep=time.sleep):
+    """Retry the wrapped function when it raises one of the `retry_on` exceptions.
+
+    Waits base * 2**(attempt-1) seconds (never more than `cap`) plus up to 25% random
+    jitter between attempts, and re-raises after `max_attempts`. `sleep` is injectable
+    so tests can run instantly.
+    """
+    def decorator(fn):
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    return fn(*args, **kwargs)
+                except retry_on:
+                    if attempt == max_attempts:
+                        raise
+                    wait = min(cap, base * 2 ** (attempt - 1))
+                    sleep(wait + random.uniform(0, wait * 0.25))
+        return wrapper
+    return decorator</code></pre>
+          <pre class="code" data-file="test_retry.py"><code>"""Tests for retry.retry. They never call a real API and run in milliseconds.
+Run with:  pytest -q test_retry.py"""
+import pytest
+
+from retry import retry
+
+
+class Flaky(Exception):
+    pass
+
+
+def test_succeeds_after_transient_failures():
+    calls, waits = [], []
+
+    @retry(Flaky, max_attempts=4, base=1, sleep=waits.append)
+    def sometimes():
+        calls.append(1)
+        if len(calls) &lt; 3:
+            raise Flaky()
+        return "ok"
+
+    assert sometimes() == "ok"
+    assert len(calls) == 3
+    assert len(waits) == 2
+    assert 1 &lt;= waits[0] &lt;= 1.25 and 2 &lt;= waits[1] &lt;= 2.5   <span class="c"># exponential, plus jitter</span>
+
+
+def test_gives_up_after_max_attempts():
+    calls = []
+
+    @retry(Flaky, max_attempts=3, sleep=lambda s: None)
+    def always_fails():
+        calls.append(1)
+        raise Flaky()
+
+    with pytest.raises(Flaky):
+        always_fails()
+    assert len(calls) == 3
+
+
+def test_does_not_retry_other_errors():
+    calls = []
+
+    @retry(Flaky, sleep=lambda s: None)
+    def wrong_input():
+        calls.append(1)
+        raise ValueError("bad request")
+
+    with pytest.raises(ValueError):
+        wrong_input()
+    assert len(calls) == 1
+
+
+def test_wait_is_capped():
+    waits = []
+
+    @retry(Flaky, max_attempts=8, base=10, cap=30, sleep=waits.append)
+    def always_fails():
+        raise Flaky()
+
+    with pytest.raises(Flaky):
+        always_fails()
+    assert max(waits) &lt;= 30 * 1.25</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_retry.py</code></pre>
+        <span class="out-label">Expected</span>
+<pre class="out"><code>....                                                                     [100%]
+4 passed in 0.02s</code></pre>
+        <ul class="verify-list"><li>The tests take milliseconds: no real sleeping.</li><li>Use it: decorate a function that calls the model with <code>@retry((openai.RateLimitError, openai.APIConnectionError, openai.InternalServerError))</code>.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-13"> I've completed Drill 02.13</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Limits.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why add random jitter to backoff waits?</summary><div><p>So many clients that failed together <strong>don't retry together</strong> and cause the same overload again.</p></div></details>
+  <details><summary>2. A nightly job summarising 25,000 tickets keeps hitting 429s and slowing the chat. What do you change?</summary><div><p>Move it to a <strong>queue or batch API</strong> with a steady processing rate, ideally on separate capacity, instead of retrying harder.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Back off politely, honour retry-after, and keep bulk work out of the interactive lane.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m02-rate"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/02/errors.html"><small>Previous</small><span>← 02 · Error handling</span></a><a class="next" href="../../modules/02/cost.html"><small>Next</small><span>02 · Managing API costs →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

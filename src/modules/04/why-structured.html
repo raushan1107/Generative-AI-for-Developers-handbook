@@ -1,0 +1,119 @@
+<!--meta
+{"id": "m04-why", "short": "Why Structured Outputs Matter", "h1": "Why Structured Outputs Matter", "description": "Module 04, topic 1: the difference between output for people and output for programs, why parsing free text fails, and a drill that breaks a regex parser with three perfectly reasonable replies.", "lead": "A reply can be perfect for a human and useless for a program. The moment your code reads what the model wrote (to show a price, route a ticket or fill a form), you need the answer in a shape your code can trust. This page shows, with a parser you'll watch fail, why that shape can't be left to chance.", "chips": ["People vs programs", "Why regex parsing fails", "Drill 04.1"], "time": "Learn 8 min · Do 10 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Two readers, two very different needs.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Structured output</strong> is model output in a predefined, machine-readable format (usually JSON with known keys, types and allowed values) so application code can parse and use it directly, instead of interpreting free-form text.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>People are forgiving readers: "290 USD", "$290" and "two hundred and ninety dollars" all mean the same to you. Code isn't. It needs the price in one box, as a number, every single time.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A customer writes a letter to their bank: "Please move about three hundred from my everyday account to savings, maybe Tuesday." A clerk understands it. The bank's computer can't. That's why banks give you a transfer form with boxes: amount, from, to, date. The form doesn't make the customer smarter; it makes the request <strong>processable</strong>.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 250" role="img" aria-labelledby="ws-t ws-d">
+      <title id="ws-t">Free text versus structured output</title>
+      <desc id="ws-d">The same model answer goes two ways. As free text, "Python Foundations is a great start at 290 USD", a regex tries to find a dollar sign, finds none or the wrong one, and the program shows a wrong price or crashes. As structured output, an object with course_id C101, title Python Foundations and price_usd 290 goes straight into the program, which displays it and adds it to the basket.</desc>
+      <rect x="20" y="95" width="150" height="60" rx="12" class="s-violet"/><text x="95" y="122" class="t-b mid">Model</text><text x="95" y="140" class="t-s mid">same answer</text>
+      <path d="M170 110 L240 60" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M170 140 L240 190" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="246" y="22" width="340" height="76" rx="12" class="s-surface2"/>
+      <text x="262" y="46" class="t-m">FREE TEXT</text><text x="262" y="68" class="t-s">"Python Foundations is a great start</text><text x="262" y="86" class="t-s">at 290 USD (Docker is only $190)."</text>
+      <rect x="246" y="152" width="340" height="76" rx="12" class="s-blue"/>
+      <text x="262" y="176" class="t-m t-blue">STRUCTURED</text><text x="262" y="198" class="t-s">{"course_id": "C101", "title": "Python</text><text x="262" y="216" class="t-s">Foundations", "price_usd": 290}</text>
+      <path d="M586 60 H640" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M586 190 H640" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="646" y="22" width="294" height="76" rx="12" class="s-rose"/><text x="662" y="48" class="t-b">regex finds "$190"</text><text x="662" y="70" class="t-s">wrong price shown, no error raised</text><text x="662" y="86" class="t-s">(silently wrong is the worst kind)</text>
+      <rect x="646" y="152" width="294" height="76" rx="12" class="s-green"/><text x="662" y="178" class="t-b">data["price_usd"] → 290</text><text x="662" y="200" class="t-s">shown, compared, added to basket</text><text x="662" y="216" class="t-s">same shape every time</text>
+    </svg>
+  </div>
+  <figcaption><b>One answer, two readers.</b> Free text is for people. When code is the reader, ask for structure.</figcaption>
+</figure>
+
+<h3>Where structured output is the whole point</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Task</th><th>What the code needs back</th></tr></thead>
+    <tbody>
+      <tr><td>Ticket triage (Milestone 3)</td><td><code>category</code>, <code>urgency</code>, <code>enrolment_id</code> to route it</td></tr>
+      <tr><td>Extraction from emails, invoices, forms</td><td>Named fields to save in a database</td></tr>
+      <tr><td>Classification and moderation</td><td>One label from a fixed list, maybe a score</td></tr>
+      <tr><td>UI generation</td><td>Title, bullet points, button labels in known slots</td></tr>
+      <tr><td>Calling your functions (topic 4)</td><td>A function name and arguments that match its parameters</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Most production GenAI features are <strong>not chat</strong>. They're pipelines where a model reads something messy (an email, a contract, a call transcript) and returns a record that the rest of the system processes like any other data: stored, searched, routed, reported on. The chat window is the demo; the structured record is the product.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"The API returns text. I'll parse it with a regex and fix the edge cases as they come in."</p></div>
+  <div><h5>GenAI developer view</h5><p>"There's no finite list of edge cases: the model can phrase the same fact a thousand ways. I <strong>ask for structure</strong>, so there's nothing to parse."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Testing a parser on three replies, seeing it work, and shipping it. The fourth reply mentions two prices, or writes "USD 290", and your code shows the wrong number without raising any error.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"When code consumes model output, I don't parse prose. I request <strong>structured output against a schema</strong> and validate it, because free text has unbounded variation and parsing failures are often <strong>silent</strong>."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Watch a reasonable parser fail on reasonable answers.</p></div></div>
+
+<div class="drill" id="d04-1" data-title="Parse the unparseable: free text vs your code" data-time="~10 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 04.1</span><h3>Parse the unparseable: free text vs your code</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-tool">Offline first · then Azure OpenAI</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> see why "just parse the reply" fails, using three replies that any person would call correct.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Three good answers, one quick parser</h4>
+        <pre class="code" data-file="lab04_01_free_text.py" data-src="code/genai-labs/lab04_01_free_text.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab04_01_free_text.py --offline</code></pre>
+        <span class="out-label">Output (exact, offline)</span>
+<pre class="out"><code>Reply 1: I recommend Python Foundations (C101). It costs $290 and is designed f...
+  parsed price -> 290   OK
+
+Reply 2: Python Foundations is the best fit. If budget is tight, Docker Quick S...
+  parsed price -> 190   WRONG
+
+Reply 3: Go for **Python Foundations**: beginner level, 290 USD, five days.
+  parsed price -> None   FAILED</code></pre>
+        <p>Now run it without <code>--offline</code> to ask your own deployment three times. Different wording, same problem.</p>
+        <pre class="term"><code><span class="ps">$ </span>python lab04_01_free_text.py</code></pre>
+        <span class="out-label">From a small local model (Ollama); yours will differ</span>
+<pre class="out"><code>Reply 1: Based on your criteria, a suitable Python course for a beginner is "C1...
+  parsed price -> 290   OK
+Reply 2: Based on your requirements, I would recommend the Python Foundations c...
+  parsed price -> 290   OK
+Reply 3: For a beginner Python course that costs under $300, I recommend the fo...
+  parsed price -> 300   WRONG</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Which failure is worse?</h4>
+        <p>Reply 2 parsed as <code>190</code>; reply 3 parsed as <code>None</code>. In production, which one hurts more, and why?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>The <strong>wrong</strong> one (190). <code>None</code> fails loudly: you can catch it, log it and retry. A wrong number flows silently into the UI or an invoice. Notice the live run: the model's "under $300" echoed the question, and the parser grabbed it. Fixing the regex just moves the problem; the fix is to stop parsing prose. The next three topics do exactly that.</p></div></details>
+      </li>
+    </ol>
+    <p class="lab-say"><b>Remember:</b> “If code reads it, don't ask for prose and hope. Ask for a shape.”</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-1"> I've completed Drill 04.1</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Why structure.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A feature shows a model-written summary to a support agent. Does it need structured output?</summary><div><p>Not necessarily: a person reads it, so free text is fine (with length and tone constraints). If the same feature also needs a <strong>category to route on</strong>, that part should be structured.</p></div></details>
+  <details><summary>2. Why is a parser that "usually works" dangerous?</summary><div><p>Because failures can be <strong>silent</strong>: it returns a plausible but wrong value instead of an error, and at 25,000 messages a month, rare cases happen daily.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Prose is for people. When a program is the reader, ask for a shape, not a sentence.</p></div>

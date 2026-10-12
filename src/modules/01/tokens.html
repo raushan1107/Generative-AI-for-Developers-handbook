@@ -1,0 +1,218 @@
+<!--meta
+{"id": "m01-tokens", "short": "Tokens and Context Windows", "h1": "Tokens and Context Windows", "description": "Module 01, topic 4: what tokens are, why languages, code and JSON cost different amounts, what the context window holds, and drills that visualise tokens and build a token-budget CLI with your AI assistant.", "lead": "The model never sees your letters. It sees tokens, it's billed in tokens, and it can only hold so many tokens at once. Token thinking shapes cost, speed and quality, so you'll see real tokenizer output and then build a tool that tells you whether a document fits.", "chips": ["Tokenizer", "Context window", "Cost", "Drills 01.5 · 01.6"], "time": "Learn 12 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The unit of everything: memory, money and speed.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A <strong>token</strong> is the unit of text an LLM reads and writes: a word, part of a word, a punctuation mark or a space-prefixed fragment, mapped to an integer ID by the model's tokenizer. The <strong>context window</strong> is the maximum number of tokens the model can consider in one request, including the input and the generated output.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>A tokenizer chops your text into pieces the model knows (common words stay whole, rare words get split) and turns each piece into a number. The context window is how many pieces fit on the model's desk at once. Your instructions, the chat history, documents and the answer all have to fit on that desk.</p>
+</div>
+
+<p>Real output from the tokenizer used by recent OpenAI models, for the same learner question in four languages:</p>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 260" role="img" aria-labelledby="tk-t tk-d">
+      <title id="tk-t">The same sentence tokenized in four languages</title>
+      <desc id="tk-d">"My exam voucher hasn't arrived yet. Can you check my enrolment?" is 14 tokens in English, 17 in Spanish, 21 in Hindi and 22 in Japanese even though the Japanese text has only 33 characters. The word "enrolment" splits into "enrol" and "ment". The number 3.14159265358979 becomes 7 tokens in chunks of three digits.</desc>
+      <text x="20" y="26" class="t-m t-accent">ENGLISH · 63 CHARACTERS → 14 TOKENS</text>
+      <rect x="20" y="36" width="36" height="28" rx="6" class="s-blue"/><text x="38" y="55" class="t mid">My</text>
+      <rect x="60" y="36" width="54" height="28" rx="6" class="s-teal"/><text x="87" y="55" class="t mid">␣exam</text>
+      <rect x="118" y="36" width="76" height="28" rx="6" class="s-violet"/><text x="156" y="55" class="t mid">␣voucher</text>
+      <rect x="198" y="36" width="68" height="28" rx="6" class="s-amber"/><text x="232" y="55" class="t mid">␣hasn't</text>
+      <rect x="270" y="36" width="72" height="28" rx="6" class="s-rose"/><text x="306" y="55" class="t mid">␣arrived</text>
+      <rect x="346" y="36" width="42" height="28" rx="6" class="s-green"/><text x="367" y="55" class="t mid">␣yet</text>
+      <rect x="392" y="36" width="20" height="28" rx="6" class="s-blue"/><text x="402" y="55" class="t mid">.</text>
+      <rect x="416" y="36" width="48" height="28" rx="6" class="s-teal"/><text x="440" y="55" class="t mid">␣Can</text>
+      <rect x="468" y="36" width="46" height="28" rx="6" class="s-violet"/><text x="491" y="55" class="t mid">␣you</text>
+      <rect x="518" y="36" width="60" height="28" rx="6" class="s-amber"/><text x="548" y="55" class="t mid">␣check</text>
+      <rect x="582" y="36" width="40" height="28" rx="6" class="s-rose"/><text x="602" y="55" class="t mid">␣my</text>
+      <rect x="626" y="36" width="62" height="28" rx="6" class="s-green"/><text x="657" y="55" class="t mid">␣enrol</text>
+      <rect x="692" y="36" width="52" height="28" rx="6" class="s-green"/><text x="718" y="55" class="t mid">ment</text>
+      <rect x="748" y="36" width="20" height="28" rx="6" class="s-blue"/><text x="758" y="55" class="t mid">?</text>
+      <text x="776" y="55" class="t-s">"enrolment" = 2</text>
+
+      <text x="20" y="96" class="t-m t-accent">SAME MEANING, OTHER LANGUAGES</text>
+      <rect x="20" y="106" width="260" height="40" rx="8" class="s-surface"/><text x="34" y="131" class="t">Spanish · 69 chars → <tspan class="t-b">17 tokens</tspan></text>
+      <rect x="296" y="106" width="260" height="40" rx="8" class="s-surface"/><text x="310" y="131" class="t">Hindi · 73 chars → <tspan class="t-b">21 tokens</tspan></text>
+      <rect x="572" y="106" width="300" height="40" rx="8" class="s-surface"/><text x="586" y="131" class="t">Japanese · 33 chars → <tspan class="t-b">22 tokens</tspan></text>
+      <text x="20" y="168" class="t-s">same question, up to ~1.6× the tokens: multilingual support costs more and fills the window faster</text>
+
+      <text x="20" y="206" class="t-m t-accent">NUMBER · 3.14159265358979 → 7 TOKENS</text>
+      <rect x="20" y="216" width="22" height="28" rx="6" class="s-surface"/><text x="31" y="235" class="t mid">3</text>
+      <rect x="46" y="216" width="22" height="28" rx="6" class="s-surface"/><text x="57" y="235" class="t mid">.</text>
+      <rect x="72" y="216" width="42" height="28" rx="6" class="s-surface"/><text x="93" y="235" class="t mid">141</text>
+      <rect x="118" y="216" width="42" height="28" rx="6" class="s-surface"/><text x="139" y="235" class="t mid">592</text>
+      <rect x="164" y="216" width="42" height="28" rx="6" class="s-surface"/><text x="185" y="235" class="t mid">653</text>
+      <rect x="210" y="216" width="42" height="28" rx="6" class="s-surface"/><text x="231" y="235" class="t mid">589</text>
+      <rect x="256" y="216" width="32" height="28" rx="6" class="s-surface"/><text x="272" y="235" class="t mid">79</text>
+      <text x="306" y="235" class="t-s">numbers are chopped into chunks: one reason LLMs are shaky at arithmetic</text>
+    </svg>
+  </div>
+  <figcaption><b>Real tokenizer output</b> (OpenAI's <code>o200k_base</code> encoding; ␣ marks a leading space). You'll reproduce every number here in Drill 01.5.</figcaption>
+</figure>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Rule of thumb</th><th>Approximate value</th><th>Why you care</th></tr></thead>
+    <tbody>
+      <tr><td>English text</td><td>1 token ≈ 4 characters ≈ ¾ of a word</td><td>100 tokens is about 75 words</td></tr>
+      <tr><td>Other languages</td><td>Often 1.2× to 2× or more tokens than English for the same meaning</td><td>Multilingual support costs more. Measure it.</td></tr>
+      <tr><td>Code and JSON</td><td>Punctuation-heavy, more tokens per character</td><td>Sending large JSON blobs is expensive</td></tr>
+      <tr><td>Tokenizers differ</td><td>Each model family has its own</td><td>Same text, different counts on GPT, Claude and Llama</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>The context window is a desk, not a memory</h3>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 190" role="img" aria-labelledby="cw-t cw-d">
+      <title id="cw-t">What shares the context window</title>
+      <desc id="cw-d">A bar for the context window holding system instructions, documents, chat history, the new question and room for the answer. Anything that doesn't fit doesn't exist for the model.</desc>
+      <path d="M20 36 H880" class="s-line" marker-start="url(#ah)" marker-end="url(#ah)"/>
+      <text x="450" y="26" class="t-m mid">CONTEXT WINDOW · roughly 128K to ~1M tokens on current large models</text>
+      <rect x="20" y="50" width="860" height="64" rx="12" class="s-surface2"/>
+      <rect x="24" y="54" width="120" height="56" rx="9" class="s-violet"/><text x="84" y="78" class="t-b mid">Instructions</text><text x="84" y="96" class="t-s mid">system prompt</text>
+      <rect x="148" y="54" width="250" height="56" rx="9" class="s-teal"/><text x="273" y="78" class="t-b mid">Documents / data</text><text x="273" y="96" class="t-s mid">policies, search results (RAG)</text>
+      <rect x="402" y="54" width="200" height="56" rx="9" class="s-blue"/><text x="502" y="78" class="t-b mid">Chat history</text><text x="502" y="96" class="t-s mid">grows every turn</text>
+      <rect x="606" y="54" width="100" height="56" rx="9" class="s-amber"/><text x="656" y="78" class="t-b mid">Question</text><text x="656" y="96" class="t-s mid">this turn</text>
+      <rect x="710" y="54" width="166" height="56" rx="9" class="s-green"/><text x="793" y="78" class="t-b mid">Room for answer</text><text x="793" y="96" class="t-s mid">output tokens</text>
+      <text x="20" y="146" class="t-s">Everything the model "knows" about this request must be on this desk. What doesn't fit doesn't exist for the model.</text>
+      <text x="20" y="168" class="t-s">More on the desk = more cost and latency, and important details can get buried in very long contexts.</text>
+    </svg>
+  </div>
+  <figcaption><b>One shared budget.</b> Instructions, documents, history, the question and the answer compete for the same window. Managing it is a core GenAI engineering skill (Modules 06, 07, 11).</figcaption>
+</figure>
+
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>The context window is your <strong>exam desk</strong>. You can bring some notes (documents), the question paper (prompt) and your answer sheet (output). The desk has a fixed size; bring the whole library and it won't fit. When the exam ends, the desk is cleared, and next time you start with an empty desk. That's why the model "forgets" between calls.</p>
+</div>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>You're billed <strong>per token</strong>, input and output separately; output tokens usually cost several times more.</li>
+  <li>Current large models offer context windows from roughly <strong>128K up to about 1M tokens</strong>; the output limit per response is much smaller and separate.</li>
+  <li>Reasoning models also produce hidden <strong>reasoning tokens</strong>. You don't see them, but they count as output and cost money.</li>
+  <li>The response's <code>usage</code> field is the truth. Your estimate is just an estimate.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Coding assistants can't send your whole repository to the model, so they work hard on <strong>context assembly</strong>: which open files, which related functions, how much of the current file. Support bots do the same with knowledge articles. When an AI product feels "smart about your stuff", it's usually because someone engineered what goes into the window.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>"The model supports 1M tokens, so let's send all our documents every time." It works in the demo; then the bill arrives, each answer takes 40 seconds, and quality drops because the relevant paragraph is buried. A big window is a capability, not a strategy. Send the <em>right</em> content (Module 06).</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Tokens are the units the model reads and bills; the context window is the total token budget for <strong>input plus output</strong> in one request." Add that input and output are priced differently and that languages tokenize differently: it signals production experience.</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>See tokens, then build a tool that answers "will this fit, and what will it cost?"</p></div></div>
+
+<div class="drill" id="d01-5" data-title="See text the way the model sees it" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 01.5</span><h3>See text the way the model sees it</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · tiktoken</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> count and visualise tokens for four languages, code, JSON and a number, then compare your estimate with what the API actually bills.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Create and run the script</h4>
+        <pre class="code" data-file="lab01_05_tokens.py" data-src="code/genai-labs/lab01_05_tokens.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_05_tokens.py</code></pre>
+        <p class="small muted">If Hindi or Japanese print as boxes, run it in the VS Code terminal, or run <code>chcp 65001</code> first in a Windows console.</p>
+        <span class="out-label">Real output (the tokenizer part is exact; the API number varies by model)</span>
+<pre class="out"><code>English: 63 characters -&gt; 14 tokens
+My |  exam |  voucher |  hasn't |  arrived |  yet | . |  Can |  you |  check |  my |  enrol | ment | ?
+
+Spanish: 69 characters -&gt; 17 tokens
+Mi |  cup | ón |  de |  examen |  aún |  no |  ha |  llegado | . |  ¿ | P | ueden |  revisar |  mi |  inscripción | ?
+
+Hindi: 73 characters -&gt; 21 tokens
+म | ेरा |  परीक्षा |  व | ाउ | चर |  अभी |  तक |  नहीं |  आया |  है | । |  क्या |  आप |  मेरा |  नाम | ांकन |  देख |  सकते |  हैं | ?
+
+Japanese: 33 characters -&gt; 22 tokens
+試 | 験 | バ | ウ | チャ | ー | が | まだ | 届 | いて | い | ません | 。 | 登録 | を | 確認 | して | いただ | け | ます | か | ？
+
+Code: 60 characters -&gt; 16 tokens
+def |  total | (items | ): |  return |  sum | (i | .price |  * |  i | .qty |  for |  i |  in |  items | )
+
+JSON: 63 characters -&gt; 25 tokens
+{" | en | rol | ment | _id | ": |  " | TC | - | 102 | 93 | ", |  " | status | ": |  " | confirmed | ", |  " | se | ats | ": |   | 2 | }
+
+Number: 16 characters -&gt; 7 tokens
+3 | . | 141 | 592 | 653 | 589 | 79
+
+API on azure billed 21 input tokens for the English sentence</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Explain three things</h4>
+        <ul class="verify-list">
+          <li>Why the API billed a few more tokens than tiktoken counted (hint: chat formatting adds role markers, and your model may use a different tokenizer).</li>
+          <li>Why the JSON line cost 25 tokens: every quote and brace is a token, and <code>TC-10293</code> alone is four.</li>
+          <li>Why Japanese had the fewest characters but the most tokens.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · Claude counts differently</div>
+      <div class="alt-body">
+        <p>Every model family has its own tokenizer. Claude's API counts tokens for free:</p>
+<pre class="code" data-file="claude_tokens.py"><code>from claude_llm import client, CLAUDE_MODEL
+
+for text in ["My exam voucher hasn't arrived yet. Can you check my enrolment?",
+             "試験バウチャーがまだ届いていません。登録を確認していただけますか？"]:
+    count = client.messages.count_tokens(model=CLAUDE_MODEL, messages=[{"role": "user", "content": text}])
+    print(count.input_tokens, "tokens:", text)</code></pre>
+        <p>The numbers won't match tiktoken's. Never estimate one provider's tokens with another provider's tokenizer.</p>
+      </div>
+    </div>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-5"> I've completed Drill 01.5</label></div>
+</div>
+
+<div class="drill" id="d01-6" data-title="Build a token-budget CLI with your AI assistant" data-time="~15 min" data-steps="ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 01.6</span><h3>Build a token-budget CLI with your AI assistant</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">Copilot · Claude Code · Codex</span><span class="badge b-tool">no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> a small tool real teams use before sending documents to a model: how many tokens, what it costs, and does it fit?</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Send this prompt</h4>
+        <div class="prompt-box"><pre><code>Create token_budget.py, a command-line tool using argparse and tiktoken (o200k_base).
+Usage: python token_budget.py FILE [--window 128000] [--reserve 4000] [--price-in 0.40]
+It must print:
+1) characters and estimated tokens in FILE,
+2) estimated input cost in USD (price-in is USD per 1M tokens),
+3) whether FILE fits in the context window after reserving --reserve tokens for the answer,
+   and what percentage of that input budget it uses.
+Exit with code 0 if it fits and 1 if it doesn't. Read the file as UTF-8. No other dependencies.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> exact usage line, defaults, outputs and exit codes leave nothing to guess. The exit code makes it scriptable, so a pipeline could block an oversized prompt (you'll see that idea again in Module 12).</div>
+        <details class="solution"><summary>Reference solution (if your assistant gets stuck)</summary><div>
+          <pre class="code" data-file="token_budget.py" data-src="code/genai-labs/token_budget.py"></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Test a file that fits and one that doesn't</h4>
+<pre class="term"><code><span class="ps">$ </span>python token_budget.py tickets.py
+<span class="ps">$ </span>python -c "open('big.txt','w').write('hello world ' * 200000)"
+<span class="ps">$ </span>python token_budget.py big.txt
+<span class="ps">$ </span>echo $LASTEXITCODE     <span class="c"># PowerShell; use: echo $? in bash</span></code></pre>
+        <ul class="verify-list"><li><code>tickets.py</code> fits, using a tiny fraction of the budget.</li><li><code>big.txt</code> (about 400,000 tokens) does <strong>not</strong> fit, and the exit code is 1.</li><li>Change <code>--window 1000000</code>: now it fits. Same document, different model, different answer.</li></ul>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Try this:</b> ask your assistant to add <code>--price-out</code> and an <code>--expected-output</code> estimate so the tool prints the full cost per call.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-6"> I've completed Drill 01.6</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Token sense.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A request has 3,000 tokens of instructions, 20,000 of documents, 4,000 of history and a 50-token question. What else must fit?</summary><div><p>The <strong>output</strong>, including hidden reasoning tokens on reasoning models. If input nearly fills the window, the answer is cut off or the request fails.</p></div></details>
+  <details><summary>2. TrainCrest adds Japanese support. What happens to cost per conversation, and why?</summary><div><p>It <strong>rises</strong>: the same meaning takes more tokens in Japanese with this tokenizer, so both input and output token counts go up.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Think in tokens: they are the model's memory limit, your bill and your latency, all at once.</p></div>

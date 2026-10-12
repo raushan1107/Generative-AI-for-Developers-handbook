@@ -1,0 +1,83 @@
+<!--meta
+{"id": "m01", "short": "Introduction to Generative AI", "h1": "Introduction to Generative AI: What's Really Happening Behind the Chat Box", "description": "Module 01 overview: what generative AI is, how LLMs turn tokens into answers, training vs inference, foundation and multimodal models, developer use cases, 13 drills and Traincrest Assist milestone 1.", "lead": "You've used ChatGPT or Copilot. It feels like talking to someone who has read everything. But as a developer you can't build on a feeling. This module opens the box: what the model actually does with your words, why it sometimes confidently makes things up, and how to choose the right model, and you'll prove each idea with your own hands.", "chips": ["9 topics", "13 drills", "Milestone 1", "≈ 4 hours hands-on"]}
+-->
+<h2 id="map">The mental map</h2>
+<p>On the first morning of every batch someone asks me: <em>"Is it actually thinking?"</em> My honest answer is that it's doing something much simpler, and much stranger: <strong>it predicts the next small piece of text, again and again, very fast</strong>. Every page in this module zooms into one part of this picture.</p>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 400" role="img" aria-labelledby="m1-t m1-d">
+      <title id="m1-t">What happens when you send a prompt to an LLM</title>
+      <desc id="m1-d">Your text is split into tokens and placed in the context window. The model predicts a probability for every possible next token; one is picked, appended, and the loop repeats until the answer is complete. Tokens are turned back into text. The model's knowledge comes from training, which happened earlier and is frozen.</desc>
+      <rect x="20" y="40" width="170" height="86" rx="12" class="s-surface"/>
+      <text x="105" y="72" class="t-b mid">Your prompt</text>
+      <text x="105" y="94" class="t-s mid">"Where is my</text>
+      <text x="105" y="110" class="t-s mid">exam voucher?"</text>
+      <rect x="240" y="40" width="150" height="86" rx="12" class="s-teal"/>
+      <text x="315" y="72" class="t-b mid">1 · Tokenize</text>
+      <text x="315" y="94" class="t-s mid">text → token IDs</text>
+      <text x="315" y="112" class="t-m mid t-teal">TOPIC 4</text>
+      <rect x="440" y="24" width="300" height="118" rx="12" class="s-blue"/>
+      <text x="590" y="52" class="t-b mid">2 · Context window</text>
+      <text x="590" y="72" class="t-s mid">instructions + history + your prompt</text>
+      <rect x="460" y="86" width="64" height="22" rx="5" class="s-surface"/>
+      <rect x="530" y="86" width="90" height="22" rx="5" class="s-surface"/>
+      <rect x="626" y="86" width="56" height="22" rx="5" class="s-surface"/>
+      <rect x="688" y="86" width="34" height="22" rx="5" class="s-surface2"/>
+      <text x="590" y="130" class="t-m mid t-blue">TOPIC 4 · LIMITED SIZE</text>
+      <rect x="440" y="200" width="300" height="100" rx="14" class="s-violet"/>
+      <text x="590" y="232" class="t-h mid">3 · The model</text>
+      <text x="590" y="256" class="t-s mid">billions of learned numbers (weights)</text>
+      <text x="590" y="276" class="t-s mid">scores every possible next token</text>
+      <text x="590" y="294" class="t-m mid t-violet">TOPICS 3 · 5</text>
+      <rect x="800" y="200" width="140" height="100" rx="12" class="s-amber"/>
+      <text x="870" y="234" class="t-b mid">4 · Pick one</text>
+      <text x="870" y="256" class="t-s mid">"Your" 62%</text>
+      <text x="870" y="274" class="t-s mid">"I" 21% …</text>
+      <path d="M870 200 V150 Q870 120 840 112 L746 96" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="760" y="176" class="t-s">append &amp; repeat</text>
+      <rect x="20" y="214" width="370" height="72" rx="12" class="s-green"/>
+      <text x="205" y="242" class="t-b mid">5 · Detokenize → answer</text>
+      <text x="205" y="264" class="t-s mid">"Vouchers are issued within 3 business days…"</text>
+      <rect x="440" y="330" width="300" height="52" rx="12" class="s-surface2"/>
+      <text x="590" y="352" class="t-b mid">Training happened earlier</text>
+      <text x="590" y="370" class="t-s mid">knowledge is frozen at a cutoff · topic 6</text>
+      <path d="M190 83 H234" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M390 83 H434" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M590 142 V194" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M740 250 H794" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M590 330 V306" class="s-dash" marker-end="url(#ah)"/>
+      <path d="M440 266 Q420 256 396 252" class="s-arrow" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption><b>One loop explains most of GenAI.</b> Text becomes tokens, tokens fill a limited window, the model scores every possible next token, one is chosen and added, and the loop runs until the answer ends. The model's knowledge was baked in during training and doesn't update by itself.</figcaption>
+</figure>
+
+<div class="callout takeaway">
+  <div class="c-label">Takeaway</div>
+  <p>An LLM doesn't look things up and doesn't "know" in the human sense. It produces the most plausible continuation of the text it was given. Almost every GenAI technique you'll learn (prompting, RAG, tools, evaluation) is a way of making "plausible" also mean "correct and useful".</p>
+</div>
+
+<h2 id="why">Why developers need to understand what's inside</h2>
+<p>A team wired an LLM into their support portal in one afternoon. The demo was magical. Two weeks after launch:</p>
+<blockquote class="voice">"The bot told a learner our refund window is 30 days. It's 14. Legal wants it switched off tonight."<cite>A very real Friday-evening escalation</cite></blockquote>
+<p>Nothing was broken. The code worked exactly as written. The model did what models do: it produced a <em>plausible</em> answer, because 30 days is a common refund window on the internet. Nobody on the team understood that, so nobody designed for it.</p>
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>Software is <strong>deterministic</strong>. Same input, same output. A wrong output means a bug to find.</p></div>
+  <div><h5>GenAI developer view</h5><p>The model is <strong>probabilistic</strong>. Same input can give different outputs, and a wrong answer can come from perfectly working code. You design <em>around</em> the model: give it facts, constrain its output, check its work.</p></div>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Hiring an LLM is like hiring a brilliant new joiner who has read every book in the library but has <strong>never worked at your company</strong>, <strong>forgets every conversation</strong>, and is a little too eager to please. Brilliant at language, bad at saying "I don't know". You wouldn't let them answer customers on their first day without a policy binder and a supervisor. This course is about building that binder and that supervisor.</p>
+</div>
+
+<h2 id="pages">Pages and drills in this module</h2>
+<p>Work through them in order. Each topic page has its drills right after the concept.</p>
+<!--MODULE_PAGES:01-->
+
+<h2 id="kit">Lab kit for Module 01</h2>
+<ul>
+  <li><strong>You'll need:</strong> the <code>genai-labs</code> folder from <a href="../../setup/index.html">Lab setup</a> with <code>lab00_hello.py</code> working, your AI coding assistant, and optionally a second deployment (for example <code>chat-big</code>) or Ollama for Drill 01.11.</li>
+  <li><strong>Files you'll create:</strong> <code>tickets.py</code> and <code>data/train_tickets.json</code> (reused in Module 03), plus one script per drill.</li>
+  <li><strong>Build:</strong> Milestone 1 creates the <code>traincrest-assist</code> project, which grows for the rest of the course.</li>
+</ul>

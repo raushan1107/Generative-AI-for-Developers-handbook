@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build: Milestone 1</title>
+<meta name="description" content="Traincrest Assist milestone 1 (Module 01 hands-on exercise): scaffold the project with an AI coding assistant and build a CLI application that sends a prompt to an LLM and displays the response, with timing and token usage.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-build" data-page="m01-build">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod" open><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build active" data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/01/index.html">Module 01</a><i>/</i><span>Build: Milestone 1</span></nav>
+  <span class="kind-pill">Build</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 01 · Build milestone</span><h1>Build · Milestone 1: Hello, Traincrest Assist</h1><p class="lead">The progressive project starts here. You'll scaffold a real project with your AI assistant and build version 0.1 of Traincrest Assist: a small application that sends a learner's question to the LLM and displays the answer, with response time and tokens. Then you'll use it to discover exactly what the next modules must fix.</p><div class="chips"><span class="chip">Module 01 exercise</span><span class="chip">Project scaffold</span><span class="chip">CLI app</span><span class="chip">≈ 30 min</span></div><div class="flow"><em>Plan 5 min · Build 20 min · Verify 10 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>What v0.1 does, and the shape of the project.</p></div></div>
+
+<div class="case">
+  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 1</span></div>
+  <div class="case-body">
+    <p>Leadership wants to <em>see</em> an AI assistant answer learner questions before investing further. Build the smallest real thing: a command-line app where a support agent types a learner's question and sees the model's answer, the time it took and the tokens it used. It must be a proper project, ready to grow, not a throwaway script.</p>
+  </div>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 200" role="img" aria-labelledby="b1-t b1-d">
+      <title id="b1-t">Traincrest Assist v0.1</title>
+      <desc id="b1-d">An agent types into cli.py, which builds a system prompt plus the question, calls the model through app/llm.py configured by app/config.py and .env, and prints the answer with time and tokens.</desc>
+      <rect x="20" y="60" width="150" height="80" rx="12" class="s-surface"/><text x="95" y="94" class="t-b mid">Agent types</text><text x="95" y="114" class="t-s mid">a learner question</text>
+      <rect x="220" y="40" width="200" height="120" rx="12" class="s-blue"/><text x="320" y="68" class="t-b mid">cli.py</text><text x="320" y="92" class="t-s mid">system prompt + question</text><text x="320" y="110" class="t-s mid">time it · print answer</text><text x="320" y="128" class="t-s mid">and token usage</text>
+      <rect x="470" y="40" width="190" height="54" rx="10" class="s-amber"/><text x="565" y="64" class="t-b mid">app/llm.py</text><text x="565" y="82" class="t-s mid">get_client()</text>
+      <rect x="470" y="106" width="190" height="54" rx="10" class="s-surface2"/><text x="565" y="130" class="t-b mid">app/config.py + .env</text><text x="565" y="148" class="t-s mid">provider, model</text>
+      <rect x="710" y="60" width="170" height="80" rx="12" class="s-violet"/><text x="795" y="94" class="t-b mid">Azure OpenAI</text><text x="795" y="114" class="t-s mid">deployment "chat"</text>
+      <path d="M170 100 H214" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <path d="M420 70 H464" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M565 94 V100" class="s-line"/>
+      <path d="M660 70 Q690 72 704 86" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+    </svg>
+  </div>
+  <figcaption><b>Small, but structured.</b> Configuration, model access and the user interface are already separate. In Module 02 the CLI gets a web front end without touching <code>llm.py</code>.</figcaption>
+</figure>
+
+<span class="out-label">Target structure after this milestone</span>
+<pre class="out"><code>traincrest-assist/
+├── .env                 your settings (never committed)
+├── .env.example         the settings template (committed)
+├── .gitignore
+├── requirements.txt
+├── app/
+│   ├── __init__.py
+│   ├── config.py        reads .env
+│   └── llm.py           the only place that knows how to reach the model
+└── cli.py               Traincrest Assist v0.1</code></pre>
+
+<div class="phase do" id="build"><span class="ph-num">2</span><div><h2>Build</h2><p>Scaffold with your assistant, then write the core yourself.</p></div></div>
+
+<div class="drill exercise" id="b01-1" data-title="Milestone 1: scaffold and build Traincrest Assist v0.1" data-time="~30 min" data-steps="write,run,verify">
+  <div class="drill-head"><span class="drill-id">Milestone 1</span><h3>Scaffold and build Traincrest Assist v0.1</h3>
+    <div class="drill-meta"><span class="time">~30 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · AI assistant</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> the Module 01 hands-on exercise: an application that sends a prompt to an LLM and displays the generated response, built as the first version of a real project.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Scaffold the project with your AI assistant</h4>
+        <p>Create an empty folder <code>traincrest-assist</code> next to <code>genai-labs</code>, open it in VS Code, and ask your assistant to scaffold it. Write the prompt from the template:</p>
+        <div class="template-box"><pre><code>Goal:        scaffold a Python project called …
+Context:     empty folder; Python 3.11+; I'll write the main code myself
+Constraints: create these files/folders …; requirements …; .gitignore must …;
+             .env.example with these keys …; do NOT create a real .env or any API logic
+Done when:   I can create a venv and pip install -r requirements.txt without errors</code></pre></div>
+        <p class="hint"><b>Hint:</b> list the exact tree from the Plan section, the two requirements (<code>openai</code>, <code>python-dotenv</code>), the <code>.env.example</code> keys from your drills' <code>.env</code> (with placeholder values only) and the commands to create and activate a venv.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Scaffold a Python 3.11+ project in this empty folder for "Traincrest Assist", an AI learner-support
+assistant. Create only:
+- requirements.txt with: openai, python-dotenv
+- .gitignore ignoring .env, .venv/, __pycache__/, *.log
+- .env.example with placeholder values (no real secrets) for: LLM_PROVIDER=azure,
+  AZURE_OPENAI_BASE_URL, AZURE_OPENAI_API_KEY, AZURE_OPENAI_DEPLOYMENT=chat, OPENAI_API_KEY,
+  OPENAI_MODEL=gpt-5.4-mini, OLLAMA_MODEL=llama3.2
+- app/__init__.py with a one-line docstring
+Do not create .env, config.py, llm.py or cli.py; I'll write those. Finally, tell me the
+commands to create and activate a virtual environment on Windows PowerShell and install
+the requirements.</code></pre></div>
+        </div></details>
+        <p>Then create the venv, install, and copy your working <code>.env</code> from <code>genai-labs</code>:</p>
+        <pre class="term"><code><span class="ps">$ </span>python -m venv .venv
+<span class="ps">$ </span>.venv\Scripts\Activate.ps1          <span class="c"># macOS/Linux: source .venv/bin/activate</span>
+<span class="ps">$ </span>pip install -r requirements.txt
+<span class="ps">$ </span>copy ..\genai-labs\.env .env          <span class="c"># macOS/Linux: cp ../genai-labs/.env .env</span></code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Write the configuration and the model access layer</h4>
+        <pre class="code" data-file="app/config.py"><code>"""Settings for Traincrest Assist, read from .env so nothing secret lives in code."""
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+PROVIDER = os.getenv("LLM_PROVIDER", "azure").lower()
+
+<span class="c"># On Azure this is the DEPLOYMENT name; elsewhere it's the model name.</span>
+MODEL = {
+    "azure": os.getenv("AZURE_OPENAI_DEPLOYMENT", "chat"),
+    "openai": os.getenv("OPENAI_MODEL", "gpt-5.4-mini"),
+    "ollama": os.getenv("OLLAMA_MODEL", "llama3.2"),
+}.get(PROVIDER, "")</code></pre>
+        <pre class="code" data-file="app/llm.py"><code>"""The only place in Traincrest Assist that knows how to reach the model."""
+import os
+
+from openai import OpenAI
+
+from app.config import PROVIDER
+
+
+def get_client() -&gt; OpenAI:
+    if PROVIDER == "azure":
+        return OpenAI(base_url=os.environ["AZURE_OPENAI_BASE_URL"], api_key=os.environ["AZURE_OPENAI_API_KEY"])
+    if PROVIDER == "openai":
+        return OpenAI()
+    if PROVIDER == "ollama":
+        return OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+    raise ValueError(f"Unknown LLM_PROVIDER: {PROVIDER!r}")</code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Write the CLI</h4>
+        <pre class="code" data-file="cli.py"><code>"""Traincrest Assist, milestone 1: a question goes in, an answer comes out.
+
+Run from the project folder:  python cli.py
+"""
+import time
+
+from app.config import MODEL, PROVIDER
+from app.llm import get_client
+
+SYSTEM_PROMPT = (
+    "You are Traincrest Assist, the learner-support assistant of TrainCrest, a global technical "
+    "training company. Be friendly, concise and practical. If you don't know something about "
+    "TrainCrest's policies or a learner's enrolment, say so honestly."
+)
+
+
+def main():
+    client = get_client()
+    print(f"Traincrest Assist v0.1 [{PROVIDER} · {MODEL}]. Ask a question, or type 'exit'.\n")
+    while True:
+        question = input("You: ").strip()
+        if question.lower() in {"exit", "quit"}:
+            break
+        if not question:
+            continue
+
+        start = time.perf_counter()
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": question},
+            ],
+        )
+        seconds = time.perf_counter() - start
+
+        print(f"\nAssist: {response.choices[0].message.content.strip()}")
+        u = response.usage
+        print(f"  ({seconds:.1f}s · {u.prompt_tokens} in / {u.completion_tokens} out)\n")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python cli.py</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Have this exact conversation and record what happens</h4>
+        <ol>
+          <li>"Hi! What can you help me with?"</li>
+          <li>"What's your refund policy if I cancel 10 days before the course?"</li>
+          <li>"Where is the exam voucher for enrolment TC-10293?"</li>
+          <li>"My name is Mei." then "What's my name?"</li>
+          <li>"Mi laboratorio no funciona, ¿qué hago?" (My lab isn't working, what do I do?)</li>
+        </ol>
+        <span class="out-label">Expected (abridged)</span>
+<pre class="out"><code>Traincrest Assist v0.1 [azure · chat]. Ask a question, or type 'exit'.
+
+You: What's your refund policy if I cancel 10 days before the course?
+
+Assist: I don't have TrainCrest's exact refund terms. Please check your enrolment confirmation
+or contact support...
+  (1.9s · 61 in / 48 out)
+
+You: What's my name?
+
+Assist: I don't know your name yet. Could you tell me?
+  (1.2s · 52 in / 14 out)</code></pre>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="b01-1"> I've completed Milestone 1</label></div>
+</div>
+
+<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>What v0.1 does, and what the course must fix.</p></div></div>
+<ul class="checklist">
+  <li><code>python cli.py</code> answers questions and shows time and tokens.</li>
+  <li><code>.env</code> is ignored by Git; <code>.env.example</code> has placeholders only.</li>
+  <li>Switching <code>LLM_PROVIDER</code> to <code>ollama</code> works with no code change.</li>
+</ul>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>What you observed</th><th>Why</th><th>Fixed in</th></tr></thead>
+    <tbody>
+      <tr><td>Doesn't know TrainCrest's refund policy</td><td>The policy isn't in training data or the prompt</td><td>M03 (in the prompt), M06 (RAG)</td></tr>
+      <tr><td>Can't check enrolment TC-10293</td><td>No access to TrainCrest's systems</td><td>M04 (tools)</td></tr>
+      <tr><td>Forgets Mei's name immediately</td><td>Each call is stateless; no history is sent</td><td>M02</td></tr>
+      <tr><td>Blank screen while it thinks</td><td>We wait for the whole response</td><td>M02 (streaming)</td></tr>
+      <tr><td>A network blip or wrong key crashes it</td><td>No error handling or retries</td><td>M02</td></tr>
+      <tr><td>Answers in Spanish, but costs more tokens</td><td>Tokenization (topic 4)</td><td>M11 (cost)</td></tr>
+      <tr><td>Only a terminal, only for agents</td><td>No web interface or API</td><td>M02</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout note">
+  <div class="c-label">Fell behind? Catch up here</div>
+  <p>The complete reference code for this milestone is in the handbook repository under <a href="../../code/traincrest-assist/m01/cli.py"><code>code/traincrest-assist/m01/</code></a>. Copy it into your <code>traincrest-assist</code> folder, add your <code>.env</code>, and carry on with Module 02.</p>
+</div>
+<p class="lab-say"><b>Remember:</b> “v0.1 works, and v0.1 is not a product. Every row in that table is a module in this course.”</p>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m01-build"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/01/use-cases.html"><small>Previous</small><span>← 01 · Developer use cases</span></a><a class="next" href="../../modules/01/recap.html"><small>Next</small><span>01 · Recap and self-check →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

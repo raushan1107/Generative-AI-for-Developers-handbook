@@ -1,0 +1,66 @@
+<!--meta
+{"id": "m02", "short": "Working with LLM APIs", "h1": "Working with LLM APIs: Calling the Model Like a Professional", "description": "Module 02 overview: API-based architecture, authentication, the request lifecycle, message roles, parameters, streaming, error handling, rate limits, retries and cost, with 15 drills and Traincrest Assist milestone 2.", "lead": "Traincrest Assist v0.1 worked until it didn't: it forgot names, froze while thinking and would crash on the first network blip. The fix isn't a better model. It's treating the LLM as what it really is: a slow, metered, rate-limited HTTPS API that sometimes fails. By the end of this module, v0.2 streams in a browser and survives failures.", "chips": ["9 topics", "15 drills", "Milestone 2", "≈ 5 hours hands-on"]}
+-->
+<h2 id="map">The mental map</h2>
+<p>Every LLM call in every app you'll ever build goes through four stages. In class I draw them as four circles and refuse to move on until everyone can say what goes wrong at each one.</p>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 360" role="img" aria-labelledby="m2-t m2-d">
+      <title id="m2-t">The four stages of an LLM API call</title>
+      <desc id="m2-d">Your backend authenticates with a key or token, sends a request with messages and parameters, receives the response as a stream, and handles errors such as 429 rate limits with retries. Each stage lists what can go wrong and which topic covers it. Cost is counted from token usage on every call.</desc>
+      <rect x="20" y="130" width="130" height="90" rx="12" class="s-surface"/><text x="85" y="162" class="t-b mid">Your backend</text><text x="85" y="182" class="t-s mid">Python, Node,</text><text x="85" y="198" class="t-s mid">.NET, Java…</text>
+      <circle cx="250" cy="175" r="64" class="s-blue"/><text x="250" y="160" class="t-m mid t-blue">1</text><text x="250" y="180" class="t-b mid">Authenticate</text><text x="250" y="198" class="t-s mid">key or token</text>
+      <circle cx="420" cy="175" r="64" class="s-teal"/><text x="420" y="160" class="t-m mid t-teal">2</text><text x="420" y="180" class="t-b mid">Send request</text><text x="420" y="198" class="t-s mid">JSON body</text>
+      <circle cx="590" cy="175" r="64" class="s-violet"/><text x="590" y="160" class="t-m mid t-violet">3</text><text x="590" y="180" class="t-b mid">Stream</text><text x="590" y="198" class="t-s mid">tokens arrive</text>
+      <circle cx="760" cy="175" r="64" class="s-amber"/><text x="760" y="160" class="t-m mid t-amber">4</text><text x="760" y="180" class="t-b mid">Handle errors</text><text x="760" y="198" class="t-s mid">retry or fail well</text>
+      <path d="M150 175 H182" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M314 175 H352" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <path d="M484 175 H522" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <path d="M654 175 H692" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <path d="M760 239 Q760 300 590 300 Q440 300 430 243" class="s-dash" marker-end="url(#ah)"/>
+      <text x="595" y="322" class="t-s mid">retry with backoff (429, 5xx, timeouts)</text>
+      <text x="250" y="70" class="t-s mid">401 bad key</text><text x="250" y="86" class="t-s mid">403 not allowed</text><text x="250" y="104" class="t-m mid t-blue">TOPIC 2</text>
+      <text x="420" y="70" class="t-s mid">400 bad parameter</text><text x="420" y="86" class="t-s mid">404 wrong deployment</text><text x="420" y="104" class="t-m mid t-teal">TOPICS 3 · 4 · 5</text>
+      <text x="590" y="70" class="t-s mid">cut off (length)</text><text x="590" y="86" class="t-s mid">content filtered</text><text x="590" y="104" class="t-m mid t-violet">TOPIC 6</text>
+      <text x="760" y="70" class="t-s mid">429 too many</text><text x="760" y="86" class="t-s mid">500/503, timeouts</text><text x="760" y="104" class="t-m mid t-amber">TOPICS 7 · 8</text>
+      <rect x="850" y="130" width="96" height="90" rx="12" class="s-green"/><text x="898" y="164" class="t-b mid">$ Cost</text><text x="898" y="184" class="t-s mid">tokens ×</text><text x="898" y="200" class="t-s mid">price · T9</text>
+      <path d="M824 175 H846" class="s-arrow" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption><b>Authenticate, send, stream, handle errors.</b> The labels above each circle are what goes wrong at that stage. And every call, successful or not, has a token bill attached.</figcaption>
+</figure>
+
+<h2 id="why">An API like no other</h2>
+<p>You've called hundreds of REST APIs. An LLM API looks like one more: <code>POST</code> some JSON, get JSON back. Its behaviour breaks several assumptions you've built up over the years.</p>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Property</th><th>A typical REST API</th><th>An LLM API</th><th>What it forces you to do</th></tr></thead>
+    <tbody>
+      <tr><td>Latency</td><td>50–200 ms</td><td>1–30+ seconds</td><td>Stream, show progress, set generous timeouts</td></tr>
+      <tr><td>Determinism</td><td>Same request, same response</td><td>Same request, different response</td><td>Validate outputs; test with datasets, not one example</td></tr>
+      <tr><td>Billing</td><td>Per call, or flat</td><td>Per token; input and output priced differently</td><td>Count tokens, cap output, watch prompt size</td></tr>
+      <tr><td>Rate limits</td><td>Requests per second</td><td>Tokens per minute <em>and</em> requests per minute</td><td>Back off and retry; queue background work</td></tr>
+      <tr><td>State</td><td>Often session-based</td><td>Stateless: resend the conversation every time</td><td>Manage history yourself</td></tr>
+      <tr><td>"Success"</td><td>200 means it worked</td><td>200 can still be truncated, filtered or wrong</td><td>Check <code>finish_reason</code>; validate content</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A normal API is a <strong>vending machine</strong>: press B4, get the same snack in a second, every time. An LLM API is a <strong>busy restaurant kitchen</strong>: your order takes a while, the dish tastes slightly different each time, the bill depends on how much you ordered, and on a Saturday night the kitchen says "come back in ten minutes". You don't stop going to the restaurant. You just order differently.</p>
+</div>
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"It's an HTTP call. Wrap it in try/except, done."</p></div>
+  <div><h5>GenAI developer view</h5><p>"It's a <strong>slow, probabilistic, metered, rate-limited</strong> dependency. I design the UX for latency, the code for retries, the budget for tokens, and the tests for variability."</p></div>
+</div>
+
+<h2 id="pages">Pages and drills in this module</h2>
+<!--MODULE_PAGES:02-->
+
+<h2 id="kit">Lab kit for Module 02</h2>
+<ul>
+  <li><strong>You'll need:</strong> the <code>genai-labs</code> folder and your <code>chat</code> deployment; for Drill 02.12, permission to lower the deployment's tokens-per-minute limit temporarily; for Drill 02.3, the Azure CLI.</li>
+  <li><strong>New packages:</strong> <code>fastapi</code>, <code>uvicorn</code> and <code>pytest</code> (already in <code>requirements.txt</code>).</li>
+  <li><strong>Unit tests without an API:</strong> Drills 02.6, 02.11 and 02.13 have you build tested utilities (history trimming, error mapping, retries) that the milestone reuses.</li>
+  <li><strong>Build:</strong> Milestone 2 turns Traincrest Assist into a FastAPI service with a streaming web chat.</li>
+</ul>

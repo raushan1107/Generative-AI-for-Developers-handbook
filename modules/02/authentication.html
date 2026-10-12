@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authentication and API Keys</title>
+<meta name="description" content="Module 02, topic 2: API keys vs Microsoft Entra ID tokens, provider headers, key hygiene, and drills that make a raw HTTP call with a key and then go keyless with an Azure CLI role assignment written with your AI assistant.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m02-auth">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic active" data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/02/index.html">Module 02</a><i>/</i><span>Authentication and API keys</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 02 · Topic 2 of 9</span><h1>Authentication and API Keys</h1><p class="lead">A key is a password that never expires; a token is a temporary pass tied to an identity. You'll see both on the wire: first a raw HTTP call with a key, then the same call with no key at all, after your AI assistant writes the role assignment for you.</p><div class="chips"><span class="chip">API keys</span><span class="chip">Entra ID tokens</span><span class="chip">Managed identity</span><span class="chip">Drills 02.2 · 02.3</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 25 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>House keys vs hotel key cards.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>LLM APIs authenticate each request either with a static <strong>API key</strong> sent in a header, or with a short-lived <strong>access token</strong> issued by an identity provider (for Azure, a Microsoft Entra ID token checked against role-based access control).</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>A key is a long password: whoever has it can spend your money, forever, until you regenerate it. A token is a temporary pass your app gets by proving who it is; it expires in about an hour and access can be removed centrally. Keys are fine for learning. Tokens are what you want in production.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>An API key is a <strong>house key</strong>: copy it once and the copy works forever, and you'll never know who has one. A token is a <strong>hotel key card</strong>: issued at the front desk after checking your ID, it stops working at checkout, and the desk can deactivate it at any time.</p>
+</div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Provider</th><th>Key header</th><th>Token option</th></tr></thead>
+    <tbody>
+      <tr><td>Azure OpenAI (Foundry)</td><td><code>api-key: &lt;key&gt;</code></td><td><code>Authorization: Bearer &lt;Entra ID token&gt;</code> plus a role such as <em>Cognitive Services OpenAI User</em></td></tr>
+      <tr><td>OpenAI</td><td><code>Authorization: Bearer sk-…</code></td><td>Project-scoped keys</td></tr>
+      <tr><td>Anthropic Claude</td><td><code>x-api-key: &lt;key&gt;</code> plus <code>anthropic-version</code></td><td>Workspace keys; cloud identity via Foundry, Bedrock or Vertex</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Key hygiene</h3>
+<ul>
+  <li><strong>Never in code, never in the client.</strong> <code>.env</code> locally; Azure Key Vault or managed identity in the cloud.</li>
+  <li><strong>Rotate without downtime.</strong> Azure gives each resource two keys: move apps to key 2, regenerate key 1, repeat next time.</li>
+  <li><strong>One key per app and environment</strong> where possible, so a leak has a small blast radius.</li>
+  <li><strong>Prefer keyless:</strong> a managed identity plus an RBAC role means there's no secret to leak at all.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Leaked AI keys are a constant problem: bots scrape public repositories for them within minutes, and platforms such as GitHub run secret scanning that detects many provider key formats and alerts the owner. Enterprises on Azure typically disable key authentication on their AI resources altogether and use managed identities, so there is nothing to leak.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"In production on Azure I'd <strong>disable key auth</strong> and use <strong>managed identity with RBAC</strong>, so there's no secret to rotate or leak. Keys are for local development, in environment variables, never in the repo."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>See the key on the wire, then remove it entirely.</p></div></div>
+
+<div class="drill" id="d02-2" data-title="See the wire: one call with raw HTTP and a key" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.2</span><h3>See the wire: one call with raw HTTP and a key</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · requests</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> make one chat call without any SDK, see the exact headers and JSON, and save the response for Drill 02.4.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab02_02_raw_http.py"><code>"""Drill 02.2: one chat call with plain HTTP, to see exactly what the SDK hides."""
+import json
+import os
+import time
+from pathlib import Path
+
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+url = os.environ["AZURE_OPENAI_BASE_URL"].rstrip("/") + "/chat/completions"
+headers = {
+    "api-key": os.environ["AZURE_OPENAI_API_KEY"],  <span class="c"># Azure's key header</span>
+    "Content-Type": "application/json",
+}
+body = {
+    "model": os.getenv("AZURE_OPENAI_DEPLOYMENT", "chat"),
+    "messages": [
+        {"role": "system", "content": "You are Traincrest Assist, TrainCrest's learner-support assistant. Be brief."},
+        {"role": "user", "content": "What does 'batch confirmed' mean on my enrolment?"},
+    ],
+}
+
+start = time.perf_counter()
+resp = requests.post(url, headers=headers, json=body, timeout=60)
+print(f"HTTP {resp.status_code} in {time.perf_counter() - start:.2f}s\n")
+
+for name in ("x-request-id", "apim-request-id", "x-ratelimit-remaining-requests", "x-ratelimit-remaining-tokens"):
+    if name in resp.headers:
+        print(f"{name}: {resp.headers[name]}")
+
+data = resp.json()
+print("\n" + json.dumps(data, indent=2, ensure_ascii=False))
+Path("response.json").write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+print("\nSaved the response body to response.json")</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_02_raw_http.py</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list">
+          <li>Find in the output: <code>model</code>, <code>choices[0].message.content</code>, <code>finish_reason</code>, <code>usage</code> and Azure's content-filter results.</li>
+          <li>Find the <code>x-request-id</code> or <code>apim-request-id</code> header: it's what Microsoft support asks for. Log it on every call.</li>
+          <li>Change the key in the code (not in <code>.env</code>) to something wrong and run again. Read the 401 body, then change it back.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · the same call to Claude, with curl</div>
+      <div class="alt-body">
+        <p>Different provider, different shape: <code>x-api-key</code>, a version header, <code>system</code> outside the messages, and <code>max_tokens</code> is required.</p>
+<pre class="term"><code><span class="ps">$ </span>curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "anthropic-beta: server-side-fallback-2026-07-01" \
+  -H "content-type: application/json" \
+  -d '{"model": "claude-opus-5-5", "max_tokens": 1024, "fallbacks": "default",
+       "system": "You are Traincrest Assist. Be brief.",
+       "messages": [{"role": "user", "content": "What does batch confirmed mean?"}]}'</code></pre>
+        <p>Look for <code>content[0].text</code>, <code>stop_reason</code> (Claude's finish_reason) and <code>usage</code>.</p>
+      </div>
+    </div>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-2"> I've completed Drill 02.2</label></div>
+</div>
+
+<div class="drill" id="d02-3" data-title="Go keyless: write the role assignment with AI, then call with your identity" data-time="~15 min" data-steps="write,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.3</span><h3>Go keyless: role assignment by prompt, then call with your identity</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure CLI · Entra ID</span><span class="badge b-tool">AI assistant</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> call your deployment with no API key: Azure checks <em>who you are</em> and <em>what role you have</em>.</p>
+    <p class="lab-note"><b>Before you start:</b> Azure CLI installed and <code>az login</code> done. You need permission to assign roles on the resource group (Owner or User Access Administrator); on a company subscription, ask your admin.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Ask your assistant for the role assignment commands</h4>
+        <div class="template-box"><pre><code>Goal:        Azure CLI commands to give … the role … on …
+Context:     resource group …, Foundry resource …, I'm signed in with az login; shell is …
+Constraints: look up my object ID and the resource ID with az commands, don't hard-code them;
+             least privilege (only what's needed to call deployments)
+Done when:   a command lists my role assignment on that resource</code></pre></div>
+        <p class="hint"><b>Hint:</b> the role is <em>Cognitive Services OpenAI User</em>, the assignee is the signed-in user (<code>az ad signed-in-user show</code>), and the scope is the Foundry resource's ID (<code>az cognitiveservices account show … --query id</code>).</p>
+        <details class="solution"><summary>Compare with my prompt and the expected commands</summary><div>
+          <div class="prompt-box"><pre><code>Give me PowerShell Azure CLI commands to assign the "Cognitive Services OpenAI User" role to
+the user I'm signed in as (az login), scoped to the Foundry resource aif-genai-rr in resource
+group rg-genai-labs. Look up my object ID and the resource ID with az commands instead of
+hard-coding them. Then give me a command that lists my role assignments on that resource.
+Explain in one line why this role is enough to call deployments but not to manage them.</code></pre></div>
+<pre class="term"><code><span class="ps">PS&gt; </span>$me = az ad signed-in-user show --query id -o tsv
+<span class="ps">PS&gt; </span>$scope = az cognitiveservices account show -n aif-genai-rr -g rg-genai-labs --query id -o tsv
+<span class="ps">PS&gt; </span>az role assignment create --assignee $me --role "Cognitive Services OpenAI User" --scope $scope
+<span class="ps">PS&gt; </span>az role assignment list --assignee $me --scope $scope -o table</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Call the model with your identity</h4>
+        <pre class="code" data-file="lab02_03_keyless.py"><code>"""Drill 02.3: call Azure OpenAI with your Microsoft Entra ID identity. No API key at all."""
+import os
+
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()
+
+<span class="c"># DefaultAzureCredential tries, in order: environment variables, managed identity,</span>
+<span class="c"># Azure CLI login (az login), VS Code sign-in, and more. Locally, az login is enough.</span>
+token_provider = get_bearer_token_provider(
+    DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
+)
+client = OpenAI(base_url=os.environ["AZURE_OPENAI_BASE_URL"], api_key=token_provider)
+
+r = client.chat.completions.create(
+    model=os.getenv("AZURE_OPENAI_DEPLOYMENT", "chat"),
+    messages=[{"role": "user", "content": "Say 'keyless works' and nothing else."}],
+)
+print(r.choices[0].message.content)</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_03_keyless.py</code></pre>
+        <p class="small muted">Role assignments can take a few minutes to apply. A 401 or 403 right after assigning usually just means "wait and retry".</p>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>The script prints "keyless works" without using <code>AZURE_OPENAI_API_KEY</code> (comment it out in <code>.env</code> to prove it).</li><li><code>az role assignment list</code> shows your role on the resource.</li><li>Run <code>az logout</code>, then the script again: it fails. Identity really is the credential. Log back in.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-3"> I've completed Drill 02.3</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Credentials.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Your key leaked in a public repo an hour ago and you deleted the commit. Are you safe?</summary><div><p>No. Assume it's been copied. <strong>Regenerate the key now</strong> (Azure's two keys let you do it without downtime), then check usage for abuse.</p></div></details>
+  <details><summary>2. Why is "Cognitive Services OpenAI User" better for an app than Contributor on the resource?</summary><div><p><strong>Least privilege</strong>: it can call deployments but not create, delete or reconfigure them, or read keys.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Keys for learning, identities for production. The safest secret is the one that doesn't exist.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m02-auth"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/02/architecture.html"><small>Previous</small><span>← 02 · API-based app architecture</span></a><a class="next" href="../../modules/02/lifecycle.html"><small>Next</small><span>02 · Request/response lifecycle →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!--meta
+{"id": "m02-life", "short": "Request/Response Lifecycle", "h1": "The Request/Response Lifecycle", "description": "Module 02, topic 3: the anatomy of a chat completion request and response, the gates a request passes through, finish_reason, and a drill where your AI assistant builds a response inspector.", "lead": "Strip away the SDK and an LLM call is one HTTPS POST with a very particular shape. Knowing that shape is what lets you debug at 2 a.m. You'll read a real response and have your assistant build a small inspector that pulls out the fields that matter.", "chips": ["Request anatomy", "Response anatomy", "finish_reason", "Drill 02.4"], "time": "Learn 12 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>One POST, several gates.</p></div></div>
+
+<p>Here's the Chat Completions format, which Azure OpenAI, OpenAI, Ollama and many other providers all accept.</p>
+<span class="out-label">The request</span>
+<pre class="code" data-file="POST /openai/v1/chat/completions"><code>POST https://&lt;resource&gt;.openai.azure.com/openai/v1/chat/completions
+api-key: ••••••••
+Content-Type: application/json
+
+{
+  "model": "chat",                              <span class="c"># deployment name on Azure</span>
+  "messages": [
+    { "role": "system", "content": "You are Traincrest Assist, TrainCrest's support assistant." },
+    { "role": "user",   "content": "What does 'batch confirmed' mean?" }
+  ],
+  "max_completion_tokens": 400                  <span class="c"># optional parameters</span>
+}</code></pre>
+<span class="out-label">The response (trimmed)</span>
+<pre class="code" data-file="200 OK · application/json"><code>{
+  "id": "chatcmpl-…",
+  "model": "gpt-5.4-mini-2026-03-17",           <span class="c"># the model version that answered</span>
+  "choices": [{
+    "index": 0,
+    "message": { "role": "assistant", "content": "It means your seat is reserved…" },
+    "finish_reason": "stop"                     <span class="c"># why generation ended</span>
+  }],
+  "usage": {
+    "prompt_tokens": 38,                        <span class="c"># you pay for these…</span>
+    "completion_tokens": 54,                    <span class="c"># …and these, priced higher</span>
+    "total_tokens": 92,
+    "completion_tokens_details": { "reasoning_tokens": 0 }
+  }
+}</code></pre>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 230" role="img" aria-labelledby="lc-t lc-d">
+      <title id="lc-t">What happens between request and response</title>
+      <desc id="lc-d">The request passes authentication and limits, then input content filtering, then the model generates tokens, then output filtering, and the response returns with usage and finish reason. A rejection at any step returns an error.</desc>
+      <text x="480" y="34" class="t-m mid t-accent">EVERY STEP CAN SAY NO, AND EACH SAYS IT DIFFERENTLY</text>
+      <rect x="20" y="70" width="120" height="70" rx="10" class="s-surface"/><text x="80" y="100" class="t-b mid">Request</text><text x="80" y="120" class="t-s mid">JSON over HTTPS</text>
+      <rect x="180" y="70" width="140" height="70" rx="10" class="s-blue"/><text x="250" y="100" class="t-b mid">Auth + limits</text><text x="250" y="120" class="t-s mid">key/token · quota</text>
+      <rect x="360" y="70" width="140" height="70" rx="10" class="s-rose"/><text x="430" y="100" class="t-b mid">Input filter</text><text x="430" y="120" class="t-s mid">content safety</text>
+      <rect x="540" y="70" width="140" height="70" rx="10" class="s-violet"/><text x="610" y="100" class="t-b mid">Model</text><text x="610" y="120" class="t-s mid">generates tokens</text>
+      <rect x="720" y="70" width="100" height="70" rx="10" class="s-rose"/><text x="770" y="100" class="t-b mid">Output</text><text x="770" y="120" class="t-s mid">filter</text>
+      <rect x="850" y="70" width="96" height="70" rx="10" class="s-green"/><text x="898" y="100" class="t-b mid">Response</text><text x="898" y="120" class="t-s mid">+ usage</text>
+      <path d="M140 105 H174" class="s-arrow" marker-end="url(#ah)"/><path d="M320 105 H354" class="s-arrow" marker-end="url(#ah)"/><path d="M500 105 H534" class="s-arrow" marker-end="url(#ah)"/><path d="M680 105 H714" class="s-arrow" marker-end="url(#ah)"/><path d="M820 105 H844" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="250" y="170" class="t-s mid">401 · 403 · 429</text><text x="430" y="170" class="t-s mid">400 content_filter</text><text x="610" y="170" class="t-s mid">finish_reason: length</text><text x="770" y="170" class="t-s mid">content_filter</text>
+      <text x="480" y="210" class="t-s mid">Azure adds content-filter results to the response; other providers have their own safety layers.</text>
+    </svg>
+  </div>
+  <figcaption><b>Knowing which gate rejected you</b> tells you whether to fix the request, retry later or change the content.</figcaption>
+</figure>
+
+<h3>Read <code>finish_reason</code> every time</h3>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Value</th><th>Meaning</th><th>What your code should do</th></tr></thead>
+    <tbody>
+      <tr><td><code>stop</code></td><td>Finished naturally or hit a stop sequence</td><td>Use the answer</td></tr>
+      <tr><td><code>length</code></td><td>Hit the output token cap mid-answer</td><td>Don't show a half answer as complete; raise the cap or ask for brevity</td></tr>
+      <tr><td><code>content_filter</code></td><td>Output blocked by safety filtering</td><td>Show a safe fallback message; log it</td></tr>
+      <tr><td><code>tool_calls</code></td><td>The model wants your code to run a function</td><td>Module 04</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout note">
+  <div class="c-label">Chat Completions vs the Responses API</div>
+  <p>OpenAI and Azure also offer a newer <strong>Responses API</strong> (<code>client.responses.create</code>) with server-side conversation state and built-in tools. This handbook uses Chat Completions because it's the common format across Azure, OpenAI, Ollama and many others. Messages, parameters, streaming and usage carry over directly.</p>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Production teams log at least the request ID, model version, finish_reason, token usage and latency for every call. When a customer says "the bot gave me a weird answer yesterday", those five fields are how you find out what happened: which model version, whether it was truncated, how long it took.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"A chat request is <strong>model + messages + parameters</strong>; the response gives <strong>choices, finish_reason and usage</strong>. I always check finish_reason, because a 200 can still be a truncated or filtered answer."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Build the tool you'll reach for when something looks wrong.</p></div></div>
+
+<div class="drill" id="d02-4" data-title="Build a response inspector with your AI assistant" data-time="~15 min" data-steps="ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.4</span><h3>Build a response inspector</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> a script that prints the fields that matter from a saved response, including error bodies, using <code>response.json</code> from Drill 02.2.</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span>
+        <div class="prompt-box"><pre><code>Look at #response.json (a saved Azure OpenAI chat completion). Write inspect_response.py that
+takes an optional path argument (default response.json) and prints, one per line: model,
+finish_reason, the first 200 characters of the answer, prompt and completion tokens, reasoning
+tokens (0 if absent), and whether any content filter category was flagged. If the file is an
+error body ({"error": {...}}), print the error code and message and exit with code 1.
+Standard library only.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it points the assistant at a real example of the data (so it doesn't guess the shape), lists exact outputs, and covers the error case and missing fields explicitly.</div>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="inspect_response.py" data-src="code/genai-labs/inspect_response.py"></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <p>Run it on your saved response, then create <code>error.json</code> with the content below and run it again:</p>
+<pre class="code" data-file="error.json"><code>{"error": {"code": "DeploymentNotFound", "message": "no such deployment"}}</code></pre>
+<pre class="term"><code><span class="ps">$ </span>python inspect_response.py
+<span class="ps">$ </span>python inspect_response.py error.json</code></pre>
+        <span class="out-label">Expected</span>
+<pre class="out"><code>model            gpt-5.4-mini-2026-03-17
+finish_reason    stop
+answer           "Batch confirmed" means your seat in the scheduled course batch is reserved...
+tokens in / out  41 / 63
+reasoning tokens 0
+content filter   nothing filtered
+
+ERROR: DeploymentNotFound - no such deployment</code></pre>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-4"> I've completed Drill 02.4</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Read the response.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A response is HTTP 200 but the answer stops mid-sentence. What do you check?</summary><div><p><code>finish_reason</code>: it's <strong>length</strong>. The output cap was hit (reasoning tokens count too).</p></div></details>
+  <details><summary>2. Which five fields would you log for every call?</summary><div><p>Request ID, <strong>model version</strong>, <strong>finish_reason</strong>, <strong>token usage</strong> and <strong>latency</strong> (plus your own prompt version, from Module 03).</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>A 200 is not the same as success. Read finish_reason and usage on every response.</p></div>

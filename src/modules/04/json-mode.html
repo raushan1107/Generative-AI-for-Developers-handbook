@@ -1,0 +1,127 @@
+<!--meta
+{"id": "m04-json", "short": "JSON Responses", "h1": "JSON Responses: JSON Mode and Its Limits", "description": "Module 04, topic 2: JSON mode (response_format json_object), what it guarantees and what it doesn't, and a drill that shows keys drifting until the prompt pins them, and values still going wrong.", "lead": "JSON mode is the first rung up the ladder: flip one switch and the reply is always valid JSON. No code fences, no 'Here you go!'. But valid JSON isn't the JSON you wanted. You'll see the keys change from message to message, fix them with the prompt, and then catch the values still lying.", "chips": ["response_format json_object", "Syntax vs schema", "Drill 04.2"], "time": "Learn 8 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Valid JSON is a low bar.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>JSON mode</strong> (<code>response_format={"type": "json_object"}</code> in Chat Completions) constrains the model so its reply is a syntactically valid JSON object. It does <strong>not</strong> enforce any particular keys, types or values. The prompt must mention JSON, and you describe the wanted fields in words.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>JSON mode promises brackets, quotes and commas in the right places. It promises nothing about what's inside. You asked for <code>enrolment_id</code>; you might get <code>enrollmentId</code>, <code>id</code> or a nested <code>details</code> object.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>You ask five colleagues to "send me the details as a spreadsheet". You get five valid spreadsheets: one has columns <em>Name, Issue</em>, one has <em>Customer, Problem, Status</em>, one put everything in cell A1. Every file opens. None of them can be merged without manual work.</p>
+</div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th></th><th>Free text + "return JSON"</th><th>JSON mode</th><th>Structured outputs (next topic)</th></tr></thead>
+    <tbody>
+      <tr><td>Always parses</td><td>No (fences, extra text)</td><td><strong>Yes</strong></td><td><strong>Yes</strong></td></tr>
+      <tr><td>Exact keys</td><td>Only if the prompt is followed</td><td>Only if the prompt is followed</td><td><strong>Yes</strong></td></tr>
+      <tr><td>Types and allowed values</td><td>No</td><td>No</td><td><strong>Yes</strong></td></tr>
+      <tr><td>Correct values</td><td>No</td><td>No</td><td>No: still validate</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>The request must mention "JSON" in a message, or the API rejects it. Describe the fields too; otherwise the model invents its own.</li>
+  <li>JSON mode is widely supported (Azure OpenAI, OpenAI, Ollama and most OpenAI-compatible servers), so it's a useful fallback where structured outputs aren't available.</li>
+  <li>If the reply is cut off by <code>max_completion_tokens</code>, the JSON is incomplete. Check <code>finish_reason == "length"</code> (topic 7).</li>
+  <li>Claude has no JSON-mode switch; you get the same effect with a clear prompt or, better, with a tool whose input schema is your object (shown on the next page).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams that started with JSON mode in 2023 all built the same thing next: a validator that checks the keys and types, plus a retry loop. That pile of glue code is exactly what structured outputs replaced. You'll still meet JSON mode with local and older models, so it's worth knowing its limits.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"It's valid JSON, so the integration works."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Valid JSON means it <em>parses</em>. I still need the <strong>right keys, types and values</strong>, so I either enforce a schema or validate every reply."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p><code>json.loads()</code> succeeds and the code moves on, then fails three functions later with <code>KeyError: 'enrolment_id'</code> because this reply called it <code>enrollmentId</code>. Validate right where the JSON enters your system.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"JSON mode guarantees <strong>syntax</strong>, not <strong>schema</strong>. For a fixed shape I use structured outputs with a JSON Schema; I keep JSON mode as a fallback for models that don't support it, with validation."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Count the shapes, then pin them down.</p></div></div>
+
+<div class="drill" id="d04-2" data-title="JSON mode: watch the keys drift, then pin them" data-time="~15 min" data-steps="run,write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 04.2</span><h3>JSON mode: watch the keys drift, then pin them</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> measure how many different JSON shapes a loose prompt produces, then reduce it to one with a precise prompt, and spot what's still wrong.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Loose prompt, JSON mode on</h4>
+        <pre class="code" data-file="lab04_02_json_mode.py" data-src="code/genai-labs/lab04_02_json_mode.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab04_02_json_mode.py</code></pre>
+        <span class="out-label">Real run on a small local model (Ollama, qwen2.5:1.5b); yours will differ</span>
+<pre class="out"><code>{"name": "Mei", "issue": "Quota exceeded", "event": "Exam on Friday"}
+{"issue": "Refund for product TC-20877", "issue status": "Outstanding", "reason": "unable to attend next week"}
+{"Issue": "The user is looking for the AZ-104 exam voucher", "Course Completion": "...", "Recipient": "Diego"}
+{"name": "Asha", "courseRegistrationID": "TC-31002"}
+{"details": {"first_name": "Omar", "middle_name": "Farouk", "last_name": "Faruk"}}
+
+Different key sets seen: 5
+  1 x ['event', 'issue', 'name']
+  ...</code></pre>
+        <p>Every line parsed. Five messages, five shapes. A bigger model gives tidier output, but you'll still usually see more than one key set.</p>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Write a prompt that pins the shape</h4>
+        <p>Before looking at <code>TIGHT</code> in the script, write your own system prompt that makes every reply use the same four keys.</p>
+        <div class="template-box"><pre><code>Goal: extract details from a TrainCrest support message as JSON
+Context: the output is parsed by a program, not read by a person
+Constraints: exactly these keys and no others: ...
+             allowed values for category: ...
+             what to write when a value is missing: ...
+Done when: all five messages produce the same key set</code></pre></div>
+        <p class="hint"><b>Hint:</b> name each key, its type, and the missing-value rule (<code>null</code>, not <code>"null"</code> or <code>""</code>). List the seven categories from Module 03.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div><p>Mine is the <code>TIGHT</code> string in the script. Run it:</p>
+          <pre class="term"><code><span class="ps">$ </span>python lab04_02_json_mode.py --tight</code></pre>
+          <span class="out-label">Same small model, tight prompt</span>
+<pre class="out"><code>{"learner_name": "Mei", "enrolment_id": "12345", "category": "lab_access", "urgent": true}
+{"learner_name": null, "enrolment_id": "TC-20877", "category": "billing", "urgent": false}
+{"learner_name": null, "enrolment_id": null, "category": "billing", "urgent": false}
+{"learner_name": "Asha", "enrolment_id": "TC-31002", "category": "billing", "urgent": false}
+{"learner_name": "Omar Faruk", "enrolment_id": "null", "category": "certificate", "urgent": false}
+
+Different key sets seen: 1
+  5 x ['category', 'enrolment_id', 'learner_name', 'urgent']</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>One shape, and still wrong</h4>
+        <ul class="verify-list">
+          <li>The key sets dropped to one: the prompt fixed the <strong>shape</strong>.</li>
+          <li>Now read the <strong>values</strong> in that last run: Mei's ID became <code>"12345"</code> (invented; hers is TC-10293), Omar's missing ID is the <em>string</em> <code>"null"</code>, and Diego's voucher and Asha's reschedule were both filed as billing. JSON mode can't catch any of that.</li>
+          <li>Keep this output. In Drill 04.3 you'll run the same messages with a schema, and in Drill 04.9 you'll add the rules that catch invented IDs.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · compare models fairly</div>
+      <div class="alt-body">
+        <p>Run the same script with <code>LLM_PROVIDER=ollama</code> and then with your Azure deployment. Counting key sets and wrong values gives you a numeric comparison instead of an impression. Small local models are great for learning exactly <em>why</em> the guarantees on the next page matter.</p>
+      </div>
+    </div>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-2"> I've completed Drill 04.2</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>JSON mode.</p></div></div>
+<div class="quiz">
+  <details><summary>1. JSON mode is on and <code>json.loads()</code> never fails. What can still go wrong?</summary><div><p>Wrong or missing <strong>keys</strong>, wrong <strong>types</strong> (<code>"null"</code> as a string, numbers as text), values outside the allowed list, invented values, and truncated output if the token limit is hit.</p></div></details>
+  <details><summary>2. When would you still choose JSON mode today?</summary><div><p>When the model or server doesn't support structured outputs (some local or older models), or when the shape is genuinely open-ended. Always pair it with validation.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>JSON mode fixes the syntax. The prompt can fix the keys. Neither fixes the types or the truth.</p></div>

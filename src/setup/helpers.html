@@ -1,0 +1,58 @@
+<!--meta
+{"id": "setup-helpers", "short": "Helpers and Smoke Test", "h1": "Helpers and a Smoke Test", "description": "Lab setup step 4: the .env file, the shared llm.py and claude_llm.py helpers, and smoke tests for Azure OpenAI, OpenAI, Ollama and Claude.", "lead": "Every drill runs from one folder with one .env file and one tiny helper. Change providers by changing one line, without touching code. Then prove the whole pipe works with a smoke test.", "chips": [".env", "llm.py", "claude_llm.py", "Smoke test"], "time": "≈ 5 min"}
+-->
+<h2 id="env">The <code>.env</code> file</h2>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Your code never contains a key. Keys and settings live in <code>.env</code>, which stays on your machine (your <code>.gitignore</code> from Drill 00.3 keeps it out of Git), and <code>python-dotenv</code> loads it when a script starts.</p>
+</div>
+<p>Copy this as <code>.env</code> in <code>genai-labs</code> and fill in your values:</p>
+<pre class="code" data-file=".env" data-src="code/genai-labs/.env.example"></pre>
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Someone always pushes <code>.env</code> to a public repo "just for a minute". Automated scanners find leaked keys within minutes. If it happens, <strong>regenerate the key</strong> in the portal immediately; deleting the commit isn't enough.</p>
+</div>
+
+<h2 id="helper">The shared helpers</h2>
+<p>This is the only file that knows <em>which</em> provider you use. Every drill just does <code>from llm import get_client, MODEL</code>.</p>
+<pre class="code" data-file="llm.py" data-src="code/genai-labs/llm.py"></pre>
+<p>Claude gets its own helper because it uses Anthropic's SDK. <code>FALLBACK</code> lets the API retry a request on another Claude model automatically if a safety check declines it.</p>
+<pre class="code" data-file="claude_llm.py" data-src="code/genai-labs/claude_llm.py"></pre>
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Why a helper for three lines? I'll create the client in each script."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Providers, models and endpoints change every few months. One seam means swapping a model is a config change, not a code hunt. It's the tiny ancestor of the <strong>LLM gateway</strong> in Module 08."</p></div>
+</div>
+
+<h2 id="smoke">Smoke test</h2>
+<div class="drill" id="d00-4" data-title="Smoke test: prove the pipe works" data-time="~5 min" data-steps="run,ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 00.4</span><h3>Prove the pipe works</h3>
+    <div class="drill-meta"><span class="time">~5 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> one successful call from your laptop to your model, with a token count.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Create and run the smoke test</h4>
+        <pre class="code" data-file="lab00_hello.py" data-src="code/genai-labs/lab00_hello.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab00_hello.py</code></pre>
+        <span class="out-label">Expected output (your words will differ)</span>
+<pre class="out"><code>[azure · chat]
+Welcome aboard! You're about to turn "what if" into working code, one prompt at a time.
+tokens: 21 in / 19 out</code></pre>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Let your assistant explain the helper</h4>
+        <div class="prompt-box"><pre><code>Explain #llm.py to me line by line as if I'm new to Python packages and environment variables.
+Then tell me exactly which lines in .env it reads for each LLM_PROVIDER value.
+Don't change any files.</code></pre></div>
+        <p><b>What you should get:</b> an explanation that mentions <code>load_dotenv()</code>, the three providers, and that on Azure <code>MODEL</code> is the deployment name. (In Claude Code or Codex, use <code>@llm.py</code> instead of <code>#llm.py</code>.)</p>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><ul class="verify-list"><li>The script printed a greeting and a token count.</li><li>Change <code>LLM_PROVIDER</code> to <code>ollama</code> (if installed) and run again: the provider in brackets changes, the code doesn't.</li><li>Optional Claude check: run the script below.</li></ul>
+        <pre class="code" data-file="lab00_claude.py" data-src="code/genai-labs/lab00_claude.py"></pre>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d00-4"> I've completed Drill 00.4</label></div>
+</div>
+
+<div class="callout takeaway">
+  <div class="c-label">Takeaway</div>
+  <p>If <code>lab00_hello.py</code> prints a greeting and a token count, you're ready for every drill in Part I. If not, the <a href="troubleshooting.html">troubleshooting page</a> covers the usual causes.</p>
+</div>

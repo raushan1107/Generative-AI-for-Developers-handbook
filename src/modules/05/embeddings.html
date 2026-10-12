@@ -1,0 +1,137 @@
+<!--meta
+{"id": "m05-emb", "short": "What Are Embeddings?", "h1": "What Are Embeddings?", "description": "Module 05, topic 1: embeddings as vectors that capture meaning, dimensions and normalisation, what they're used for, and a drill that deploys an embedding model and creates your first vectors.", "lead": "An embedding is a list of numbers that describes what a piece of text means. Texts with similar meanings get similar numbers, even when they share no words. That one idea powers semantic search, recommendations, duplicate detection and the retrieval half of RAG. You'll deploy an embedding model and look at real vectors.", "chips": ["Vectors for meaning", "Dimensions", "Drill 05.1"], "time": "Learn 10 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Meaning, as coordinates.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>An <strong>embedding</strong> is a fixed-length vector of numbers (for example 1,536 of them) produced by an <strong>embedding model</strong> from a piece of text, such that texts with similar meaning have vectors that are close together. The model is trained so that distance in this vector space reflects difference in meaning.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Each text gets an address in a "meaning space". "Can I have my money back?" and "How do I get a refund?" get addresses on the same street. "My lab says quota exceeded" lives in another part of town.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A map gives every place two numbers: latitude and longitude. Two cafés on the same street have almost the same numbers, so "find cafés near me" is just arithmetic. An embedding does the same for meaning, except it uses hundreds or thousands of directions instead of two: one might loosely track "about money", another "urgent", another "about software".</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 320" role="img" aria-labelledby="em-t em-d">
+      <title id="em-t">Texts as points in a meaning space</title>
+      <desc id="em-d">On the left, three sentences go into an embedding model, which outputs a list of 1,536 numbers for each. On the right, a simplified two-dimensional map: refund-related sentences in English and Spanish cluster together, lab problems form a second cluster, and a sentence about the weather sits far away from both.</desc>
+      <rect x="16" y="40" width="250" height="44" rx="10" class="s-surface"/><text x="30" y="67" class="t-s">"Can I have my money back?"</text>
+      <rect x="16" y="96" width="250" height="44" rx="10" class="s-surface"/><text x="30" y="123" class="t-s">"How do I get a refund?"</text>
+      <rect x="16" y="152" width="250" height="44" rx="10" class="s-surface"/><text x="30" y="179" class="t-s">"My lab says quota exceeded."</text>
+      <path d="M266 118 H300" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="306" y="84" width="150" height="70" rx="12" class="s-violet"/><text x="381" y="114" class="t-b mid">embedding</text><text x="381" y="134" class="t-b mid">model</text>
+      <path d="M456 118 H490" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="16" y="232" class="t-m">each → [0.038, 0.012, -0.144, ...]</text><text x="16" y="252" class="t-s">1,536 numbers (text-embedding-3-small)</text>
+      <rect x="496" y="20" width="448" height="280" rx="14" class="s-surface2"/>
+      <text x="512" y="44" class="t-m">MEANING SPACE (squashed to 2-D)</text>
+      <circle cx="610" cy="110" r="7" class="s-green"/><text x="624" y="106" class="t-s">money back?</text>
+      <circle cx="640" cy="132" r="7" class="s-green"/><text x="654" y="136" class="t-s">get a refund?</text>
+      <circle cx="590" cy="150" r="7" class="s-green"/><text x="532" y="172" class="t-s">¿un reembolso?</text>
+      <circle cx="830" cy="220" r="7" class="s-amber"/><text x="740" y="246" class="t-s">quota exceeded</text>
+      <circle cx="860" cy="196" r="7" class="s-amber"/><text x="790" y="186" class="t-s">sandbox won't start</text>
+      <circle cx="800" cy="80" r="7" class="s-rose"/><text x="814" y="84" class="t-s">weather in Paris?</text>
+      <path d="M610 110 L640 132" class="s-dash"/>
+      <text x="560" y="276" class="t-s">close = similar meaning · far = unrelated</text>
+    </svg>
+  </div>
+  <figcaption><b>Close means similar.</b> Real embeddings have hundreds or thousands of dimensions; the picture squashes them to two so we can see the clusters.</figcaption>
+</figure>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li><strong>Fixed length:</strong> a word and a page both become the same number of dimensions (1,536 for <code>text-embedding-3-small</code>, 3,072 for <code>text-embedding-3-large</code>, 768 for the local <code>nomic-embed-text</code>).</li>
+  <li><strong>Usually normalised</strong> to length 1, so similarity is a simple dot product (topic 2).</li>
+  <li><strong>Input limit:</strong> text-embedding-3 models accept up to 8,191 tokens per input. Longer documents must be chunked (topic 6), and shorter chunks usually retrieve better anyway.</li>
+  <li><strong>Cheap and fast:</strong> one request can embed a batch of texts; embedding a 20-course catalogue costs a fraction of a cent.</li>
+  <li><strong>Not reversible text:</strong> you can't read an embedding, and you can't compare embeddings from two different models.</li>
+  <li><strong>Embedding models are not chat models.</strong> You deploy them separately and call <code>client.embeddings.create()</code>, not chat completions.</li>
+</ul>
+
+<div class="www">
+  <div><b>What</b>A vector that represents the meaning of a text.</div>
+  <div><b>Why</b>"Similar meaning" becomes "nearby numbers", which computers can search fast.</div>
+  <div><b>When</b>Search by meaning, recommendations, duplicates, clustering, and retrieval for RAG.</div>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Online shops embed product descriptions so "shoes for wet weather" finds waterproof boots. Help centres embed articles so "money back" finds the refunds page. Support teams embed tickets to spot duplicates and trending problems. And almost every "chat with your documents" product embeds document chunks so it can retrieve the right ones before the model answers (Module 06).</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Text is a string. Two strings are equal or they aren't."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Text also has a <strong>position in meaning space</strong>. I store that vector next to the string, and 'how similar are these?' becomes a number I can sort by."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Building an index with one embedding model, then switching models (or deployments with different dimensions) for queries. The vectors live in different spaces; similarity scores become meaningless, often without any error. Store the model name with the index and rebuild when it changes (Milestone 5 checks this).</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"An embedding is a <strong>dense vector representation</strong> of text where semantic similarity corresponds to vector closeness. You embed documents and queries with <strong>the same model</strong>, then compare vectors, typically with cosine similarity."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Deploy an embedding model and look at real vectors.</p></div></div>
+
+<div class="drill" id="d05-1" data-title="Your first embeddings" data-time="~15 min" data-steps="portal,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 05.1</span><h3>Your first embeddings</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · numpy</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> deploy an embedding model, embed three sentences in one call, and see dimensions, length and the numbers themselves.</p>
+    <ol class="dsteps">
+      <li class="dstep portal"><span class="st">Portal</span><h4>Deploy an embedding model</h4>
+        <ol>
+          <li>In the <a href="https://ai.azure.com" target="_blank" rel="noopener noreferrer">Foundry portal</a>, open your project <code>proj-genai-labs</code>.</li>
+          <li>Go to <strong>Models + endpoints</strong> (or the model catalog), choose <strong>Deploy model</strong> and pick <code>text-embedding-3-small</code>.</li>
+          <li>Name the deployment <code>embed</code>. Standard or Global Standard is fine.</li>
+          <li>Add <code>AZURE_OPENAI_EMBED_DEPLOYMENT=embed</code> to your <code>.env</code>. The endpoint and key are the same as for your chat deployment.</li>
+        </ol>
+        <p class="small muted">No Azure? Run <code>ollama pull nomic-embed-text</code> and set <code>LLM_PROVIDER=ollama</code>. The outputs below come from it.</p>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Three sentences, one call</h4>
+        <pre class="code" data-file="lab05_01_first_embeddings.py" data-src="code/genai-labs/lab05_01_first_embeddings.py"></pre>
+        <p>The embedding model setting lives in <code>embed.py</code>, the helper you'll use in every Module 05 drill. It batches requests and caches vectors on disk, so re-running a drill costs nothing:</p>
+        <pre class="code" data-file="embed.py" data-src="code/genai-labs/embed.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_01_first_embeddings.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama)</span>
+<pre class="out"><code>model: nomic-embed-text | tokens used: 30
+
+How do I get a refund for my course?
+  dimensions: 768   length (norm): 1.000
+  first 5 numbers: [0.0382, 0.0117, -0.1443, -0.0264, 0.0644]
+
+Can I have my money back?
+  dimensions: 768   length (norm): 1.000
+  first 5 numbers: [0.0618, 0.0347, -0.1616, 0.019, 0.028]
+
+My lab says quota exceeded.
+  dimensions: 768   length (norm): 1.000
+  first 5 numbers: [0.0334, 0.067, -0.1603, 0.0098, 0.0235]</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list">
+          <li>On Azure with <code>text-embedding-3-small</code> you'll see <code>dimensions: 1536</code> and length 1.000.</li>
+          <li>Every sentence, short or long, gives the same number of dimensions.</li>
+          <li>The raw numbers mean nothing to you on their own. The meaning is in how vectors <em>compare</em>, which is the next topic.</li>
+          <li>Look at <code>tokens used</code>: embeddings are billed on input tokens only; there's no output.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-1"> I've completed Drill 05.1</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Embeddings.</p></div></div>
+<div class="quiz">
+  <details><summary>1. You embed a one-word query and a 300-word article. Do their vectors have different lengths?</summary><div><p>No. Both have the model's fixed number of dimensions. That's what makes them comparable.</p></div></details>
+  <details><summary>2. Can you compare a vector from <code>text-embedding-3-small</code> with one from <code>nomic-embed-text</code>?</summary><div><p>No. They're different spaces (and even different sizes). Embed documents and queries with the <strong>same model</strong>.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>An embedding is a text's address in meaning space. Same model for everything, and closeness means similarity.</p></div>

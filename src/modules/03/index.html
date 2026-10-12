@@ -1,0 +1,54 @@
+<!--meta
+{"id": "m03", "short": "Prompt Engineering", "h1": "Prompt Engineering: Writing Instructions a Model Can't Misread", "description": "Module 03 overview: the prompt design framework, clear instructions, roles, zero- and few-shot, chain-of-thought, templates, structured prompts, output constraints and prompt injection, with 13 drills and Traincrest Assist milestone 3.", "lead": "Traincrest Assist v0.2 has a solid pipe, but what flows through it is one vague sentence, and vague in means unpredictable out. In this module the prompt becomes what it really is: a specification you write, version, test and defend. You'll practise on the model, and on your AI coding assistant, because prompting it is the same skill.", "chips": ["10 topics", "13 drills", "Milestone 3", "≈ 5 hours hands-on"]}
+-->
+<h2 id="map">The mental map: the prompt design framework</h2>
+<p>Every good prompt I've seen in production, whatever the model and task, answers the same five questions. The whole module hangs off them.</p>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 420" role="img" aria-labelledby="m3-t m3-d">
+      <title id="m3-t">The prompt design framework</title>
+      <desc id="m3-d">Five stacked blocks feed the model: context sets the scene, task defines what must be done, constraints set scope and boundaries, examples give few-shot demonstrations, and output format specifies JSON, markdown or plain text. On the right, each block is filled in for Traincrest Assist's ticket triage, producing reliable JSON.</desc>
+      <rect x="20" y="20" width="250" height="64" rx="12" class="s-blue"/><text x="40" y="46" class="t-m t-blue">1 · CONTEXT</text><text x="40" y="68" class="t-b">Set the scene and background</text>
+      <rect x="20" y="96" width="250" height="64" rx="12" class="s-teal"/><text x="40" y="122" class="t-m t-teal">2 · TASK</text><text x="40" y="144" class="t-b">Define what must be done</text>
+      <rect x="20" y="172" width="250" height="64" rx="12" class="s-amber"/><text x="40" y="198" class="t-m t-amber">3 · CONSTRAINTS</text><text x="40" y="220" class="t-b">Scope and boundaries</text>
+      <rect x="20" y="248" width="250" height="64" rx="12" class="s-violet"/><text x="40" y="274" class="t-m t-violet">4 · EXAMPLES</text><text x="40" y="296" class="t-b">Few-shot demonstrations</text>
+      <rect x="20" y="324" width="250" height="64" rx="12" class="s-green"/><text x="40" y="350" class="t-m t-green">5 · OUTPUT FORMAT</text><text x="40" y="372" class="t-b">JSON, markdown, plain text</text>
+      <path d="M270 52 H300" class="s-line"/><path d="M270 128 H300" class="s-line"/><path d="M270 204 H300" class="s-line"/><path d="M270 280 H300" class="s-line"/><path d="M270 356 H300" class="s-line"/>
+      <rect x="300" y="20" width="420" height="64" rx="10" class="s-surface"/><text x="316" y="46" class="t">"You triage learner-support messages for TrainCrest,</text><text x="316" y="66" class="t">a global technical training company."</text>
+      <rect x="300" y="96" width="420" height="64" rx="10" class="s-surface"/><text x="316" y="122" class="t">"Classify the message into exactly one category</text><text x="316" y="142" class="t">and rate its urgency."</text>
+      <rect x="300" y="172" width="420" height="64" rx="10" class="s-surface"/><text x="316" y="198" class="t">"Only the listed categories. Refund requests are</text><text x="316" y="218" class="t">'billing'. Never invent an enrolment ID."</text>
+      <rect x="300" y="248" width="420" height="64" rx="10" class="s-surface"/><text x="316" y="274" class="t">"Need 5 more days of lab access" →</text><text x="316" y="294" class="t">{"category": "lab_access", "urgency": "medium"}</text>
+      <rect x="300" y="324" width="420" height="64" rx="10" class="s-surface"/><text x="316" y="350" class="t">"Return only JSON: {"category": …,</text><text x="316" y="370" class="t">"urgency": "low" | "medium" | "high"}"</text>
+      <path d="M720 204 H770" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="776" y="150" width="170" height="108" rx="14" class="s-violet"/><text x="861" y="186" class="t-h mid">Model</text><text x="861" y="210" class="t-s mid">same input,</text><text x="861" y="226" class="t-s mid">same shape out,</text><text x="861" y="242" class="t-s mid">every time</text>
+      <text x="861" y="300" class="t-m mid t-green">RELIABLE · PARSEABLE</text><text x="861" y="318" class="t-m mid t-green">TESTABLE</text>
+    </svg>
+  </div>
+  <figcaption><b>Five questions, every prompt.</b> Simple tasks can skip examples, but when output is unreliable, the missing block is almost always the cause.</figcaption>
+</figure>
+<div class="callout takeaway">
+  <div class="c-label">Takeaway</div>
+  <p>A prompt isn't a question you ask the model. It's a <strong>brief</strong> you write for it. The better the brief, the less the model has to guess, and guessing is where unreliability comes from.</p>
+</div>
+
+<h2 id="why">Why prompts are specifications</h2>
+<p>In Module 01 you met the brilliant new joiner who has read everything but knows nothing about your company. The prompt is the only briefing that joiner ever gets. Every time. Nothing you <em>meant</em> reaches the model; only what you wrote.</p>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>You walk into a tailor's shop and say "make me a shirt". You'll get <em>a</em> shirt: maybe the wrong size, a collar you hate, winter fabric when you wanted summer, ready next month when the wedding is on Saturday. Now walk in with your measurements, the fabric, "button-down collar, short sleeves, ready by Friday, here's a photo". Same tailor, same skill, completely different result. <strong>The brief got better.</strong></p>
+</div>
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"The prompt is a string. I'll tweak words until the demo looks good."</p></div>
+  <div><h5>GenAI developer view</h5><p>"The prompt is <strong>code</strong> running on a probabilistic machine. It has a spec, versions, tests and a review. I change it based on measured results across many inputs, not one lucky example."</p></div>
+</div>
+
+<h2 id="pages">Pages and drills in this module</h2>
+<!--MODULE_PAGES:03-->
+
+<h2 id="kit">Lab kit for Module 03</h2>
+<ul>
+  <li><strong>The golden rule:</strong> never judge a prompt from one run. Every drill runs prompts several times or over several inputs and prints something you can count.</li>
+  <li><strong>You'll reuse:</strong> <code>tickets.py</code> from Drill 01.3. You'll create <code>data/eval_tickets.json</code> (Drill 03.4) and <code>prompts.py</code> (Drill 03.8), which Milestone 3 builds on.</li>
+  <li><strong>Two kinds of prompting:</strong> prompts for the model inside your app, and prompts for your AI coding assistant. Drill 03.1 shows they're the same skill.</li>
+  <li><strong>Build:</strong> Milestone 3 turns Traincrest Assist's prompts into versioned, tested code and adds a JSON triage endpoint with validation and an output guard.</li>
+</ul>

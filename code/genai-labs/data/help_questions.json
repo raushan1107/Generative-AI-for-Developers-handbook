@@ -1,0 +1,22 @@
+[
+  {"question": "How much do I get back if I cancel 10 days before the class?", "source": "refunds-and-cancellations", "must_contain": "50% refund"},
+  {"question": "How long until the refund shows up on my card?", "source": "refunds-and-cancellations", "must_contain": "5 to 10 business days"},
+  {"question": "The trainer cancelled the class, what are my options?", "source": "refunds-and-cancellations", "must_contain": "If we cancel a class"},
+  {"question": "Is there a fee to change my class date three days before it starts?", "source": "rescheduling", "must_contain": "$50 fee"},
+  {"question": "Can I swap to a different course instead?", "source": "rescheduling", "must_contain": "treated as a cancellation"},
+  {"question": "When will I get my exam voucher code?", "source": "exam-vouchers", "must_contain": "within 3 business days"},
+  {"question": "Can my voucher be extended past its expiry date?", "source": "exam-vouchers", "must_contain": "cannot be extended"},
+  {"question": "My certificate name is wrong and it was issued two months ago", "source": "certificates", "must_contain": "costs $25"},
+  {"question": "How can my employer check my certificate is real?", "source": "certificates", "must_contain": "verification link"},
+  {"question": "How much does extra lab time cost after the free extension?", "source": "labs-and-sandboxes", "must_contain": "$49"},
+  {"question": "My lab session stopped while I was at lunch", "source": "labs-and-sandboxes", "must_contain": "4 hours of inactivity"},
+  {"question": "I didn't receive the password reset email", "source": "account-and-sign-in", "must_contain": "spam folder"},
+  {"question": "Can I pay for a $1,490 course in parts?", "source": "payments-and-invoices", "must_contain": "three monthly instalments"},
+  {"question": "I need our tax number on the invoice", "source": "payments-and-invoices", "must_contain": "tax number"},
+  {"question": "What does a Retake Pass cost?", "source": "payments-and-invoices", "must_contain": "15% of the course price"},
+  {"question": "What discount do we get for 12 people on a public class?", "source": "corporate-training", "must_contain": "15% off"},
+  {"question": "Do unused training credits get refunded?", "source": "corporate-training", "must_contain": "not refundable"},
+  {"question": "I need a sign-language interpreter for the course", "source": "accessibility", "must_contain": "10 business days"},
+  {"question": "How long do I have to finish a self-paced course?", "source": "course-formats", "must_contain": "90 days"},
+  {"question": "Is lunch included for in-person classes?", "source": "course-formats", "must_contain": "Lunch"}
+]

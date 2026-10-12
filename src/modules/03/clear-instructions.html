@@ -1,0 +1,82 @@
+<!--meta
+{"id": "m03-clear", "short": "Clear Instructions", "h1": "Clear Instructions and Context", "description": "Module 03, topic 2: what makes an instruction clear (goal, audience, scope, format, reason, escape hatch), vague-to-clear rewrites, and a drill measuring a vague and a clear prompt over repeated runs.", "lead": "Say exactly what you want, for whom, how long, in what shape, and why. If a smart colleague would need to ask you a question before starting, the model needs that answer in the prompt. You'll measure the difference over repeated runs.", "chips": ["Goal · audience · format", "Explain why", "Escape hatch", "Drill 03.2"], "time": "Learn 10 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Leave nothing to guess.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A clear instruction states the goal, audience, expected scope and length, and success criteria explicitly. Context supplies the background facts and purpose the model needs to make choices the way you would.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Say what you want, for whom, how long, in what shape, and why. Then say what to do when the task can't be done.</p>
+</div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Vague</th><th>Clear</th><th>What was added</th></tr></thead>
+    <tbody>
+      <tr><td>"Summarise this ticket."</td><td>"Summarise this ticket for the agent who picks it up next: 3 bullets, under 15 words each, include the enrolment ID and what the learner needs by when."</td><td>Audience, length, format, must-include items</td></tr>
+      <tr><td>"Write a course description."</td><td>"Write a 60-word description of 'Generative AI for Developers' for working developers new to AI. Plain English, no hype, mention the hands-on Azure labs."</td><td>Length, audience, tone, focus</td></tr>
+      <tr><td>"Don't be rude."</td><td>"Be warm and patient. Acknowledge the frustration in the first sentence, then give the next step."</td><td>What <em>to</em> do, not only what not to do</td></tr>
+      <tr><td>"Answer the question."</td><td>"Answer only from the policy below. If it isn't covered, say 'I'll check with the team' and don't guess."</td><td>Source of truth and an escape hatch</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Five habits of clear prompts</h3>
+<ol class="steps">
+  <li><strong>State the goal and the audience.</strong> "For a learner" and "for an agent" produce very different answers.</li>
+  <li><strong>Explain why.</strong> "Under 60 words <em>because it's shown in a mobile notification</em>" lets the model make smart trade-offs you didn't list.</li>
+  <li><strong>Be positive and specific.</strong> "Use plain English" beats "don't use complicated words".</li>
+  <li><strong>Separate instructions from data.</strong> Put tickets, documents and emails inside clear delimiters (topic 8).</li>
+  <li><strong>Give an escape hatch.</strong> "If the enrolment ID is missing, use null" stops the model inventing one.</li>
+</ol>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Most prompt "bugs" in production turn out to be missing context: the model didn't know who the reader was, what length fitted the UI, or what to do when information was missing. Teams that write prompts like tickets for a new colleague (background, goal, acceptance criteria) spend far less time firefighting odd answers.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I make prompts explicit about <strong>goal, audience, scope, format and fallback behaviour</strong>, and I give the reason behind constraints so the model generalises them correctly."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Run vague and clear three times each, and count.</p></div></div>
+
+<div class="drill" id="d03-2" data-title="Vague vs clear: measure the difference" data-time="~15 min" data-steps="nocode,run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 03.2</span><h3>Vague vs clear: measure the difference</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-nocode">No-code path</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> compare consistency, length and usefulness of a vague and a clear prompt on the same support thread.</p>
+    <ol class="dsteps">
+      <li class="dstep nocode"><span class="st">No-code</span><p>In a chat window, paste the thread from the script with just "Summarise this." Then, in a new chat, use the CLEAR prompt. Regenerate each twice and compare by eye.</p></li>
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab03_02_vague_vs_clear.py" data-src="code/genai-labs/lab03_02_vague_vs_clear.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab03_02_vague_vs_clear.py</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Fill the scorecard for each prompt</h4>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Check</th><th>Vague (3 runs)</th><th>Clear (3 runs)</th></tr></thead>
+          <tbody>
+            <tr><td>Word count range</td><td>…</td><td>…</td></tr>
+            <tr><td>Enrolment ID TC-10293 in every run?</td><td>…</td><td>…</td></tr>
+            <tr><td>Both problems (lab and voucher) in every run?</td><td>…</td><td>…</td></tr>
+            <tr><td>Deadline (12 Mar) in every run?</td><td>…</td><td>…</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small muted">Typical: vague gives paragraphs one run and bullets the next, 60–150 words, the deadline sometimes missing. Clear gives three bullets every time with the ID, both problems and the deadline.</p>
+      </li>
+    </ol>
+    <p class="lab-say"><b>Remember:</b> “The clear prompt isn't longer for decoration. Every line removes something the model would otherwise have guessed.”</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-2"> I've completed Drill 03.2</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Clarity.</p></div></div>
+<div class="quiz">
+  <details><summary>1. "Summarise the ticket" gives answers between 20 and 200 words. Which blocks are missing?</summary><div><p><strong>Constraints</strong> (length, must-include items), <strong>output format</strong> and <strong>context</strong> about the audience.</p></div></details>
+  <details><summary>2. Why tell the model <em>why</em> a constraint exists?</summary><div><p>So it can apply the intent to cases you didn't list. "Short, because it's a mobile notification" also suggests no tables or long links.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Write the brief you'd give a smart new colleague: goal, audience, shape, reason and what to do when stuck.</p></div>

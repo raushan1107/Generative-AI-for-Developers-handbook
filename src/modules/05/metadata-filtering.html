@@ -1,0 +1,134 @@
+<!--meta
+{"id": "m05-filter", "short": "Metadata Filtering", "h1": "Metadata Filtering", "description": "Module 05, topic 7: combining similarity with hard rules on metadata (level, price, format, language, tenant, permissions), pre-filtering versus post-filtering, filterable fields and OData filters in Azure AI Search, and a drill that shows post-filtering returning nothing.", "lead": "Meaning isn't the only rule. A learner wants a beginner course under $500; a German learner needs German articles; a company must only see its own documents. Metadata filters apply those hard rules, and where you apply them matters: filter after ranking and you can end up with nothing at all. You'll see it happen.", "chips": ["Pre- vs post-filtering", "OData filters", "Security trimming", "Drill 05.8"], "time": "Learn 8 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Similarity ranks; filters rule.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Metadata filtering</strong> restricts a vector search to items whose structured fields meet exact conditions (for example <code>level eq 'beginner' and price_usd le 500</code>). With <strong>pre-filtering</strong> the condition is applied before or during the nearest-neighbour search, so you get the top k <em>among matching items</em>. With <strong>post-filtering</strong> you take the top k first and then drop non-matching items, which can leave fewer than k, or none.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Embeddings handle "sounds like what I want". Filters handle "must be true": price, level, language, date, owner. You need both, and the filter should come first.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>House hunting. You tell the agent "something cosy near a park, under $400,000". A good agent first sets aside everything over budget, then shows the three cosiest in what's left. A careless one picks the three cosiest houses in town, then crosses off the ones you can't afford, and ends up showing you nothing.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 250" role="img" aria-labelledby="mf-t mf-d">
+      <title id="mf-t">Post-filtering versus pre-filtering</title>
+      <desc id="mf-d">Post-filtering: rank all twenty courses, take the top three, which are all intermediate and over $1,000, then apply the filter beginner and up to $500; nothing is left. Pre-filtering: apply the filter first, leaving a handful of beginner courses under $500, then rank those and return the top three.</desc>
+      <text x="20" y="32" class="t-m">POST-FILTER: RANK, THEN FILTER</text>
+      <rect x="20" y="44" width="180" height="60" rx="10" class="s-surface"/><text x="110" y="70" class="t-b mid">20 courses</text><text x="110" y="90" class="t-s mid">rank by meaning</text>
+      <path d="M200 74 H238" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="244" y="44" width="220" height="60" rx="10" class="s-blue"/><text x="354" y="70" class="t-b mid">top 3</text><text x="354" y="90" class="t-s mid">all intermediate, $1,190+</text>
+      <path d="M464 74 H502" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="508" y="44" width="200" height="60" rx="10" class="s-amber"/><text x="608" y="70" class="t-b mid">filter</text><text x="608" y="90" class="t-s mid">beginner, ≤ $500</text>
+      <path d="M708 74 H746" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="752" y="44" width="188" height="60" rx="10" class="s-rose"/><text x="846" y="80" class="t-b mid">0 results</text>
+      <text x="20" y="146" class="t-m">PRE-FILTER: FILTER, THEN RANK</text>
+      <rect x="20" y="158" width="180" height="60" rx="10" class="s-surface"/><text x="110" y="184" class="t-b mid">20 courses</text><text x="110" y="204" class="t-s mid">all of them</text>
+      <path d="M200 188 H238" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="244" y="158" width="220" height="60" rx="10" class="s-amber"/><text x="354" y="184" class="t-b mid">filter</text><text x="354" y="204" class="t-s mid">beginner, ≤ $500 → 6 left</text>
+      <path d="M464 188 H502" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="508" y="158" width="200" height="60" rx="10" class="s-blue"/><text x="608" y="184" class="t-b mid">rank by meaning</text><text x="608" y="204" class="t-s mid">among the 6</text>
+      <path d="M708 188 H746" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="752" y="158" width="188" height="60" rx="10" class="s-green"/><text x="846" y="184" class="t-b mid">top 3</text><text x="846" y="204" class="t-s mid">all match the rules</text>
+    </svg>
+  </div>
+  <figcaption><b>Filter first.</b> Pre-filtering always returns the best matches that obey the rules; post-filtering can return nothing.</figcaption>
+</figure>
+
+<h3>What metadata to store</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Field</th><th>Example filter</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Category, level, format</td><td><code>level eq 'beginner'</code></td><td>User choices in the UI</td></tr>
+      <tr><td>Price, date</td><td><code>price_usd le 500</code>, <code>updated ge 2026-01-01</code></td><td>Budgets and freshness</td></tr>
+      <tr><td>Language, region</td><td><code>language eq 'es'</code></td><td>Answer from the right version of a document</td></tr>
+      <tr><td>Kind of document</td><td><code>kind eq 'help'</code></td><td>One index, several collections (Milestone 5 does this)</td></tr>
+      <tr><td>Tenant, permission group</td><td><code>group_ids/any(g: search.in(g, 'sales,all'))</code></td><td><strong>Security trimming</strong>: users only retrieve what they may see (Module 10)</td></tr>
+    </tbody>
+  </table>
+</div>
+<ul>
+  <li><strong>Azure AI Search:</strong> mark fields <code>filterable=True</code> in the index, then pass an OData expression as <code>filter=</code>. For vector queries, filters are applied before the vector search by default.</li>
+  <li><strong>Chroma:</strong> pass <code>where={"$and": [{"level": "beginner"}, {"price_usd": {"$lte": 500}}]}</code>.</li>
+  <li><strong>Never build filter strings from raw user text.</strong> Map UI choices or enum values to filters in code; a filter is a query language, and injection applies.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Enterprise "search your company's documents" products rely on security trimming: every chunk carries the groups allowed to see it, and every query adds a filter for the signed-in user's groups. Without it, a semantic search happily retrieves the salary spreadsheet for anyone who asks about pay.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Filtering is a WHERE clause; I'll add it at the end."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Filters change <strong>which neighbours exist</strong>. I store the fields I'll need, filter <strong>before</strong> ranking, and use filters for permissions, not just preferences."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Asking the model to "only use beginner courses" instead of filtering. It might comply; it might not. Hard rules belong in the query as filters, where they are guaranteed.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I store filterable metadata with each vector and apply <strong>pre-filters</strong> so the top k are the best among items that satisfy the rules. Filters also enforce <strong>security trimming</strong>, so retrieval only returns documents the user is allowed to see."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Watch post-filtering return nothing.</p></div></div>
+
+<div class="drill" id="d05-8" data-title="Pre-filter vs post-filter" data-time="~15 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 05.8</span><h3>Pre-filter vs post-filter</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-azure">Azure AI Search optional</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> run the same search three ways (no filter, post-filter, pre-filter) and see why the order matters.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>With your Drill 05.4 vector store</h4>
+        <pre class="code" data-file="lab05_08_filters.py" data-src="code/genai-labs/lab05_08_filters.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_08_filters.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama)</span>
+<pre class="out"><code>query: 'hands-on course about AI and language models'
+filter: {'level': 'beginner', 'price_usd': {'$lte': 500}}
+
+No filter, top 3:
+  0.70  C104  Generative AI for Developers             intermediate  $1490
+  0.66  C103  Machine Learning Essentials              intermediate  $1190
+  0.66  C112  AI-102: Azure AI Engineer                intermediate  $1350
+
+Post-filter (top 3 first, then filter):
+  (nothing left)
+
+Pre-filter (filter first, then top 3):
+  0.59  C105  Prompt Engineering for Business Teams    beginner      $390
+  0.51  C101  Python Foundations                       beginner      $290
+  0.49  C109  AZ-900: Azure Fundamentals               beginner      $350</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>The same filter on Azure AI Search</h4>
+        <p>If you built the index in Drill 05.5, the filter is an OData expression on <code>filterable</code> fields:</p>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_05_azure_search.py query "hands-on course about AI and language models" --mode vector --filter "level eq 'beginner' and price_usd le 500"</code></pre>
+        <ul class="verify-list">
+          <li>Azure returns three beginner courses under $500: it pre-filters vector queries by default.</li>
+          <li>Try a filter on a field that isn't filterable, like <code>title eq 'x'</code>: the service rejects it. Filterability is decided when you design the index.</li>
+        </ul>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Where should the filter values come from?</h4>
+        <p>In Milestone 5 the model calls <code>search_courses(query, level, max_price_usd, format)</code>. Who decides those filter values, and how do they become a filter safely?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>The model extracts them from the conversation ("beginner", "under $500"), but only as <strong>typed arguments</strong>: <code>level</code> is a <code>Literal</code> enum and <code>max_price_usd</code> an integer, validated by Pydantic. Code then builds the filter from those values, never by pasting text into a filter string. Permission filters (Module 10) never come from the model at all: they come from the signed-in user, like identity in Module 04.</p></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-8"> I've completed Drill 05.8</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Filters.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Post-filtering returned 1 result instead of 5. Two fixes?</summary><div><p>Switch to <strong>pre-filtering</strong> (filter inside the search), or over-fetch (ask for many more than k, then filter), which is wasteful and still not guaranteed.</p></div></details>
+  <details><summary>2. Why is a filter better than telling the model "only use documents for the Sales team"?</summary><div><p>A filter guarantees the rule: other documents never reach the model. An instruction is a request the model may not follow, and it still exposes the documents to the model.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Store the fields you'll need, filter before ranking, build filters from typed values, and let filters enforce permissions.</p></div>

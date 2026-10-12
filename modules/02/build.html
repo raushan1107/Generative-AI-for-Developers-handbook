@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build: Milestone 2</title>
+<meta name="description" content="Traincrest Assist milestone 2 (Module 02 hands-on exercise): a FastAPI service with user input, LLM integration, streaming over server-sent events, conversation memory, error handling, retries, structured logging and cost, plus a web chat UI built with an AI coding assistant.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-build" data-page="m02-build">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build active" data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/02/index.html">Module 02</a><i>/</i><span>Build: Milestone 2</span></nav>
+  <span class="kind-pill">Build</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 02 · Build milestone</span><h1>Build · Milestone 2: A Streaming Chat Service</h1><p class="lead">Version 0.2 turns the CLI into a real service: a FastAPI backend that streams answers to a browser chat, remembers the conversation, survives failures with friendly messages, retries what's transient, and logs latency, tokens and cost for every turn. You write the backend; your AI assistant builds the UI to your contract.</p><div class="chips"><span class="chip">Module 02 exercise</span><span class="chip">FastAPI + SSE</span><span class="chip">Memory · errors · retries</span><span class="chip">JSON logs + cost</span><span class="chip">≈ 60 min</span></div><div class="flow"><em>Plan 10 min · Build 40 min · Verify 15 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From a terminal toy to a service.</p></div></div>
+
+<div class="case">
+  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 2</span></div>
+  <div class="case-body">
+    <p>The pilot team liked v0.1 but can't use it: it forgets context, freezes while thinking and dies on the first network blip. Build v0.2 as a web service with a chat page. Required: <strong>user input</strong>, <strong>LLM API integration</strong>, <strong>a streaming response</strong>, <strong>error handling</strong> and <strong>basic logging</strong>, plus conversation memory and a cost figure per turn so finance can plan.</p>
+  </div>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 300" role="img" aria-labelledby="b2-t b2-d">
+      <title id="b2-t">Traincrest Assist v0.2</title>
+      <desc id="b2-d">The browser chat page posts to /api/chat on the FastAPI backend and receives server-sent events. main.py hands the request to ChatService in chat.py, which keeps per-session history, builds the messages with the system prompt from prompts.py, streams from the model through llm.py with retries, maps errors to friendly messages, and writes JSON log lines with cost through logging_utils.py.</desc>
+      <rect x="16" y="90" width="170" height="120" rx="12" class="s-surface"/><text x="101" y="122" class="t-b mid">web/index.html</text><text x="101" y="144" class="t-s mid">chat page</text><text x="101" y="162" class="t-s mid">reads SSE events</text><text x="101" y="180" class="t-s mid">delta · done · error</text>
+      <rect x="236" y="20" width="520" height="260" rx="14" class="s-blue"/>
+      <text x="252" y="46" class="t-b">FastAPI backend (uvicorn app.main:app)</text>
+      <rect x="252" y="60" width="150" height="60" rx="9" class="s-surface"/><text x="327" y="86" class="t-b mid">main.py</text><text x="327" y="104" class="t-s mid">/api/chat · /reset</text>
+      <rect x="420" y="60" width="320" height="120" rx="9" class="s-surface"/><text x="580" y="84" class="t-b mid">chat.py · ChatService</text>
+      <text x="436" y="108" class="t-s">• per-session history, trimmed to 6 pairs</text>
+      <text x="436" y="126" class="t-s">• system prompt + history → stream</text>
+      <text x="436" y="144" class="t-s">• errors → friendly messages</text>
+      <text x="436" y="162" class="t-s">• done event: TTFT, tokens, cost</text>
+      <rect x="252" y="196" width="150" height="66" rx="9" class="s-surface"/><text x="327" y="222" class="t-b mid">prompts.py</text><text x="327" y="240" class="t-s mid">SYSTEM_PROMPT</text>
+      <rect x="420" y="196" width="150" height="66" rx="9" class="s-amber"/><text x="495" y="222" class="t-b mid">llm.py</text><text x="495" y="240" class="t-s mid">3 retries · 60s</text>
+      <rect x="590" y="196" width="150" height="66" rx="9" class="s-surface"/><text x="665" y="222" class="t-b mid">logging_utils</text><text x="665" y="240" class="t-s mid">JSON lines · $</text>
+      <rect x="806" y="110" width="140" height="80" rx="12" class="s-violet"/><text x="876" y="146" class="t-b mid">Azure OpenAI</text><text x="876" y="166" class="t-s mid">"chat"</text>
+      <path d="M186 130 H230" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="208" y="122" class="t-s mid">POST</text>
+      <path d="M230 172 H192" class="s-arrow" marker-end="url(#ah)"/><text x="208" y="188" class="t-s mid">SSE</text>
+      <path d="M402 90 H414" class="s-arrow" marker-end="url(#ah)"/>
+      <path d="M570 229 Q790 240 806 180" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+    </svg>
+  </div>
+  <figcaption><b>The web layer stays thin.</b> All the GenAI logic lives in <code>ChatService</code>, which the CLI and the web app share and which can be tested with a fake model.</figcaption>
+</figure>
+
+<span class="out-label">Files after this milestone (new or changed)</span>
+<pre class="out"><code>traincrest-assist/
+├── requirements.txt          + fastapi, uvicorn
+├── .env.example              + MAX_TURNS_KEPT, PRICE_IN_PER_M, PRICE_OUT_PER_M, LOG_FILE
+├── app/
+│   ├── config.py             + memory, price and log settings
+│   ├── llm.py                + retries and timeout
+│   ├── prompts.py            NEW  the system prompt lives here now
+│   ├── logging_utils.py      NEW  JSON log lines and cost
+│   ├── chat.py               NEW  ChatService: memory, streaming, errors, logging
+│   └── main.py               NEW  FastAPI: /, /api/chat (SSE), /api/reset, /api/health
+├── web/index.html            NEW  chat page (built with your AI assistant)
+└── cli.py                    now uses ChatService and streams</code></pre>
+
+<div class="phase do" id="build"><span class="ph-num">2</span><div><h2>Build</h2><p>Backend by hand, UI by prompt.</p></div></div>
+
+<div class="drill exercise" id="b02-1" data-title="Milestone 2: streaming chat service with memory, errors and logging" data-time="~60 min" data-steps="run,ask,verify">
+  <div class="drill-head"><span class="drill-id">Milestone 2</span><h3>Streaming chat service with memory, errors and logging</h3>
+    <div class="drill-meta"><span class="time">~60 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · AI assistant</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> the Module 02 hands-on exercise. A small AI-powered application with user input, LLM API integration, a streaming response, error handling and basic logging.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Settings and model access</h4>
+        <p>Add <code>fastapi</code> and <code>uvicorn</code> to <code>requirements.txt</code> and install them. Add the new keys to <code>.env</code> (see <code>.env.example</code> below). Then update the two existing files:</p>
+        <pre class="code" data-file=".env.example"><code><span class="c"># Copy to .env and fill in. Never commit .env.</span>
+LLM_PROVIDER=azure
+AZURE_OPENAI_BASE_URL=https://&lt;resource-name&gt;.openai.azure.com/openai/v1/
+AZURE_OPENAI_API_KEY=&lt;paste key from the Foundry portal&gt;
+AZURE_OPENAI_DEPLOYMENT=chat
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5.4-mini
+OLLAMA_MODEL=llama3.2
+
+<span class="c"># New in milestone 2</span>
+MAX_TURNS_KEPT=6
+PRICE_IN_PER_M=0.40
+PRICE_OUT_PER_M=1.60
+LOG_FILE=assist.log</code></pre>
+        <pre class="code" data-file="app/config.py"><code>"""Settings for Traincrest Assist, read from .env so nothing secret lives in code."""
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+PROVIDER = os.getenv("LLM_PROVIDER", "azure").lower()
+
+<span class="c"># On Azure this is the DEPLOYMENT name; elsewhere it's the model name.</span>
+MODEL = {
+    "azure": os.getenv("AZURE_OPENAI_DEPLOYMENT", "chat"),
+    "openai": os.getenv("OPENAI_MODEL", "gpt-5.4-mini"),
+    "ollama": os.getenv("OLLAMA_MODEL", "llama3.2"),
+}.get(PROVIDER, "")
+
+<span class="c"># New in milestone 2</span>
+MAX_TURNS_KEPT = int(os.getenv("MAX_TURNS_KEPT", "6"))           <span class="c"># user/assistant pairs resent each turn</span>
+PRICE_IN_PER_M = float(os.getenv("PRICE_IN_PER_M", "0.40"))      <span class="c"># USD per 1M input tokens (check yours)</span>
+PRICE_OUT_PER_M = float(os.getenv("PRICE_OUT_PER_M", "1.60"))    <span class="c"># USD per 1M output tokens</span>
+LOG_FILE = os.getenv("LOG_FILE", "assist.log")</code></pre>
+        <pre class="code" data-file="app/llm.py"><code>"""The only place in Traincrest Assist that knows how to reach the model."""
+import os
+
+from openai import OpenAI
+
+from app.config import PROVIDER
+
+
+def get_client() -&gt; OpenAI:
+    if PROVIDER == "azure":
+        client = OpenAI(base_url=os.environ["AZURE_OPENAI_BASE_URL"], api_key=os.environ["AZURE_OPENAI_API_KEY"])
+    elif PROVIDER == "openai":
+        client = OpenAI()
+    elif PROVIDER == "ollama":
+        client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+    else:
+        raise ValueError(f"Unknown LLM_PROVIDER: {PROVIDER!r}")
+    <span class="c"># New in milestone 2: the SDK retries 408/409/429/5xx with backoff; give it 3 tries and a timeout.</span>
+    return client.with_options(max_retries=3, timeout=60)</code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Prompts and logging get their own homes</h4>
+        <pre class="code" data-file="app/prompts.py"><code>"""Prompts live here, not scattered through the code. (Module 03 turns this into a versioned library.)"""
+
+SYSTEM_PROMPT = (
+    "You are Traincrest Assist, the learner-support assistant of TrainCrest, a global technical "
+    "training company. Be friendly, concise and practical. Reply in the learner's language. "
+    "If you don't know something about TrainCrest's policies or a learner's enrolment, say so honestly."
+)</code></pre>
+        <pre class="code" data-file="app/logging_utils.py"><code>"""Structured logging and cost: one JSON line per event, ready for any log platform."""
+import json
+import logging
+import time
+
+from app.config import LOG_FILE, PRICE_IN_PER_M, PRICE_OUT_PER_M
+
+_logger = logging.getLogger("traincrest_assist")
+if not _logger.handlers:
+    _handler = logging.FileHandler(LOG_FILE, encoding="utf-8")
+    _handler.setFormatter(logging.Formatter("%(message)s"))
+    _logger.addHandler(_handler)
+    _logger.setLevel(logging.INFO)
+    _logger.propagate = False
+
+
+def log_event(**fields):
+    """Write one JSON object per line. Never log API keys or full learner messages."""
+    _logger.info(json.dumps({"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), **fields}, ensure_ascii=False))
+
+
+def cost_usd(usage):
+    """Dollar cost of one call from its token usage."""
+    if usage is None:
+        return None
+    return (usage.prompt_tokens * PRICE_IN_PER_M + usage.completion_tokens * PRICE_OUT_PER_M) / 1_000_000</code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>The heart: ChatService</h4>
+        <p>Everything from this module meets here: history trimming (Drill 02.6), streaming with the empty-chunk guard (Drill 02.8), the error mapping (Drill 02.11), and usage and cost (Drill 02.14). Read it top to bottom before you run it.</p>
+        <pre class="code" data-file="app/chat.py"><code>"""Chat service: conversation memory, streaming, error handling and usage logging.
+Kept separate from the web layer so it can be used from the CLI, the API and tests."""
+import time
+import uuid
+
+import openai
+
+from app.config import MAX_TURNS_KEPT, MODEL
+from app.llm import get_client
+from app.logging_utils import cost_usd, log_event
+from app.prompts import SYSTEM_PROMPT
+
+FRIENDLY = {
+    "rate_limited": "Traincrest Assist is very busy right now. Please try again in a moment.",
+    "unreachable": "I couldn't reach the AI service. Please try again.",
+    "bad_request": "I couldn't process that message. Could you rephrase it?",
+    "config": "Traincrest Assist is temporarily unavailable. Our team has been notified.",
+    "server": "Something went wrong on our side. Please try again shortly.",
+}
+
+
+class ChatService:
+    def __init__(self, client=None):
+        self.client = client or get_client()
+        <span class="c"># session_id -&gt; list of messages. In memory for now; Module 08 moves this to a database.</span>
+        self.sessions: dict[str, list[dict]] = {}
+
+    def reset(self, session_id: str) -&gt; None:
+        self.sessions.pop(session_id, None)
+
+    def stream(self, session_id: str, user_message: str):
+        """Yield events for one turn: {"type": "delta", "text": ...} while the answer streams,
+        then exactly one {"type": "done", ...} or {"type": "error", "message": ...}."""
+        history = self.sessions.setdefault(session_id, [])
+        history[:] = history[-(MAX_TURNS_KEPT * 2):]            <span class="c"># keep whole user/assistant pairs</span>
+        history.append({"role": "user", "content": user_message})
+        turn_id, start = uuid.uuid4().hex[:8], time.perf_counter()
+        ttft, parts, usage, finish = None, [], None, None
+        error, detail = None, ""
+
+        try:
+            stream = self.client.chat.completions.create(
+                model=MODEL,
+                messages=[{"role": "system", "content": SYSTEM_PROMPT}] + history,
+                stream=True,
+                stream_options={"include_usage": True},
+            )
+            for chunk in stream:
+                if chunk.usage:                                  <span class="c"># final chunk carries token usage</span>
+                    usage = chunk.usage
+                if not chunk.choices:                            <span class="c"># filter-only or usage-only chunks</span>
+                    continue
+                choice = chunk.choices[0]
+                finish = choice.finish_reason or finish
+                if choice.delta.content:
+                    ttft = ttft or time.perf_counter() - start
+                    parts.append(choice.delta.content)
+                    yield {"type": "delta", "text": choice.delta.content}
+        except openai.RateLimitError as e:
+            error, detail = "rate_limited", str(e)
+        except openai.APIConnectionError as e:                   <span class="c"># includes timeouts</span>
+            error, detail = "unreachable", str(e)
+        except openai.BadRequestError as e:
+            error, detail = "bad_request", str(e)
+        except (openai.AuthenticationError, openai.PermissionDeniedError, openai.NotFoundError) as e:
+            error, detail = "config", str(e)
+        except openai.APIStatusError as e:
+            error, detail = "server", str(e)
+
+        if error:
+            history.pop()                                        <span class="c"># forget the unanswered question</span>
+            log_event(turn=turn_id, session=session_id[:8], level="error", error=error, detail=detail[:200])
+            yield {"type": "error", "message": FRIENDLY[error]}
+            return
+
+        reply = "".join(parts)
+        history.append({"role": "assistant", "content": reply})
+        cost = cost_usd(usage)
+        event = {
+            "type": "done",
+            "finish_reason": finish,
+            "ttft_s": round(ttft or 0, 2),
+            "total_s": round(time.perf_counter() - start, 2),
+            "tokens_in": getattr(usage, "prompt_tokens", None),
+            "tokens_out": getattr(usage, "completion_tokens", None),
+            "cost_usd": round(cost, 6) if cost is not None else None,
+        }
+        log_event(turn=turn_id, session=session_id[:8], level="info", model=MODEL,
+                  **{k: v for k, v in event.items() if k != "type"})
+        yield event</code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>The web API</h4>
+        <pre class="code" data-file="app/main.py"><code>"""Traincrest Assist API, milestone 2.
+
+Run from the project folder:  uvicorn app.main:app --reload
+Then open http://127.0.0.1:8000 (chat UI) or http://127.0.0.1:8000/docs (API docs).
+"""
+import json
+from pathlib import Path
+
+from fastapi import FastAPI
+from fastapi.responses import FileResponse, StreamingResponse
+from pydantic import BaseModel, Field
+
+from app.chat import ChatService
+
+app = FastAPI(title="Traincrest Assist", version="0.2")
+chat = ChatService()
+WEB = Path(__file__).resolve().parent.parent / "web"
+
+
+class ChatRequest(BaseModel):
+    session_id: str = Field(min_length=8, max_length=64)
+    message: str = Field(min_length=1, max_length=4000)
+
+
+class ResetRequest(BaseModel):
+    session_id: str = Field(min_length=8, max_length=64)
+
+
+@app.get("/")
+def home():
+    return FileResponse(WEB / "index.html")
+
+
+@app.get("/api/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.post("/api/chat")
+def chat_endpoint(req: ChatRequest):
+    """Stream the answer as server-sent events: one `data: {json}` line per event."""
+    def events():
+        for event in chat.stream(req.session_id, req.message):
+            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+    return StreamingResponse(events(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
+@app.post("/api/reset")
+def reset(req: ResetRequest):
+    chat.reset(req.session_id)
+    return {"status": "reset"}</code></pre>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Have your assistant build the chat page to your contract</h4>
+        <div class="prompt-box"><pre><code>Create web/index.html: a single-file chat page (HTML, CSS and vanilla JavaScript, no frameworks,
+no external files) for "Traincrest Assist". Contract with the backend in #app/main.py:
+- On load, create sessionId = crypto.randomUUID().
+- On submit, POST /api/chat with JSON {session_id, message}. The response is server-sent events:
+  lines "data: {json}" separated by a blank line. Read it with fetch + response.body.getReader()
+  + TextDecoder, buffering until "\n\n".
+- Event types: {"type":"delta","text"} append text to the current assistant bubble;
+  {"type":"replace","text"} replace the bubble's text; {"type":"error","message"} show the message
+  styled as an error; {"type":"done","ttft_s","total_s","tokens_in","tokens_out"} show a small
+  grey line under the bubble with those numbers.
+- If fetch fails or the status isn't OK, show a friendly error in the bubble.
+- A "New chat" button POSTs /api/reset {session_id}, makes a new sessionId and clears the log.
+- Disable Send while a reply is streaming. Use textContent, never innerHTML, for message text.
+Dark, clean design; user bubbles on the right, assistant on the left.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it's a contract, not a wish. It names the exact endpoint, payload, wire format and every event type (including <code>replace</code>, which Milestone 3 needs), says how to parse a streamed body, and includes a security rule: <code>textContent</code> instead of <code>innerHTML</code>, so model output can never inject HTML or scripts into the page.</div>
+        <details class="solution"><summary>Reference solution (if your assistant gets stuck)</summary><div>
+          <pre class="code" data-file="web/index.html"><code>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+&lt;title&gt;Traincrest Assist&lt;/title&gt;
+&lt;style&gt;
+  :root { --bg: #0d1220; --panel: #151b2e; --ink: #e8ebf5; --muted: #8b95ad; --accent: #8d7bff; --you: #2a3354; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); }
+  .wrap { max-width: 760px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 16px; }
+  header { display: flex; align-items: center; gap: 10px; padding: 8px 0 16px; }
+  header b { font-size: 18px; }
+  header span { color: var(--muted); font-size: 13px; }
+  header button { margin-left: auto; background: none; border: 1px solid #2c3554; color: var(--muted); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+  #log { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+  .msg { max-width: 85%; padding: 10px 14px; border-radius: 14px; line-height: 1.55; white-space: pre-wrap; }
+  .you { align-self: flex-end; background: var(--you); }
+  .bot { align-self: flex-start; background: var(--panel); border: 1px solid #222a44; }
+  .bot.error { border-color: #a33a52; color: #ffb3c1; }
+  .meta { align-self: flex-start; font-size: 12px; color: var(--muted); margin-top: -4px; }
+  form { display: flex; gap: 8px; padding-top: 12px; }
+  input { flex: 1; padding: 12px 14px; border-radius: 12px; border: 1px solid #2c3554; background: var(--panel); color: var(--ink); font: inherit; }
+  form button { padding: 0 18px; border: 0; border-radius: 12px; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
+  form button:disabled { opacity: .5; cursor: wait; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class="wrap"&gt;
+  &lt;header&gt;&lt;b&gt;Traincrest Assist&lt;/b&gt;&lt;span&gt;learner support · milestone 2&lt;/span&gt;&lt;button id="reset" type="button"&gt;New chat&lt;/button&gt;&lt;/header&gt;
+  &lt;div id="log" aria-live="polite"&gt;&lt;/div&gt;
+  &lt;form id="form"&gt;
+    &lt;input id="input" autocomplete="off" placeholder="Ask about your course, lab, voucher or certificate..." required&gt;
+    &lt;button id="send"&gt;Send&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/div&gt;
+&lt;script&gt;
+  let sessionId = crypto.randomUUID();
+  const log = document.getElementById("log");
+  const form = document.getElementById("form");
+  const input = document.getElementById("input");
+  const send = document.getElementById("send");
+
+  function add(cls, text) {
+    const el = document.createElement("div");
+    el.className = cls;
+    el.textContent = text;
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+    return el;
+  }
+
+  function handle(event, bubble) {
+    if (event.type === "delta") bubble.textContent += event.text;
+    else if (event.type === "replace") bubble.textContent = event.text;
+    else if (event.type === "error") { bubble.textContent = event.message; bubble.classList.add("error"); }
+    else if (event.type === "done") {
+      add("meta", `first word ${event.ttft_s}s · total ${event.total_s}s · ${event.tokens_in ?? "?"} in / ${event.tokens_out ?? "?"} out`);
+    }
+    log.scrollTop = log.scrollHeight;
+  }
+
+  form.addEventListener("submit", async (e) =&gt; {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+    send.disabled = true;
+    add("msg you", text);
+    const bubble = add("msg bot", "");
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId, message: text }),
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let cut;
+        while ((cut = buffer.indexOf("\n\n")) &gt;= 0) {        // SSE events end with a blank line
+          const raw = buffer.slice(0, cut);
+          buffer = buffer.slice(cut + 2);
+          if (raw.startsWith("data: ")) handle(JSON.parse(raw.slice(6)), bubble);
+        }
+      }
+    } catch (err) {
+      handle({ type: "error", message: "Couldn't reach Traincrest Assist (" + err.message + ")." }, bubble);
+    } finally {
+      send.disabled = false;
+      input.focus();
+    }
+  });
+
+  document.getElementById("reset").addEventListener("click", async () =&gt; {
+    await fetch("/api/reset", { method: "POST", headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ session_id: sessionId }) });
+    sessionId = crypto.randomUUID();
+    log.innerHTML = "";
+  });
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Upgrade the CLI to share the same service</h4>
+        <pre class="code" data-file="cli.py"><code>"""Traincrest Assist in the terminal, milestone 2: same ChatService as the web app, streamed.
+
+Run from the project folder:  python cli.py
+"""
+import uuid
+
+from app.chat import ChatService
+from app.config import MODEL, PROVIDER
+
+
+def main():
+    chat, session = ChatService(), uuid.uuid4().hex
+    print(f"Traincrest Assist v0.2 [{PROVIDER} · {MODEL}]. Type 'exit' to quit, '/reset' for a new chat.\n")
+    while True:
+        try:
+            question = input("You: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            break
+        if question.lower() in {"exit", "quit"}:
+            break
+        if question == "/reset":
+            chat.reset(session)
+            print("(new conversation)\n")
+            continue
+        if not question:
+            continue
+        print("Assist: ", end="", flush=True)
+        for event in chat.stream(session, question):
+            if event["type"] == "delta":
+                print(event["text"], end="", flush=True)
+            elif event["type"] == "error":
+                print(event["message"])
+            elif event["type"] == "done":
+                print(f"\n  ({event['ttft_s']}s to first word · {event['total_s']}s · "
+                      f"{event['tokens_in']} in / {event['tokens_out']} out · ${event['cost_usd']})")
+        print()
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Run it and try to break it</h4>
+        <pre class="term"><code><span class="ps">$ </span>uvicorn app.main:app --reload</code></pre>
+        <ul class="verify-list">
+          <li><strong>Streaming:</strong> open <code>http://127.0.0.1:8000</code>, ask "How should I prepare for my first cloud certification?". Words appear within about a second.</li>
+          <li><strong>Memory:</strong> "Hi, I'm Mei, enrolled in AZ-305." then "Which course am I in, and what's my name?"</li>
+          <li><strong>New chat:</strong> click it, ask "What's my name?": forgotten, as designed.</li>
+          <li><strong>Friendly errors:</strong> set <code>AZURE_OPENAI_DEPLOYMENT=nope</code>, restart, send a message: a calm "temporarily unavailable" message, no stack trace. Restore it.</li>
+          <li><strong>Network failure:</strong> disconnect Wi-Fi mid-conversation and send a message: "couldn't reach the AI service". Reconnect; the next message works.</li>
+          <li><strong>Logging:</strong> open <code>assist.log</code>: one JSON line per turn with TTFT, tokens and <code>cost_usd</code>; errors logged with a code, never your key.</li>
+          <li><strong>API docs:</strong> open <code>/docs</code> and send an empty message: 422, and the model is never called.</li>
+          <li><strong>CLI:</strong> <code>python cli.py</code> streams the same way.</li>
+        </ul>
+        <span class="out-label">Expected log lines</span>
+<pre class="out"><code>{"ts": "2026-10-12T10:41:07", "turn": "3fa9c1d2", "session": "6b1f0c2a", "level": "info", "model": "chat", "finish_reason": "stop", "ttft_s": 0.62, "total_s": 2.9, "tokens_in": 58, "tokens_out": 74, "cost_usd": 0.000142}
+{"ts": "2026-10-12T10:42:02", "turn": "9c4d2e10", "session": "6b1f0c2a", "level": "error", "error": "unreachable", "detail": "Connection error."}</code></pre>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Stretch (Ask AI):</b> "Write tests/test_chat.py that tests ChatService with a fake client object (no network): streaming deltas then a done event, a RateLimitError producing a friendly error event and removing the unanswered question from history, and history trimmed to MAX_TURNS_KEPT pairs." Testing GenAI code with a fake model is a skill you'll use from Module 09 on.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="b02-1"> I've completed Milestone 2</label></div>
+</div>
+
+<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>What v0.2 fixed, and what's next.</p></div></div>
+<ul class="checklist">
+  <li>Remembers the conversation (last 6 exchanges) per browser session.</li>
+  <li>Streams answers to a web page and the CLI, with time to first word shown.</li>
+  <li>Retries transient errors automatically; every failure shows a calm message.</li>
+  <li>Logs one JSON line per turn with latency, tokens and cost.</li>
+  <li>The key never leaves the server.</li>
+</ul>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Still wrong in v0.2</th><th>Fixed in</th></tr></thead>
+    <tbody>
+      <tr><td>Still doesn't know TrainCrest's policies</td><td>M03 (policy in a structured prompt), M06 (RAG)</td></tr>
+      <tr><td>Can't triage tickets into data the team can route</td><td>M03 (JSON triage)</td></tr>
+      <tr><td>One vague prompt string, no versions, no tests</td><td>M03 (prompts as code)</td></tr>
+      <tr><td>Can't look up enrolments or vouchers</td><td>M04 (tools)</td></tr>
+      <tr><td>History lives in memory; a restart loses it</td><td>M08 (architecture)</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="callout note">
+  <div class="c-label">Fell behind? Catch up here</div>
+  <p>The complete reference code for this milestone is in <a href="../../code/traincrest-assist/m02/app/chat.py"><code>code/traincrest-assist/m02/</code></a>. Copy it over your project, keep your <code>.env</code>, install the requirements and carry on.</p>
+</div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m02-build"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/02/cost.html"><small>Previous</small><span>← 02 · Managing API costs</span></a><a class="next" href="../../modules/02/recap.html"><small>Next</small><span>02 · Recap and self-check →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

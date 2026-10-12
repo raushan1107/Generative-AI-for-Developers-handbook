@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JSON Responses</title>
+<meta name="description" content="Module 04, topic 2: JSON mode (response_format json_object), what it guarantees and what it doesn&#x27;t, and a drill that shows keys drifting until the prompt pins them, and values still going wrong.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m04-json">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod" open><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic active" data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part II</span><i>/</i><a href="../../modules/04/index.html">Module 04</a><i>/</i><span>JSON responses</span></nav>
+  <span class="kind-pill">Learn · Do · Check · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 04 · Topic 2 of 7</span><h1>JSON Responses: JSON Mode and Its Limits</h1><p class="lead">JSON mode is the first rung up the ladder: flip one switch and the reply is always valid JSON. No code fences, no 'Here you go!'. But valid JSON isn't the JSON you wanted. You'll see the keys change from message to message, fix them with the prompt, and then catch the values still lying.</p><div class="chips"><span class="chip">response_format json_object</span><span class="chip">Syntax vs schema</span><span class="chip">Drill 04.2</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 8 min · Do 15 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Valid JSON is a low bar.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>JSON mode</strong> (<code>response_format={"type": "json_object"}</code> in Chat Completions) constrains the model so its reply is a syntactically valid JSON object. It does <strong>not</strong> enforce any particular keys, types or values. The prompt must mention JSON, and you describe the wanted fields in words.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>JSON mode promises brackets, quotes and commas in the right places. It promises nothing about what's inside. You asked for <code>enrolment_id</code>; you might get <code>enrollmentId</code>, <code>id</code> or a nested <code>details</code> object.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>You ask five colleagues to "send me the details as a spreadsheet". You get five valid spreadsheets: one has columns <em>Name, Issue</em>, one has <em>Customer, Problem, Status</em>, one put everything in cell A1. Every file opens. None of them can be merged without manual work.</p>
+</div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th></th><th>Free text + "return JSON"</th><th>JSON mode</th><th>Structured outputs (next topic)</th></tr></thead>
+    <tbody>
+      <tr><td>Always parses</td><td>No (fences, extra text)</td><td><strong>Yes</strong></td><td><strong>Yes</strong></td></tr>
+      <tr><td>Exact keys</td><td>Only if the prompt is followed</td><td>Only if the prompt is followed</td><td><strong>Yes</strong></td></tr>
+      <tr><td>Types and allowed values</td><td>No</td><td>No</td><td><strong>Yes</strong></td></tr>
+      <tr><td>Correct values</td><td>No</td><td>No</td><td>No: still validate</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>The request must mention "JSON" in a message, or the API rejects it. Describe the fields too; otherwise the model invents its own.</li>
+  <li>JSON mode is widely supported (Azure OpenAI, OpenAI, Ollama and most OpenAI-compatible servers), so it's a useful fallback where structured outputs aren't available.</li>
+  <li>If the reply is cut off by <code>max_completion_tokens</code>, the JSON is incomplete. Check <code>finish_reason == "length"</code> (topic 7).</li>
+  <li>Claude has no JSON-mode switch; you get the same effect with a clear prompt or, better, with a tool whose input schema is your object (shown on the next page).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams that started with JSON mode in 2023 all built the same thing next: a validator that checks the keys and types, plus a retry loop. That pile of glue code is exactly what structured outputs replaced. You'll still meet JSON mode with local and older models, so it's worth knowing its limits.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"It's valid JSON, so the integration works."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Valid JSON means it <em>parses</em>. I still need the <strong>right keys, types and values</strong>, so I either enforce a schema or validate every reply."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p><code>json.loads()</code> succeeds and the code moves on, then fails three functions later with <code>KeyError: 'enrolment_id'</code> because this reply called it <code>enrollmentId</code>. Validate right where the JSON enters your system.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"JSON mode guarantees <strong>syntax</strong>, not <strong>schema</strong>. For a fixed shape I use structured outputs with a JSON Schema; I keep JSON mode as a fallback for models that don't support it, with validation."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Count the shapes, then pin them down.</p></div></div>
+
+<div class="drill" id="d04-2" data-title="JSON mode: watch the keys drift, then pin them" data-time="~15 min" data-steps="run,write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 04.2</span><h3>JSON mode: watch the keys drift, then pin them</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> measure how many different JSON shapes a loose prompt produces, then reduce it to one with a precise prompt, and spot what's still wrong.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Loose prompt, JSON mode on</h4>
+        <pre class="code" data-file="lab04_02_json_mode.py"><code>"""Drill 04.2: JSON mode. The reply is always valid JSON, but which keys and types?
+Run:  python lab04_02_json_mode.py            (loose prompt)
+      python lab04_02_json_mode.py --tight    (prompt that lists the exact keys)"""
+import json
+import sys
+from collections import Counter
+
+from llm import MODEL, get_client
+
+MESSAGES = [
+    "Hi, I'm Mei. My lab for TC-10293 says quota exceeded and my exam is on Friday!",
+    "Can I get a refund for TC-20877? I can't attend next week.",
+    "Where is my AZ-104 exam voucher? I finished the course 5 days ago. Diego",
+    "Hola, ¿puedo cambiar la fecha de mi curso? Soy Asha, inscripción TC-31002.",
+    "My certificate says Omar Farouk but my name is Omar Faruk.",
+]
+
+LOOSE = "Extract the useful details from this support message as JSON."
+TIGHT = """Extract details from this support message.
+Return a JSON object with exactly these keys:
+"learner_name" (string or null), "enrolment_id" (string or null),
+"category" (one of scheduling, billing, exam_voucher, certificate, lab_access, account, other),
+"urgent" (true or false)."""
+
+
+def main():
+    client = get_client()
+    system = TIGHT if "--tight" in sys.argv else LOOSE
+    shapes = Counter()
+
+    for text in MESSAGES:
+        response = client.chat.completions.create(
+            model=MODEL,
+            <span class="c"># JSON mode: the model must produce valid JSON. The prompt must mention "JSON".</span>
+            response_format={"type": "json_object"},
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": text}],
+        )
+        data = json.loads(response.choices[0].message.content)      <span class="c"># never fails in JSON mode...</span>
+        keys = tuple(sorted(data))
+        shapes[keys] += 1
+        print(json.dumps(data, ensure_ascii=False))
+
+    print("\nDifferent key sets seen:", len(shapes))
+    for keys, count in shapes.most_common():
+        print(f"  {count} x {list(keys)}")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab04_02_json_mode.py</code></pre>
+        <span class="out-label">Real run on a small local model (Ollama, qwen2.5:1.5b); yours will differ</span>
+<pre class="out"><code>{"name": "Mei", "issue": "Quota exceeded", "event": "Exam on Friday"}
+{"issue": "Refund for product TC-20877", "issue status": "Outstanding", "reason": "unable to attend next week"}
+{"Issue": "The user is looking for the AZ-104 exam voucher", "Course Completion": "...", "Recipient": "Diego"}
+{"name": "Asha", "courseRegistrationID": "TC-31002"}
+{"details": {"first_name": "Omar", "middle_name": "Farouk", "last_name": "Faruk"}}
+
+Different key sets seen: 5
+  1 x ['event', 'issue', 'name']
+  ...</code></pre>
+        <p>Every line parsed. Five messages, five shapes. A bigger model gives tidier output, but you'll still usually see more than one key set.</p>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Write a prompt that pins the shape</h4>
+        <p>Before looking at <code>TIGHT</code> in the script, write your own system prompt that makes every reply use the same four keys.</p>
+        <div class="template-box"><pre><code>Goal: extract details from a TrainCrest support message as JSON
+Context: the output is parsed by a program, not read by a person
+Constraints: exactly these keys and no others: ...
+             allowed values for category: ...
+             what to write when a value is missing: ...
+Done when: all five messages produce the same key set</code></pre></div>
+        <p class="hint"><b>Hint:</b> name each key, its type, and the missing-value rule (<code>null</code>, not <code>"null"</code> or <code>""</code>). List the seven categories from Module 03.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div><p>Mine is the <code>TIGHT</code> string in the script. Run it:</p>
+          <pre class="term"><code><span class="ps">$ </span>python lab04_02_json_mode.py --tight</code></pre>
+          <span class="out-label">Same small model, tight prompt</span>
+<pre class="out"><code>{"learner_name": "Mei", "enrolment_id": "12345", "category": "lab_access", "urgent": true}
+{"learner_name": null, "enrolment_id": "TC-20877", "category": "billing", "urgent": false}
+{"learner_name": null, "enrolment_id": null, "category": "billing", "urgent": false}
+{"learner_name": "Asha", "enrolment_id": "TC-31002", "category": "billing", "urgent": false}
+{"learner_name": "Omar Faruk", "enrolment_id": "null", "category": "certificate", "urgent": false}
+
+Different key sets seen: 1
+  5 x ['category', 'enrolment_id', 'learner_name', 'urgent']</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>One shape, and still wrong</h4>
+        <ul class="verify-list">
+          <li>The key sets dropped to one: the prompt fixed the <strong>shape</strong>.</li>
+          <li>Now read the <strong>values</strong> in that last run: Mei's ID became <code>"12345"</code> (invented; hers is TC-10293), Omar's missing ID is the <em>string</em> <code>"null"</code>, and Diego's voucher and Asha's reschedule were both filed as billing. JSON mode can't catch any of that.</li>
+          <li>Keep this output. In Drill 04.3 you'll run the same messages with a schema, and in Drill 04.9 you'll add the rules that catch invented IDs.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · compare models fairly</div>
+      <div class="alt-body">
+        <p>Run the same script with <code>LLM_PROVIDER=ollama</code> and then with your Azure deployment. Counting key sets and wrong values gives you a numeric comparison instead of an impression. Small local models are great for learning exactly <em>why</em> the guarantees on the next page matter.</p>
+      </div>
+    </div>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-2"> I've completed Drill 04.2</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>JSON mode.</p></div></div>
+<div class="quiz">
+  <details><summary>1. JSON mode is on and <code>json.loads()</code> never fails. What can still go wrong?</summary><div><p>Wrong or missing <strong>keys</strong>, wrong <strong>types</strong> (<code>"null"</code> as a string, numbers as text), values outside the allowed list, invented values, and truncated output if the token limit is hit.</p></div></details>
+  <details><summary>2. When would you still choose JSON mode today?</summary><div><p>When the model or server doesn't support structured outputs (some local or older models), or when the shape is genuinely open-ended. Always pair it with validation.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>JSON mode fixes the syntax. The prompt can fix the keys. Neither fixes the types or the truth.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m04-json"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/04/why-structured.html"><small>Previous</small><span>← 04 · Why structured outputs matter</span></a><a class="next" href="../../modules/04/schema-outputs.html"><small>Next</small><span>04 · Schema-based generation →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

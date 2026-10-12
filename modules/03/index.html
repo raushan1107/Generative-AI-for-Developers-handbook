@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Engineering</title>
+<meta name="description" content="Module 03 overview: the prompt design framework, clear instructions, roles, zero- and few-shot, chain-of-thought, templates, structured prompts, output constraints and prompt injection, with 13 drills and Traincrest Assist milestone 3.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-overview" data-page="m03">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview active" data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/03/index.html">Module 03</a></nav>
+  <span class="kind-pill">Overview</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 03 · Overview</span><h1>Prompt Engineering: Writing Instructions a Model Can't Misread</h1><p class="lead">Traincrest Assist v0.2 has a solid pipe, but what flows through it is one vague sentence, and vague in means unpredictable out. In this module the prompt becomes what it really is: a specification you write, version, test and defend. You'll practise on the model, and on your AI coding assistant, because prompting it is the same skill.</p><div class="chips"><span class="chip">10 topics</span><span class="chip">13 drills</span><span class="chip">Milestone 3</span><span class="chip">≈ 5 hours hands-on</span></div></header>
+<div class="content">
+
+<h2 id="map">The mental map: the prompt design framework</h2>
+<p>Every good prompt I've seen in production, whatever the model and task, answers the same five questions. The whole module hangs off them.</p>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 420" role="img" aria-labelledby="m3-t m3-d">
+      <title id="m3-t">The prompt design framework</title>
+      <desc id="m3-d">Five stacked blocks feed the model: context sets the scene, task defines what must be done, constraints set scope and boundaries, examples give few-shot demonstrations, and output format specifies JSON, markdown or plain text. On the right, each block is filled in for Traincrest Assist's ticket triage, producing reliable JSON.</desc>
+      <rect x="20" y="20" width="250" height="64" rx="12" class="s-blue"/><text x="40" y="46" class="t-m t-blue">1 · CONTEXT</text><text x="40" y="68" class="t-b">Set the scene and background</text>
+      <rect x="20" y="96" width="250" height="64" rx="12" class="s-teal"/><text x="40" y="122" class="t-m t-teal">2 · TASK</text><text x="40" y="144" class="t-b">Define what must be done</text>
+      <rect x="20" y="172" width="250" height="64" rx="12" class="s-amber"/><text x="40" y="198" class="t-m t-amber">3 · CONSTRAINTS</text><text x="40" y="220" class="t-b">Scope and boundaries</text>
+      <rect x="20" y="248" width="250" height="64" rx="12" class="s-violet"/><text x="40" y="274" class="t-m t-violet">4 · EXAMPLES</text><text x="40" y="296" class="t-b">Few-shot demonstrations</text>
+      <rect x="20" y="324" width="250" height="64" rx="12" class="s-green"/><text x="40" y="350" class="t-m t-green">5 · OUTPUT FORMAT</text><text x="40" y="372" class="t-b">JSON, markdown, plain text</text>
+      <path d="M270 52 H300" class="s-line"/><path d="M270 128 H300" class="s-line"/><path d="M270 204 H300" class="s-line"/><path d="M270 280 H300" class="s-line"/><path d="M270 356 H300" class="s-line"/>
+      <rect x="300" y="20" width="420" height="64" rx="10" class="s-surface"/><text x="316" y="46" class="t">"You triage learner-support messages for TrainCrest,</text><text x="316" y="66" class="t">a global technical training company."</text>
+      <rect x="300" y="96" width="420" height="64" rx="10" class="s-surface"/><text x="316" y="122" class="t">"Classify the message into exactly one category</text><text x="316" y="142" class="t">and rate its urgency."</text>
+      <rect x="300" y="172" width="420" height="64" rx="10" class="s-surface"/><text x="316" y="198" class="t">"Only the listed categories. Refund requests are</text><text x="316" y="218" class="t">'billing'. Never invent an enrolment ID."</text>
+      <rect x="300" y="248" width="420" height="64" rx="10" class="s-surface"/><text x="316" y="274" class="t">"Need 5 more days of lab access" →</text><text x="316" y="294" class="t">{"category": "lab_access", "urgency": "medium"}</text>
+      <rect x="300" y="324" width="420" height="64" rx="10" class="s-surface"/><text x="316" y="350" class="t">"Return only JSON: {"category": …,</text><text x="316" y="370" class="t">"urgency": "low" | "medium" | "high"}"</text>
+      <path d="M720 204 H770" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="776" y="150" width="170" height="108" rx="14" class="s-violet"/><text x="861" y="186" class="t-h mid">Model</text><text x="861" y="210" class="t-s mid">same input,</text><text x="861" y="226" class="t-s mid">same shape out,</text><text x="861" y="242" class="t-s mid">every time</text>
+      <text x="861" y="300" class="t-m mid t-green">RELIABLE · PARSEABLE</text><text x="861" y="318" class="t-m mid t-green">TESTABLE</text>
+    </svg>
+  </div>
+  <figcaption><b>Five questions, every prompt.</b> Simple tasks can skip examples, but when output is unreliable, the missing block is almost always the cause.</figcaption>
+</figure>
+<div class="callout takeaway">
+  <div class="c-label">Takeaway</div>
+  <p>A prompt isn't a question you ask the model. It's a <strong>brief</strong> you write for it. The better the brief, the less the model has to guess, and guessing is where unreliability comes from.</p>
+</div>
+
+<h2 id="why">Why prompts are specifications</h2>
+<p>In Module 01 you met the brilliant new joiner who has read everything but knows nothing about your company. The prompt is the only briefing that joiner ever gets. Every time. Nothing you <em>meant</em> reaches the model; only what you wrote.</p>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>You walk into a tailor's shop and say "make me a shirt". You'll get <em>a</em> shirt: maybe the wrong size, a collar you hate, winter fabric when you wanted summer, ready next month when the wedding is on Saturday. Now walk in with your measurements, the fabric, "button-down collar, short sleeves, ready by Friday, here's a photo". Same tailor, same skill, completely different result. <strong>The brief got better.</strong></p>
+</div>
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"The prompt is a string. I'll tweak words until the demo looks good."</p></div>
+  <div><h5>GenAI developer view</h5><p>"The prompt is <strong>code</strong> running on a probabilistic machine. It has a spec, versions, tests and a review. I change it based on measured results across many inputs, not one lucky example."</p></div>
+</div>
+
+<h2 id="pages">Pages and drills in this module</h2>
+<div class="page-cards"><a class="page-card k-topic" href="../../modules/03/what-is-prompt-engineering.html"><span class="pc-tag">Learn · Do · Check</span><b>What is prompt engineering?</b><ul><li><span class="mono">03.1</span> Vague vs specified: prompt your coding assistant two ways <span class="muted">· ~20 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/03/clear-instructions.html"><span class="pc-tag">Learn · Do · Check</span><b>Clear instructions and context</b><ul><li><span class="mono">03.2</span> Vague vs clear: measure the difference <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/03/role-prompting.html"><span class="pc-tag">Learn · Do · Check</span><b>Role prompting</b><ul><li><span class="mono">03.3</span> What a role changes, and what it doesn&#x27;t <span class="muted">· ~12 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/03/zero-shot.html"><span class="pc-tag">Learn · Do · Check</span><b>Zero-shot prompting</b><ul><li><span class="mono">03.4</span> Generate a labelled test set with AI, then verify it <span class="muted">· ~15 min</span></li><li><span class="mono">03.5</span> Measure the zero-shot baseline <span class="muted">· ~10 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/03/few-shot.html"><span class="pc-tag">Learn · Do · Check</span><b>Few-shot prompting</b><ul><li><span class="mono">03.6</span> Few-shot vs zero-shot: beat your baseline <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/03/chain-of-thought.html"><span class="pc-tag">Learn · Do · Check</span><b>Chain-of-thought</b><ul><li><span class="mono">03.7</span> Chain-of-thought on a multi-step refund case <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/03/templates.html"><span class="pc-tag">Learn · Do · Check</span><b>Prompt templates</b><ul><li><span class="mono">03.8</span> Build a versioned prompt template library <span class="muted">· ~12 min</span></li><li><span class="mono">03.9</span> Protect your prompts with tests written by your AI assistant <span class="muted">· ~12 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/03/structured-prompts.html"><span class="pc-tag">Learn · Do · Check</span><b>Structured prompts</b><ul><li><span class="mono">03.10</span> Restructure a messy prompt and score both versions <span class="muted">· ~20 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/03/output-constraints.html"><span class="pc-tag">Learn · Do · Check</span><b>Output constraints</b><ul><li><span class="mono">03.11</span> Exercise: turn an unreliable prompt into consistent JSON <span class="muted">· ~30 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/03/prompt-injection.html"><span class="pc-tag">Learn · Do · Check</span><b>Prompt injection awareness</b><ul><li><span class="mono">03.12</span> Attack and defend a course-review summariser <span class="muted">· ~15 min</span></li><li><span class="mono">03.13</span> Build a tested output guard <span class="muted">· ~15 min</span></li></ul></a>
+<a class="page-card k-build" href="../../modules/03/build.html"><span class="pc-tag">Traincrest Assist</span><b>Build: Milestone 3</b><ul><li><span class="mono">M3</span> Milestone 3: prompt library, JSON triage, output guard and checks <span class="muted">· ~60 min</span></li></ul></a>
+<a class="page-card k-recap" href="../../modules/03/recap.html"><span class="pc-tag">Check</span><b>Recap and self-check</b></a></div>
+
+<h2 id="kit">Lab kit for Module 03</h2>
+<ul>
+  <li><strong>The golden rule:</strong> never judge a prompt from one run. Every drill runs prompts several times or over several inputs and prints something you can count.</li>
+  <li><strong>You'll reuse:</strong> <code>tickets.py</code> from Drill 01.3. You'll create <code>data/eval_tickets.json</code> (Drill 03.4) and <code>prompts.py</code> (Drill 03.8), which Milestone 3 builds on.</li>
+  <li><strong>Two kinds of prompting:</strong> prompts for the model inside your app, and prompts for your AI coding assistant. Drill 03.1 shows they're the same skill.</li>
+  <li><strong>Build:</strong> Milestone 3 turns Traincrest Assist's prompts into versioned, tested code and adds a JSON triage endpoint with validation and an output guard.</li>
+</ul>
+
+</div>
+<nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/02/recap.html"><small>Previous</small><span>← 02 · Recap and self-check</span></a><a class="next" href="../../modules/03/what-is-prompt-engineering.html"><small>Next</small><span>03 · What is prompt engineering? →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

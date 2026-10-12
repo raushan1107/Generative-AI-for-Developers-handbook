@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenAI vs Traditional ML</title>
+<meta name="description" content="Module 01, topic 2: where generative AI sits inside AI and machine learning, when classic ML or plain code is the better choice, and a drill that trains a real classifier and races it against an LLM.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m01-vsml">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod" open><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic active" data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/01/index.html">Module 01</a><i>/</i><span>GenAI vs traditional AI/ML</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 01 · Topic 2 of 9</span><h1>Generative AI vs Traditional AI/ML</h1><p class="lead">GenAI didn't replace machine learning; it sits inside it. Knowing where it sits tells you when an LLM is the right tool, and when a classic model or a plain if-statement is faster, cheaper and more reliable. You'll prove it by racing the two on the same tickets.</p><div class="chips"><span class="chip">AI ⊃ ML ⊃ DL ⊃ GenAI</span><span class="chip">Choosing the tool</span><span class="chip">Drill 01.3</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Russian dolls, and how to pick the right doll.</p></div></div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 330" role="img" aria-labelledby="nest-t nest-d">
+      <title id="nest-t">Where generative AI sits</title>
+      <desc id="nest-d">Nested boxes: artificial intelligence contains machine learning, which contains deep learning, which contains generative AI, which contains large language models. Each layer has an example.</desc>
+      <rect x="20" y="20" width="860" height="290" rx="18" class="s-surface2"/>
+      <text x="44" y="50" class="t-b">Artificial Intelligence</text>
+      <text x="44" y="70" class="t-s">any technique that makes machines act smart: rules, search, ML</text>
+      <text x="44" y="290" class="t-s">e.g. rule-based fraud checks, route planning</text>
+      <rect x="250" y="84" width="610" height="210" rx="16" class="s-blue"/>
+      <text x="272" y="112" class="t-b">Machine Learning</text>
+      <text x="272" y="132" class="t-s">learns patterns from data instead of hand-written rules</text>
+      <text x="272" y="276" class="t-s">e.g. churn prediction, demand forecasting</text>
+      <rect x="470" y="146" width="370" height="132" rx="14" class="s-teal"/>
+      <text x="490" y="172" class="t-b">Deep Learning</text>
+      <text x="490" y="190" class="t-s">many-layered neural networks</text>
+      <text x="490" y="264" class="t-s">e.g. face unlock</text>
+      <rect x="640" y="198" width="184" height="66" rx="12" class="s-violet"/>
+      <text x="732" y="220" class="t-b mid">Generative AI</text>
+      <rect x="672" y="230" width="120" height="26" rx="8" class="s-amber"/>
+      <text x="732" y="248" class="t-b mid">LLMs</text>
+    </svg>
+  </div>
+  <figcaption><b>Russian dolls.</b> Every LLM is generative AI, every GenAI model is deep learning, and so on outwards. But not every problem needs the innermost doll.</figcaption>
+</figure>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Aspect</th><th>Traditional ML</th><th>Generative AI (LLMs)</th></tr></thead>
+    <tbody>
+      <tr><td>Output</td><td>A label, a number or a score</td><td>Open-ended content: text, code, images</td></tr>
+      <tr><td>Training</td><td>You train a model on <em>your</em> labelled data</td><td>You usually <em>use</em> a pre-trained model through an API</td></tr>
+      <tr><td>Data needed</td><td>Hundreds to thousands of labelled examples per task</td><td>Zero to a handful of examples, written in the prompt</td></tr>
+      <tr><td>Tasks per model</td><td>One</td><td>Thousands</td></tr>
+      <tr><td>Speed and cost per prediction</td><td>Milliseconds, almost free</td><td>Hundreds of milliseconds to seconds, pay per token</td></tr>
+      <tr><td>Handles new wording or languages</td><td>Poorly, unless trained on them</td><td>Well, out of the box</td></tr>
+      <tr><td>Main failure</td><td>Wrong prediction</td><td>Fluent, confident, wrong answer (hallucination)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Most production systems are <strong>hybrids</strong>. Card-fraud scoring and product recommendations are still classic ML because they need millisecond decisions on structured data at huge volume. LLMs sit on top for the language parts: explaining a decision to a customer, summarising a case for an analyst, understanding a free-text complaint. Search products work the same way: classic ranking finds results, a language model writes the summary.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Using an LLM for everything. Calculating tax, validating an email address, checking whether an enrolment ID exists, sorting a list: these have <strong>exact answers</strong>. Plain code does them perfectly, instantly and for free. Use the LLM for the fuzzy part (understanding the learner's message) and code for the exact part (looking up the enrolment). Module 04 wires the two together.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"We need a model, so we need a data scientist, a labelled dataset and three months."</p></div>
+  <div><h5>GenAI developer view</h5><p>"A pre-trained model already understands language, so I can prototype with a prompt this afternoon. If volume, latency or cost demand it later, I can train a small classic model, using the LLM to help label the data."</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"When would you <em>not</em> use an LLM?" Say: <strong>"When the task has an exact answer, needs millisecond latency at high volume, or is a narrow classification with plenty of labelled data. There, plain code or a small classic model is cheaper, faster and more predictable."</strong></p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Generate training data with AI, train a real classifier, and race it against an LLM.</p></div></div>
+
+<div class="drill" id="d01-3" data-title="Train a classic classifier, then race it against an LLM" data-time="~20 min" data-steps="write,verify,run,think">
+  <div class="drill-head"><span class="drill-id">Drill 01.3</span><h3>Train a classic classifier, then race it against an LLM</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">scikit-learn · AI assistant</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> feel the difference in data needs, speed, cost and robustness between classic ML and an LLM, on the same 12 support tickets.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Create the shared ticket file</h4>
+        <p>This file holds 12 labelled test tickets and TrainCrest's house rules. Module 03 reuses it.</p>
+        <pre class="code" data-file="tickets.py"><code>"""Synthetic TrainCrest learner-support tickets (fictional, no real data).
+Shared by drills in Module 01 and Module 03."""
+
+CATEGORIES = ["scheduling", "billing", "exam_voucher", "certificate", "lab_access", "account", "other"]
+
+<span class="c"># TrainCrest house rules the model can't know unless you tell it:</span>
+<span class="c">#   - a refund request is "billing", even when it mentions dates or batches</span>
+<span class="c">#   - asking for more lab time is "lab_access", not "scheduling"</span>
+TEST_TICKETS = [
+    ("I paid for the AZ-305 batch but my card was charged twice.", "billing"),
+    ("Can I move my Generative AI course from the March batch to April?", "scheduling"),
+    ("I finished the course two weeks ago and still have no exam voucher.", "exam_voucher"),
+    ("My certificate says 'Asha Kumari' but my name is 'Asha Kumar'.", "certificate"),
+    ("The lab VM says my subscription has expired, I can't start the exercise.", "lab_access"),
+    ("I can't log in, the password reset email never arrives.", "account"),
+    ("Do you offer corporate discounts for a team of 20 engineers?", "other"),
+    ("My lab ran out yesterday, can I get one more week to finish?", "lab_access"),
+    ("Quiero cambiar mi curso al grupo del próximo mes.", "scheduling"),
+    ("I want a refund, the course starts in 3 days and I can't attend.", "billing"),
+    ("The voucher code you sent shows as already used.", "exam_voucher"),
+    ("Please update the email on my account to my new work address.", "account"),
+]
+
+<span class="c"># Few-shot examples: different from the test tickets, covering the house rules.</span>
+FEW_SHOT_EXAMPLES = [
+    ("I can't attend next week, please refund my fee.", "billing"),
+    ("I need 5 more days of lab access to finish module 6.", "lab_access"),
+    ("I was charged in EUR instead of USD.", "billing"),
+    ("My voucher expired before I could book the exam.", "exam_voucher"),
+    ("Please shift me to the weekend batch.", "scheduling"),
+]</code></pre>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Ask your assistant to generate training data</h4>
+        <p>Classic ML needs labelled examples. Instead of writing 40 by hand, have your AI assistant generate them. Write the prompt yourself:</p>
+        <div class="template-box"><pre><code>Goal:        create data/train_tickets.json with … labelled support tickets
+Context:     the categories are in #tickets.py; the company is …
+Constraints: format …; how many per category …; style …;
+             must NOT copy or paraphrase the tickets in TEST_TICKETS
+Done when:   …</code></pre></div>
+        <p class="hint"><b>Hint:</b> ask for a JSON array of objects with exactly <code>text</code> and <code>label</code>, 6 per category (42 total), short realistic messages, varied wording, English only (that's deliberate: you'll see why later), and a quick check you can run.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Create data/train_tickets.json: a JSON array of 42 synthetic learner-support tickets for
+TrainCrest, an online technical training company. Each item is {"text": ..., "label": ...}
+with exactly those two keys. Use the 7 labels in CATEGORIES from #tickets.py, exactly
+6 tickets per label. Messages should be short (5-20 words), realistic and varied in wording.
+English only. Do not copy or paraphrase anything in TEST_TICKETS. Afterwards, give me a
+one-line Python command that prints the count per label.</code></pre></div>
+          <p>If your assistant struggles, use the reference file: <a href="../../code/genai-labs/data/train_tickets.json">data/train_tickets.json</a>.</p>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Check the generated data before training on it</h4>
+        <pre class="term"><code><span class="ps">$ </span>python -c "import json,collections; d=json.load(open('data/train_tickets.json',encoding='utf-8')); print(len(d), collections.Counter(x['label'] for x in d))"</code></pre>
+        <ul class="verify-list"><li>42 rows, 6 per label, only the 7 known labels.</li><li>Skim 10 rows: are the labels actually right? Generated data can be wrong too.</li></ul>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Race the two approaches</h4>
+        <pre class="code" data-file="lab01_03_classic_vs_llm.py"><code>"""Drill 01.3: a classic ML classifier vs an LLM, on the same support tickets."""
+import json
+import time
+from pathlib import Path
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+
+from llm import get_client, MODEL
+from tickets import CATEGORIES, TEST_TICKETS
+
+<span class="c"># ---------- 1) Classic ML: learn from labelled examples ----------</span>
+train = json.loads(Path("data/train_tickets.json").read_text(encoding="utf-8"))
+texts = [t["text"] for t in train]
+labels = [t["label"] for t in train]
+
+start = time.perf_counter()
+classifier = make_pipeline(TfidfVectorizer(ngram_range=(1, 2)), LogisticRegression(max_iter=1000))
+classifier.fit(texts, labels)
+train_secs = time.perf_counter() - start
+
+start = time.perf_counter()
+ml_preds = list(classifier.predict([text for text, _ in TEST_TICKETS]))
+ml_secs = time.perf_counter() - start
+
+<span class="c"># ---------- 2) LLM: no training, just an instruction ----------</span>
+client = get_client()
+instruction = f"Classify the support ticket into one of: {', '.join(CATEGORIES)}. Reply with the category only."
+llm_preds, tokens = [], 0
+start = time.perf_counter()
+for text, _ in TEST_TICKETS:
+    r = client.chat.completions.create(model=MODEL, messages=[
+        {"role": "system", "content": instruction},
+        {"role": "user", "content": text},
+    ])
+    llm_preds.append(r.choices[0].message.content.strip().lower())
+    tokens += r.usage.total_tokens
+llm_secs = time.perf_counter() - start
+
+<span class="c"># ---------- 3) Compare ----------</span>
+print(f"{'ticket':46} {'expected':13} {'classic ML':13} {'LLM':13}")
+for (text, expected), ml, llm in zip(TEST_TICKETS, ml_preds, llm_preds):
+    print(f"{text[:44]:46} {expected:13} {ml:13} {llm:13}")
+
+n = len(TEST_TICKETS)
+ml_ok = sum(p == e for p, (_, e) in zip(ml_preds, TEST_TICKETS))
+llm_ok = sum(p == e for p, (_, e) in zip(llm_preds, TEST_TICKETS))
+print(f"\nClassic ML: {ml_ok}/{n} correct · trained in {train_secs:.2f}s on {len(train)} examples · "
+      f"all predictions in {ml_secs * 1000:.1f} ms · $0 per call")
+print(f"LLM:        {llm_ok}/{n} correct · no training · {llm_secs:.1f}s for all · {tokens} tokens")</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab01_03_classic_vs_llm.py</code></pre>
+        <span class="out-label">Expected output (classic ML column is real output with the reference data; the LLM column varies)</span>
+<pre class="out"><code>ticket                                         expected      classic ML    LLM
+I paid for the AZ-305 batch but my card was    billing       billing       billing
+…
+Quiero cambiar mi curso al grupo del próximo   scheduling    account       scheduling
+I want a refund, the course starts in 3 days   billing       account       scheduling
+…
+Classic ML: 10/12 correct · trained in 0.02s on 42 examples · all predictions in 1.0 ms · $0 per call
+LLM:        11/12 correct · no training · 6.3s for all · 812 tokens</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read the results like an engineer</h4>
+        <p>Answer before opening: (1) Why did classic ML miss the Spanish ticket? (2) Why might the LLM miss the refund ticket? (3) TrainCrest gets 25,000 tickets a month. Which approach would you put in production, and why?</p>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>Classic ML only knows the words it was trained on, and the training data was English only. The LLM understood Spanish for free.</li>
+            <li>"Refund… course starts in 3 days" mentions dates, so it <em>sounds</em> like scheduling. TrainCrest's house rule says refunds are billing. The LLM can't know a house rule you didn't tell it; Module 03 fixes this with few-shot examples.</li>
+            <li>It depends, and that's the real answer. The LLM is more robust to wording and language with zero training; classic ML is thousands of times faster and free per call. A common production pattern: an LLM to label historical tickets, then a small classic model for high-volume routing, with the LLM as a fallback for low-confidence cases.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-3"> I've completed Drill 01.3</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Pick the right tool.</p></div></div>
+<div class="quiz">
+  <details><summary>1. TrainCrest wants to block sign-ups with an invalid email address. LLM or code?</summary><div><p><strong>Code.</strong> It's an exact rule with a known answer. An LLM would be slower, cost money and occasionally be wrong.</p></div></details>
+  <details><summary>2. Learners write free-text complaints in 12 languages and you have no labelled data. Classic ML or an LLM to start?</summary><div><p>An <strong>LLM</strong>: no training data needed and it handles many languages. Revisit with classic ML later if volume and cost justify it.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>The best GenAI developers are the ones who know when not to use GenAI.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m01-vsml"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/01/what-is-genai.html"><small>Previous</small><span>← 01 · What is Generative AI?</span></a><a class="next" href="../../modules/01/llms.html"><small>Next</small><span>01 · Large Language Models →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

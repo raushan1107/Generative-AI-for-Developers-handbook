@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Managing API Costs</title>
+<meta name="description" content="Module 02, topic 9: how LLM costs are calculated, a worked monthly projection for TrainCrest, the cost levers in order, and drills that build a cost meter and a usage report with your AI assistant.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m02-cost">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic active" data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part I</span><i>/</i><a href="../../modules/02/index.html">Module 02</a><i>/</i><span>Managing API costs</span></nav>
+  <span class="kind-pill">Learn · Do · Check</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 02 · Topic 9 of 9</span><h1>Managing API Costs</h1><p class="lead">Every token in and out is metered. One call costs a fraction of a cent; 25,000 learners chatting four turns each, with a bloated prompt on an expensive model, is a real monthly bill. You'll do the maths once, build a cost meter, and have your assistant turn the logs into a usage report.</p><div class="chips"><span class="chip">Cost formula</span><span class="chip">Monthly projection</span><span class="chip">Cost levers</span><span class="chip">Drills 02.14 · 02.15</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 25 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>A taxi meter that runs on words.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>LLM API cost per call is <strong>input tokens × input price + output tokens × output price</strong> (prices usually per million tokens), where output includes hidden reasoning tokens. Total cost scales with volume, prompt size, conversation length and model choice.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>It's a taxi meter that runs on tokens, with the meter running faster for output than input. The good news: most of the bill comes from a few things you control.</p>
+</div>
+
+<h3>Do the maths once (illustrative prices)</h3>
+<p>Say your model costs <strong>$0.40 per million input tokens</strong> and <strong>$1.60 per million output tokens</strong> (check your model's current price). TrainCrest has 25,000 conversations a month, averaging 4 turns: 100,000 turns.</p>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Scenario</th><th>Per turn</th><th>Monthly tokens</th><th>Monthly cost</th></tr></thead>
+    <tbody>
+      <tr><td>Lean prompt, short answers</td><td>1,500 in · 250 out</td><td>150M in · 25M out</td><td>$60 + $40 = <strong>$100</strong></td></tr>
+      <tr><td>Bloated 6,000-token prompt</td><td>7,500 in · 250 out</td><td>750M in · 25M out</td><td>$300 + $40 = <strong>$340</strong></td></tr>
+      <tr><td>Bloated prompt, model 10× the price</td><td>same</td><td>same</td><td><strong>$3,400</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Same feature, a 34× difference, from two decisions: prompt size and model choice.</p>
+
+<h3>The cost levers, easiest first</h3>
+<ol class="steps">
+  <li><strong>Measure.</strong> Log usage per call with a feature name. You can't optimise what you can't see.</li>
+  <li><strong>Choose the smallest model that passes your quality bar</strong> (Drill 01.11, Module 11).</li>
+  <li><strong>Trim the prompt</strong>: remove repeated instructions, send only relevant documents, trim history.</li>
+  <li><strong>Cap the output</strong> with <code>max_completion_tokens</code> and instructions like "under 80 words".</li>
+  <li><strong>Lower reasoning effort</strong> for simple tasks; hidden reasoning is billed as output.</li>
+  <li><strong>Cache and batch</strong> repeated and non-urgent work (Module 11).</li>
+  <li><strong>Set budgets and alerts</strong> so surprises arrive by email, not on the invoice.</li>
+</ol>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams running AI features at scale track cost per feature and per user, set quotas so one heavy user can't run up the bill, and use provider discounts: prompt caching for repeated prompt prefixes, batch APIs for overnight work, and committed capacity for steady high volume. Many discover that a long, repeated system prompt is their single biggest cost line.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Testing cost with a three-message demo and multiplying. Real conversations are longer, history is resent every turn, and a few power users send ten times the average. Project from real logged usage after a pilot.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Cost is <strong>input × input price + output × output price</strong>, times volume. My biggest levers are <strong>model choice, prompt size, history trimming and output caps</strong>, and I log usage per feature."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Meter it, then report on it.</p></div></div>
+
+<div class="drill" id="d02-14" data-title="A cost meter: tokens to dollars to a monthly projection" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.14</span><h3>A cost meter: tokens → dollars → monthly projection</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> measure how prompt size and brevity change the projected bill, and log each call to <code>usage.jsonl</code> for the next drill.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <p>Put your model's real prices in <code>.env</code> (<code>PRICE_IN_PER_M</code>, <code>PRICE_OUT_PER_M</code>), then:</p>
+        <pre class="code" data-file="lab02_14_cost_meter.py"><code>"""Drill 02.14: a cost meter. Usage -&gt; dollars -&gt; monthly projection. Also logs to usage.jsonl."""
+import json
+import os
+import time
+
+from llm import get_client, MODEL
+
+PRICE_IN = float(os.getenv("PRICE_IN_PER_M", "0.40"))     <span class="c"># USD per 1M input tokens</span>
+PRICE_OUT = float(os.getenv("PRICE_OUT_PER_M", "1.60"))   <span class="c"># USD per 1M output tokens</span>
+TURNS_PER_MONTH = 25_000 * 4                              <span class="c"># TrainCrest: conversations x average turns</span>
+
+client = get_client()
+
+
+def cost_usd(usage):
+    return (usage.prompt_tokens * PRICE_IN + usage.completion_tokens * PRICE_OUT) / 1_000_000
+
+
+LEAN = "You are Traincrest Assist, TrainCrest's learner-support assistant. Be brief and friendly."
+BLOATED = LEAN + " Always follow the TrainCrest tone guide and be warm and professional." * 120
+question = "My lab environment expired before I finished the final exercise. What can I do?"
+
+for label, system in [
+    ("bloated prompt", BLOATED),
+    ("lean prompt", LEAN),
+    ("lean + 'under 60 words'", LEAN + " Answer in under 60 words."),
+]:
+    r = client.chat.completions.create(
+        model=MODEL,
+        messages=[{"role": "system", "content": system}, {"role": "user", "content": question}])
+    u = r.usage
+    details = getattr(u, "completion_tokens_details", None)
+    reasoning = getattr(details, "reasoning_tokens", 0) or 0
+    per_turn = cost_usd(u)
+    print(f"{label:26} {u.prompt_tokens:5} in · {u.completion_tokens:4} out ({reasoning} reasoning) · "
+          f"${per_turn:.5f}/turn · ~${per_turn * TURNS_PER_MONTH:,.0f}/month")
+    with open("usage.jsonl", "a", encoding="utf-8") as log:
+        log.write(json.dumps({"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "label": label, "model": MODEL,
+                              "tokens_in": u.prompt_tokens, "tokens_out": u.completion_tokens,
+                              "cost_usd": round(per_turn, 6)}) + "\n")</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_14_cost_meter.py</code></pre>
+        <span class="out-label">Expected shape (numbers depend on model and price)</span>
+<pre class="out"><code>bloated prompt              1561 in ·  212 out (0 reasoning) · $0.00096/turn · ~$96/month
+lean prompt                   41 in ·  205 out (0 reasoning) · $0.00034/turn · ~$34/month
+lean + 'under 60 words'       47 in ·   78 out (0 reasoning) · $0.00014/turn · ~$14/month</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>The bloated system prompt is paid on <em>every turn</em>: boilerplate is the most expensive text you'll write.</li><li>Brevity cut output tokens, the pricier ones.</li><li><code>usage.jsonl</code> exists with three JSON lines. Run the script two more times to give the next drill more data.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-14"> I've completed Drill 02.14</label></div>
+</div>
+
+<div class="drill" id="d02-15" data-title="Build a usage report from your logs with your AI assistant" data-time="~15 min" data-steps="ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.15</span><h3>Build a usage report from your logs</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> turn raw usage logs into the table a product owner actually asks for: "what does each feature cost, per call and per month?"</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span>
+        <div class="prompt-box"><pre><code>#usage.jsonl has one JSON object per line with keys: ts, label, model, tokens_in, tokens_out,
+cost_usd. Write usage_report.py (standard library only) that reads it (path argument, default
+usage.jsonl), groups by label, and prints a table with: label, number of calls, average tokens
+in, average tokens out, average $ per call, and projected $ per month for --turns-per-month
+(default 100000). Sort by average cost per call, most expensive first. Skip blank lines.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> the exact input schema, the exact output columns, the default volume and the sort order. A real example file for context means the assistant doesn't have to guess the data shape.</div>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="usage_report.py"><code>"""Drill 02.15 (reference solution): summarise usage.jsonl by label and project a monthly bill."""
+import argparse
+import json
+from collections import defaultdict
+from pathlib import Path
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Summarise LLM usage from a JSON-lines log.")
+    parser.add_argument("log", nargs="?", default="usage.jsonl")
+    parser.add_argument("--turns-per-month", type=int, default=100_000)
+    args = parser.parse_args()
+
+    totals = defaultdict(lambda: {"calls": 0, "in": 0, "out": 0, "cost": 0.0})
+    for line in Path(args.log).read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        t = totals[row.get("label", "unlabelled")]
+        t["calls"] += 1
+        t["in"] += row.get("tokens_in", 0)
+        t["out"] += row.get("tokens_out", 0)
+        t["cost"] += row.get("cost_usd", 0.0)
+
+    print(f"{'label':26} {'calls':&gt;5} {'avg in':&gt;8} {'avg out':&gt;8} {'avg $/call':&gt;11} {'$/month':&gt;10}")
+    for label, t in sorted(totals.items(), key=lambda kv: -kv[1]["cost"] / kv[1]["calls"]):
+        avg_cost = t["cost"] / t["calls"]
+        print(f"{label:26} {t['calls']:&gt;5} {t['in'] // t['calls']:&gt;8} {t['out'] // t['calls']:&gt;8} "
+              f"{avg_cost:&gt;11.5f} {avg_cost * args.turns_per_month:&gt;10,.0f}")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>python usage_report.py</code></pre>
+        <span class="out-label">Expected shape</span>
+<pre class="out"><code>label                      calls   avg in  avg out  avg $/call    $/month
+bloated prompt                 3     1561      209     0.00096         96
+lean prompt                    3       41      201     0.00034         34
+lean + 'under 60 words'        3       47       80     0.00014         14</code></pre>
+        <ul class="verify-list"><li>Calls per label match the number of times you ran Drill 02.14.</li><li>The most expensive label is at the top.</li></ul>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Try this:</b> multiply by a four-times-longer real conversation (history is resent every turn) and a model with ten times the price. That's why Module 11 exists.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-15"> I've completed Drill 02.15</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Money.</p></div></div>
+<div class="quiz">
+  <details><summary>1. The projected bill doubled after a prompt change. Where do you look first?</summary><div><p>The usage logs: <strong>prompt_tokens per turn</strong>. A longer system prompt is paid on every turn, and history multiplies it.</p></div></details>
+  <details><summary>2. Name three cost levers that don't require changing the model.</summary><div><p>Any three of: trim the prompt, trim history, cap output, lower reasoning effort, cache repeated work, batch non-urgent work.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Log usage on every call. The bill is decided by prompt size, output length and model choice, all of which you control.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m02-cost"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/02/rate-limits.html"><small>Previous</small><span>← 02 · Rate limits and retries</span></a><a class="next" href="../../modules/02/build.html"><small>Next</small><span>02 · Build: Milestone 2 →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!--meta
+{"id": "m04-tools", "short": "Function Calling", "h1": "Function Calling: Letting the Model Ask Your Code", "description": "Module 04, topic 4: function (tool) calling end to end: tool definitions, tool_calls, running the function, tool messages with tool_call_id, tool_choice, parallel calls and strict tools, with drills for a first call by hand and steering tool choice.", "lead": "Function calling is how a model gets things it can't know (today's price, Diego's booking) and asks for things it can't do (create a ticket). The model never runs your code. It replies with a request: 'please call find_courses with these arguments'. Your code runs it and sends the result back. You'll do every step by hand once, so nothing about it is magic.", "chips": ["tools and tool_calls", "tool_call_id", "tool_choice · parallel calls", "Drills 04.5 · 04.6"], "time": "Learn 12 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The model asks; your code answers.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Function calling</strong> (also <strong>tool calling</strong>) lets you describe functions to the model as JSON Schemas (<code>tools=[...]</code>). When the model decides one is needed, it returns <code>tool_calls</code> (a function name plus JSON arguments) instead of, or before, a text answer. Your application executes the function and returns the result in a <code>tool</code> message, and the model continues with that information.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>You give the model a menu of things your app can do. It can't press the buttons itself; it can only say "I'd like this one, with these settings". You check the request, press the button, and tell it what happened.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A new call-centre agent on day one has no system access. When a customer asks about their order, the agent writes a request slip, "look up order status for order 4471", and passes it to a supervisor who has the access. The supervisor checks the customer is allowed to see it, looks it up, and hands back the answer. The agent then explains it to the customer in friendly words. The model is the agent; your code is the supervisor.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 330" role="img" aria-labelledby="fc-t fc-d">
+      <title id="fc-t">One function call, step by step</title>
+      <desc id="fc-d">Step 1: your app sends the messages and the tool definitions. Step 2: the model replies with finish_reason tool_calls and a call to find_courses with arguments level beginner and max price 300. Step 3: your app validates the arguments and runs the real function against the catalogue. Step 4: your app appends the assistant message with the tool call and a tool message with the result, linked by tool_call_id, and calls the model again. Step 5: the model writes the final answer using the result.</desc>
+      <rect x="20" y="20" width="200" height="290" rx="14" class="s-surface"/><text x="120" y="46" class="t-h mid">Your app</text>
+      <rect x="740" y="20" width="200" height="290" rx="14" class="s-violet"/><text x="840" y="46" class="t-h mid">Model</text>
+      <path d="M220 80 H734" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="478" y="72" class="t-b mid">1 · messages + tools=[find_courses, ...]</text>
+      <path d="M740 128 H226" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="478" y="120" class="t-s mid">2 · tool_calls: find_courses({"level": "beginner", "max_price_usd": 300})</text>
+      <rect x="250" y="146" width="460" height="54" rx="10" class="s-teal"/>
+      <text x="480" y="168" class="t-b mid">3 · your code validates the arguments, runs the function</text>
+      <text x="480" y="188" class="t-s mid">find_courses(...) → [{"id": "C101", "price_usd": 290}, ...]</text>
+      <path d="M220 236 H734" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="478" y="228" class="t-b mid">4 · + assistant(tool_calls) + tool(tool_call_id, result)</text>
+      <path d="M740 282 H226" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="478" y="274" class="t-b mid">5 · "Yes: Python Foundations (C101), $290, self-paced."</text>
+    </svg>
+  </div>
+  <figcaption><b>Two model calls, one function call in between.</b> The <code>tool_call_id</code> links each result to the request that asked for it.</figcaption>
+</figure>
+
+<h3>The parts you control</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Setting</th><th>What it does</th><th>Use it when</th></tr></thead>
+    <tbody>
+      <tr><td><code>tools=[...]</code></td><td>Names, descriptions and JSON Schemas of your functions</td><td>Always. Descriptions decide when the model picks a tool.</td></tr>
+      <tr><td><code>"strict": true</code></td><td>Arguments must match the schema exactly (same rules as structured outputs)</td><td>Default for production tools. <code>openai.pydantic_function_tool()</code> sets it.</td></tr>
+      <tr><td><code>tool_choice="auto"</code></td><td>The model decides: a tool, or a text answer</td><td>Normal chat (the default)</td></tr>
+      <tr><td><code>tool_choice="none"</code></td><td>Never call a tool this turn</td><td>Summing up, or after a tool limit is reached</td></tr>
+      <tr><td><code>tool_choice="required"</code> or a named function</td><td>Must call some tool, or that tool</td><td>Pipelines where a step must happen (e.g. always classify)</td></tr>
+      <tr><td><code>parallel_tool_calls</code></td><td>Allow several calls in one reply</td><td>Independent lookups. Azure doesn't support it together with strict tools, so set it to <code>False</code> when <code>strict</code> is on.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li><code>function.arguments</code> is a <strong>JSON string</strong>, not a dict. Parse and validate it (Pydantic does both).</li>
+  <li>When the model wants tools, <code>finish_reason</code> is <code>"tool_calls"</code> and <code>content</code> is often empty.</li>
+  <li>Send back the assistant message <em>with</em> its <code>tool_calls</code>, then one <code>tool</code> message per call, in the same order, with the matching <code>tool_call_id</code>. Missing one is a 400 error.</li>
+  <li>Tool definitions count as input tokens on <strong>every</strong> call. Ten verbose tools can cost more than the question.</li>
+  <li>Reasoning models: on Azure, Chat Completions with tools may require <code>reasoning_effort="none"</code>; Microsoft recommends the Responses API for tools plus reasoning. The drills' <code>llm_tools.TOOL_EXTRAS</code> handles this from <code>.env</code>.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Booking assistants call availability and pricing APIs, banking assistants call balance and transaction lookups, and IT help desks call "reset password" or "open incident" functions. Behind every one is the same loop you'll build here, plus a rule that the model only <em>proposes</em> and the backend <em>decides</em>.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"My functions are called by my code, with arguments I constructed."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Some of my functions are now requested by a model, with arguments it <strong>made up from a conversation</strong>. Each one is a public endpoint: validate everything, check permissions, and keep the menu short."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Thinking "the model called <code>delete_account</code>" means the model did something. It didn't: <strong>your code</strong> did, because your loop executed whatever was requested. Never expose a function you wouldn't want an anonymous user to trigger with arguments of their choosing.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"With function calling the model returns a <strong>structured request</strong>: function name and JSON arguments. The application validates and executes it, returns the result as a <code>tool</code> message linked by <code>tool_call_id</code>, and the model uses it in its answer. The model never executes code."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>One call by hand, then steer which tool gets picked.</p></div></div>
+
+<div class="drill" id="d04-5" data-title="Your first function call, step by step" data-time="~15 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 04.5</span><h3>Your first function call, step by step</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · Pydantic</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> perform the five steps of the diagram yourself, with nothing hidden in a framework.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The catalogue your app already has</h4>
+        <p>A plain Python function over <code>data/courses.json</code>. No AI in here: this is "your existing business logic".</p>
+        <pre class="code" data-file="catalogue.py" data-src="code/genai-labs/catalogue.py"></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Expose it as a tool and complete one round trip</h4>
+        <pre class="code" data-file="lab04_05_first_tool.py" data-src="code/genai-labs/lab04_05_first_tool.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab04_05_first_tool.py</code></pre>
+        <span class="out-label">Real run (small local model through Ollama); yours will differ in wording</span>
+<pre class="out"><code>1) finish_reason: tool_calls
+2) model asks: find_courses({"max_price_usd":300,"text":"python","level":"beginner"})
+   we ran it:  1 result(s)
+3) answer: Yes, there is a beginner Python course for under $300. It's called "Python Foundations"
+   and it's self-paced with a price of $290.</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list">
+          <li>The price in the answer ($290) came from <strong>your</strong> data via the tool, not from the model's memory.</li>
+          <li>Print <code>messages</code> before step 3: you'll see the assistant turn with <code>tool_calls</code> and the <code>tool</code> turn with the same <code>tool_call_id</code>.</li>
+          <li>Why validate with <code>FindCourses.model_validate_json</code> before calling? On my first local run the model sent an extra argument, <code>catalog_type</code>, and a plain <code>find_courses(**args)</code> crashed. Strict mode prevents that on Azure; validation protects you everywhere.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · the same round trip with Claude</div>
+      <div class="alt-body">
+        <p>Same idea, different message shapes: Claude returns <code>tool_use</code> content blocks, and you reply with a <code>tool_result</code> block in a user message.</p>
+<pre class="code" data-file="first_tool_claude.py"><code>import json
+import openai
+from claude_llm import client, CLAUDE_MODEL, FALLBACK, text_of
+from catalogue import find_courses
+from lab04_05_first_tool import FindCourses        <span class="c"># the __main__ guard stops its own run</span>
+
+tool = {"name": "find_courses", "description": FindCourses.__doc__,
+        "input_schema": openai.pydantic_function_tool(FindCourses)["function"]["parameters"]}
+messages = [{"role": "user", "content": "Is there a beginner Python course under $300?"}]
+msg = client.beta.messages.create(model=CLAUDE_MODEL, max_tokens=2000, tools=[tool],
+                                  messages=messages, **FALLBACK)
+if msg.stop_reason == "tool_use":
+    messages.append({"role": "assistant", "content": msg.content})
+    results = [{"type": "tool_result", "tool_use_id": b.id,
+                "content": json.dumps(find_courses(**FindCourses.model_validate(b.input).model_dump()))}
+               for b in msg.content if b.type == "tool_use"]
+    messages.append({"role": "user", "content": results})
+    msg = client.beta.messages.create(model=CLAUDE_MODEL, max_tokens=2000, tools=[tool],
+                                      messages=messages, **FALLBACK)
+print(text_of(msg))</code></pre>
+      </div>
+    </div>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-5"> I've completed Drill 04.5</label></div>
+</div>
+
+<div class="drill" id="d04-6" data-title="Steer the choice: tool_choice and parallel calls" data-time="~10 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 04.6</span><h3>Steer the choice: tool_choice and parallel calls</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> see how descriptions and <code>tool_choice</code> decide which tool runs, and when parallel calls help.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Four questions, three tools, several settings</h4>
+        <pre class="code" data-file="lab04_06_tool_choice.py" data-src="code/genai-labs/lab04_06_tool_choice.py"></pre>
+<pre class="term"><code><span class="ps">$ </span>python lab04_06_tool_choice.py
+<span class="ps">$ </span>python lab04_06_tool_choice.py none
+<span class="ps">$ </span>python lab04_06_tool_choice.py get_course
+<span class="ps">$ </span>python lab04_06_tool_choice.py auto --parallel</code></pre>
+        <span class="out-label">Typical result with an Azure deployment (yours will differ)</span>
+<pre class="out"><code>tool_choice=auto  parallel_tool_calls=False
+What does C104 cover?                      -> get_course({'course_id': 'C104'})
+Has my voucher for TC-10293 been issued?   -> get_voucher_status({'enrolment_id': 'TC-10293'})
+Compare C110 and C111 for me.              -> get_course({'course_id': 'C110'})
+Thanks, that's all!                        -> no tool (text answer)
+
+tool_choice=auto  parallel_tool_calls=True
+...
+Compare C110 and C111 for me.              -> get_course({'course_id': 'C110'}), get_course({'course_id': 'C111'})</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read your results</h4>
+        <ol>
+          <li>With <code>none</code>, what did the model say about the voucher? Is that safe?</li>
+          <li>With <code>get_course</code> forced, what happened to "Thanks, that's all!"?</li>
+          <li>Without parallel calls, how does the model still compare two courses?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>With no tools allowed, a good model says it can't check; a weaker one invents a status. That's why the system prompt must say "never guess a status" <em>and</em> your loop should keep tools available when facts are needed.</li>
+            <li>A forced tool is called even when it makes no sense (often with a made-up ID). Force a tool only for pipeline steps that must always happen.</li>
+            <li>It asks for C110, gets the result, then asks for C111 in the next round. That's why real assistants run a <strong>loop</strong> (next topic). Parallel calls save a round trip for independent lookups, but on Azure they can't be combined with strict tools.</li>
+          </ol>
+          <p class="small muted">Local servers may ignore <code>tool_choice</code>: the small Ollama model I tested still answered in text when <code>required</code> was set. Test the settings you rely on with the model you'll ship.</p>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-6"> I've completed Drill 04.6</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Function calling.</p></div></div>
+<div class="quiz">
+  <details><summary>1. The model returned a tool call. Has anything happened in your system yet?</summary><div><p>No. A tool call is a <strong>request</strong>. Nothing happens until your code chooses to execute it.</p></div></details>
+  <details><summary>2. You get a 400 error on the second call: "tool_call_id ... not found". Likely cause?</summary><div><p>You sent a <code>tool</code> message without first appending the <strong>assistant message that contains the matching tool_calls</strong>, or the IDs don't match.</p></div></details>
+  <details><summary>3. The model keeps picking <code>find_courses</code> when users ask about a specific course ID. What do you change first?</summary><div><p>The tool <strong>descriptions</strong>: say clearly when to use each one ("Full details of one course by its ID, like C104"). Descriptions are how the model chooses.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>The model writes the request; your code is the only thing that ever acts.</p></div>

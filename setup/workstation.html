@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workstation Setup</title>
+<meta name="description" content="Lab setup step 3: Python, VS Code, a virtual environment, an AI coding assistant (GitHub Copilot, Claude Code or OpenAI Codex), and the optional OpenAI, Claude and Ollama tracks.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-setup" data-page="setup-workstation">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link active" data-page-id="setup-workstation" href="../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Handbook</a><i>/</i><span>Lab setup</span><i>/</i><span>Workstation and AI assistant</span></nav>
+  <span class="kind-pill">Lab setup</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Lab setup · Step 3 of 5</span><h1>Your Workstation and AI Coding Assistant</h1><p class="lead">Two tools do the work in this course: Python for the code, and an AI coding assistant inside VS Code for the prompts. Set both up here, then warm up your assistant with a first, verified task.</p><div class="chips"><span class="chip">Python 3.11+</span><span class="chip">VS Code</span><span class="chip">GitHub Copilot</span><span class="chip">Claude Code</span><span class="chip">OpenAI Codex</span><span class="chip">Ollama</span></div><div class="flow"><em>≈ 10 min</em></div></header>
+<div class="content">
+
+<h2 id="python">Python and the lab folder</h2>
+<p>You need <strong>Python 3.11 or newer</strong> and <strong>VS Code</strong> with the Python extension. Create the drills folder and a virtual environment:</p>
+<span class="out-label">Windows (PowerShell)</span>
+<pre class="term"><code><span class="ps">PS&gt; </span>mkdir genai-labs; cd genai-labs
+<span class="ps">PS&gt; </span>python -m venv .venv
+<span class="ps">PS&gt; </span>.venv\Scripts\Activate.ps1</code></pre>
+<span class="out-label">macOS / Linux</span>
+<pre class="term"><code><span class="ps">$ </span>mkdir genai-labs &amp;&amp; cd genai-labs
+<span class="ps">$ </span>python3 -m venv .venv
+<span class="ps">$ </span>source .venv/bin/activate</code></pre>
+<p>Create <code>requirements.txt</code> and install it:</p>
+<pre class="code" data-file="requirements.txt"><code>openai
+anthropic
+python-dotenv
+tiktoken
+requests
+azure-identity
+scikit-learn
+pytest
+fastapi
+uvicorn</code></pre>
+<pre class="term"><code><span class="ps">$ </span>pip install -r requirements.txt</code></pre>
+<p>Then open the folder in VS Code: <code>code .</code></p>
+
+<h2 id="assistant">Your AI coding assistant</h2>
+<p>Pick <strong>one</strong>. Every Ask AI and Your prompt step works with all three. Follow the vendor's current install instructions; the essentials are below.</p>
+<div class="cards">
+  <div class="card"><span class="num">OPTION 1</span><h3>GitHub Copilot</h3><p>Install the GitHub Copilot extension and sign in with GitHub. Open the Chat view (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd> on Windows/Linux, <kbd>⌃</kbd>+<kbd>⌘</kbd>+<kbd>I</kbd> on macOS) and switch to <strong>Agent</strong> mode, so it can create and edit files and run commands with your approval. Add files to the context with <code>#</code>.</p></div>
+  <div class="card"><span class="num">OPTION 2</span><h3>Claude Code</h3><p>Install the Claude Code extension for VS Code, or run <code>claude</code> in the integrated terminal from your project folder. It reads your files, proposes edits and runs commands with your permission. Mention files with <code>@</code>.</p></div>
+  <div class="card"><span class="num">OPTION 3</span><h3>OpenAI Codex</h3><p>Install the Codex IDE extension, or use the <code>codex</code> CLI in the integrated terminal from your project folder. Sign in with your ChatGPT or OpenAI account. It can edit files and run commands in the workspace with your approval.</p></div>
+</div>
+<div class="callout note">
+  <div class="c-label">Tool names and modes change</div>
+  <p>All three tools ship new versions every few weeks, so menu names and shortcuts change. What matters is the same everywhere: the assistant must be able to <strong>see your folder</strong>, <strong>propose file edits</strong> and <strong>run commands with your approval</strong>.</p>
+</div>
+
+<div class="drill" id="d00-3" data-title="Warm up your AI assistant with a verified first task" data-time="~5 min" data-steps="ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 00.3</span><h3>Warm up: a first task you can verify</h3>
+    <div class="drill-meta"><span class="time">~5 min</span><span class="badge b-tool">Copilot · Claude Code · Codex</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> check that your assistant can see the folder and edit files, and build the habit of verifying.</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Send this prompt from the <code>genai-labs</code> folder</h4>
+        <div class="prompt-box"><pre><code>Create a .gitignore for this Python project. It must ignore: the .env file, the .venv folder,
+__pycache__ folders, *.log files and usage.jsonl. Then create an empty file named NOTES.md
+with the heading "# GenAI labs notes". Don't change any other files.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> a precise list of what to ignore (nothing left to guess), two small, checkable outputs, and an explicit boundary ("don't change any other files"), which matters with agent modes that can edit anything.</div>
+        <p><b>What you should get:</b> a proposal to create two files. Read it, then accept.</p>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>git init -q
+<span class="ps">$ </span>git check-ignore -v .env .venv usage.jsonl
+<span class="ps">$ </span>git status --short</code></pre>
+        <ul class="verify-list"><li><code>git check-ignore</code> prints a matching <code>.gitignore</code> rule for <code>.env</code>, <code>.venv</code> and <code>usage.jsonl</code>.</li><li><code>git status</code> shows <code>.gitignore</code> and <code>NOTES.md</code>, and never <code>.env</code> or <code>.venv/</code>.</li><li>Nothing else changed.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d00-3"> I've completed Drill 00.3</label></div>
+</div>
+
+<h2 id="open">Optional tracks: OpenAI, Claude, Ollama</h2>
+<div class="two-col">
+  <div>
+    <h4>OpenAI API</h4>
+    <p>Create a key at <code>platform.openai.com</code> and add a little credit. In <code>.env</code>: <code>LLM_PROVIDER=openai</code>, <code>OPENAI_API_KEY=…</code>, <code>OPENAI_MODEL=gpt-5.4-mini</code>. A ChatGPT subscription is not an API key; they're billed separately.</p>
+  </div>
+  <div>
+    <h4>Anthropic Claude API</h4>
+    <p>Create a key at <code>platform.claude.com</code> and add credit. In <code>.env</code>: <code>ANTHROPIC_API_KEY=…</code>. Claude uses its own SDK, so the Open alternative boxes use <code>claude_llm.py</code>. Claude models are also available inside Microsoft Foundry.</p>
+  </div>
+</div>
+<h4>Ollama: a free model on your laptop</h4>
+<p>Install from <code>ollama.com</code>, then pull a small model and test it:</p>
+<pre class="term"><code><span class="ps">$ </span>ollama pull llama3.2
+<span class="ps">$ </span>ollama run llama3.2 "Explain an API in one sentence."</code></pre>
+<p>Set <code>LLM_PROVIDER=ollama</code> to run the drills locally. Ollama exposes an OpenAI-compatible endpoint at <code>http://localhost:11434/v1</code>. Small local models are noticeably weaker, which is itself a lesson in Module 01.</p>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="setup-workstation"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../setup/azure-foundry.html"><small>Previous</small><span>← Azure: Foundry and a model</span></a><a class="next" href="../setup/helpers.html"><small>Next</small><span>Helpers and smoke test →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How This Handbook Works</title>
+<meta name="description" content="How the Generative AI for Developers handbook is organised: Learn, Do, Check pages, three practice tracks, step types, and the rules for working with AI coding assistants.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-guide" data-page="how">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link active" data-page-id="how" href="../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<div class="sb-module soon"><span class="sb-num">04</span>Structured Outputs and Function Calling<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">05</span>Embeddings and Semantic Search<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Handbook</a><i>/</i><span>Start here</span><i>/</i><span>How this handbook works</span></nav>
+  <span class="kind-pill">Guide</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Guide</span><h1>How This Handbook Works</h1><p class="lead">Five minutes here saves you an hour later. You'll learn how every page is laid out, how the three practice tracks fit together, what each kind of lab step means, and the few rules that keep AI-assisted coding honest.</p><div class="chips"><span class="chip">Learn · Do · Check</span><span class="chip">Drills · Build · Capstone</span><span class="chip">Copilot · Claude Code · Codex</span></div></header>
+<div class="content">
+
+<h2 id="pages">Every topic page: Learn, Do, Check</h2>
+<p>Each topic has its own short page, so you can open exactly what you need in class. Every topic page follows the same three steps, shown as numbered banners:</p>
+<div class="cards">
+  <div class="card"><span class="num">1 · LEARN</span><h3>The idea, made simple</h3><p>A precise definition, the same idea in plain words, an everyday analogy, a diagram, how real products use it, and the developer mindset shift.</p></div>
+  <div class="card"><span class="num">2 · DO</span><h3>Drills, straight away</h3><p>One or two hands-on drills that make the idea visible: run code, prompt your AI assistant, write a prompt, verify the result.</p></div>
+  <div class="card"><span class="num">3 · CHECK</span><h3>Prove you've got it</h3><p>Two or three quick questions with hidden answers, and a one-line takeaway to carry forward.</p></div>
+</div>
+<p>Each module also has an <strong>Overview</strong> page (mental map and page list), a <strong>Build</strong> page (the Traincrest Assist milestone) and a <strong>Recap</strong> page (checklist and self-check). Tick <em>Mark this page as done</em> at the bottom of a page and the sidebar shows a ✓, saved in your own browser.</p>
+
+<h2 id="tracks">Three practice tracks</h2>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 900 270" role="img" aria-labelledby="tr-t tr-d">
+      <title id="tr-t">How the three tracks fit together</title>
+      <desc id="tr-d">For every module, drills come first and teach individual skills in the genai-labs folder. Then the build milestone applies them to Traincrest Assist in its own folder. After Module 12, the capstone applies everything to a new problem with only a brief.</desc>
+      <text x="20" y="28" class="t-m t-accent">FOR EVERY MODULE</text>
+      <rect x="20" y="40" width="250" height="120" rx="12" class="s-teal"/>
+      <text x="40" y="68" class="t-b">1 · Drills</text>
+      <text x="40" y="90" class="t-s">one per topic, 10–20 min each</text>
+      <text x="40" y="110" class="t-s">folder: genai-labs/</text>
+      <text x="40" y="130" class="t-s">isolated, safe to break</text>
+      <rect x="320" y="40" width="270" height="120" rx="12" class="s-violet"/>
+      <text x="340" y="68" class="t-b">2 · Build milestone</text>
+      <text x="340" y="90" class="t-s">the module's skills applied to</text>
+      <text x="340" y="110" class="t-s">Traincrest Assist</text>
+      <text x="340" y="130" class="t-s">folder: traincrest-assist/</text>
+      <path d="M270 100 H314" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <path d="M590 100 Q620 100 620 130 V190 Q620 205 600 205 H60 Q40 205 40 190 V166" class="s-dash" marker-end="url(#ah)"/>
+      <text x="330" y="226" class="t-s mid">next module: new drills, next milestone, the same project keeps growing</text>
+      <rect x="660" y="40" width="220" height="120" rx="12" class="s-amber"/>
+      <text x="680" y="68" class="t-b">3 · Capstone (Part V)</text>
+      <text x="680" y="90" class="t-s">a different problem</text>
+      <text x="680" y="110" class="t-s">a brief, not instructions</text>
+      <text x="680" y="130" class="t-s">design, build, evaluate, demo</text>
+      <path d="M590 70 H654" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="622" y="60" class="t-s mid">after M12</text>
+    </svg>
+  </div>
+  <figcaption><b>Drills teach, the build applies, the capstone proves.</b> If you fall behind on the build, every milestone page has the complete reference code, so you can catch up and keep going.</figcaption>
+</figure>
+
+<h2 id="steps">The six step types</h2>
+<p>Labs deliberately mix how you work. Real developers paste code, prompt AI assistants, write their own prompts and verify everything. Each step in a drill is tagged:</p>
+<div class="legend">
+  <div><span class="badge b-run">Run</span><br>Copy the code, run it, read the output. Code blocks show the file name; use the Copy button.</div>
+  <div><span class="badge b-ask">Ask AI</span><br>Paste a prompt into your AI coding assistant. You'll see <em>why the prompt works</em>, <em>what you should get</em> and a reference solution if your assistant gets stuck.</div>
+  <div><span class="badge b-write">Your prompt</span><br>Write the prompt yourself from a template and a hint. Then open <em>Compare with my prompt</em> and see what you missed.</div>
+  <div><span class="badge b-verify">Verify</span><br>Run tests or commands, or tick a checklist. Never skip it: it's where you find out whether the AI's code actually works.</div>
+  <div><span class="badge b-nocode">No-code</span><br>Try it in the Foundry playground, ChatGPT or Claude.ai. Fast intuition before code.</div>
+  <div><span class="badge b-think">Think</span><br>A short design decision. Commit to an answer before opening the hidden one.</div>
+</div>
+
+<h2 id="ai-assistants">Working with AI coding assistants</h2>
+<p>You'll use an AI assistant inside VS Code throughout this course: <strong>GitHub Copilot</strong> (Chat, in agent mode), <strong>Claude Code</strong> (VS Code extension or terminal) or <strong>OpenAI Codex</strong> (IDE extension or terminal). Any one is enough; the prompts work in all three. Setup is in <a href="../setup/workstation.html">Workstation and AI assistant</a>.</p>
+<p>Using them is itself part of the curriculum. Every prompt you send an assistant is a small prompt-engineering exercise, which is exactly what Module 03 teaches.</p>
+
+<h3>The prompt template you'll see everywhere</h3>
+<div class="template-box" data-title="Coding-assistant prompt template"><pre><code>Goal:        what to build or change, in one sentence
+Context:     which files or folder, what already exists
+Constraints: language, libraries, style, things it must NOT do
+Done when:   how you will verify it (tests pass, command output, behaviour)</code></pre></div>
+
+<h3>Five rules for AI-assisted coding</h3>
+<ol class="steps">
+  <li><strong>Never paste secrets into a prompt.</strong> Keys stay in <code>.env</code>. If an assistant asks for your key, say no.</li>
+  <li><strong>Read the diff before you accept it.</strong> Agent modes can edit several files at once. Skim every change.</li>
+  <li><strong>Run the Verify step.</strong> Code that looks right is still a draft until the tests or checks pass.</li>
+  <li><strong>Iterate with evidence.</strong> If it fails, paste the exact error back: "pytest fails with … fix it without changing the tests".</li>
+  <li><strong>Use the reference solution as a last resort,</strong> and then compare: what did your assistant do differently, and why?</li>
+</ol>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams that get value from coding assistants treat them like a fast junior colleague: clear task, relevant files as context, explicit constraints and a definition of done. That's the same Context → Task → Constraints → Output structure you'll formalise in Module 03.</p>
+</div>
+
+<h2 id="folders">Your two folders</h2>
+<div class="two-col">
+  <div>
+    <h4><code>genai-labs/</code>: drills</h4>
+    <p>A flat scratch folder. One file per drill (<code>lab01_05_tokens.py</code>), plus the shared helpers <code>llm.py</code> and <code>claude_llm.py</code>. Created in <a href="../setup/helpers.html">Helpers and smoke test</a>.</p>
+  </div>
+  <div>
+    <h4><code>traincrest-assist/</code>: the build</h4>
+    <p>A real project with an <code>app/</code> package, a web UI, tests and data. It grows with every milestone. Created in <a href="../modules/01/build.html">Build: Milestone 1</a>.</p>
+  </div>
+</div>
+
+<h2 id="case">The case: TrainCrest and Traincrest Assist</h2>
+<div class="case">
+  <div class="case-head"><b>TrainCrest</b><span>· a technical training company (scenario, data and policies here are fictional)</span></div>
+  <div class="case-body">
+    <p>TrainCrest runs instructor-led and self-paced courses in cloud, AI, data and security for learners in many countries. Learner support handles about <strong>25,000 requests a month</strong> by email and chat, mostly in English but also in Spanish, Hindi, Arabic, Japanese and more. A 35-person team answers questions about schedules, payments, lab environments, exam vouchers and certificates. First responses take 11 hours on average.</p>
+    <p>Leadership wants <strong>Traincrest Assist</strong>: an AI assistant that answers policy questions correctly, checks enrolments and vouchers, finds the right course, raises tickets, and hands over to humans safely, at a predictable cost. Enrolment IDs look like <code>TC-10293</code>.</p>
+  </div>
+</div>
+
+<h2 id="pacing">Suggested pacing</h2>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Part</th><th>Modules</th><th>Drills (approx.)</th><th>Build milestones</th></tr></thead>
+    <tbody>
+      <tr><td>I · Foundations</td><td>01, 02, 03</td><td>41</td><td>1 → 3</td></tr>
+      <tr><td>II · Connect</td><td>04, 05</td><td>coming soon</td><td>4 → 5</td></tr>
+      <tr><td>III · Ground and act</td><td>06, 07</td><td>coming soon</td><td>6 → 7</td></tr>
+      <tr><td>IV · Build it right</td><td>08, 09, 10</td><td>coming soon</td><td>8 → 10</td></tr>
+      <tr><td>V · Ship it</td><td>11, 12 + capstone</td><td>coming soon</td><td>11 → 12</td></tr>
+    </tbody>
+  </table>
+</div>
+<p class="small muted">In an instructor-led class, the trainer picks the drills that matter most for the group; everything else is there for self-paced practice.</p>
+
+</div>
+<nav class="pager" aria-label="Page navigation"><a class="prev" href="../index.html"><small>Previous</small><span>← Home</span></a><a class="next" href="../setup/index.html"><small>Next</small><span>Choose your track →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

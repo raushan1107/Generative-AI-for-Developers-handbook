@@ -1,0 +1,53 @@
+<!--meta
+{"id": "setup-trouble", "short": "Troubleshooting and Cost", "h1": "Troubleshooting, Cost Guardrails and Clean-up", "description": "Lab setup step 5: fixes for the errors everyone hits once, cost guardrails such as budget alerts and TPM limits, and how to clean up.", "lead": "Keep this page open in a tab. It covers the errors everyone hits on the first day, how to make sure a runaway loop can't surprise you with a bill, and how to clean up at the end of the course.", "chips": ["401 · 404 · 400 · 429", "Budget alerts", "Clean-up"]}
+-->
+<h2 id="errors">The errors everyone hits once</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>You see</th><th>Usual cause</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><code>401</code> Unauthorized / invalid key</td><td>Wrong key, a key from another resource, or a stray space or quote in <code>.env</code></td><td>Copy the key again; no quotes, no spaces around <code>=</code>.</td></tr>
+      <tr><td><code>404</code> deployment or model not found</td><td><code>AZURE_OPENAI_DEPLOYMENT</code> isn't your deployment name, or the base URL is missing <code>/openai/v1/</code></td><td>Use the exact deployment name (<code>chat</code>) and check the URL ending.</td></tr>
+      <tr><td><code>400</code> Unsupported parameter: <code>temperature</code> / <code>max_tokens</code></td><td>Your deployment is a reasoning model, which rejects some sampling parameters</td><td>Expected in some drills, which explain it. Use <code>max_completion_tokens</code> instead of <code>max_tokens</code>.</td></tr>
+      <tr><td><code>429</code> Too Many Requests</td><td>Tokens-per-minute limit reached</td><td>Wait (the SDK retries), or raise the TPM on the deployment.</td></tr>
+      <tr><td>No quota when deploying</td><td>No capacity for that model in your subscription or region</td><td>Try another small model or another region.</td></tr>
+      <tr><td><code>KeyError: 'AZURE_OPENAI_BASE_URL'</code></td><td><code>.env</code> isn't in the folder you ran Python from</td><td><code>cd genai-labs</code> and run again.</td></tr>
+      <tr><td><code>ModuleNotFoundError</code></td><td>Wrong folder, or the virtual environment isn't active</td><td>Activate <code>.venv</code>; run from the folder that contains the file.</td></tr>
+      <tr><td>Connection refused <code>localhost:11434</code></td><td>Ollama isn't running</td><td>Start the Ollama app, or run <code>ollama serve</code>.</td></tr>
+      <tr><td>Your AI assistant edits the wrong files</td><td>Vague prompt or the wrong folder open</td><td>Open the right folder; name the files and add "don't change any other files".</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="drill" id="d00-5" data-title="Debug an error with your AI assistant, the right way" data-time="~5 min" data-steps="ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 00.5</span><h3>Debug with your assistant, the right way</h3>
+    <div class="drill-meta"><span class="time">~5 min</span><span class="badge b-tool">Copilot · Claude Code · Codex</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> practise giving an assistant evidence instead of "it doesn't work".</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><p>In <code>.env</code>, change <code>AZURE_OPENAI_DEPLOYMENT=chat</code> to <code>chatt</code>, then run <code>python lab00_hello.py</code>. Copy the full error.</p></li>
+      <li class="dstep ask"><span class="st">Ask AI</span>
+        <div class="prompt-box"><pre><code>Running `python lab00_hello.py` fails with the error below. Using #llm.py and #lab00_hello.py,
+explain the most likely cause in two sentences and tell me exactly what to change.
+Do not edit any files and do not print or ask for my API key.
+
+&lt;paste the full error here&gt;</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it gives the exact command, the exact error and the relevant files, asks for a diagnosis instead of an edit, and protects your secrets.</div>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><ul class="verify-list"><li>The assistant points at the deployment name (a 404 "deployment not found").</li><li>Put <code>chat</code> back; the smoke test passes again.</li></ul></li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d00-5"> I've completed Drill 00.5</label></div>
+</div>
+
+<h2 id="cost">Cost guardrails</h2>
+<ul>
+  <li><strong>Pay per token.</strong> Global Standard deployments cost nothing while idle. On a mini-class model, all of Part I usually costs a few dollars at most. Check your model's current price.</li>
+  <li><strong>Set a budget alert.</strong> In the Azure portal, search <strong>Cost Management</strong> › <strong>Budgets</strong> › <strong>Add</strong>, scope it to <code>rg-genai-labs</code>, and alert at, say, $20. It's free and catches mistakes.</li>
+  <li><strong>Cap throughput.</strong> The low tokens-per-minute limit on <code>chat</code> is your seatbelt against a runaway loop.</li>
+  <li><strong>Keep it for the whole course.</strong> Later modules add an embeddings deployment and more services to the same resource group.</li>
+</ul>
+
+<h2 id="cleanup">Clean-up at the end of the course</h2>
+<pre class="term"><code><span class="ps">$ </span>az group delete --name rg-genai-labs --yes --no-wait</code></pre>
+<p>Also revoke OpenAI or Anthropic keys you no longer need, and run <code>ollama rm llama3.2</code> to free disk space.</p>

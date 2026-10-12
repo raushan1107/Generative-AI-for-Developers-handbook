@@ -1,0 +1,137 @@
+<!--meta
+{"id": "m02-stream", "short": "Streaming Responses", "h1": "Streaming Responses", "description": "Module 02, topic 6: server-sent events, time to first token, streaming pitfalls, and drills that measure streaming vs waiting and show the raw SSE events.", "lead": "Without streaming, users stare at a spinner. With streaming, words appear as soon as the model produces them. Total time barely changes; what changes is how long people wait before seeing something. You'll measure both, then look at the raw events on the wire.", "chips": ["Server-sent events", "Time to first token", "Drills 02.8 · 02.9"], "time": "Learn 10 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Same kitchen, very different guests.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Streaming returns the response incrementally as it's generated, typically using <strong>server-sent events (SSE)</strong>: the server sends a series of small JSON chunks, each with the next piece of text (a delta), followed by an end marker.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>The model writes one token at a time anyway (Module 01). Streaming just sends each piece the moment it exists, instead of waiting for the whole answer. The user starts reading in under a second.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>At a buffet, food arrives dish by dish and you start eating. At a dinner where the kitchen waits until all eight courses are ready, you sit hungry for forty minutes. Same food, same kitchen time. Very different guests.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 240" role="img" aria-labelledby="st-t st-d">
+      <title id="st-t">Streaming versus waiting for the full response</title>
+      <desc id="st-d">Two eight-second timelines. Without streaming, the screen is blank for eight seconds and the full answer appears at the end. With streaming, the first words appear after about 0.6 seconds and text keeps arriving until eight seconds.</desc>
+      <path d="M120 196 H900" class="s-line" marker-end="url(#ah)"/>
+      <text x="120" y="218" class="t-s mid">0s</text><text x="315" y="218" class="t-s mid">2s</text><text x="510" y="218" class="t-s mid">4s</text><text x="705" y="218" class="t-s mid">6s</text><text x="880" y="218" class="t-s mid">8s</text>
+      <text x="20" y="64" class="t-b">Waiting</text>
+      <rect x="120" y="44" width="740" height="34" rx="6" class="s-surface2"/><text x="490" y="66" class="t-s mid">blank screen, spinner… is it broken?</text>
+      <rect x="860" y="44" width="40" height="34" rx="6" class="s-green"/><text x="880" y="96" class="t-s mid">all at once</text>
+      <text x="20" y="150" class="t-b">Streaming</text>
+      <rect x="120" y="130" width="58" height="34" rx="6" class="s-surface2"/>
+      <rect x="178" y="130" width="722" height="34" rx="6" class="s-green"/><text x="540" y="152" class="t-s mid">words keep appearing… the user is already reading</text>
+      <path d="M178 104 V124" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <text x="190" y="108" class="t-b t-accent">time to first token ≈ 0.6s</text>
+    </svg>
+  </div>
+  <figcaption><b>Same total time, different experience.</b> Time to first token (TTFT) is the latency users feel. Measure it separately from total time.</figcaption>
+</figure>
+
+<span class="out-label">What it looks like on the wire</span>
+<pre class="out"><code>data: {"choices":[{"delta":{"role":"assistant","content":""}}], …}
+data: {"choices":[{"delta":{"content":"It"}}], …}
+data: {"choices":[{"delta":{"content":" means"}}], …}
+…
+data: {"choices":[{"delta":{},"finish_reason":"stop"}], …}
+data: [DONE]</code></pre>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li>In the OpenAI SDK pass <code>stream=True</code> and read <code>chunk.choices[0].delta.content</code>.</li>
+  <li>Some chunks have <strong>no choices</strong> (Azure sends content-filter results this way; the final usage chunk is empty too). Always check before indexing.</li>
+  <li>Usage isn't in streamed chunks by default: ask with <code>stream_options={"include_usage": True}</code>; it arrives last.</li>
+  <li>You can't validate a whole JSON object until the stream ends. Stream text to humans; collect structured output before using it.</li>
+  <li>Proxies that buffer responses silently break streaming end-to-end. Test through the full path (Milestone 2 sets a header for this).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Every major chat product streams, and teams track TTFT as a headline metric alongside total latency. Voice assistants go further: they start speaking the first sentence while the rest is still being generated. Back-end jobs (summarising 10,000 tickets overnight) don't stream at all: nobody is watching, so they use batch processing instead (Module 11).</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Streaming uses <strong>server-sent events</strong> to send deltas as tokens are generated. It doesn't make generation faster; it cuts <strong>time to first token</strong>, which is what users perceive as speed."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Measure the difference, then look under the hood.</p></div></div>
+
+<div class="drill" id="d02-8" data-title="Streaming vs waiting: measure time to first token" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.8</span><h3>Streaming vs waiting: measure time to first token</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> measure the same answer with and without streaming, and handle chunks safely.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab02_08_streaming.py" data-src="code/genai-labs/lab02_08_streaming.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_08_streaming.py</code></pre>
+        <span class="out-label">Expected (end of run)</span>
+<pre class="out"><code>Without streaming: blank screen for 5.8s, then everything at once.
+
+Preparing for a cloud certification starts with the official skills outline…
+
+With streaming: first words after 0.7s, done after 5.6s, 212 chunks.
+Usage: 24 in / 231 out</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>TTFT is a fraction of total time.</li><li>Remove the <code>if not chunk.choices: continue</code> line and run again. On Azure you'll likely get an <code>IndexError</code>: that guard matters. Put it back.</li></ul>
+      </li>
+    </ol>
+    <div class="alt">
+      <div class="alt-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>Open alternative · streaming with Claude</div>
+      <div class="alt-body">
+<pre class="code" data-file="stream_claude.py"><code>import time
+from claude_llm import client, CLAUDE_MODEL, FALLBACK
+
+start, ttft = time.perf_counter(), None
+with client.beta.messages.stream(
+    model=CLAUDE_MODEL, max_tokens=4000,
+    messages=[{"role": "user", "content": "Write a 150-word guide to preparing for a cloud certification exam."}],
+    **FALLBACK,
+) as stream:
+    for text in stream.text_stream:
+        ttft = ttft or time.perf_counter() - start
+        print(text, end="", flush=True)
+    final = stream.get_final_message()
+print(f"\n\nTTFT {ttft:.1f}s · total {time.perf_counter() - start:.1f}s · {final.usage.output_tokens} tokens out")</code></pre>
+        <p>The SDK's <code>text_stream</code> hides the event plumbing; Claude's underlying events (<code>message_start</code>, <code>content_block_delta</code>, <code>message_stop</code>) differ from OpenAI's, but the idea is identical.</p>
+      </div>
+    </div>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-8"> I've completed Drill 02.8</label></div>
+</div>
+
+<div class="drill" id="d02-9" data-title="Look at the raw server-sent events" data-time="~10 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 02.9</span><h3>Look at the raw server-sent events</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · requests</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> see the SSE format you'll produce yourself in Milestone 2, where your backend streams to a browser.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab02_09_raw_sse.py" data-src="code/genai-labs/lab02_09_raw_sse.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_09_raw_sse.py</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Design question for Milestone 2</h4>
+        <p>Your FastAPI backend will receive these chunks from Azure and forward text to the browser. Should it forward Azure's raw events, or send its own simpler events? Why?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>Send <strong>your own</strong> events (for example <code>{"type": "delta", "text": …}</code> and a final <code>{"type": "done", …}</code>). The browser shouldn't depend on one provider's format, you can add your own fields (cost, prompt version), and you can switch providers without touching the front end. That's exactly what Milestone 2 does.</p></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-9"> I've completed Drill 02.9</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Streaming.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Does streaming reduce the cost or total time of a response?</summary><div><p>No. Same tokens, roughly the same total time. It reduces <strong>time to first token</strong>, the perceived wait.</p></div></details>
+  <details><summary>2. Your API returns JSON for a mobile app to parse. Should you stream it to the app token by token?</summary><div><p>Usually not: the app can't parse partial JSON. Collect the full response on the backend, <strong>validate it</strong>, then return it.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Stream to humans, buffer for machines, and always measure TTFT.</p></div>

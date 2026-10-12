@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Similarity Search</title>
+<meta name="description" content="Module 05, topic 5: how similarity search works end to end (embed the query, find the top k, return text and scores), choosing k, the fact that vector search always returns something, and a drill comparing keyword and semantic search on the course catalogue.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m05-search">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod"><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic active" data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<div class="sb-module soon"><span class="sb-num">06</span>Retrieval-Augmented Generation<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">07</span>Building AI Agents<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part II</span><i>/</i><a href="../../modules/05/index.html">Module 05</a><i>/</i><span>Similarity search</span></nav>
+  <span class="kind-pill">Learn · Do · Check · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 05 · Topic 5 of 8</span><h1>Similarity Search: Top-k by Meaning</h1><p class="lead">Similarity search is the query half of the pipeline: embed the question with the same model, find the k nearest vectors, and return their text. It's where users stop needing your vocabulary. It's also where a new failure appears: vector search never says 'no results'. You'll compare it with keyword search on queries real learners would type.</p><div class="chips"><span class="chip">Top-k retrieval</span><span class="chip">Choosing k</span><span class="chip">Always returns something</span><span class="chip">Drill 05.6</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 8 min · Do 15 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Ask in your words, find in theirs.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Similarity search</strong> (semantic search, vector search, k-nearest-neighbour search) retrieves the <strong>k</strong> stored items whose embeddings are most similar to the query's embedding, returning each item's text, metadata and similarity score.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Turn the question into a vector, then fetch the k closest documents. "Cheap intro to containers" lands next to "Docker Quick Start: build, run and share container images", even though the words barely overlap.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A knowledgeable shop assistant. You say "something to keep my coffee hot on the commute" and they hand you three insulated travel mugs, though you never said "insulated", "travel" or "mug". They match what you <em>mean</em> to what they <em>have</em>. They also never say "we have nothing"; ask for a lawnmower in a coffee shop and you'll still be shown the closest thing, which is your cue to add a threshold.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 220" role="img" aria-labelledby="ss-t ss-d">
+      <title id="ss-t">Similarity search step by step</title>
+      <desc id="ss-d">The query "cheap intro to containers" is embedded with the same model used for the index. The index compares the query vector with stored vectors and returns the top three: Docker Quick Start, Kubernetes for Developers and a third course, each with a score. The application shows them or sends them to a model.</desc>
+      <rect x="16" y="70" width="200" height="70" rx="12" class="s-surface"/><text x="116" y="100" class="t-b mid">"cheap intro to</text><text x="116" y="120" class="t-b mid">containers"</text>
+      <path d="M216 105 H254" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="260" y="70" width="170" height="70" rx="12" class="s-violet"/><text x="345" y="100" class="t-b mid">embed (same</text><text x="345" y="120" class="t-b mid">model as index)</text>
+      <path d="M430 105 H468" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="474" y="70" width="170" height="70" rx="12" class="s-blue"/><text x="559" y="100" class="t-b mid">top k = 3</text><text x="559" y="120" class="t-s mid">by cosine</text>
+      <path d="M644 105 H682" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="688" y="30" width="256" height="150" rx="12" class="s-green"/>
+      <text x="704" y="58" class="t-s">0.63  Docker Quick Start</text>
+      <text x="704" y="82" class="t-s">…     Kubernetes for Developers</text>
+      <text x="704" y="106" class="t-s">…     (third closest)</text>
+      <text x="704" y="146" class="t-s">text + metadata + score →</text>
+      <text x="704" y="164" class="t-s">show it, or send it to the model</text>
+    </svg>
+  </div>
+  <figcaption><b>Embed, rank, return.</b> The only expensive step is embedding the query: one small API call.</figcaption>
+</figure>
+
+<h3>Decisions you make</h3>
+<ul>
+  <li><strong>k (how many):</strong> a search page shows 5 to 10. RAG (Module 06) usually sends 3 to 8 chunks to the model: too few misses the answer, too many adds cost and noise.</li>
+  <li><strong>Threshold:</strong> vector search always returns k results, even for nonsense. Decide what "no good match" looks like for your model (calibrated on real queries), or combine with keywords (topic 8).</li>
+  <li><strong>What to embed:</strong> for courses, title plus description; for articles, chunks with their headings (topic 6). Whatever you embed is what can be found.</li>
+  <li><strong>Query side:</strong> questions are short and documents long; that asymmetry is normal. Some models want a query prefix (topic 3).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Shops, streaming services and job sites all run semantic search behind their search boxes now, usually blended with keyword search and business rules (in stock, in your region, popular). The "no results" page has become rare, which is good for users and dangerous for chatbots: a weak match passed to a model becomes a confident wrong answer.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"No matching rows means no results."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Vector search <strong>always</strong> returns its nearest k. Relevance is a score I have to interpret, so I set k deliberately, watch the scores, and handle 'nothing good' explicitly."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Passing the top results to a model without checking relevance. Ask TrainCrest's help sections about "Docker" and vector search returns <em>Ways to pay</em> as the best match (Drill 05.9 shows it). A chatbot would then answer a Docker question with payment details.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Similarity search embeds the query with the <strong>same model</strong> as the corpus and returns the <strong>top-k nearest</strong> items with scores. I tune k for the use case and handle low-relevance results, because vector search never returns an empty set."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Learners' words against your catalogue.</p></div></div>
+
+<div class="drill" id="d05-6" data-title="Keyword vs semantic search on the course catalogue" data-time="~15 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 05.6</span><h3>Keyword vs semantic search on the course catalogue</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · numpy</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> run five realistic learner requests through a basic keyword search and a semantic search, and see where each one wins.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab05_06_course_search.py"><code>"""Drill 05.6: keyword search vs semantic search over the course catalogue.
+The learner's words rarely match the words on your course pages."""
+import re
+
+import numpy as np
+
+from catalogue import COURSES
+from embed import embed
+
+STOP = set("a an and the to for of in on my me i i'm im want is it with how do can at be what".split())
+QUERIES = [
+    "I want my app to recognise objects in photos",
+    "cheap intro to containers",
+    "not a coder, want to use chat assistants better at work",
+    "get certified as a cloud admin",
+    "make answers come from our own documents",
+]
+
+
+def words(text):
+    return {w for w in re.findall(r"[a-z0-9-]+", text.lower()) if w not in STOP}
+
+
+def keyword_top(query):
+    """Count shared words between the query and each course: what a basic search box does."""
+    q = words(query)
+    scores = [len(q &amp; words(c["title"] + " " + c["description"])) for c in COURSES]
+    best = int(np.argmax(scores))
+    return (COURSES[best]["title"], scores[best]) if scores[best] else ("(no match)", 0)
+
+
+texts = [f"{c['title']}. {c['description']}" for c in COURSES]
+docs = embed(texts)
+docs /= np.linalg.norm(docs, axis=1, keepdims=True)
+qs = embed(QUERIES)
+qs /= np.linalg.norm(qs, axis=1, keepdims=True)
+
+for query, row in zip(QUERIES, qs @ docs.T):
+    title, overlap = keyword_top(query)
+    best = int(np.argmax(row))
+    print(f"\n{query}")
+    print(f"  keyword : {title}  ({overlap} shared words)")
+    print(f"  semantic: {COURSES[best]['title']}  (cosine {row[best]:.2f})")</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_06_course_search.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama)</span>
+<pre class="out"><code>I want my app to recognise objects in photos
+  keyword : Docker Quick Start  (1 shared words)
+  semantic: Computer Vision with Deep Learning  (cosine 0.63)
+
+cheap intro to containers
+  keyword : Kubernetes for Developers  (1 shared words)
+  semantic: Docker Quick Start  (cosine 0.63)
+
+not a coder, want to use chat assistants better at work
+  keyword : Prompt Engineering for Business Teams  (3 shared words)
+  semantic: Prompt Engineering for Business Teams  (cosine 0.70)
+
+get certified as a cloud admin
+  keyword : Machine Learning Essentials  (1 shared words)
+  semantic: AZ-104: Azure Administrator  (cosine 0.65)
+
+make answers come from our own documents
+  keyword : Building RAG Applications  (3 shared words)
+  semantic: Building RAG Applications  (cosine 0.63)</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read the misses</h4>
+        <ol>
+          <li>Why did keyword search pick Docker for "recognise objects in photos", and Machine Learning Essentials for "cloud admin"?</li>
+          <li>Two queries tied. What do those queries have in common?</li>
+          <li>Invent a query where you'd expect keyword search to beat semantic search.</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>One accidental shared word each time: "app" appears in the Docker description, and "as" (from "such as") in Machine Learning Essentials. AZ-900 shares "cloud" too, but with one word each, the first course in the list wins the tie. Keyword search counts words, not meaning.</li>
+            <li>The learner happened to use the catalogue's own words ("documents", "work", "teams"). When vocabularies match, both methods work.</li>
+            <li>Exact identifiers and rare terms: a course code like <code>C113</code> (if it were in the text), an error code like <code>LAB-503</code>, a product name. Drill 05.9 tests exactly this, with some surprises.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-6"> I've completed Drill 05.6</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Similarity search.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A learner asks Traincrest Assist about something TrainCrest doesn't offer. What does vector search return?</summary><div><p>Still the k nearest items, just with lower scores. The application must notice low relevance (threshold, keyword check, or the model being told to say "not covered") rather than present them as answers.</p></div></details>
+  <details><summary>2. Why embed a course's title and description together, rather than only the title?</summary><div><p>Titles are short and use internal names; descriptions contain the words and ideas learners use. What you embed is what can be found.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Embed the query with the same model, take the top k, and remember vector search never says "nothing found": that part is your job.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m05-search"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/05/vector-databases.html"><small>Previous</small><span>← 05 · Vector databases</span></a><a class="next" href="../../modules/05/chunking.html"><small>Next</small><span>05 · Chunking strategies →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

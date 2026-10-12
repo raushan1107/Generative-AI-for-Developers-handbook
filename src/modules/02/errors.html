@@ -1,0 +1,115 @@
+<!--meta
+{"id": "m02-errors", "short": "Error Handling", "h1": "Error Handling", "description": "Module 02, topic 7: client vs transient errors, SDK exception classes, soft failures in finish_reason, friendly error messages, and drills that trigger every error type and build a tested error mapper with your AI assistant.", "lead": "Some errors mean 'you did something wrong, fix it'; others mean 'not right now, try again'. Your code has to tell them apart, retry only the second kind, and always show users a calm message instead of a stack trace. You'll trigger every error on purpose, then build the tested mapper Milestone 2 relies on.", "chips": ["4xx vs 5xx", "SDK exceptions", "finish_reason", "Drills 02.10 · 02.11"], "time": "Learn 10 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Fix it, or try again later?</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>LLM API errors fall into <strong>client errors</strong> (4xx: bad request, authentication, permission, not found, content policy) that won't succeed if repeated unchanged, and <strong>transient errors</strong> (429 rate limits, 5xx server errors, timeouts, connection failures) that often succeed on retry. A successful response can also signal a soft failure through <code>finish_reason</code>.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Calling a helpline. "Wrong department" (404) or "you don't have the right form" (400): calling again won't help; you need to change something. "All our lines are busy, please call later" (429, 503): call again, but not every two seconds, or you'll keep the lines busy for everyone.</p>
+</div>
+
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Status</th><th>OpenAI SDK exception</th><th>Typical cause</th><th>Retry?</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td>400</td><td><code>BadRequestError</code></td><td>Unsupported parameter, context too long, prompt blocked by content filter</td><td>No</td><td>Fix the request; shorten input; safe message</td></tr>
+      <tr><td>401</td><td><code>AuthenticationError</code></td><td>Wrong or revoked key, expired token</td><td>No</td><td>Alert ops: configuration problem</td></tr>
+      <tr><td>403</td><td><code>PermissionDeniedError</code></td><td>Missing role, network rules</td><td>No</td><td>Check roles and firewall</td></tr>
+      <tr><td>404</td><td><code>NotFoundError</code></td><td>Wrong deployment name or URL</td><td>No</td><td>Fix configuration</td></tr>
+      <tr><td>timeout</td><td><code>APITimeoutError</code></td><td>Slow response, network trouble</td><td>Yes</td><td>Retry; longer timeout for long outputs</td></tr>
+      <tr><td>429</td><td><code>RateLimitError</code></td><td>Tokens or requests per minute exceeded</td><td>Yes, after a wait</td><td>Back off; honour <code>retry-after</code></td></tr>
+      <tr><td>500/503</td><td><code>InternalServerError</code></td><td>Provider problem or overload</td><td>Yes</td><td>Retry; fall back to another model or region (Module 12)</td></tr>
+      <tr><td>no response</td><td><code>APIConnectionError</code></td><td>DNS, network, endpoint down</td><td>Yes</td><td>Retry; check connectivity</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Mature AI products never show raw errors. They map failures to a calm message ("I'm having trouble right now, here's how to reach a human"), log the details with a request ID, alert on configuration errors, and fall back to a second model or region when the primary one is down. Status pages of the big providers show that outages and degradations do happen, so this isn't theoretical.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>One <code>except Exception</code> that retries everything. A wrong key gets retried forever; a too-long prompt gets retried until the user gives up. Retry only <strong>transient</strong> errors, and let configuration errors fail loudly in your logs.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I split errors into <strong>retryable</strong> (429, 5xx, timeouts, connection) and <strong>non-retryable</strong> (400, 401, 403, 404), and treat <code>finish_reason</code> length or content_filter as failures even with HTTP 200."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Break it on purpose, then build the mapper.</p></div></div>
+
+<div class="drill" id="d02-10" data-title="Break it on purpose: read every kind of error" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.10</span><h3>Break it on purpose: read every kind of error</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> trigger each class of failure, so you recognise the exception, status and message when they happen for real.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab02_10_errors.py" data-src="code/genai-labs/lab02_10_errors.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab02_10_errors.py</code></pre>
+        <span class="out-label">Expected (Azure; messages vary)</span>
+<pre class="out"><code>1. Wrong API key               AuthenticationError (HTTP 401): Access denied due to invalid subscription key…
+2. Wrong deployment name       NotFoundError (HTTP 404): The API deployment for this resource does not exist…
+3. Invalid parameter value     BadRequestError (HTTP 400): Invalid 'temperature': decimal above maximum value…
+4. Unreachable endpoint        APIConnectionError: Connection error.
+5. Impossible timeout          APITimeoutError: Request timed out.
+6. Truncated answer            HTTP 200, finish_reason='length'</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>Match each line to a row in the table above.</li><li>1–3 are <em>your</em> mistakes (don't retry); 4–5 are transient (retry might help).</li><li>6 is the sneaky one: HTTP 200, no exception, half an answer.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-10"> I've completed Drill 02.10</label></div>
+</div>
+
+<div class="drill" id="d02-11" data-title="Build a tested error-to-message mapper" data-time="~15 min" data-steps="ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 02.11</span><h3>Build a tested error-to-message mapper</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · pytest</span><span class="badge b-tool">no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> one function that turns any SDK exception into a decision (retry or not) and a kind message, with tests that need no network.</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span>
+        <div class="prompt-box"><pre><code>Create friendly_errors.py with describe_error(exc) -> (code, retryable, user_message) for
+exceptions from the openai Python SDK:
+- RateLimitError -> "rate_limited", retryable
+- APIConnectionError (this includes APITimeoutError) -> "unreachable", retryable
+- BadRequestError -> "bad_request", not retryable
+- AuthenticationError, PermissionDeniedError, NotFoundError -> "config", not retryable
+- any other APIStatusError -> "server", retryable only if status_code >= 500
+- anything else -> "unknown", not retryable
+User messages must be friendly, mention "Traincrest Assist" where it fits, and never contain
+technical details. Then write test_friendly_errors.py with pytest that constructs real SDK
+exceptions using httpx.Request/httpx.Response (no network calls) and checks every mapping.
+Run the tests.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it gives the exact mapping table (no room for creative interpretation), a known gotcha (timeouts are a subclass of connection errors, so order matters), and asks for tests that build <em>real</em> SDK exceptions offline, so the tests are fast and honest.</div>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="friendly_errors.py" data-src="code/genai-labs/friendly_errors.py"></pre>
+          <pre class="code" data-file="test_friendly_errors.py" data-src="code/genai-labs/test_friendly_errors.py"></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_friendly_errors.py</code></pre>
+        <span class="out-label">Expected</span>
+<pre class="out"><code>.........                                                                [100%]
+9 passed in 0.31s</code></pre>
+        <ul class="verify-list"><li>All tests pass without any network call.</li><li>No user message contains words like "deployment", "401" or "Traceback".</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-11"> I've completed Drill 02.11</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Errors.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Which should be retried automatically: 400, 401, 404, 429, 503, a timeout?</summary><div><p><strong>429, 503 and the timeout</strong>, with backoff. Not 400, 401 or 404: they need a change to the request or configuration.</p></div></details>
+  <details><summary>2. Why must user-facing messages never include the raw error?</summary><div><p>Raw errors <strong>leak internals</strong> (resource and deployment names, sometimes request details) and scare users. Log the details; show a calm message.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Retry what's transient, fix what's configuration, and keep every message human.</p></div>

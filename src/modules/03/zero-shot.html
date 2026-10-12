@@ -1,0 +1,113 @@
+<!--meta
+{"id": "m03-zero", "short": "Zero-Shot Prompting", "h1": "Zero-Shot Prompting", "description": "Module 03, topic 4: zero-shot prompting as the default starting point, where it struggles, and drills that generate and verify a test set with your AI assistant and measure a zero-shot baseline.", "lead": "Zero-shot means instructions only, no examples. Modern models are good enough that it works for most common tasks, so it's always your first try. But 'works' needs a number: you'll have your AI assistant generate a test set, verify it, and measure a zero-shot baseline you'll try to beat on the next page.", "chips": ["Instructions only", "Baselines", "Synthetic test data", "Drills 03.4 · 03.5"], "time": "Learn 8 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Always try the simplest prompt first, and measure it.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Zero-shot prompting asks the model to perform a task from instructions alone, without worked examples, relying on what it learned in pre-training and instruction tuning.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Describe the task and let the model do it, with no demonstrations. Try this first; add examples only when it isn't consistent enough.</p>
+</div>
+
+<pre class="code" data-file="zero-shot prompt"><code>Classify the TrainCrest learner-support ticket into exactly one category: scheduling, billing,
+exam_voucher, certificate, lab_access, account, other. Reply with the category only, in lowercase.
+
+Ticket: "I was charged twice for the AZ-305 course."</code></pre>
+
+<div class="www">
+  <div><b>What</b>Instructions only, no examples.</div>
+  <div><b>Why</b>Shortest, cheapest prompt; easiest to maintain.</div>
+  <div><b>When</b>Common tasks with obvious categories and formats. Your default first attempt.</div>
+</div>
+
+<div class="callout note">
+  <div class="c-label">Where zero-shot struggles</div>
+  <p>Company-specific conventions ("is a refund request <em>billing</em> or <em>scheduling</em>?"), unusual formats, slang and mixed languages, and borderline cases. In all of these the model has to guess <em>your</em> convention. Examples fix that (next topic).</p>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Before any prompt work, good teams assemble a <strong>test set</strong>: real (anonymised) or synthetic inputs with the expected answers. They measure the simple zero-shot prompt first to get a <strong>baseline</strong>, then every change is a measured improvement or it's reverted. Generating synthetic test data with an LLM is now standard practice, with human review of the labels.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I start <strong>zero-shot</strong> to get a baseline on a labelled test set, then add examples or structure only if the numbers say it's needed."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Generate a test set, verify it, then measure the baseline.</p></div></div>
+
+<div class="drill" id="d03-4" data-title="Generate a labelled test set with AI, then verify it" data-time="~15 min" data-steps="write,verify">
+  <div class="drill-head"><span class="drill-id">Drill 03.4</span><h3>Generate a labelled test set with AI, then verify it</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · no API cost</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> 28 realistic, labelled, multilingual tickets in <code>data/eval_tickets.json</code>, checked by code before you trust them.</p>
+    <ol class="dsteps">
+      <li class="dstep write"><span class="st">Your prompt</span>
+        <div class="template-box"><pre><code>Goal:        data/eval_tickets.json with … labelled learner-support tickets
+Context:     labels and house rules are in #tickets.py; company is …
+Constraints: exact JSON shape …; … per label; languages …; include tricky cases for the
+             house rules; must NOT copy or paraphrase TEST_TICKETS
+Done when:   python check_dataset.py prints OK</code></pre></div>
+        <p class="hint"><b>Hint:</b> ask for 4 per label (28 total), a few in Spanish, French or German, and at least two tickets that test each house rule (refunds that mention dates; requests for more lab time). Mention that a checker script will validate it.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div>
+          <div class="prompt-box"><pre><code>Create data/eval_tickets.json: a JSON array of exactly 28 synthetic learner-support tickets for
+TrainCrest, a global technical training company. Each item is {"text": ..., "label": ...} with
+exactly those keys. Use the 7 labels in CATEGORIES from #tickets.py, exactly 4 per label.
+Make them realistic and varied (5-25 words), with 2-3 tickets in Spanish, French or German.
+Include tricky cases for the house rules in tickets.py: refund requests that mention dates
+(label: billing) and requests for more lab time (label: lab_access). Do not copy or paraphrase
+anything in TEST_TICKETS. A checker script will validate the file.</code></pre></div>
+          <p>Reference file if needed: <a href="../../code/genai-labs/data/eval_tickets.json">data/eval_tickets.json</a>.</p>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Check the data with code, then with your eyes</h4>
+        <pre class="code" data-file="check_dataset.py" data-src="code/genai-labs/check_dataset.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python check_dataset.py</code></pre>
+        <span class="out-label">Real output with the reference file</span>
+<pre class="out"><code>28 rows · labels: scheduling=4, billing=4, exam_voucher=4, certificate=4, lab_access=4, account=4, other=4
+rows with non-ASCII text (other languages, accents): 2
+OK: the dataset passes all checks</code></pre>
+        <ul class="verify-list"><li>The checker prints OK (fix and regenerate until it does: paste its complaints back to your assistant).</li><li>Read every label yourself. Code checks the shape; only a human can check the meaning.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-4"> I've completed Drill 03.4</label></div>
+</div>
+
+<div class="drill" id="d03-5" data-title="Measure the zero-shot baseline" data-time="~10 min" data-steps="run,verify">
+  <div class="drill-head"><span class="drill-id">Drill 03.5</span><h3>Measure the zero-shot baseline</h3>
+    <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> a number to beat: zero-shot accuracy on the 12 fixed tickets and on your 28-ticket set.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span>
+        <pre class="code" data-file="lab03_05_triage.py" data-src="code/genai-labs/lab03_05_triage.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab03_05_triage.py --mode zero
+<span class="ps">$ </span>python lab03_05_triage.py --mode zero --data data/eval_tickets.json</code></pre>
+        <span class="out-label">Typical result (yours will vary)</span>
+<pre class="out"><code>===== ZERO-SHOT =====
+ ✓ billing       (expected billing     ) I paid for the AZ-305 batch but my card was ch
+ …
+ ✗ scheduling    (expected lab_access  ) My lab ran out yesterday, can I get one more w
+ ✗ scheduling    (expected billing     ) I want a refund, the course starts in 3 days a
+Accuracy 10/12 (83%) · off-list labels: 0 · avg input tokens: 71
+Most common mistakes: lab_access -&gt; scheduling x1, billing -&gt; scheduling x1</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <ul class="verify-list"><li>Write down both accuracies: they're your baseline.</li><li>Look at the mistakes: are they random, or exactly the house rules? (Usually the rules.)</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-5"> I've completed Drill 03.5</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Baselines.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why measure a zero-shot baseline before improving the prompt?</summary><div><p>Without a number you can't tell whether a change <strong>helped, hurt or did nothing</strong>, and you'd keep extra prompt (and cost) that adds no value.</p></div></details>
+  <details><summary>2. Your AI-generated test set passes the checker. Is it trustworthy?</summary><div><p>Only partly. The checker verifies <strong>shape</strong> (keys, labels, counts, leaks). A human must still review whether the <strong>labels are correct</strong>.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Zero-shot first, measured. Its mistakes tell you exactly what to teach next.</p></div>

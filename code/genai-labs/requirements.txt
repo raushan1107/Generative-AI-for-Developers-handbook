@@ -1,0 +1,10 @@
+openai
+anthropic
+python-dotenv
+tiktoken
+requests
+azure-identity
+scikit-learn
+pytest
+fastapi
+uvicorn

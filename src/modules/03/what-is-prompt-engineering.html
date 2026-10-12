@@ -1,0 +1,89 @@
+<!--meta
+{"id": "m03-what", "short": "What Is Prompt Engineering?", "h1": "What Is Prompt Engineering?", "description": "Module 03, topic 1: prompt engineering as specifying and testing, everything the model reads is the prompt, and a drill comparing a vague and a specified prompt to your AI coding assistant.", "lead": "Prompt engineering is half writing and half testing: specify the task so clearly that the model can't misunderstand it, then check over many inputs that it really doesn't. You'll feel the difference first on your own AI coding assistant, with a vague request and a specified one.", "chips": ["Specify + test", "The whole request is the prompt", "Drill 03.1"], "time": "Learn 8 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Half writing, half testing.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>Prompt engineering is the practice of designing, testing and refining the inputs given to a language model (instructions, context, examples and output specifications) so that it reliably produces outputs that meet a defined requirement.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Write instructions so clear that the model can't misunderstand them, then check, over many inputs, that it really doesn't.</p>
+</div>
+
+<h3>Everything the model reads is the prompt</h3>
+<p>Beginners think the prompt is the user's question. For a developer, the prompt is the <em>entire request</em>, and you control most of it.</p>
+<div class="terms">
+  <div class="term"><b>System message</b><span>Your standing instructions: role, rules, tone, output format. Written once, versioned.</span></div>
+  <div class="term"><b>Examples</b><span>Sample inputs and ideal outputs that show the pattern (few-shot).</span></div>
+  <div class="term"><b>Context / data</b><span>Policies, documents, records: facts the model should use (RAG, Module 06).</span></div>
+  <div class="term"><b>User message</b><span>The input for this request: the only part you don't write, and the only part you shouldn't trust.</span></div>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>The system prompts behind well-known AI products are long, carefully structured documents: role, capabilities, rules, formatting, safety behaviour, often thousands of words, maintained by teams and changed through review. Some companies have published theirs. Nobody gets there by tweaking a sentence until a demo works; they get there by specifying and testing.</p>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Judging a prompt by one run. Models sample, so one great answer proves very little. Run on <strong>several inputs, several times</strong>, and count: how often valid, how often correct, how long. That habit alone puts you ahead of most teams.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Prompt engineering is <strong>specifying</strong> the task (context, task, constraints, examples, output format) and <strong>testing</strong> it across a set of inputs. I treat prompts like code: versioned, reviewed and regression-tested."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Prompt your coding assistant two ways and compare what you get.</p></div></div>
+
+<div class="drill" id="d03-1" data-title="Vague vs specified: prompt your coding assistant two ways" data-time="~20 min" data-steps="ask,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 03.1</span><h3>Vague vs specified: prompt your coding assistant two ways</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-tool">Copilot · Claude Code · Codex</span><span class="badge b-tool">pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> feel, on a tool you use every day, how much a specified prompt changes the result, and that it's the same skill you'll use on the model inside your app.</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Prompt A: the vague version</h4>
+        <p>In a new folder <code>prompt-test-a</code>, send:</p>
+        <div class="prompt-box" data-title="Prompt A · vague"><pre><code>write an email validation function</code></pre></div>
+        <p>Note what you got: which language, what rules, any tests, how it reports failures.</p>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Prompt B: the specified version</h4>
+        <p>In a new folder <code>prompt-test-b</code>, send:</p>
+        <div class="prompt-box" data-title="Prompt B · specified"><pre><code>Context: TrainCrest's sign-up form needs a simple, explainable email check (not full RFC 5322).
+Task: write validate_email(address: str) -> tuple[bool, str] in validate_email.py, returning
+(is_valid, reason).
+Rules, in this order: strip surrounding whitespace; empty -> "empty"; longer than 254 chars ->
+"too long"; contains a space -> "contains spaces"; not exactly one "@" -> "must contain exactly
+one @"; nothing before "@" -> "missing name before @"; domain without a dot, starting or ending
+with a dot, or containing ".." -> "invalid domain"; otherwise (True, "ok").
+Constraints: standard library only, no regex, type hints, a docstring listing the rules.
+Output: also write test_validate_email.py with pytest covering 3 valid addresses and every
+invalid reason. Run the tests and show me the result.</code></pre></div>
+        <div class="why"><b>Why prompt B works:</b> context (why and for whom), the exact signature and return shape, every rule in order, constraints, and an output that includes its own verification. That's the prompt design framework applied to a coding assistant.</div>
+        <details class="solution"><summary>Reference result for prompt B</summary><div>
+          <pre class="code" data-file="validate_email.py" data-src="code/genai-labs/validate_email.py"></pre>
+          <pre class="code" data-file="test_validate_email.py" data-src="code/genai-labs/test_validate_email.py"></pre>
+        </div></details>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>cd prompt-test-b
+<span class="ps">$ </span>pytest -q</code></pre>
+        <ul class="verify-list"><li>Prompt B's tests pass (12 cases in the reference).</li><li>Try Prompt B's tests against Prompt A's function. Most of them fail: not because A is "wrong", but because nobody told it what "right" meant.</li></ul>
+      </li>
+      <li class="dstep think"><span class="st">Think</span>
+        <p>Which of the five framework blocks (context, task, constraints, examples, output format) did prompt A leave entirely to the assistant's imagination?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>All five. It had no context (why, for whom), a vague task (no signature or return shape), no constraints (language, libraries, rules), no examples and no output format (tests? explanation?). Prompt B filled every one.</p></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d03-1"> I've completed Drill 03.1</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Two questions.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Which part of a request is the only one you shouldn't trust, and why?</summary><div><p>The <strong>user message</strong>: anyone can write anything in it, including instructions that try to override yours (topic 10).</p></div></details>
+  <details><summary>2. A prompt gave a perfect answer in your demo. Is it ready?</summary><div><p>Not yet. One run proves little; test it on <strong>many inputs, several times</strong>, and count the results.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Whether you're prompting the model in your app or the assistant in your editor, the skill is the same: specify, then verify.</p></div>

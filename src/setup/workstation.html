@@ -1,0 +1,70 @@
+<!--meta
+{"id": "setup-workstation", "short": "Workstation Setup", "h1": "Your Workstation and AI Coding Assistant", "description": "Lab setup step 3: Python, VS Code, a virtual environment, an AI coding assistant (GitHub Copilot, Claude Code or OpenAI Codex), and the optional OpenAI, Claude and Ollama tracks.", "lead": "Two tools do the work in this course: Python for the code, and an AI coding assistant inside VS Code for the prompts. Set both up here, then warm up your assistant with a first, verified task.", "chips": ["Python 3.11+", "VS Code", "GitHub Copilot", "Claude Code", "OpenAI Codex", "Ollama"], "time": "≈ 10 min"}
+-->
+<h2 id="python">Python and the lab folder</h2>
+<p>You need <strong>Python 3.11 or newer</strong> and <strong>VS Code</strong> with the Python extension. Create the drills folder and a virtual environment:</p>
+<span class="out-label">Windows (PowerShell)</span>
+<pre class="term"><code><span class="ps">PS&gt; </span>mkdir genai-labs; cd genai-labs
+<span class="ps">PS&gt; </span>python -m venv .venv
+<span class="ps">PS&gt; </span>.venv\Scripts\Activate.ps1</code></pre>
+<span class="out-label">macOS / Linux</span>
+<pre class="term"><code><span class="ps">$ </span>mkdir genai-labs &amp;&amp; cd genai-labs
+<span class="ps">$ </span>python3 -m venv .venv
+<span class="ps">$ </span>source .venv/bin/activate</code></pre>
+<p>Create <code>requirements.txt</code> and install it:</p>
+<pre class="code" data-file="requirements.txt" data-src="code/genai-labs/requirements.txt"></pre>
+<pre class="term"><code><span class="ps">$ </span>pip install -r requirements.txt</code></pre>
+<p>Then open the folder in VS Code: <code>code .</code></p>
+
+<h2 id="assistant">Your AI coding assistant</h2>
+<p>Pick <strong>one</strong>. Every Ask AI and Your prompt step works with all three. Follow the vendor's current install instructions; the essentials are below.</p>
+<div class="cards">
+  <div class="card"><span class="num">OPTION 1</span><h3>GitHub Copilot</h3><p>Install the GitHub Copilot extension and sign in with GitHub. Open the Chat view (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd> on Windows/Linux, <kbd>⌃</kbd>+<kbd>⌘</kbd>+<kbd>I</kbd> on macOS) and switch to <strong>Agent</strong> mode, so it can create and edit files and run commands with your approval. Add files to the context with <code>#</code>.</p></div>
+  <div class="card"><span class="num">OPTION 2</span><h3>Claude Code</h3><p>Install the Claude Code extension for VS Code, or run <code>claude</code> in the integrated terminal from your project folder. It reads your files, proposes edits and runs commands with your permission. Mention files with <code>@</code>.</p></div>
+  <div class="card"><span class="num">OPTION 3</span><h3>OpenAI Codex</h3><p>Install the Codex IDE extension, or use the <code>codex</code> CLI in the integrated terminal from your project folder. Sign in with your ChatGPT or OpenAI account. It can edit files and run commands in the workspace with your approval.</p></div>
+</div>
+<div class="callout note">
+  <div class="c-label">Tool names and modes change</div>
+  <p>All three tools ship new versions every few weeks, so menu names and shortcuts change. What matters is the same everywhere: the assistant must be able to <strong>see your folder</strong>, <strong>propose file edits</strong> and <strong>run commands with your approval</strong>.</p>
+</div>
+
+<div class="drill" id="d00-3" data-title="Warm up your AI assistant with a verified first task" data-time="~5 min" data-steps="ask,verify">
+  <div class="drill-head"><span class="drill-id">Drill 00.3</span><h3>Warm up: a first task you can verify</h3>
+    <div class="drill-meta"><span class="time">~5 min</span><span class="badge b-tool">Copilot · Claude Code · Codex</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> check that your assistant can see the folder and edit files, and build the habit of verifying.</p>
+    <ol class="dsteps">
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Send this prompt from the <code>genai-labs</code> folder</h4>
+        <div class="prompt-box"><pre><code>Create a .gitignore for this Python project. It must ignore: the .env file, the .venv folder,
+__pycache__ folders, *.log files and usage.jsonl. Then create an empty file named NOTES.md
+with the heading "# GenAI labs notes". Don't change any other files.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> a precise list of what to ignore (nothing left to guess), two small, checkable outputs, and an explicit boundary ("don't change any other files"), which matters with agent modes that can edit anything.</div>
+        <p><b>What you should get:</b> a proposal to create two files. Read it, then accept.</p>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span>
+        <pre class="term"><code><span class="ps">$ </span>git init -q
+<span class="ps">$ </span>git check-ignore -v .env .venv usage.jsonl
+<span class="ps">$ </span>git status --short</code></pre>
+        <ul class="verify-list"><li><code>git check-ignore</code> prints a matching <code>.gitignore</code> rule for <code>.env</code>, <code>.venv</code> and <code>usage.jsonl</code>.</li><li><code>git status</code> shows <code>.gitignore</code> and <code>NOTES.md</code>, and never <code>.env</code> or <code>.venv/</code>.</li><li>Nothing else changed.</li></ul>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d00-3"> I've completed Drill 00.3</label></div>
+</div>
+
+<h2 id="open">Optional tracks: OpenAI, Claude, Ollama</h2>
+<div class="two-col">
+  <div>
+    <h4>OpenAI API</h4>
+    <p>Create a key at <code>platform.openai.com</code> and add a little credit. In <code>.env</code>: <code>LLM_PROVIDER=openai</code>, <code>OPENAI_API_KEY=…</code>, <code>OPENAI_MODEL=gpt-5.4-mini</code>. A ChatGPT subscription is not an API key; they're billed separately.</p>
+  </div>
+  <div>
+    <h4>Anthropic Claude API</h4>
+    <p>Create a key at <code>platform.claude.com</code> and add credit. In <code>.env</code>: <code>ANTHROPIC_API_KEY=…</code>. Claude uses its own SDK, so the Open alternative boxes use <code>claude_llm.py</code>. Claude models are also available inside Microsoft Foundry.</p>
+  </div>
+</div>
+<h4>Ollama: a free model on your laptop</h4>
+<p>Install from <code>ollama.com</code>, then pull a small model and test it:</p>
+<pre class="term"><code><span class="ps">$ </span>ollama pull llama3.2
+<span class="ps">$ </span>ollama run llama3.2 "Explain an API in one sentence."</code></pre>
+<p>Set <code>LLM_PROVIDER=ollama</code> to run the drills locally. Ollama exposes an OpenAI-compatible endpoint at <code>http://localhost:11434/v1</code>. Small local models are noticeably weaker, which is itself a lesson in Module 01.</p>
