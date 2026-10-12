@@ -24,7 +24,19 @@
     </tbody>
   </table>
 </div>
-<p>Before each exercise: open your <code>oss-genai-labs</code> folder in VS Code, open the terminal, and make sure the virtual environment is active (the prompt starts with <code>(.venv)</code>). If not, run <code>.venv\Scripts\Activate.ps1</code> (Windows) or <code>source .venv/bin/activate</code> (macOS/Linux).</p>
+
+<h2 id="before">Before you start: check your project folder</h2>
+<p>Every program in this lab imports its settings from two files in your <code>oss-genai-labs</code> folder. If you did Lab 0 they're already there; check them anyway, because a missing or wrong <code>.env</code> is the most common reason a lab program fails.</p>
+<ol>
+  <li>Open the <code>oss-genai-labs</code> folder in VS Code and activate the virtual environment: <code>.venv\Scripts\Activate.ps1</code> (Windows) or <code>source .venv/bin/activate</code> (macOS/Linux). The prompt starts with <code>(.venv)</code>.</li>
+  <li>Make sure Ollama is running (open <code>http://localhost:11434</code>: it says <em>Ollama is running</em>).</li>
+  <li>Check that <code>.env</code> exists (with the leading dot) and contains the lines below. The default is a <strong>free local model with Ollama</strong>; there is no key to get: <code>LLM_API_KEY=ollama</code> is a placeholder.
+    <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env" data-src="code/oss-labs/.env.example"></pre></div></details></li>
+  <li>Check that <code>client.py</code> exists. Every program imports <code>get_client</code> and the model names from it:
+    <details class="solution"><summary>client.py</summary><div><pre class="code" data-file="client.py" data-src="code/oss-labs/client.py"></pre></div></details></li>
+  <li>Run <code>python lab0_check.py</code>. Every line should say <code>[ OK ]</code>.</li>
+</ol>
+<div class="callout note"><div class="c-label">Missing files, or starting fresh?</div><p>Download <a href="../code/oss-labs-complete.zip"><code>oss-labs-complete.zip</code></a>: it has <code>client.py</code>, <code>.env.example</code>, <code>requirements.txt</code>, the data folder and the code of every lab released so far. Unzip it, copy <code>.env.example</code> to <code>.env</code>, create the virtual environment and run <code>pip install -r requirements.txt</code> (Lab 0, Exercise 3).</p></div>
 
 <h2 id="ex1">Exercise 1 · Your first prompt from code</h2>
 <p>Module 01's hands-on exercise: an application that sends a prompt to an LLM and displays the generated response.</p>

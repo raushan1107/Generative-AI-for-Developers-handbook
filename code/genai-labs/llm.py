@@ -7,7 +7,7 @@ from openai import OpenAI
 
 load_dotenv()  # reads .env from the current folder
 
-PROVIDER = os.getenv("LLM_PROVIDER", "azure").lower()
+PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()   # default: a free local model (Ollama)
 
 
 def get_client() -> OpenAI:

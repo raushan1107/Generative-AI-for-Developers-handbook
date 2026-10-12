@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PROVIDER = os.getenv("LLM_PROVIDER", "azure").lower()
+PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()   # default: a free local model (Ollama)
 
 # On Azure this is the DEPLOYMENT name; elsewhere it's the model name.
 MODEL = {

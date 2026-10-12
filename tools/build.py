@@ -407,6 +407,68 @@ def page_html(page, meta, content):
 META_RE = re.compile(r"\A\s*<!--meta\s*(\{.*?\})\s*-->", re.S)
 
 
+LABS_DIR = ROOT / "code" / "genai-labs"
+IMPORT_RE = re.compile(r"^\s*(?:from\s+(\w+)\s+import|import\s+(\w+))", re.M)
+
+
+def local_imports(path, seen=None):
+    """genai-labs helper modules a script needs, followed recursively (llm.py, tickets.py, ...)."""
+    seen = set() if seen is None else seen
+    for a, b in IMPORT_RE.findall(path.read_text(encoding="utf-8")):
+        name = a or b
+        helper = LABS_DIR / f"{name}.py"
+        if helper.exists() and helper.name not in seen:
+            seen.add(helper.name)
+            local_imports(helper, seen)
+    return seen
+
+
+def prereq_box(page, content):
+    """A 'Before you run this code' box at the start of the Do phase of every drill and build page:
+    the folder, the default .env (free local Ollama), llm.py, the helpers this page's code imports,
+    and a download that has them all. Pages stand alone, whatever order learners read them in."""
+    here = page["path"]
+    if page["kind"] == "build" and page.get("module"):
+        num = page["module"]["num"]
+        if 'data-src="code/traincrest-assist/' not in content:
+            return content
+        box = f"""<div class="callout note prereq">
+  <div class="c-label">Before you run this code</div>
+  <p>Milestones are built in your <code>traincrest-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
+  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="{rel(here, f"code/traincrest-assist-m{int(num) - 1:02d}.zip")}">traincrest-assist-m{int(num) - 1:02d}.zip</a>{"" if num == "01" else ""}, or the finished one, <a href="{rel(here, f"code/traincrest-assist-m{num}.zip")}">traincrest-assist-m{num}.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
+  <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env" data-src="code/traincrest-assist/m{num}/.env.example"></pre></div></details>
+</div>"""
+        if num == "01":
+            box = box.replace(f'Download the complete project as it should be at the <em>start</em> of this milestone, <a href="{rel(here, "code/traincrest-assist-m00.zip")}">traincrest-assist-m00.zip</a>, or the finished one,', "Download the finished project,")
+    else:
+        srcs = [LABS_DIR.parent.parent / s for s in re.findall(r'data-src="(code/genai-labs/[^"]+\.py)"', content)]
+        if '<div class="phase do"' not in content or (not srcs and "python lab" not in content):
+            return content
+        shown = {s.name for s in srcs}
+        needed = set()
+        for s in srcs:
+            if s.exists():
+                local_imports(s, needed)
+        needed.discard("llm.py")
+        extra = sorted(needed - shown)
+        listed = ", ".join(f"<code>{h}</code>" for h in extra)
+        uses = ((f"<p>This page's code also imports {listed}: it's in the starter kit, and comes from an earlier drill.</p>"
+                 if len(extra) == 1 else
+                 f"<p>This page's code also imports {listed}: they're in the starter kit, and come from earlier drills.</p>")
+                if extra else "")
+        box = f"""<div class="callout note prereq">
+  <div class="c-label">Before you run this code</div>
+  <p>Run every drill from your <code>genai-labs</code> folder with its virtual environment active. Two files must be there: <code>.env</code> (settings) and <code>llm.py</code> (the shared helper every drill imports). By default they use a <strong>free local model with Ollama</strong>: install Ollama, then <code>ollama pull llama3.2</code>; no key is needed. To use Azure OpenAI or OpenAI instead, change <code>LLM_PROVIDER</code> in <code>.env</code>.</p>
+  {uses}<p><strong>Easiest:</strong> download the <a href="{rel(here, "code/genai-labs-kit.zip")}">genai-labs starter kit</a> (every helper, data file and drill script), unzip it, copy <code>.env.example</code> to <code>.env</code>, and run <code>pip install -r requirements.txt</code>. Full walkthrough: <a href="{rel(here, "setup/helpers.html")}">Helpers and smoke test</a>.</p>
+  <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env" data-src="code/genai-labs/.env.example"></pre></div></details>
+  <details class="solution"><summary>llm.py</summary><div><pre class="code" data-file="llm.py" data-src="code/genai-labs/llm.py"></pre></div></details>
+</div>"""
+    m = re.search(r'<div class="phase do" id="(?:do|build)">.*?</div></div>\n', content, re.S)
+    if not m:
+        return content
+    return content[:m.end()] + "\n" + box + "\n" + content[m.end():]
+
+
 DRAFT_MODULES = {m["num"] for s in NAV["sections"] for m in s.get("modules", []) if m.get("draft") or m.get("soon")}
 
 
@@ -467,7 +529,7 @@ def main():
     draft_paths = {p["path"] for p in DRAFT}
     for page_id, content in fragments.items():
         page = BY_ID[page_id]
-        content = inline_code(content)
+        content = inline_code(prereq_box(page, content))
         content = content.replace("<!--DRILL_INDEX-->", drill_index_html(drills, page["path"]))
         content = re.sub(r"<!--MODULE_PAGES:(\d\d)-->",
                          lambda mm: module_pages_html(mm.group(1), drills, page["path"]), content)

@@ -196,6 +196,71 @@
   </table>
 </div>
 
+<h2 id="before">Before you start: check your project folder</h2>
+<p>Every program in this lab imports its settings from two files in your <code>oss-genai-labs</code> folder. If you did Lab 0 they're already there; check them anyway, because a missing or wrong <code>.env</code> is the most common reason a lab program fails.</p>
+<ol>
+  <li>Open the <code>oss-genai-labs</code> folder in VS Code and activate the virtual environment: <code>.venv\Scripts\Activate.ps1</code> (Windows) or <code>source .venv/bin/activate</code> (macOS/Linux). The prompt starts with <code>(.venv)</code>.</li>
+  <li>Make sure Ollama is running (open <code>http://localhost:11434</code>: it says <em>Ollama is running</em>).</li>
+  <li>Check that <code>.env</code> exists (with the leading dot) and contains the lines below. The default is a <strong>free local model with Ollama</strong>; there is no key to get: <code>LLM_API_KEY=ollama</code> is a placeholder.
+    <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env"><code><span class="c"># Copy this file to .env (same folder). Never share or commit .env.</span>
+
+<span class="c"># ---- Option A (default): Ollama on this computer -------------------------------</span>
+<span class="c"># No account and no key. Ollama doesn't check the key; "ollama" is just a placeholder</span>
+<span class="c"># because the OpenAI library requires some value.</span>
+LLM_BASE_URL=http://localhost:11434/v1
+LLM_API_KEY=ollama
+CHAT_MODEL=llama3.2
+<span class="c"># Tool calling and agents (Lab 2 exercise 2, Lab 3) work much better with a 7B model, if you have 16 GB of RAM:</span>
+<span class="c">#   ollama pull qwen2.5:7b   and then set   AGENT_MODEL=qwen2.5:7b</span>
+AGENT_MODEL=
+
+<span class="c"># Embeddings (Labs 2 and 3) always come from Ollama.</span>
+EMBED_BASE_URL=http://localhost:11434/v1
+EMBED_MODEL=nomic-embed-text
+
+<span class="c"># ---- Option B: hosted open models with a free key (only if Option A is too slow) ----</span>
+<span class="c"># Replace the three LLM lines above with ONE of these, and paste your own key.</span>
+<span class="c"># Groq (console.groq.com &gt; API Keys):</span>
+<span class="c">#   LLM_BASE_URL=https://api.groq.com/openai/v1</span>
+<span class="c">#   LLM_API_KEY=gsk_your_key_here</span>
+<span class="c">#   CHAT_MODEL=llama-3.1-8b-instant</span>
+<span class="c"># OpenRouter (openrouter.ai &gt; Keys); pick a model whose id ends in ":free" on openrouter.ai/models:</span>
+<span class="c">#   LLM_BASE_URL=https://openrouter.ai/api/v1</span>
+<span class="c">#   LLM_API_KEY=sk-or-your_key_here</span>
+<span class="c">#   CHAT_MODEL=&lt;model id ending in :free&gt;</span></code></pre></div></details></li>
+  <li>Check that <code>client.py</code> exists. Every program imports <code>get_client</code> and the model names from it:
+    <details class="solution"><summary>client.py</summary><div><pre class="code" data-file="client.py"><code>"""Shared helper for every open-source lab: OpenAI-compatible clients for open models.
+
+Option A (default): Ollama on your own computer. Free, private, no key. Ollama ignores the API key,
+but the OpenAI library insists on one, so .env holds the placeholder "ollama".
+Option B: a hosted provider of open models, with a free key, if your computer is too slow.
+Change LLM_BASE_URL, LLM_API_KEY and CHAT_MODEL in .env; nothing else changes.
+Embeddings always come from Ollama in these labs (EMBED_BASE_URL)."""
+import os
+
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()  <span class="c"># reads .env from the current folder</span>
+
+BASE_URL = os.getenv("LLM_BASE_URL", "http://localhost:11434/v1")
+API_KEY = os.getenv("LLM_API_KEY", "ollama")
+CHAT_MODEL = os.getenv("CHAT_MODEL", "llama3.2")
+AGENT_MODEL = os.getenv("AGENT_MODEL") or CHAT_MODEL        <span class="c"># for tool calling and agents (Labs 2 and 3)</span>
+EMBED_BASE_URL = os.getenv("EMBED_BASE_URL", "http://localhost:11434/v1")
+EMBED_MODEL = os.getenv("EMBED_MODEL", "nomic-embed-text")
+
+
+def get_client() -&gt; OpenAI:
+    return OpenAI(base_url=BASE_URL, api_key=API_KEY)
+
+
+def get_embed_client() -&gt; OpenAI:
+    return OpenAI(base_url=EMBED_BASE_URL, api_key="ollama")</code></pre></div></details></li>
+  <li>Run <code>python lab0_check.py</code>. Every line should say <code>[ OK ]</code>.</li>
+</ol>
+<div class="callout note"><div class="c-label">Missing files, or starting fresh?</div><p>Download <a href="../code/oss-labs-complete.zip"><code>oss-labs-complete.zip</code></a>: it has <code>client.py</code>, <code>.env.example</code>, <code>requirements.txt</code>, the data folder and the code of every lab released so far. Unzip it, copy <code>.env.example</code> to <code>.env</code>, create the virtual environment and run <code>pip install -r requirements.txt</code> (Lab 0, Exercise 3).</p></div>
+
 <h2 id="ex1">Exercise 1 · A company knowledge assistant (RAG)</h2>
 <p>Module 06's hands-on project: a company knowledge assistant that answers questions from internal documents.</p>
 

@@ -131,29 +131,31 @@
   <div class="c-label">In plain words</div>
   <p>Your code never contains a key. Keys and settings live in <code>.env</code>, which stays on your machine (your <code>.gitignore</code> from Drill 00.3 keeps it out of Git), and <code>python-dotenv</code> loads it when a script starts.</p>
 </div>
-<p>Copy this as <code>.env</code> in <code>genai-labs</code> and fill in your values:</p>
-<pre class="code" data-file=".env"><code><span class="c"># Copy this file to .env and fill in your values. Never commit .env.</span>
+<p>Copy this as <code>.env</code> in <code>genai-labs</code>. As it is, it uses the <strong>free local model with Ollama</strong>, so there is nothing to fill in. To use Azure OpenAI or OpenAI, set <code>LLM_PROVIDER</code> and fill in that provider's lines. If you'd rather not create the files by hand, download the <a href="../code/genai-labs-kit.zip">genai-labs starter kit</a>: it has <code>.env.example</code>, <code>llm.py</code>, every helper, data file and drill script.</p>
+<pre class="code" data-file=".env"><code><span class="c"># Copy this file to .env in your genai-labs folder. Never commit .env.</span>
+<span class="c"># The default is a FREE local model with Ollama: no account and no key needed.</span>
+<span class="c"># Install Ollama, then run once:   ollama pull llama3.2      (and for Module 05+:  ollama pull nomic-embed-text)</span>
 
-<span class="c"># Which provider llm.py uses: azure | openai | ollama</span>
-LLM_PROVIDER=azure
+<span class="c"># Which provider llm.py uses: ollama (default) | azure | openai</span>
+LLM_PROVIDER=ollama
 
-<span class="c"># --- Azure OpenAI in Microsoft Foundry (main track) ---</span>
+<span class="c"># --- Ollama, local and free (default) ---</span>
+OLLAMA_MODEL=llama3.2
+
+<span class="c"># --- Azure OpenAI in Microsoft Foundry (optional: set LLM_PROVIDER=azure) ---</span>
 <span class="c"># Your endpoint + "openai/v1/" at the end</span>
 AZURE_OPENAI_BASE_URL=https://&lt;resource-name&gt;.openai.azure.com/openai/v1/
 AZURE_OPENAI_API_KEY=&lt;paste key from the Foundry portal&gt;
 AZURE_OPENAI_DEPLOYMENT=chat
 
-<span class="c"># --- OpenAI (optional) ---</span>
+<span class="c"># --- OpenAI (optional: set LLM_PROVIDER=openai) ---</span>
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5.4-mini
-
-<span class="c"># --- Ollama, local and free (optional) ---</span>
-OLLAMA_MODEL=llama3.2
 
 <span class="c"># --- Anthropic Claude (optional, used in "Open alternative" boxes) ---</span>
 ANTHROPIC_API_KEY=
 
-<span class="c"># --- Cost meter (USD per 1M tokens; check your model's price list) ---</span>
+<span class="c"># --- Cost meter (USD per 1M tokens; local models cost $0, so these matter only for paid providers) ---</span>
 PRICE_IN_PER_M=0.40
 PRICE_OUT_PER_M=1.60
 
@@ -176,7 +178,7 @@ from openai import OpenAI
 
 load_dotenv()  <span class="c"># reads .env from the current folder</span>
 
-PROVIDER = os.getenv("LLM_PROVIDER", "azure").lower()
+PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()   <span class="c"># default: a free local model (Ollama)</span>
 
 
 def get_client() -&gt; OpenAI:
@@ -245,8 +247,8 @@ print(f"[{PROVIDER} · {MODEL}]")
 print(response.choices[0].message.content)
 print("tokens:", response.usage.prompt_tokens, "in /", response.usage.completion_tokens, "out")</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab00_hello.py</code></pre>
-        <span class="out-label">Expected output (your words will differ)</span>
-<pre class="out"><code>[azure · chat]
+        <span class="out-label">Expected output with the default local model (your words will differ; on Azure the first line is <code>[azure · chat]</code>)</span>
+<pre class="out"><code>[ollama · llama3.2]
 Welcome aboard! You're about to turn "what if" into working code, one prompt at a time.
 tokens: 21 in / 19 out</code></pre>
       </li>

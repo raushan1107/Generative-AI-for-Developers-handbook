@@ -212,3 +212,12 @@ Content is built ahead; each training day is switched on separately with `"draft
 | Day 3 | modules `06`, `07` and item `oss-3` (Lab 3) |
 
 On live pages the build switches off, rather than deletes, everything that points at draft content: links and cards become greyed "coming soon" (class `is-soon`), course-map boxes tagged `data-module="NN"` turn grey, and roadmap badges `<span class="badge b-run" data-module="NN">Available</span>` become "Coming soon". Draft labs list their code in `"code_files"`, so `stage_site.py` leaves that code out of the site and out of `oss-labs-complete.zip`. Going live is: edit `nav.json`, `python tools/build.py`, commit, push.
+
+---
+
+## 10. Defaults and self-contained pages (2026-10-12)
+
+- **Default provider is local Ollama** everywhere: `genai-labs/llm.py`, every milestone's `app/config.py` default `LLM_PROVIDER` to `ollama`, and every `.env.example` starts with `LLM_PROVIDER=ollama` / `OLLAMA_MODEL=llama3.2`. Azure, OpenAI and Claude are optional one-line switches. Setup pages present Ollama as the default track.
+- **"Before you run this code" box**: `build.py` (`prereq_box`) inserts it after the Do banner of every drill page and the Build banner of every build page. It shows `.env` and `llm.py` (or the milestone `.env`), lists the genai-labs helpers that page's inlined scripts import (found by following imports), and links the downloads. Never hand-write these boxes.
+- **Downloads built by `stage_site.py`** (a static site can't serve folders): `code/genai-labs-kit.zip` (helpers, data and drill scripts of live modules), `code/traincrest-assist-mNN.zip` per live milestone, `code/oss-labs-data.zip`, `code/oss-labs-complete.zip` (code of live labs only). They exist only in `_site`, so locally these links 404.
+- Open-source labs 1–3 start with "Before you start" (folder, venv, Ollama running, `.env`, `client.py`, `lab0_check.py`).

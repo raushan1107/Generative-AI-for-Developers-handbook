@@ -12,6 +12,12 @@ from tests.fakes import FakeClient, text, tool
 REFUND_Q = "How much refund if I cancel 7 to 13 days before the start date?"
 
 
+@pytest.fixture(autouse=True)
+def no_floor(monkeypatch):
+    """The fake embeddings aren't calibrated; tests set the relevance floor themselves when they need one."""
+    monkeypatch.setattr(rag, "RAG_MIN_SCORE", 0.0)
+
+
 @pytest.fixture(scope="module")
 def search():
     client = FakeClient()

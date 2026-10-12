@@ -6,7 +6,7 @@
   <div class="c-label">In plain words</div>
   <p>Your code never contains a key. Keys and settings live in <code>.env</code>, which stays on your machine (your <code>.gitignore</code> from Drill 00.3 keeps it out of Git), and <code>python-dotenv</code> loads it when a script starts.</p>
 </div>
-<p>Copy this as <code>.env</code> in <code>genai-labs</code> and fill in your values:</p>
+<p>Copy this as <code>.env</code> in <code>genai-labs</code>. As it is, it uses the <strong>free local model with Ollama</strong>, so there is nothing to fill in. To use Azure OpenAI or OpenAI, set <code>LLM_PROVIDER</code> and fill in that provider's lines. If you'd rather not create the files by hand, download the <a href="../code/genai-labs-kit.zip">genai-labs starter kit</a>: it has <code>.env.example</code>, <code>llm.py</code>, every helper, data file and drill script.</p>
 <pre class="code" data-file=".env" data-src="code/genai-labs/.env.example"></pre>
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
@@ -33,8 +33,8 @@
       <li class="dstep run"><span class="st">Run</span><h4>Create and run the smoke test</h4>
         <pre class="code" data-file="lab00_hello.py" data-src="code/genai-labs/lab00_hello.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab00_hello.py</code></pre>
-        <span class="out-label">Expected output (your words will differ)</span>
-<pre class="out"><code>[azure · chat]
+        <span class="out-label">Expected output with the default local model (your words will differ; on Azure the first line is <code>[azure · chat]</code>)</span>
+<pre class="out"><code>[ollama · llama3.2]
 Welcome aboard! You're about to turn "what if" into working code, one prompt at a time.
 tokens: 21 in / 19 out</code></pre>
       </li>

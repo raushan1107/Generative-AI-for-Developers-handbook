@@ -178,6 +178,30 @@
 
 <div class="phase do" id="build"><span class="ph-num">2</span><div><h2>Build</h2><p>Backend by hand, UI by prompt.</p></div></div>
 
+<div class="callout note prereq">
+  <div class="c-label">Before you run this code</div>
+  <p>Milestones are built in your <code>traincrest-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
+  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="../../code/traincrest-assist-m01.zip">traincrest-assist-m01.zip</a>, or the finished one, <a href="../../code/traincrest-assist-m02.zip">traincrest-assist-m02.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
+  <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env"><code><span class="c"># Copy to .env in the project folder. Never commit .env.</span>
+<span class="c"># Default: a free local model with Ollama (no account, no key). Run once:  ollama pull llama3.2</span>
+LLM_PROVIDER=ollama
+OLLAMA_MODEL=llama3.2
+
+<span class="c"># Optional: Azure OpenAI in Microsoft Foundry (set LLM_PROVIDER=azure)</span>
+AZURE_OPENAI_BASE_URL=https://&lt;resource-name&gt;.openai.azure.com/openai/v1/
+AZURE_OPENAI_API_KEY=&lt;paste key from the Foundry portal&gt;
+AZURE_OPENAI_DEPLOYMENT=chat
+<span class="c"># Optional: OpenAI (set LLM_PROVIDER=openai)</span>
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5.4-mini
+
+<span class="c"># New in milestone 2</span>
+MAX_TURNS_KEPT=6
+PRICE_IN_PER_M=0.40
+PRICE_OUT_PER_M=1.60
+LOG_FILE=assist.log</code></pre></div></details>
+</div>
+
 <div class="drill exercise" id="b02-1" data-title="Milestone 2: streaming chat service with memory, errors and logging" data-time="~60 min" data-steps="run,ask,verify">
   <div class="drill-head"><span class="drill-id">Milestone 2</span><h3>Streaming chat service with memory, errors and logging</h3>
     <div class="drill-meta"><span class="time">~60 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · AI assistant</span></div></div>
@@ -186,14 +210,18 @@
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Settings and model access</h4>
         <p>Add <code>fastapi</code> and <code>uvicorn</code> to <code>requirements.txt</code> and install them. Add the new keys to <code>.env</code> (see <code>.env.example</code> below). Then update the two existing files:</p>
-        <pre class="code" data-file=".env.example"><code><span class="c"># Copy to .env and fill in. Never commit .env.</span>
-LLM_PROVIDER=azure
+        <pre class="code" data-file=".env.example"><code><span class="c"># Copy to .env in the project folder. Never commit .env.</span>
+<span class="c"># Default: a free local model with Ollama (no account, no key). Run once:  ollama pull llama3.2</span>
+LLM_PROVIDER=ollama
+OLLAMA_MODEL=llama3.2
+
+<span class="c"># Optional: Azure OpenAI in Microsoft Foundry (set LLM_PROVIDER=azure)</span>
 AZURE_OPENAI_BASE_URL=https://&lt;resource-name&gt;.openai.azure.com/openai/v1/
 AZURE_OPENAI_API_KEY=&lt;paste key from the Foundry portal&gt;
 AZURE_OPENAI_DEPLOYMENT=chat
+<span class="c"># Optional: OpenAI (set LLM_PROVIDER=openai)</span>
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5.4-mini
-OLLAMA_MODEL=llama3.2
 
 <span class="c"># New in milestone 2</span>
 MAX_TURNS_KEPT=6
@@ -207,7 +235,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PROVIDER = os.getenv("LLM_PROVIDER", "azure").lower()
+PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()   <span class="c"># default: a free local model (Ollama)</span>
 
 <span class="c"># On Azure this is the DEPLOYMENT name; elsewhere it's the model name.</span>
 MODEL = {

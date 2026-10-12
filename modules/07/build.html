@@ -226,6 +226,54 @@
 
 <div class="phase do" id="build"><span class="ph-num">2</span><div><h2>Build</h2><p>Systems that change, tools that propose, a store that decides.</p></div></div>
 
+<div class="callout note prereq">
+  <div class="c-label">Before you run this code</div>
+  <p>Milestones are built in your <code>traincrest-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
+  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="../../code/traincrest-assist-m06.zip">traincrest-assist-m06.zip</a>, or the finished one, <a href="../../code/traincrest-assist-m07.zip">traincrest-assist-m07.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
+  <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env"><code><span class="c"># Copy to .env in the project folder. Never commit .env.</span>
+<span class="c"># Default: a free local model with Ollama (no account, no key). Run once:  ollama pull llama3.2</span>
+LLM_PROVIDER=ollama
+OLLAMA_MODEL=llama3.2
+
+<span class="c"># Optional: Azure OpenAI in Microsoft Foundry (set LLM_PROVIDER=azure)</span>
+AZURE_OPENAI_BASE_URL=https://&lt;resource-name&gt;.openai.azure.com/openai/v1/
+AZURE_OPENAI_API_KEY=&lt;paste key from the Foundry portal&gt;
+AZURE_OPENAI_DEPLOYMENT=chat
+<span class="c"># Optional: OpenAI (set LLM_PROVIDER=openai)</span>
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5.4-mini
+
+<span class="c"># New in milestone 2</span>
+MAX_TURNS_KEPT=6
+PRICE_IN_PER_M=0.40
+PRICE_OUT_PER_M=1.60
+LOG_FILE=assist.log
+
+<span class="c"># New in milestone 4</span>
+MAX_TOOL_ROUNDS=4
+TICKETS_FILE=data/tickets.jsonl
+<span class="c"># Set to none if the model says "Function tools with reasoning_effort are not supported"</span>
+TOOLS_REASONING_EFFORT=
+
+<span class="c"># New in milestone 5</span>
+AZURE_OPENAI_EMBED_DEPLOYMENT=embed
+OPENAI_EMBED_MODEL=text-embedding-3-small
+OLLAMA_EMBED_MODEL=nomic-embed-text
+SEARCH_BACKEND=local
+INDEX_DIR=data/index
+<span class="c"># Only for SEARCH_BACKEND=azure</span>
+AZURE_SEARCH_ENDPOINT=https://&lt;search-service-name&gt;.search.windows.net
+AZURE_SEARCH_API_KEY=&lt;admin key from the portal&gt;
+AZURE_SEARCH_INDEX=traincrest
+
+<span class="c"># New in milestone 6</span>
+RAG_TOP_K=4
+<span class="c"># Relevance floor: leave empty for the default of your embedding model, or set the value from Drill 06.6</span>
+RAG_MIN_SCORE=
+RAG_MAX_CONTEXT_TOKENS=1500
+HELP_CENTRE_URL=https://help.traincrest.example/</code></pre></div></details>
+</div>
+
 <div class="drill exercise" id="b07-1" data-title="Milestone 7: actions with the learner's approval" data-time="~75 min" data-steps="run,ask,write,verify">
   <div class="drill-head"><span class="drill-id">Milestone 7</span><h3>Actions with the learner's approval</h3>
     <div class="drill-meta"><span class="time">~75 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · Pydantic · pytest</span></div></div>

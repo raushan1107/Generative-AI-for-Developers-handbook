@@ -184,6 +184,74 @@ Traincrest Assist, learner support.
 
 <div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Rewrite a messy prompt, then let the checks decide.</p></div></div>
 
+<div class="callout note prereq">
+  <div class="c-label">Before you run this code</div>
+  <p>Run every drill from your <code>genai-labs</code> folder with its virtual environment active. Two files must be there: <code>.env</code> (settings) and <code>llm.py</code> (the shared helper every drill imports). By default they use a <strong>free local model with Ollama</strong>: install Ollama, then <code>ollama pull llama3.2</code>; no key is needed. To use Azure OpenAI or OpenAI instead, change <code>LLM_PROVIDER</code> in <code>.env</code>.</p>
+  <p><strong>Easiest:</strong> download the <a href="../../code/genai-labs-kit.zip">genai-labs starter kit</a> (every helper, data file and drill script), unzip it, copy <code>.env.example</code> to <code>.env</code>, and run <code>pip install -r requirements.txt</code>. Full walkthrough: <a href="../../setup/helpers.html">Helpers and smoke test</a>.</p>
+  <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env"><code><span class="c"># Copy this file to .env in your genai-labs folder. Never commit .env.</span>
+<span class="c"># The default is a FREE local model with Ollama: no account and no key needed.</span>
+<span class="c"># Install Ollama, then run once:   ollama pull llama3.2      (and for Module 05+:  ollama pull nomic-embed-text)</span>
+
+<span class="c"># Which provider llm.py uses: ollama (default) | azure | openai</span>
+LLM_PROVIDER=ollama
+
+<span class="c"># --- Ollama, local and free (default) ---</span>
+OLLAMA_MODEL=llama3.2
+
+<span class="c"># --- Azure OpenAI in Microsoft Foundry (optional: set LLM_PROVIDER=azure) ---</span>
+<span class="c"># Your endpoint + "openai/v1/" at the end</span>
+AZURE_OPENAI_BASE_URL=https://&lt;resource-name&gt;.openai.azure.com/openai/v1/
+AZURE_OPENAI_API_KEY=&lt;paste key from the Foundry portal&gt;
+AZURE_OPENAI_DEPLOYMENT=chat
+
+<span class="c"># --- OpenAI (optional: set LLM_PROVIDER=openai) ---</span>
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5.4-mini
+
+<span class="c"># --- Anthropic Claude (optional, used in "Open alternative" boxes) ---</span>
+ANTHROPIC_API_KEY=
+
+<span class="c"># --- Cost meter (USD per 1M tokens; local models cost $0, so these matter only for paid providers) ---</span>
+PRICE_IN_PER_M=0.40
+PRICE_OUT_PER_M=1.60
+
+<span class="c"># --- Model comparison drill (optional) ---</span>
+COMPARE_DEPLOYMENT=
+COMPARE_WITH_OLLAMA=0</code></pre></div></details>
+  <details class="solution"><summary>llm.py</summary><div><pre class="code" data-file="llm.py"><code>"""Shared helper for every drill: returns an OpenAI-compatible client for
+Azure OpenAI (Microsoft Foundry), OpenAI or Ollama, chosen in .env."""
+import os
+
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()  <span class="c"># reads .env from the current folder</span>
+
+PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()   <span class="c"># default: a free local model (Ollama)</span>
+
+
+def get_client() -&gt; OpenAI:
+    if PROVIDER == "azure":
+        <span class="c"># Azure OpenAI v1 API: the standard OpenAI client, pointed at your resource</span>
+        return OpenAI(
+            base_url=os.environ["AZURE_OPENAI_BASE_URL"],
+            api_key=os.environ["AZURE_OPENAI_API_KEY"],
+        )
+    if PROVIDER == "openai":
+        return OpenAI()  <span class="c"># reads OPENAI_API_KEY</span>
+    if PROVIDER == "ollama":
+        return OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+    raise ValueError(f"Unknown LLM_PROVIDER: {PROVIDER!r}")
+
+
+<span class="c"># On Azure this is the DEPLOYMENT name; elsewhere it's the model name.</span>
+MODEL = {
+    "azure": os.getenv("AZURE_OPENAI_DEPLOYMENT", "chat"),
+    "openai": os.getenv("OPENAI_MODEL", "gpt-5.4-mini"),
+    "ollama": os.getenv("OLLAMA_MODEL", "llama3.2"),
+}.get(PROVIDER, "")</code></pre></div></details>
+</div>
+
 <div class="drill" id="d03-10" data-title="Restructure a messy prompt and score both versions" data-time="~20 min" data-steps="write,run,verify">
   <div class="drill-head"><span class="drill-id">Drill 03.10</span><h3>Restructure a messy prompt and score both versions</h3>
     <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
