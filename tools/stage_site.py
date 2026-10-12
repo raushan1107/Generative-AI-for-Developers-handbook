@@ -9,6 +9,7 @@ Usage (from the repo root, after `python tools/build.py`):
 """
 import json
 import shutil
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -34,6 +35,22 @@ def draft_paths():
     return paths
 
 
+def make_lab_downloads(drafts):
+    """Zips for the open-source labs (a static site can't serve a folder):
+    oss-labs-data.zip (the data folder, for Lab 0) and oss-labs-complete.zip (all lab code, for catching up)."""
+    src = ROOT / "code" / "oss-labs"
+    if "code/oss-labs" in drafts or not src.exists():
+        return
+    skip = {"__pycache__", ".pytest_cache", ".env", "search_index.json", "kb_index.json", "chat_log.jsonl"}
+    files = [p for p in sorted(src.rglob("*")) if p.is_file() and not skip & set(p.relative_to(src).parts)]
+    for name, keep in (("oss-labs-data.zip", lambda r: r.parts[0] == "data"), ("oss-labs-complete.zip", lambda r: True)):
+        with zipfile.ZipFile(OUT / "code" / name, "w", zipfile.ZIP_DEFLATED) as z:
+            for p in files:
+                rel = p.relative_to(src)
+                if keep(rel):
+                    z.write(p, Path("oss-genai-labs") / rel)
+
+
 def main():
     if OUT.exists():
         shutil.rmtree(OUT)
@@ -56,6 +73,7 @@ def main():
     for folder in sorted((p for p in OUT.rglob("*") if p.is_dir()), key=lambda p: -len(p.parts)):
         if not any(folder.iterdir()):                 # e.g. oss/ once all its draft pages are removed
             folder.rmdir()
+    make_lab_downloads(drafts)
     files = sum(1 for p in OUT.rglob("*") if p.is_file())
     print(f"Staged {files} files in _site/ (left out drafts: {', '.join(drafts) or 'none'})")
 
