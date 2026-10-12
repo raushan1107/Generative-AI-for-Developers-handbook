@@ -103,12 +103,12 @@ Dark, clean design; user bubbles on the right, assistant on the left.</code></pr
         <pre class="term"><code><span class="ps">$ </span>uvicorn app.main:app --reload</code></pre>
         <ul class="verify-list">
           <li><strong>Streaming:</strong> open <code>http://127.0.0.1:8000</code>, ask "How should I prepare for my first cloud certification?". Words appear within about a second.</li>
-          <li><strong>Memory:</strong> "Hi, I'm Mei, enrolled in AZ-305." then "Which course am I in, and what's my name?"</li>
-          <li><strong>New chat:</strong> click it, ask "What's my name?": forgotten, as designed.</li>
-          <li><strong>Friendly errors:</strong> set <code>AZURE_OPENAI_DEPLOYMENT=nope</code>, restart, send a message: a calm "temporarily unavailable" message, no stack trace. Restore it.</li>
-          <li><strong>Network failure:</strong> disconnect Wi-Fi mid-conversation and send a message: "couldn't reach the AI service". Reconnect; the next message works.</li>
-          <li><strong>Logging:</strong> open <code>assist.log</code>: one JSON line per turn with TTFT, tokens and <code>cost_usd</code>; errors logged with a code, never your key.</li>
-          <li><strong>API docs:</strong> open <code>/docs</code> and send an empty message: 422, and the model is never called.</li>
+          <li><strong>Memory:</strong> in the browser at <code>http://127.0.0.1:8000</code>, send "Hi, I'm Mei, enrolled in AZ-305." then "Which course am I in, and what's my name?". The answer mentions Mei and AZ-305. If it doesn't, check your <code>web/index.html</code>: it must create <code>sessionId</code> <em>once</em> when the page loads and send the same value with every message (compare with the reference code above). A page that makes a new ID per message has no memory.</li>
+          <li><strong>New chat:</strong> click it, ask "What's my name?": forgotten, as designed. It works because the button calls <code>/api/reset</code> and then creates a new <code>sessionId</code>.</li>
+          <li><strong>Friendly errors:</strong> in <code>.env</code> set a model that doesn't exist (default local model: <code>OLLAMA_MODEL=nope</code>; Azure: <code>AZURE_OPENAI_DEPLOYMENT=nope</code>), restart uvicorn, send a message: a calm "temporarily unavailable" message, no stack trace. Restore the setting and restart.</li>
+          <li><strong>Model unreachable:</strong> make the model server unreachable and send a message: "I couldn't reach the AI service". With the default local model, quit Ollama (Windows: right-click its tray icon › Quit; macOS: menu-bar icon › Quit; Linux: <code>sudo systemctl stop ollama</code>); turning off Wi-Fi changes nothing, because the model runs on your own computer. With Azure, disconnect Wi-Fi instead. Start Ollama or reconnect: the next message works.</li>
+          <li><strong>Logging:</strong> open <code>assist.log</code>: one JSON line per turn with TTFT, tokens and <code>cost_usd</code>; errors logged with a code (<code>config</code>, <code>unreachable</code>), never your key. With a local model, <code>cost_usd</code> is what the same tokens <em>would</em> cost at the prices in <code>.env</code>; you pay nothing.</li>
+          <li><strong>API docs:</strong> open <code>http://127.0.0.1:8000/docs</code>, try <code>POST /api/chat</code> with <code>"message": ""</code>: 422, and the model is never called.</li>
           <li><strong>CLI:</strong> <code>python cli.py</code> streams the same way.</li>
         </ul>
         <span class="out-label">Expected log lines</span>
