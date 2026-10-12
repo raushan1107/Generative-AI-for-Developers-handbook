@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 0: Set Up Ollama and Python</title>
+<meta name="description" content="Open-source lab guide, Lab 0: install Python and VS Code, install Ollama, download open models (llama3.2, nomic-embed-text, optionally qwen2.5:7b), create the project and virtual environment, configure .env (and where a key goes, if you use a hosted provider), and run an environment check.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-osslab" data-page="oss-0">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod"><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<details class="sb-mod"><summary><span class="sb-num">06</span>Retrieval-Augmented Generation</summary>
+<a class="sb-link sub k-overview " data-page-id="m06" href="../modules/06/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m06-what" href="../modules/06/what-is-rag.html"><span class="sb-ico">•</span>What is RAG, and why use it?</a>
+<a class="sb-link sub k-topic " data-page-id="m06-arch" href="../modules/06/architecture.html"><span class="sb-ico">•</span>RAG architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m06-ingest" href="../modules/06/ingestion.html"><span class="sb-ico">•</span>Document ingestion</a>
+<a class="sb-link sub k-topic " data-page-id="m06-chunk" href="../modules/06/chunking.html"><span class="sb-ico">•</span>Text chunking</a>
+<a class="sb-link sub k-topic " data-page-id="m06-embed" href="../modules/06/embedding-storage.html"><span class="sb-ico">•</span>Embedding generation and vector storage</a>
+<a class="sb-link sub k-topic " data-page-id="m06-retrieve" href="../modules/06/retrieval.html"><span class="sb-ico">•</span>Retrieval</a>
+<a class="sb-link sub k-topic " data-page-id="m06-prompt" href="../modules/06/prompt-construction.html"><span class="sb-ico">•</span>Prompt construction</a>
+<a class="sb-link sub k-topic " data-page-id="m06-generate" href="../modules/06/generation.html"><span class="sb-ico">•</span>Response generation</a>
+<a class="sb-link sub k-topic " data-page-id="m06-cite" href="../modules/06/citations.html"><span class="sb-ico">•</span>Citation and source attribution</a>
+<a class="sb-link sub k-build " data-page-id="m06-build" href="../modules/06/build.html"><span class="sb-ico">⚒</span>Build: Milestone 6</a>
+<a class="sb-link sub k-recap " data-page-id="m06-recap" href="../modules/06/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">07</span>Building AI Agents</summary>
+<a class="sb-link sub k-overview " data-page-id="m07" href="../modules/07/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m07-what" href="../modules/07/what-is-an-agent.html"><span class="sb-ico">•</span>What is an AI agent? Agent vs chatbot</a>
+<a class="sb-link sub k-topic " data-page-id="m07-plan" href="../modules/07/planning.html"><span class="sb-ico">•</span>Reasoning and planning</a>
+<a class="sb-link sub k-topic " data-page-id="m07-tools" href="../modules/07/tool-calling.html"><span class="sb-ico">•</span>Tool calling for agents</a>
+<a class="sb-link sub k-topic " data-page-id="m07-flows" href="../modules/07/workflows.html"><span class="sb-ico">•</span>Agent workflows</a>
+<a class="sb-link sub k-topic " data-page-id="m07-memory" href="../modules/07/state-memory.html"><span class="sb-ico">•</span>State and memory</a>
+<a class="sb-link sub k-topic " data-page-id="m07-multi" href="../modules/07/multi-step.html"><span class="sb-ico">•</span>Multi-step tasks</a>
+<a class="sb-link sub k-topic " data-page-id="m07-hitl" href="../modules/07/human-in-the-loop.html"><span class="sb-ico">•</span>Human-in-the-loop workflows</a>
+<a class="sb-link sub k-topic " data-page-id="m07-reliable" href="../modules/07/reliability.html"><span class="sb-ico">•</span>Agent reliability</a>
+<a class="sb-link sub k-build " data-page-id="m07-build" href="../modules/07/build.html"><span class="sb-ico">⚒</span>Build: Milestone 7</a>
+<a class="sb-link sub k-recap " data-page-id="m07-recap" href="../modules/07/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Open-source lab guide</div>
+<a class="sb-link " data-page-id="oss" href="../oss/index.html"><span class="sb-ico">▸</span>About the open-source labs</a>
+<a class="sb-link active" data-page-id="oss-0" href="../oss/lab-0-setup.html"><span class="sb-ico">▸</span>Lab 0 · Set up Ollama and Python</a>
+<a class="sb-link " data-page-id="oss-1" href="../oss/lab-1.html"><span class="sb-ico">▸</span>Lab 1 · Prompts, APIs and JSON</a>
+<a class="sb-link " data-page-id="oss-2" href="../oss/lab-2.html"><span class="sb-ico">▸</span>Lab 2 · Tools and semantic search</a>
+<a class="sb-link " data-page-id="oss-3" href="../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Handbook</a><i>/</i><span>Open-source lab guide</span><i>/</i><span>Lab 0 · Set up Ollama and Python</span></nav>
+  <span class="kind-pill">Open-source lab · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Open-source lab</span><h1>Lab 0 · Set Up Your Open-Source Lab Environment</h1><p class="lead">In this lab you install everything the course needs to run on free, open-source models, on your own computer: Python, VS Code, Ollama and three models. Then you create the project folder, configure it, and run a check that proves every piece works. Do this once, before the first day.</p><div class="chips"><span class="chip">Python + VS Code</span><span class="chip">Ollama</span><span class="chip">Open models</span><span class="chip">.env</span><span class="chip">≈ 30–60 min</span></div><div class="flow"><em>Estimated time: 30–60 minutes (mostly downloads)</em></div></header>
+<div class="content">
+
+<h2 id="overview">Lab overview</h2>
+<div class="table-wrap min">
+  <table>
+    <tbody>
+      <tr><th>Objectives</th><td>Install Python, VS Code and Ollama · download a chat model and an embedding model · create the lab project with a virtual environment · configure <code>.env</code> · verify everything with a check script</td></tr>
+      <tr><th>Prerequisites</th><td>A computer with 8 GB of RAM or more (16 GB recommended) and about 10 GB of free disk space · administrator rights to install software · an internet connection</td></tr>
+      <tr><th>You finish with</th><td>A folder <code>oss-genai-labs</code> and a check that prints <em>All checks passed</em></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="ex1">Exercise 1 · Install the tools</h2>
+
+<h3>Task 1: Install Python</h3>
+<ol>
+  <li>Open a terminal (Windows: <em>Terminal</em> or <em>PowerShell</em>; macOS: <em>Terminal</em>; Linux: your terminal) and check whether Python 3.10 or later is installed:
+<pre class="term"><code><span class="ps">$ </span>python --version</code></pre>
+    On macOS and Linux, try <code>python3 --version</code> if <code>python</code> isn't found. If you see <code>Python 3.10</code> or higher, skip to Task 2.</li>
+  <li>Otherwise install Python 3.12 from <code>python.org/downloads</code>.
+    <ul>
+      <li><strong>Windows:</strong> run the installer and tick <strong>Add python.exe to PATH</strong> on the first screen, then select <em>Install Now</em>.</li>
+      <li><strong>macOS:</strong> run the <code>.pkg</code> installer. Use <code>python3</code> and <code>pip3</code> in the commands below.</li>
+      <li><strong>Linux (Ubuntu/Debian):</strong> <code>sudo apt install python3 python3-venv python3-pip</code></li>
+    </ul></li>
+  <li>Close and reopen the terminal, then run <code>python --version</code> again. Expected: <code>Python 3.12.x</code> (any 3.10 or later works).</li>
+</ol>
+
+<h3>Task 2: Install VS Code</h3>
+<ol>
+  <li>Download and install Visual Studio Code from <code>code.visualstudio.com</code>.</li>
+  <li>Open VS Code, select the <em>Extensions</em> view (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>, or <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> on macOS), search for <strong>Python</strong> and install the extension published by Microsoft.</li>
+  <li>Optional: install an AI coding assistant (GitHub Copilot, Claude Code or Codex). The labs don't require one.</li>
+</ol>
+
+<h3>Task 3: Install Ollama</h3>
+<p>Ollama downloads and runs open-source models on your computer and serves them on <code>http://localhost:11434</code>.</p>
+<ol>
+  <li>Go to <code>ollama.com/download</code> and install it for your system:
+    <ul>
+      <li><strong>Windows:</strong> download and run <code>OllamaSetup.exe</code>. When it finishes, Ollama runs in the background; you'll see its icon in the system tray.</li>
+      <li><strong>macOS:</strong> download the app, move it to <em>Applications</em> and open it once. It runs in the menu bar.</li>
+      <li><strong>Linux:</strong> run <code>curl -fsSL https://ollama.com/install.sh | sh</code></li>
+    </ul></li>
+  <li>Open a <strong>new</strong> terminal and check the installation:
+<pre class="term"><code><span class="ps">$ </span>ollama --version</code></pre>
+    <span class="out-label">Expected (your version number will differ)</span>
+<pre class="out"><code>ollama version is 0.40.2</code></pre></li>
+  <li>Open <code>http://localhost:11434</code> in your browser. Expected: the text <em>Ollama is running</em>.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>Python, VS Code and Ollama are installed, and <code>http://localhost:11434</code> says <em>Ollama is running</em>.</p></div>
+
+<h2 id="ex2">Exercise 2 · Download open models</h2>
+
+<h3>Task 1: Pull the models</h3>
+<ol>
+  <li>Download the chat model (Meta's Llama 3.2, 3 billion parameters, about 2 GB):
+<pre class="term"><code><span class="ps">$ </span>ollama pull llama3.2</code></pre>
+    You'll see download progress bars, then <code>success</code>.</li>
+  <li>Download the embedding model used in Labs 2 and 3 (about 270 MB):
+<pre class="term"><code><span class="ps">$ </span>ollama pull nomic-embed-text</code></pre></li>
+  <li><strong>Only if your computer has 16 GB of RAM or more:</strong> download a stronger model for Lab 3's agent (Alibaba's Qwen 2.5, 7 billion parameters, about 4.7 GB):
+<pre class="term"><code><span class="ps">$ </span>ollama pull qwen2.5:7b</code></pre></li>
+  <li>List what you have:
+<pre class="term"><code><span class="ps">$ </span>ollama list</code></pre>
+    <span class="out-label">Expected (IDs and dates will differ)</span>
+<pre class="out"><code>NAME                       ID              SIZE      MODIFIED
+qwen2.5:7b                 845dbda0ea48    4.7 GB    22 minutes ago
+llama3.2:latest            a80c4f17acd5    2.0 GB    About an hour ago
+nomic-embed-text:latest    0a109f422b47    274 MB    25 hours ago</code></pre></li>
+</ol>
+
+<h3>Task 2: Talk to a model in the terminal</h3>
+<ol>
+  <li>Start an interactive chat:
+<pre class="term"><code><span class="ps">$ </span>ollama run llama3.2</code></pre></li>
+  <li>At the <code>&gt;&gt;&gt;</code> prompt, type <em>Explain what a token is in one sentence.</em> and press <kbd>Enter</kbd>. The first answer takes longer while the model loads into memory.</li>
+  <li>Type <code>/bye</code> to leave. Ollama keeps running in the background.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p><code>ollama list</code> shows <code>llama3.2</code> and <code>nomic-embed-text</code>, and the model answered in the terminal.</p></div>
+
+<h2 id="ex3">Exercise 3 · Create the lab project</h2>
+
+<h3>Task 1: Create the folder and the virtual environment</h3>
+<ol>
+  <li>Create a folder named <code>oss-genai-labs</code> (for example in your <em>Documents</em> folder) and open it in VS Code: <em>File › Open Folder…</em></li>
+  <li>Open VS Code's terminal: <em>Terminal › New Terminal</em>. Create and activate a virtual environment, an isolated set of Python packages for this project:
+<pre class="term"><code><span class="c"># Windows (PowerShell)</span>
+<span class="ps">$ </span>python -m venv .venv
+<span class="ps">$ </span>.venv\Scripts\Activate.ps1
+<span class="c"># macOS / Linux</span>
+<span class="ps">$ </span>python3 -m venv .venv
+<span class="ps">$ </span>source .venv/bin/activate</code></pre>
+    Your prompt now starts with <code>(.venv)</code>. If PowerShell refuses to run the script, run <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code> once and try again.</li>
+  <li>If VS Code asks whether to use the new environment for the workspace, select <em>Yes</em>.</li>
+</ol>
+
+<h3>Task 2: Install the packages</h3>
+<ol>
+  <li>Create a file <code>requirements.txt</code> in the folder with this content:
+    <pre class="code" data-file="requirements.txt"><code>openai
+python-dotenv
+pydantic
+tiktoken
+numpy
+rank_bm25
+pytest</code></pre></li>
+  <li>Install them:
+<pre class="term"><code><span class="ps">$ </span>pip install -r requirements.txt</code></pre>
+    Expected: the last line starts with <code>Successfully installed</code>.</li>
+</ol>
+
+<h3>Task 3: Copy the lab data</h3>
+<ol>
+  <li>Copy the <code>data</code> folder from <code>code/oss-labs/data</code> in the handbook into your project. It holds the fictional TrainCrest course catalogue, ten help-centre articles and three internal staff documents used in Labs 2 and 3.</li>
+  <li>Your folder now looks like this:
+<pre class="out"><code>oss-genai-labs/
+├── .venv/
+├── data/
+│   ├── courses.json
+│   ├── help/          10 help-centre articles (.md)
+│   └── internal/      3 staff documents (.md, .txt, .csv)
+└── requirements.txt</code></pre></li>
+</ol>
+
+<h2 id="ex4">Exercise 4 · Configure settings and keys</h2>
+<p>Settings live in a file named <code>.env</code>, never in code, so you can change models or providers without editing programs, and secrets never end up in files you share.</p>
+
+<h3>Task 1: Create .env</h3>
+<ol>
+  <li>Create a file named <code>.env</code> (with the leading dot) in the project folder and paste:
+    <pre class="code" data-file=".env"><code><span class="c"># Copy this file to .env (same folder). Never share or commit .env.</span>
+
+<span class="c"># ---- Option A (default): Ollama on this computer -------------------------------</span>
+<span class="c"># No account and no key. Ollama doesn't check the key; "ollama" is just a placeholder</span>
+<span class="c"># because the OpenAI library requires some value.</span>
+LLM_BASE_URL=http://localhost:11434/v1
+LLM_API_KEY=ollama
+CHAT_MODEL=llama3.2
+<span class="c"># Tool calling and agents (Lab 2 exercise 2, Lab 3) work much better with a 7B model, if you have 16 GB of RAM:</span>
+<span class="c">#   ollama pull qwen2.5:7b   and then set   AGENT_MODEL=qwen2.5:7b</span>
+AGENT_MODEL=
+
+<span class="c"># Embeddings (Labs 2 and 3) always come from Ollama.</span>
+EMBED_BASE_URL=http://localhost:11434/v1
+EMBED_MODEL=nomic-embed-text
+
+<span class="c"># ---- Option B: hosted open models with a free key (only if Option A is too slow) ----</span>
+<span class="c"># Replace the three LLM lines above with ONE of these, and paste your own key.</span>
+<span class="c"># Groq (console.groq.com &gt; API Keys):</span>
+<span class="c">#   LLM_BASE_URL=https://api.groq.com/openai/v1</span>
+<span class="c">#   LLM_API_KEY=gsk_your_key_here</span>
+<span class="c">#   CHAT_MODEL=llama-3.1-8b-instant</span>
+<span class="c"># OpenRouter (openrouter.ai &gt; Keys); pick a model whose id ends in ":free" on openrouter.ai/models:</span>
+<span class="c">#   LLM_BASE_URL=https://openrouter.ai/api/v1</span>
+<span class="c">#   LLM_API_KEY=sk-or-your_key_here</span>
+<span class="c">#   CHAT_MODEL=&lt;model id ending in :free&gt;</span></code></pre></li>
+  <li>Read the comments. With Ollama (Option A) there is <strong>no key to get</strong>: Ollama runs on your computer and doesn't check keys. The OpenAI Python library always sends one, so <code>LLM_API_KEY=ollama</code> is just a placeholder.</li>
+  <li>If you pulled <code>qwen2.5:7b</code>, set <code>AGENT_MODEL=qwen2.5:7b</code>. Otherwise leave it empty: the agent uses <code>CHAT_MODEL</code>.</li>
+</ol>
+
+<h3>Task 2: Create the shared client</h3>
+<ol>
+  <li>Create <code>client.py</code>. Every lab program imports its settings and client from here:
+    <pre class="code" data-file="client.py"><code>"""Shared helper for every open-source lab: OpenAI-compatible clients for open models.
+
+Option A (default): Ollama on your own computer. Free, private, no key. Ollama ignores the API key,
+but the OpenAI library insists on one, so .env holds the placeholder "ollama".
+Option B: a hosted provider of open models, with a free key, if your computer is too slow.
+Change LLM_BASE_URL, LLM_API_KEY and CHAT_MODEL in .env; nothing else changes.
+Embeddings always come from Ollama in these labs (EMBED_BASE_URL)."""
+import os
+
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()  <span class="c"># reads .env from the current folder</span>
+
+BASE_URL = os.getenv("LLM_BASE_URL", "http://localhost:11434/v1")
+API_KEY = os.getenv("LLM_API_KEY", "ollama")
+CHAT_MODEL = os.getenv("CHAT_MODEL", "llama3.2")
+AGENT_MODEL = os.getenv("AGENT_MODEL") or CHAT_MODEL        <span class="c"># for tool calling and agents (Labs 2 and 3)</span>
+EMBED_BASE_URL = os.getenv("EMBED_BASE_URL", "http://localhost:11434/v1")
+EMBED_MODEL = os.getenv("EMBED_MODEL", "nomic-embed-text")
+
+
+def get_client() -&gt; OpenAI:
+    return OpenAI(base_url=BASE_URL, api_key=API_KEY)
+
+
+def get_embed_client() -&gt; OpenAI:
+    return OpenAI(base_url=EMBED_BASE_URL, api_key="ollama")</code></pre></li>
+</ol>
+
+<h3>Task 3 (optional): Use a hosted open model with a free API key</h3>
+<p>Only if Option A is too slow on your computer (more than about a minute per answer). Hosted providers run the same kind of open models on fast hardware; they need an account and an API key, and your prompts are sent to them, so never paste personal or confidential data.</p>
+<ol>
+  <li>Create a free account with an OpenAI-compatible provider of open models, for example <strong>Groq</strong> (<code>console.groq.com</code>) or <strong>OpenRouter</strong> (<code>openrouter.ai</code>).</li>
+  <li>Create a key: Groq: <em>API Keys › Create API Key</em>; OpenRouter: <em>Keys › Create Key</em>. Copy it immediately: it's shown only once.</li>
+  <li>In <code>.env</code>, replace the three <code>LLM_</code>/<code>CHAT_MODEL</code> lines with the provider's block from the comments, and paste your key after <code>LLM_API_KEY=</code>. Check the provider's model list for a current model name; free tiers and model names change.</li>
+  <li>Keep <code>EMBED_BASE_URL</code> pointing at Ollama: <code>nomic-embed-text</code> is small and runs on any laptop.</li>
+  <li>Treat the key like a password: don't paste it into chats, screenshots or code, and delete it in the provider's console when the course ends.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p><code>.env</code> and <code>client.py</code> exist in your project folder, and you know which option (A or B) you're using.</p></div>
+
+<h2 id="ex5">Exercise 5 · Check everything</h2>
+<ol>
+  <li>Create <code>lab0_check.py</code>:
+    <pre class="code" data-file="lab0_check.py"><code>"""Lab 0: check your open-source lab environment. One line per check; fix any FAIL before Lab 1.
+Run:  python lab0_check.py"""
+import json
+import sys
+import time
+import urllib.request
+
+from client import BASE_URL, CHAT_MODEL, EMBED_BASE_URL, EMBED_MODEL, get_client, get_embed_client
+
+OLLAMA = EMBED_BASE_URL.removesuffix("/v1")
+failures = 0
+
+
+def check(name, fn):
+    global failures
+    try:
+        print(f"[ OK ] {name}: {fn()}")
+    except Exception as e:
+        failures += 1
+        print(f"[FAIL] {name}: {type(e).__name__}: {e}")
+
+
+def python_version():
+    if sys.version_info &lt; (3, 10):
+        raise RuntimeError(f"Python {sys.version.split()[0]} is too old; install 3.10 or later")
+    return sys.version.split()[0]
+
+
+def ollama_running():
+    with urllib.request.urlopen(f"{OLLAMA}/api/version", timeout=5) as r:
+        return "Ollama " + json.load(r)["version"]
+
+
+def models_pulled():
+    with urllib.request.urlopen(f"{OLLAMA}/api/tags", timeout=5) as r:
+        names = {m["name"] for m in json.load(r)["models"]}
+    wanted = [EMBED_MODEL] + ([CHAT_MODEL] if "localhost" in BASE_URL else [])
+    missing = [m for m in wanted if m not in names and f"{m}:latest" not in names]
+    if missing:
+        raise RuntimeError("not pulled yet: " + ", ".join(missing) + "  -&gt;  run: ollama pull &lt;name&gt;")
+    return ", ".join(sorted(names))
+
+
+def chat_works():
+    start = time.perf_counter()
+    r = get_client().chat.completions.create(
+        model=CHAT_MODEL, messages=[{"role": "user", "content": "Reply with exactly one word: ready"}])
+    return f"{CHAT_MODEL} says {r.choices[0].message.content.strip()!r} in {time.perf_counter() - start:.1f}s"
+
+
+def embeddings_work():
+    r = get_embed_client().embeddings.create(model=EMBED_MODEL, input=["hello world"])
+    return f"{EMBED_MODEL} returns {len(r.data[0].embedding)} numbers per text"
+
+
+check("Python", python_version)
+check("Ollama server", ollama_running)
+check("Models", models_pulled)
+check("Chat model", chat_works)
+check("Embedding model", embeddings_work)
+print("\nAll checks passed. You're ready for Lab 1." if not failures else f"\n{failures} check(s) failed. "
+      "See Troubleshooting in Lab 0.")</code></pre></li>
+  <li>Run it:
+<pre class="term"><code><span class="ps">$ </span>python lab0_check.py</code></pre>
+    <span class="out-label">Real output on a laptop without a GPU (your times and model list will differ)</span>
+<pre class="out"><code>[ OK ] Python: 3.10.0
+[ OK ] Ollama server: Ollama 0.40.2
+[ OK ] Models: llama3.2:latest, nomic-embed-text:latest, qwen2.5:1.5b, qwen2.5:7b
+[ OK ] Chat model: llama3.2 says 'Yes' in 43.7s
+[ OK ] Embedding model: nomic-embed-text returns 768 numbers per text
+
+All checks passed. You're ready for Lab 1.</code></pre>
+    Notice the model said <em>Yes</em> although it was asked to reply <em>ready</em>: small models don't always follow instructions exactly. You'll see that again, and learn to handle it. The first call is slow because the model is loaded into memory; later calls are faster.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>All five checks are <code>[ OK ]</code>. You're ready for Lab 1.</p></div>
+
+<h2 id="trouble">Troubleshooting</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><code>python</code> or <code>ollama</code>: command not found</td><td>Close and reopen the terminal (the installer changed PATH). On Windows, re-run the Python installer with <em>Add python.exe to PATH</em> ticked.</td></tr>
+      <tr><td><code>[FAIL] Ollama server: URLError ... refused</code></td><td>Ollama isn't running. Windows/macOS: start the Ollama app. Linux: <code>ollama serve</code> in another terminal.</td></tr>
+      <tr><td><code>not pulled yet: llama3.2</code></td><td>Run <code>ollama pull llama3.2</code>, then check again. Names must match <code>.env</code> exactly.</td></tr>
+      <tr><td><code>ModuleNotFoundError: No module named 'openai'</code></td><td>The virtual environment isn't active, or packages aren't installed: activate <code>.venv</code> and run <code>pip install -r requirements.txt</code>.</td></tr>
+      <tr><td>Answers take minutes, or the computer freezes</td><td>The model is too big for your RAM. Use <code>llama3.2</code>, close other apps, or use Option B. <code>ollama ps</code> shows what's loaded.</td></tr>
+      <tr><td>Downloads fail on a company network</td><td>A proxy may block them. Ask IT, or download at home. Ollama honours the <code>HTTPS_PROXY</code> environment variable.</td></tr>
+      <tr><td>Option B: <code>AuthenticationError</code> (401)</td><td>The key is wrong, has spaces around it, or was deleted. Create a new one and paste it again.</td></tr>
+      <tr><td>Option B: <code>NotFoundError</code> for the model</td><td>The model name isn't offered (any more). Copy a current name from the provider's model list.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="review">Review</h2>
+<ul class="checklist">
+  <li>Ollama runs open models locally and serves an OpenAI-compatible API on port 11434.</li>
+  <li>You have a chat model (<code>llama3.2</code>) and an embedding model (<code>nomic-embed-text</code>).</li>
+  <li>Settings live in <code>.env</code>; with Ollama the "key" is a placeholder, with a hosted provider it's a secret.</li>
+  <li><code>client.py</code> gives every lab the same client, so switching provider is a three-line change.</li>
+</ul>
+
+</div>
+<nav class="pager" aria-label="Page navigation"><a class="prev" href="../oss/index.html"><small>Previous</small><span>← About the open-source labs</span></a><a class="next" href="../oss/lab-1.html"><small>Next</small><span>Lab 1 · Prompts, APIs and JSON →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

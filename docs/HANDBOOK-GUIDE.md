@@ -1,6 +1,6 @@
 # Generative AI for Developers handbook: build guide
 
-Notes for myself (not published on the site): how this handbook is built and how to add Parts II–V in the same style. Part I (setup, Modules 01–03, the project, labs and capstone pages) is live. Part II (Modules 04–05, Milestones 4–5) is built as a **draft**: complete and tested, but not linked from live pages yet (see "Draft modules" below).
+Notes for myself (not published on the site): how this handbook is built and how to add Parts II–V in the same style. Part I (setup, Modules 01–03, the project, labs and capstone pages) is live. Parts II (Modules 04–05) and III (Modules 06–07, Milestones 6–7) are built as **drafts**: complete and tested, but not linked from live pages yet (see "Draft modules" below). The **open-source lab guide** (section 8) is also a draft.
 
 ---
 
@@ -41,7 +41,9 @@ tools/nav.json        the single source of truth for page order, sidebar and pre
 tools/build.py        wraps src/ fragments in the shared shell and writes the final pages
 src/**.html           page CONTENT ONLY, each starting with a <!--meta {...} --> JSON header
 code/genai-labs/      every drill script, helper, dataset and test (real, tested files)
-code/traincrest-assist/m01..m05/   complete project snapshot per milestone
+code/traincrest-assist/m01..m07/   complete project snapshot per milestone
+code/oss-labs/        the open-source lab guide's project (Ollama only), see section 8
+src/oss/              the open-source lab guide's pages
 assets/css/handbook.css, assets/js/handbook.js
 index.html, start/, setup/, modules/NN/, project/, labs/, capstone/   GENERATED: don't edit by hand
 ```
@@ -143,6 +145,8 @@ The attribute order of the opening `div` must stay exactly as shown (the build i
 - Azure names: `rg-genai-labs`, `proj-genai-labs`, deployment `chat` (optional `chat-big`), embedding deployment `embed` (text-embedding-3-small), search service `srch-genai-labs-<initials>` (Free tier).
 - Structured outputs and tools (Part II): Pydantic models via `parse()` / `openai.pydantic_function_tool()` (strict). Keep `pattern`, `maxLength`, `minimum`/`maximum`, `format` out of schemas (Azure strict mode rejects them) and enforce them with validators. Optional tool arguments get `= None` defaults (still required in the strict schema, tolerant with lenient providers). Strict tools on Azure need `parallel_tool_calls=False`. Reasoning deployments may need `TOOLS_REASONING_EFFORT=none` (`llm_tools.TOOL_EXTRAS`).
 - Real outputs for Part II embedding and search drills come from a local run with Ollama `nomic-embed-text` (and `qwen2.5:1.5b` for tool smoke tests); Azure-only outputs are labelled illustrative.
+- Part III real outputs: `llama3.2` (3B) for RAG drills, `qwen2.5:7b` for agent drills (a 3B model is too weak for multi-step tool use; its failures are shown as lessons). On a CPU laptop expect 20–60 s per call, so run model drills in the background. Keep small-model mistakes on the page when they teach something (invented actions, skipped citations, cross-language misses).
+- The `openai` SDK must be recent (`client.chat.completions.parse` exists from 1.x late releases; tested with 3.29).
 - Expected outputs: use real output where it can be produced offline (tokenizer, temperature, bigram, classic ML, dataset checker, tests); otherwise label "yours will differ".
 
 ---
@@ -155,7 +159,9 @@ The attribute order of the opening `div` must stay exactly as shown (the build i
 - Milestones done: **M1** CLI + config + llm layer · **M2** FastAPI SSE chat, memory (6 pairs), friendly errors, SDK retries (3), JSON logs + cost, web UI · **M3** versioned prompt library (`assist_system@v2`, `triage@v1`, `ACTIVE`), Pydantic triage with one repair, output guard + tag neutralising, offline tests, `check_triage`.
 - Built as draft: **M4** stand-in backend (`backend.py`: learners L-MEI, L-DIEGO, L-ASHA; enrolments TC-10293, TC-10477, TC-20877, TC-31002, TC-31188; vouchers; dates relative to today), `policy.py` (refund and reschedule quotes), `toolkit.py` registry, 7 strict tools with identity from session context, streaming tool loop (max 4 rounds, `parallel_tool_calls=False`, `tool` events), `assist_system@v3`, triage on `parse()` with validators (`triage@v2`) and JSON-repair fallback (`triage@v1`), demo sign-in in UI/CLI, 30 tests · **M5** `search.py` (chunk by heading, `LocalIndex` BM25 + cosine + RRF with pre-filters, `AzureIndex`, `SearchService`), `scripts/build_index.py`, `GET /api/search`, semantic `search_courses` with keyword fallback, 36 tests.
 - Shared Part II data in `genai-labs/data/`: `courses.json` (20 courses C101–C120), `help/*.md` (10 help-centre articles; labs article has error codes LAB-409/503/440), `help_questions.json` (20 questions with source + required phrase). Module 06 should reuse them.
-- Planned: M6 RAG over the help articles with citations · M7 agent with human approval · M8 gateway, persistent sessions, tracing · M9 evaluation in CI · M10 Prompt Shields, least privilege · M11 routing, caching, batch · M12 containers, secrets, fallbacks, CI/CD.
+- Built as draft: **M6** help sections keep introductions (`headings-v2`, chunker version checked on load, 47 sections), `rag.py` (floor per embedding model, numbered sources within a budget, tag neutralising, `check_citations`, `ask()` with NOT_FOUND and "related" when uncited), `search_help` tool numbering sources across a turn, `assist_system@v4` (no policy text), `rag_answer@v1`, `POST /api/ask`, sources in UI/CLI, 45 tests · **M7** `backend` LABS/SESSIONS with idempotent logged writes (`data/actions.jsonl`), `actions.py` ActionStore (frozen proposals, one decision, 15-min expiry, re-check, execute once), tools `get_lab_access`, `list_course_dates`, `request_lab_extension`, `request_reschedule` (propose only), `assist_system@v5`, `POST /api/actions/{id}`, approval cards, repeated-call refusal, tool-call-as-text guard, 54 tests.
+- Part III drill data: `genai-labs/data/internal/` (4 staff docs in md/html/txt/csv + a duplicate `support_playbook_FINAL.md`); agent drills use `desk.py` (in-memory systems, audit log `ACTIONS`, flaky mode) and `desk_tools.py` (tools + shared `SYSTEM`).
+- Planned: M8 gateway, persistent sessions, tracing · M9 evaluation in CI · M10 Prompt Shields, least privilege · M11 routing, caching, batch · M12 containers, secrets, fallbacks, CI/CD.
 
 ---
 
@@ -180,3 +186,16 @@ The attribute order of the opening `div` must stay exactly as shown (the build i
   So removing `"draft": true` and pushing is what publishes a Part.
 - Preview locally exactly what will go live: `python tools/build.py && python tools/stage_site.py`, then serve `_site/` (e.g. `python -m http.server -d _site 8000`). `_site/` is git-ignored.
 - Publish a change: commit and `git push`. Check the run under the repo's **Actions** tab.
+
+---
+
+## 8. Open-source lab guide (Ollama track)
+
+A second, separate track for learners without Azure or paid API access, written in the style of Microsoft hands-on labs: overview table (objectives, prerequisites, what you finish with), exercises > tasks > numbered steps, exact commands, expected output, a **Checkpoint** callout per exercise, a troubleshooting table, review and cleanup. One lab per Part, about **3 hours**, used after the trainer's demo. **Build one for every new Part** (standing request, 2026-10-12).
+
+- Pages: `src/oss/` (`index.html`, `lab-0-setup.html`, `lab-1.html` …), kind `osslab`, in the nav section "Open-source lab guide".
+- Code: `code/oss-labs/` is the learner's project folder `oss-genai-labs`: `client.py` (LLM_BASE_URL / LLM_API_KEY / CHAT_MODEL / AGENT_MODEL / EMBED_*), `.env.example`, `requirements.txt`, `lab0_check.py`, `lN_*.py` per lab, `data/` (courses, help articles, 3 internal docs). Programs are self-contained, simpler than the handbook drills, and Ollama-first.
+- Keys: Ollama needs none (the placeholder `ollama` satisfies the OpenAI library). Option B, documented in Lab 0, is a hosted open-model provider with a free key (Groq, OpenRouter); embeddings stay on Ollama.
+- Models: `llama3.2` (chat, 8 GB RAM), `nomic-embed-text` (embeddings), `qwen2.5:7b` (agents, 16 GB RAM).
+- The whole section is a **draft** (`"draft": true` on the nav section, plus `"code_dirs": ["code/oss-labs"]`): its pages are hidden from live sidebars and `tools/stage_site.py` leaves its pages and code out of the site. To publish it, remove `"draft": true` from the section (Lab 2 and 3 pages link to nothing in draft modules, but check the build output).
+- Draft sections work like draft modules: any nav section can carry `"draft": true`.

@@ -1,0 +1,185 @@
+<!--meta
+{"id": "m06-retrieve", "short": "Retrieval for RAG", "h1": "Retrieval", "description": "Module 06, topic 6: retrieval for RAG: top k, a calibrated relevance floor, hybrid search, permission pre-filters, query rewriting for follow-ups and other languages, reranking and diversity, and two drills: calibrating a floor on answerable versus off-topic questions, and rewriting follow-up questions before searching.", "lead": "Retrieval decides what the model is allowed to know for this question. Top k always returns k chunks, even for 'Can I bring my dog?'. Follow-ups like 'and after that, how much?' mean nothing to an index. You'll calibrate a relevance floor on real scores and fix follow-ups by rewriting them first.", "chips": ["Top k + floor", "Permission filters", "Query rewriting", "Reranking", "Drills 06.6–06.7"], "time": "Learn 12 min · Do 30 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The right few passages, for the right person, or none.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Retrieval</strong> is the query-time step that selects the chunks a model will see: it turns the user's message into a search query, searches the index (vector, keyword or hybrid) <strong>within what that user may see</strong>, keeps the top <em>k</em> results above a <strong>relevance threshold</strong>, and optionally <strong>reranks</strong> or diversifies them.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Work out what's really being asked, search only what this person is allowed to read, keep the few best matches, and if nothing is good enough, return nothing rather than something.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A reference librarian. They turn "and the other one?" into the actual title from your earlier conversation, only fetch books from shelves you have a pass for, bring you three good books rather than the ten nearest on the shelf, and when the library has nothing on dog-friendly classrooms, they say so instead of handing you a book about payments.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 280" role="img" aria-labelledby="rt-t rt-d">
+      <title id="rt-t">Retrieval steps for one question</title>
+      <desc id="rt-d">A follow-up message 'and after that, how much?' is rewritten with the conversation into 'How much does extra lab time cost after the free extension?'. The search runs only over chunks the user's audience may see, combining keyword and vector ranking. The top results are kept only if their similarity is above the floor; optionally a reranker reorders them. The output is zero to k numbered sources.</desc>
+      <rect x="20" y="40" width="170" height="90" rx="12" class="s-surface"/><text x="105" y="70" class="t-b mid">message</text><text x="105" y="92" class="t-s mid">"and after that,</text><text x="105" y="110" class="t-s mid">how much?"</text>
+      <path d="M190 85 H214" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="220" y="40" width="170" height="90" rx="12" class="s-violet"/><text x="305" y="70" class="t-b mid">1. rewrite</text><text x="305" y="92" class="t-s mid">standalone question,</text><text x="305" y="110" class="t-s mid">index language</text>
+      <path d="M390 85 H414" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="420" y="40" width="170" height="90" rx="12" class="s-blue"/><text x="505" y="70" class="t-b mid">2. filter</text><text x="505" y="92" class="t-s mid">audience / groups</text><text x="505" y="110" class="t-s mid">before ranking</text>
+      <path d="M590 85 H614" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="620" y="40" width="150" height="90" rx="12" class="s-teal"/><text x="695" y="70" class="t-b mid">3. search</text><text x="695" y="92" class="t-s mid">keyword + vector</text><text x="695" y="110" class="t-s mid">RRF (Module 05)</text>
+      <path d="M770 85 H794" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="800" y="40" width="140" height="90" rx="12" class="s-green"/><text x="870" y="70" class="t-b mid">4. floor</text><text x="870" y="92" class="t-s mid">drop weak</text><text x="870" y="110" class="t-s mid">matches</text>
+      <path d="M870 130 V170 H700" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="420" y="150" width="274" height="70" rx="12" class="s-surface2"/><text x="436" y="178" class="t-b">5. optional: rerank, diversify</text><text x="436" y="200" class="t-s">cross-encoder or semantic ranker</text>
+      <path d="M420 185 H300" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="20" y="150" width="274" height="70" rx="12" class="s-amber"/><text x="36" y="178" class="t-b">0 to k sources</text><text x="36" y="200" class="t-s">zero is a valid result</text>
+      <text x="20" y="258" class="t-s">every step is cheap compared with generation, and each one removes a way for the model to answer from the wrong text</text>
+    </svg>
+  </div>
+  <figcaption><b>Retrieval is a funnel.</b> Rewrite, filter, search, threshold, and optionally rerank, before a single token is generated.</figcaption>
+</figure>
+
+<h3>The levers</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Lever</th><th>What it fixes</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td><strong>k</strong> (how many chunks)</td><td>Answers needing two sections (k of 3 to 5 is typical)</td><td>Tokens and noise grow with k</td></tr>
+      <tr><td><strong>Relevance floor</strong></td><td>Off-topic questions retrieving unrelated chunks</td><td>Calibrate per embedding model; too high drops real questions</td></tr>
+      <tr><td><strong>Permission pre-filter</strong></td><td>Users seeing documents they may not read</td><td>Needs audience or group metadata from ingestion</td></tr>
+      <tr><td><strong>Hybrid search</strong></td><td>Codes and names (LAB-503, AZ-104) plus paraphrases</td><td>None worth mentioning (Module 05)</td></tr>
+      <tr><td><strong>Query rewriting</strong></td><td>Follow-ups, typos, other languages, chatty messages</td><td>One small model call (or free, when the model writes a tool query)</td></tr>
+      <tr><td><strong>Reranking</strong></td><td>The best chunk ranked fourth instead of first</td><td>A reranker call; Azure AI Search's semantic ranker does it on the service</td></tr>
+      <tr><td><strong>Diversity</strong> (for example MMR)</td><td>Three near-identical chunks crowding out a second topic</td><td>A little extra computation</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Production RAG systems on Azure AI Search commonly run hybrid queries with the semantic ranker on top, filter by the user's group ids (security trimming), and keep a minimum reranker score below which the bot says it can't find an answer. Chat products also rewrite every follow-up into a standalone query, which is why their logs show search queries the user never typed.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Search returns results sorted by score. Take the first few."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Retrieval is the model's <strong>whole world</strong> for this question. I rewrite the query, filter by permission <strong>before</strong> ranking, accept zero results, and calibrate thresholds on labelled questions for each embedding model."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Filtering by permission <em>after</em> retrieval ("get the top 5, then drop what the user can't see"). Sometimes nothing is left; worse, if someone forgets the post-filter in one code path, restricted text reaches the prompt. Filter inside the search, as <code>kb_index.search(..., audience=...)</code> does.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I retrieve with hybrid search, pre-filtered by the user's permissions, keep the top k above a <strong>calibrated relevance threshold</strong>, rewrite conversational follow-ups into standalone queries, and add a reranker when the right chunk is retrieved but not ranked first."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>A floor from real scores, and follow-ups that find things.</p></div></div>
+
+<div class="drill" id="d06-6" data-title="Calibrate a relevance floor" data-time="~15 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 06.6</span><h3>Calibrate a relevance floor</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI embeddings</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> compare the best similarity score for 20 answerable questions and 8 off-topic ones, then choose a floor for your embedding model.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Scores for answerable and off-topic questions</h4>
+        <pre class="code" data-file="lab06_06_relevance_floor.py" data-src="code/genai-labs/lab06_06_relevance_floor.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab06_06_relevance_floor.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama); on text-embedding-3-small every score is lower</span>
+<pre class="out"><code>Lowest in-scope scores:
+  0.638  My lab session stopped while I was at lunch
+  0.654  I need a sign-language interpreter for the course
+  0.689  The trainer cancelled the class, what are my options?
+  0.694  Can I swap to a different course instead?
+Highest off-topic scores:
+  0.686  Can I bring my dog to a classroom course?
+  0.636  Is TrainCrest hiring trainers?
+  0.514  Do you sell gift cards?
+  0.475  Can you recommend a good laptop for programming?
+
+ floor  answerable kept  off-topic dropped
+  0.40           20/20              2/8
+  0.45           20/20              3/8
+  0.50           20/20              5/8
+  0.55           20/20              6/8
+  0.60           20/20              6/8</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Pick a floor</h4>
+        <ol>
+          <li>The dog question (0.686) scores higher than a real question (0.638). What does that tell you about floors?</li>
+          <li>Which floor would you choose for this model, and what catches the questions it lets through?</li>
+          <li>Why must you re-run this when you change embedding model?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>Similarity measures "about the same kind of thing", not "answerable". A question about bringing a dog to a classroom course is close to the classroom-format section. No floor separates every case; it removes the obvious misses cheaply.</li>
+            <li>0.55: it keeps all 20 answerable questions with margin (lowest 0.638) and drops 6 of 8 off-topic ones before any model call. The prompt's "reply NOT_FOUND" rule (topic 7) and the checks in topic 9 handle the rest. <code>rag.py</code> uses 0.55 for <code>nomic-embed-text</code>.</li>
+            <li>Score ranges are model-specific. <code>text-embedding-3-small</code> puts related texts around 0.4 to 0.7 and unrelated ones around 0.1 to 0.3, so 0.55 would drop real questions there. Calibrate, then set <code>RAG_MIN_SCORE</code> in <code>.env</code>.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d06-6"> I've completed Drill 06.6</label></div>
+</div>
+
+<div class="drill" id="d06-7" data-title="Rewrite follow-ups before searching" data-time="~15 min" data-steps="run,write">
+  <div class="drill-head"><span class="drill-id">Drill 06.7</span><h3>Rewrite follow-ups before searching</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> see a follow-up message retrieve the wrong section, then fix it by asking the model for a standalone question first.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Raw follow-up vs rewritten question</h4>
+        <pre class="code" data-file="lab06_07_rewrite.py" data-src="code/genai-labs/lab06_07_rewrite.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab06_07_rewrite.py</code></pre>
+        <span class="out-label">Real output with llama3.2 and nomic-embed-text (Ollama); yours will differ</span>
+<pre class="out"><code>Follow-up : And after that, how much is it?
+  retrieves: Refunds and cancellations > How much you get back (0.52), Payments and invoices > Paying in instalments (0.50)
+Rewritten : How much does the lab stay open and charge afterwards for a standard 30-day use?
+  retrieves: Labs and cloud sandboxes > How long labs stay open (0.79), Labs and cloud sandboxes > Asking for more time (0.58)
+
+Follow-up : ten days. what do i get back?
+  retrieves: Refunds and cancellations > How much you get back (0.59), Refunds and cancellations > When the money arrives (0.64)
+Rewritten : Can I get a refund or cancellation policy for the remaining 10 days before my AZ-104 course is due to start?
+  retrieves: Refunds and cancellations > How much you get back (0.81), Refunds and cancellations > Overview (0.76)
+
+Follow-up : about two months ago, does it cost anything?
+  retrieves: Payments and invoices > Paying in instalments (0.56), Exam vouchers > How long it is valid (0.54)
+Rewritten : Does the cost of replacing or updating a certificate issued with an old surname differ from that of a regular replacement?
+  retrieves: Certificates of completion > Name corrections (0.74), Account and sign-in > Deleting your account (0.57)</code></pre>
+        <p>The rewritten questions are clumsy (a 3-billion-parameter model wrote them), yet two of three raw follow-ups retrieved the wrong article and all three rewrites found the right one, with much higher scores. Notice also that the third raw follow-up (0.56) passes even the 0.55 floor from Drill 06.6: a floor can't fix a query that has lost its subject.</p>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Make the rewriter handle other languages</h4>
+        <p>In Drill 06.9 a Spanish question finds nothing: <code>nomic-embed-text</code> is mostly English and the help centre is English. Improve the <code>REWRITE</code> prompt so the search query is always English, while the learner still gets an answer in their language later.</p>
+        <div class="template-box"><pre><code>Goal: improve REWRITE in #file:lab06_07_rewrite.py
+Context: the index is English; learners write in any language ...
+Constraints: output ...
+             keep ... (codes, numbers, product names) ...
+             only the question, nothing else
+Done when: a fourth conversation in Spanish retrieves ...</code></pre></div>
+        <p class="hint"><b>Hint:</b> say explicitly that only the <em>search query</em> is English; the reply language is decided elsewhere. Ask for codes like LAB-503 and AZ-104 to be copied exactly, and add a Spanish test conversation about rescheduling three days before a course.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div><div class="prompt-box"><pre><code>Improve the REWRITE prompt in #file:lab06_07_rewrite.py.
+- The output is a search query for an English-language help centre, so always write it in
+  English, whatever language the user wrote in. (Only the search query: the answer to the
+  user is produced later, in their language.)
+- Copy codes, numbers and product names exactly (LAB-503, AZ-104, $49, TC-12345).
+- Add the missing subject from the conversation; keep the user's details.
+- Return only the question, no quotes or explanation.
+Add a fourth conversation in Spanish ending with "¿Cuánto cuesta cambiar la fecha tres días antes?"
+after a first turn about rescheduling. Done when its rewrite is English and retrieves
+"Rescheduling a course > Fees" first.</code></pre></div></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d06-7"> I've completed Drill 06.7</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Retrieval.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why is "zero results" a good outcome for some questions?</summary><div><p>It lets the system say "I couldn't find that" without a model call, instead of handing the model unrelated chunks it may improvise from. Users trust a system that admits gaps.</p></div></details>
+  <details><summary>2. In tool-based RAG, who does the query rewriting?</summary><div><p>The model, when it writes the <code>query</code> argument of the search tool. That's why Milestone 6's prompt asks for "a complete question, including details from earlier in the conversation".</p></div></details>
+  <details><summary>3. The right chunk is usually in the top 10 but rarely first. What do you add?</summary><div><p>A reranker (a cross-encoder model, or Azure AI Search's semantic ranker) over the top 10 to 50, then keep the best 3 to 5. It improves ordering without changing the index.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Rewrite the question, filter by permission inside the search, keep only matches above a calibrated floor, and accept zero results. The model can only be as good as what it's given.</p></div>

@@ -1,0 +1,141 @@
+<!--meta
+{"id": "m07-plan", "short": "Reasoning and Planning", "h1": "Reasoning and Planning", "description": "Module 07, topic 2: how agents decide what to do next: step-by-step reasoning and acting (ReAct), plan-then-execute, re-planning, reasoning models, and checking a plan in code before anything runs; with a drill that asks for a plan as structured output and validates it.", "lead": "Before an agent acts, something has to decide the order: find the enrolment, then the dates, then the fee, then ask. A model can do that one step at a time, or write a whole plan first. A plan written as data can be checked by code before a single tool runs. You'll get a plan for Diego's request and let a validator check it.", "chips": ["ReAct", "Plan then execute", "Plans as data", "Drill 07.2"], "time": "Learn 12 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Think about the order before you act.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Reasoning</strong> is the model working out what a request needs and in what order; <strong>planning</strong> turns that into steps. Two common patterns: <strong>ReAct</strong> (reason and act), where the model decides one step at a time from the latest observation, and <strong>plan-then-execute</strong>, where it writes a full plan first and code or the model carries it out, re-planning if a step fails.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Either take the next sensible step and see what happens, or write the to-do list first. Both work; a written list can be checked before you start.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Cooking a familiar dish, you decide each step as you go (ReAct). Catering a wedding, you write the plan first (plan-then-execute), someone checks it ("you can't plate before the oven step"), and you adjust when the fish delivery is late (re-planning).</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 300" role="img" aria-labelledby="pl-t pl-d">
+      <title id="pl-t">ReAct versus plan-then-execute</title>
+      <desc id="pl-d">ReAct: the model reasons about the next step, calls one tool, reads the observation, and repeats; the plan emerges as it goes. Plan-then-execute: the model writes a structured plan with ordered steps, code validates the plan (known tools, approvals marked, dependencies in order), then the steps run and the model re-plans if one fails.</desc>
+      <text x="20" y="30" class="t-m">REACT · ONE STEP AT A TIME</text>
+      <rect x="20" y="42" width="190" height="60" rx="12" class="s-violet"/><text x="115" y="68" class="t-b mid">think: "need the ID"</text><text x="115" y="88" class="t-s mid">reason</text>
+      <path d="M210 72 H244" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="250" y="42" width="190" height="60" rx="12" class="s-teal"/><text x="345" y="68" class="t-b mid">act: my_enrolments</text><text x="345" y="88" class="t-s mid">tool call</text>
+      <path d="M440 72 H474" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="480" y="42" width="190" height="60" rx="12" class="s-surface"/><text x="575" y="68" class="t-b mid">observe: TC-20877</text><text x="575" y="88" class="t-s mid">result</text>
+      <path d="M670 72 H704" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="710" y="42" width="230" height="60" rx="12" class="s-surface2"/><text x="825" y="78" class="t-s mid">repeat until done</text>
+      <text x="20" y="148" class="t-m">PLAN THEN EXECUTE</text>
+      <rect x="20" y="160" width="250" height="120" rx="12" class="s-violet"/><text x="36" y="184" class="t-b">plan (structured output)</text><text x="36" y="208" class="t-s">1 my_enrolments</text><text x="36" y="226" class="t-s">2 upcoming_sessions</text><text x="36" y="244" class="t-s">3 reschedule_quote</text><text x="36" y="262" class="t-s">4 reschedule [approval]</text>
+      <path d="M270 220 H304" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="310" y="160" width="250" height="120" rx="12" class="s-rose"/><text x="326" y="184" class="t-b">code checks the plan</text><text x="326" y="208" class="t-s">known tools only</text><text x="326" y="226" class="t-s">writes marked for approval</text><text x="326" y="244" class="t-s">quote and dates before</text><text x="326" y="262" class="t-s">reschedule</text>
+      <path d="M560 220 H594" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="600" y="160" width="340" height="120" rx="12" class="s-teal"/><text x="616" y="184" class="t-b">execute, re-plan on failure</text><text x="616" y="208" class="t-s">a step fails (date taken) →</text><text x="616" y="226" class="t-s">ask for a new plan from here</text><text x="616" y="252" class="t-s">the learner can see the plan first</text>
+    </svg>
+  </div>
+  <figcaption><b>A plan you can read is a plan you can check.</b> ReAct adapts better; a written plan is easier to validate, show and approve.</figcaption>
+</figure>
+
+<h3>Choosing a planning style</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Pattern</th><th>Strengths</th><th>Weaknesses</th><th>Use for</th></tr></thead>
+    <tbody>
+      <tr><td>ReAct (the default tool loop)</td><td>Adapts to each result; simple</td><td>Can wander; no overview to check or show</td><td>Short tasks, 2 to 5 steps</td></tr>
+      <tr><td>Plan then execute</td><td>Checkable, showable, cheaper steps</td><td>Plans go stale when results surprise</td><td>Longer tasks, approvals, audit</td></tr>
+      <tr><td>Reasoning models</td><td>Better at multi-step logic, internally</td><td>Slower, pricier; reasoning is hidden</td><td>Hard planning; often only for the plan step</td></tr>
+    </tbody>
+  </table>
+</div>
+<ul>
+  <li><strong>Reasoning happens anyway.</strong> Modern models reason before choosing a tool; reasoning models do it explicitly with a separate effort setting (Module 03's chain-of-thought topic). You don't need "think step by step" in every prompt.</li>
+  <li><strong>Plans are structured output</strong> (Module 04): a list of steps with tool names, purposes and flags, which code can validate.</li>
+  <li><strong>Re-planning</strong> is normal: when a step fails, give the model the plan, what's done, and the error, and ask for the rest.</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Coding agents often show a plan or to-do list before editing files ("1. read the failing test, 2. fix the parser, 3. run the tests") and update it as they go, because people trust what they can follow. Travel and expense agents present the plan ("book this flight, this hotel, total $1,240") for approval before any booking. In both cases the plan is data the product can display, check and log.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"The control flow is in the code. A model just fills in text."</p></div>
+  <div><h5>GenAI developer view</h5><p>"The model can write the control flow at run time, as a <strong>plan I can validate</strong>: known tools, correct order, approvals marked, before anything runs."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Executing a model's plan blindly. Plans invent tools, skip checks ("reschedule" before "reschedule_quote") or forget approvals. Validate a plan like any other untrusted input.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I use a ReAct-style tool loop for short tasks, and plan-then-execute for longer or sensitive ones: the model returns a structured plan, code validates tools, order and approval flags, and the agent re-plans when a step fails."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>A plan as data, checked by code.</p></div></div>
+
+<div class="drill" id="d07-2" data-title="Plan first, then check the plan" data-time="~15 min" data-steps="run,think,write">
+  <div class="drill-head"><span class="drill-id">Drill 07.2</span><h3>Plan first, then check the plan</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · Pydantic</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> get a structured plan for Diego's three-part request without executing anything, and validate it in code.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Plan, then validate</h4>
+        <pre class="code" data-file="lab07_02_plan.py" data-src="code/genai-labs/lab07_02_plan.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab07_02_plan.py</code></pre>
+        <span class="out-label">Real output with qwen2.5:7b (Ollama); yours will differ</span>
+<pre class="out"><code>GOAL: Move Diego to the next date for his AZ-104 class and check lab status for the new date.
+  1. reschedule_quote   [needs approval] Check if Diego can be rescheduled to the next available date and what the cost would be.
+  2. upcoming_sessions  Identify the next available date for Diego's AZ-104 class.
+  3. reschedule         [needs approval] Reschedule Diego to the identified next available date for his AZ-104 class, if feasible.
+  4. lab_status         Check the lab status for the new date to ensure the lab will be available for Diego’s studying.
+  ask first: Step 1
+
+PLAN CHECK: ["reschedule_quote needs an ID, but my_enrolments isn't called before it"]</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Judge the plan</h4>
+        <ol>
+          <li>Does the plan put the read steps before the write step? Which check in the code enforces that?</li>
+          <li>Diego said "if it isn't too expensive". Where should that condition be handled: in the plan, by the model during execution, or by a person?</li>
+          <li>What would you do with a plan that fails the check?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>Yes: <code>reschedule</code> comes after <code>reschedule_quote</code> and <code>upcoming_sessions</code>, which the order check enforces. But the plan never calls <code>my_enrolments</code>, so it would need an enrolment ID nobody looked up, and the dependency check flags exactly that. In an earlier version of this drill, without that check, a plan with the same gap (and <code>reschedule</code> twice) printed "PLAN CHECK: OK". A validator only catches what you encode.</li>
+            <li>By the person. "Too expensive" is Diego's judgement; the agent should find the fee and show it in the approval request (topic 7). That's why the reschedule step is marked for approval.</li>
+            <li>Send the problems back to the model and ask for a corrected plan (a repair loop, as in Module 04), with a limit; or fall back to the step-by-step loop with approvals still enforced.</li>
+          </ol>
+        </div></details>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Re-plan after a failure</h4>
+        <p>Write a prompt for your assistant that adds re-planning to the script: if a (simulated) step fails, ask the model for a new plan for the remaining work.</p>
+        <div class="template-box"><pre><code>Goal: add a replan(plan, done_steps, error) function to #file:lab07_02_plan.py
+Context: Plan and PlanStep are Pydantic models; the same validator should run on the new plan
+Constraints: what the model is given ...; what it must not repeat ...; limit ...
+Done when: simulating "upcoming_sessions failed: schedule service timed out" ...</code></pre></div>
+        <p class="hint"><b>Hint:</b> give the model the original request, the steps already done with their results, and the error, and ask for the remaining steps only. Validate the new plan with the same checks, and stop after two re-plans.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div><div class="prompt-box"><pre><code>In #file:lab07_02_plan.py, move the plan checks into a function check(plan) -> list[str], then add
+replan(request, done, error) -> Plan. It sends the model the original request, the steps already
+completed (tool + one-line result), and the error from the failed step, and asks for a Plan of the
+REMAINING steps only, without repeating completed ones. Use the same parse(response_format=Plan) call.
+At the end of the script, simulate: done = [my_enrolments -> TC-20877, course C110], error =
+"upcoming_sessions failed: schedule service timed out"; print the new plan and check(new_plan).
+Allow at most 2 re-plans. Don't change PlanStep or Plan.</code></pre></div></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d07-2"> I've completed Drill 07.2</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Planning.</p></div></div>
+<div class="quiz">
+  <details><summary>1. What does ReAct stand for, and what does a ReAct loop look like in code?</summary><div><p>Reason and act. In code it's the tool loop: the model reasons, calls a tool, sees the result and decides the next step, until it answers. Milestone 4's loop and <code>agent.py</code> are ReAct loops.</p></div></details>
+  <details><summary>2. Give two checks you'd run on a model-written plan.</summary><div><p>Any two: every tool exists; write steps are marked for approval; dependencies come first (quote before reschedule); the number of steps is within budget; no step uses data the plan hasn't fetched.</p></div></details>
+  <details><summary>3. When is a separate planning call worth its cost?</summary><div><p>For longer or sensitive tasks where a plan can be checked, shown to a person, or reused, and where a wrong first action is expensive. For a two-step look-up, the plain loop is cheaper and just as good.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Agents plan step by step or up front. A plan written as structured data can be validated, displayed and approved before anything runs.</p></div>

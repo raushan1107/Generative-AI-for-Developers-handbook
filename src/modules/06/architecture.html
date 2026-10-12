@@ -1,0 +1,139 @@
+<!--meta
+{"id": "m06-arch", "short": "RAG Architecture", "h1": "RAG Architecture", "description": "Module 06, topic 2: the components of a RAG system (ingestion, chunking, embedding, vector store, retriever, prompt builder, generator, citation checker), offline and online pipelines, pipeline RAG versus tool-based (agentic) RAG, and a drill that runs the smallest end-to-end RAG with timings per stage.", "lead": "RAG isn't one thing; it's two pipelines and eight components, each with its own failure modes. Name them, and you know where to look when an answer is wrong. You'll run the smallest RAG that works, about 50 lines, and time every stage.", "chips": ["Two pipelines", "Eight components", "Pipeline vs tool RAG", "Drill 06.2"], "time": "Learn 12 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Know the parts, and where answers go wrong.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A <strong>RAG architecture</strong> has an <strong>offline (indexing) pipeline</strong> that turns source documents into a searchable index (ingest, chunk, embed, store) and an <strong>online (query) pipeline</strong> that answers each question (retrieve, build the prompt, generate, check). The two meet at the index and must use the same embedding model.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Prepare the library ahead of time; at question time, fetch the right pages, hand them over with clear instructions, and check the answer before showing it.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A restaurant kitchen. Before service, the prep cooks wash, cut and label ingredients into containers (indexing). During service, each order pulls exactly the containers it needs, the chef cooks, and the pass checks the plate before it leaves (query). A bad plate is usually a prep or picking problem, not a chef problem.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 330" role="img" aria-labelledby="ar-t ar-d">
+      <title id="ar-t">Components of a RAG system and their typical failures</title>
+      <desc id="ar-d">Eight components in two rows. Offline: ingestion (failure: junk text or missing documents), chunking (failure: facts split from their context), embedding (failure: model mismatch or poor language coverage), vector store (failure: stale or unfiltered). Online: retriever (failure: right chunk not in the top k), prompt builder (failure: too much or untrusted context), generator (failure: ignores or embellishes sources), citation checker (failure: missing, so wrong citations reach users).</desc>
+      <text x="20" y="30" class="t-m">OFFLINE · INDEXING</text>
+      <rect x="20" y="42" width="215" height="98" rx="12" class="s-amber"/><text x="36" y="68" class="t-b">1 · ingestion</text><text x="36" y="90" class="t-s">load, clean, dedupe, metadata</text><text x="36" y="120" class="t-s t-rose">fails: junk text, missing docs</text>
+      <rect x="250" y="42" width="215" height="98" rx="12" class="s-amber"/><text x="266" y="68" class="t-b">2 · chunking</text><text x="266" y="90" class="t-s">passages with titles</text><text x="266" y="120" class="t-s t-rose">fails: fact cut from context</text>
+      <rect x="480" y="42" width="215" height="98" rx="12" class="s-violet"/><text x="496" y="68" class="t-b">3 · embedding</text><text x="496" y="90" class="t-s">vectors, changed chunks only</text><text x="496" y="120" class="t-s t-rose">fails: model mismatch, language</text>
+      <rect x="710" y="42" width="230" height="98" rx="12" class="s-blue"/><text x="726" y="68" class="t-b">4 · vector store</text><text x="726" y="90" class="t-s">vector + text + metadata</text><text x="726" y="120" class="t-s t-rose">fails: stale, no permissions</text>
+      <text x="20" y="182" class="t-m">ONLINE · EVERY QUESTION</text>
+      <rect x="20" y="194" width="215" height="98" rx="12" class="s-teal"/><text x="36" y="220" class="t-b">5 · retriever</text><text x="36" y="242" class="t-s">top k, floor, filters, hybrid</text><text x="36" y="272" class="t-s t-rose">fails: answer not retrieved</text>
+      <rect x="250" y="194" width="215" height="98" rx="12" class="s-green"/><text x="266" y="220" class="t-b">6 · prompt builder</text><text x="266" y="242" class="t-s">rules, numbered sources</text><text x="266" y="272" class="t-s t-rose">fails: noise, injected text</text>
+      <rect x="480" y="194" width="215" height="98" rx="12" class="s-violet"/><text x="496" y="220" class="t-b">7 · generator</text><text x="496" y="242" class="t-s">the chat model</text><text x="496" y="272" class="t-s t-rose">fails: embellishes, ignores</text>
+      <rect x="710" y="194" width="230" height="98" rx="12" class="s-rose"/><text x="726" y="220" class="t-b">8 · citation checker</text><text x="726" y="242" class="t-s">code, before the user sees it</text><text x="726" y="272" class="t-s t-rose">fails: absent, so errors ship</text>
+      <path d="M235 91 H250 M465 91 H480 M695 91 H710" class="s-line"/>
+      <path d="M235 243 H250 M465 243 H480 M695 243 H710" class="s-line"/>
+      <path d="M825 140 V160 H210 V188" class="s-dash" marker-end="url(#ah)"/>
+      <text x="20" y="318" class="t-s">debug from the left: if the right chunk isn't retrieved, no prompt or model can fix the answer</text>
+    </svg>
+  </div>
+  <figcaption><b>Every component can fail on its own.</b> When an answer is wrong, first check whether the right chunk was retrieved; that single question splits most bugs in half.</figcaption>
+</figure>
+
+<h3>Two ways to wire the query side</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th></th><th>Pipeline RAG</th><th>Tool-based ("agentic") RAG</th></tr></thead>
+    <tbody>
+      <tr><td>Who decides to search</td><td>Your code, for every question</td><td>The model, by calling a <code>search</code> tool when it needs to</td></tr>
+      <tr><td>Searches per question</td><td>One (or a fixed number)</td><td>Zero, one or several, with queries the model writes</td></tr>
+      <tr><td>Good for</td><td>A help-centre search box, "ask the docs" pages, batch jobs</td><td>A chat assistant that also uses other tools and handles follow-ups</td></tr>
+      <tr><td>Watch out for</td><td>Searching for "thanks!" and greetings</td><td>The model skipping the search and answering from memory</td></tr>
+      <tr><td>In Milestone 6</td><td><code>POST /api/ask</code></td><td>The <code>search_help</code> tool in chat</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Facts worth remembering</h3>
+<ul>
+  <li><strong>Indexing runs when content changes</strong>, not per question: on a schedule, on a webhook from the wiki, or in a CI pipeline (Module 12).</li>
+  <li><strong>Latency is dominated by generation.</strong> Embedding a question and searching takes milliseconds; the model's answer takes seconds (Drill 06.2 shows it).</li>
+  <li><strong>Managed options exist for each box</strong>: Azure AI Search can ingest, chunk and vectorise documents for you (integrated vectorization), rank results semantically, and filter by user permissions. Doing it by hand once makes those settings meaningful.</li>
+  <li><strong>Keep every stage observable</strong>: log which chunks were retrieved, with scores, for every answer. Without that you can't debug or evaluate (Modules 08 and 09).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>When a RAG bot gives a wrong answer, experienced teams open the trace and read the retrieved chunks first. Most of the time the answer was wrong because the right passage wasn't there: an outdated document, a table that chunked badly, a question in another language, or a filter that hid it. Teams that log retrieval fix these in hours; teams that only log the final answer end up rewriting prompts for weeks.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"It's a chatbot with a search box glued on."</p></div>
+  <div><h5>GenAI developer view</h5><p>"It's a <strong>data pipeline</strong> plus a <strong>question pipeline</strong>. I test and monitor each stage separately, and I always know which chunks produced which answer."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Fixing retrieval problems with prompt changes ("ALWAYS check carefully!"). If the right chunk isn't in the context, no instruction can make the model know it. Check retrieval first.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"A RAG system has an offline indexing pipeline (ingest, chunk, embed, store) and an online query pipeline (retrieve, augment the prompt, generate, verify). I'd choose <strong>pipeline RAG</strong> for a single-purpose Q&amp;A box and <strong>tool-based RAG</strong> inside an assistant that also calls other tools, and I'd log retrieved chunks for every answer."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>All eight boxes in one small script.</p></div></div>
+
+<div class="drill" id="d06-2" data-title="The smallest RAG that works" data-time="~15 min" data-steps="run,think,ask">
+  <div class="drill-head"><span class="drill-id">Drill 06.2</span><h3>The smallest RAG that works</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · numpy</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> run RAG end to end over the help centre with no framework, see each stage and its time, then map the script onto the architecture.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Index and answer in one script</h4>
+        <pre class="code" data-file="lab06_02_minimal_rag.py" data-src="code/genai-labs/lab06_02_minimal_rag.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab06_02_minimal_rag.py "Can I pay for a $1,490 course in parts?"</code></pre>
+        <span class="out-label">Real output with nomic-embed-text and llama3.2 (Ollama) on a laptop CPU; yours will differ</span>
+<pre class="out"><code>[ 0.01s] ingest + chunk: 40 chunks
+[ 0.00s] embed + store: 40 vectors of 768 numbers
+[ 0.00s] retrieve: payments-and-invoices > Paying in instalments (0.70), rescheduling > Fees (0.65), payments-and-invoices > Retake Pass (0.64)
+[ 0.00s] prompt: question + 3 sources
+[15.15s] generate
+
+Q: Can I pay for a $1,490 course in parts?
+A: Yes, according to [1], courses over $1,000 can be paid in three monthly instalments with no extra cost.</code></pre>
+        <p>The embedding stages show 0.00s because <code>embed.py</code>'s disk cache already had these texts from Module 05. On a first run, embedding 40 chunks takes a second or two; generation still dominates.</p>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Map it to the eight components</h4>
+        <ol>
+          <li>Which lines are ingestion, chunking, embedding, the vector store, the retriever, the prompt builder and the generator? Which component is missing?</li>
+          <li>The script re-embeds and rebuilds the "index" on every run. Why is that fine here and wrong in production?</li>
+          <li>What happens if you ask <em>"Can I bring my dog?"</em>, and which component should have stopped it?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>The <code>for path in ...</code> loop is ingestion and chunking (headings only, intros dropped); <code>embed(...)</code> plus the normalised numpy array are embedding and the "vector store"; <code>scores</code> and <code>argsort</code> are the retriever; <code>context</code> and <code>messages</code> are the prompt builder; the <code>create</code> call is the generator. The <strong>citation checker</strong> is missing, and so are a relevance floor and metadata.</li>
+            <li>Forty short chunks embed in seconds (and the cache makes re-runs free). With thousands of documents you index once, store the vectors, and update only what changed (topic 5).</li>
+            <li>It always retrieves 3 chunks, however unrelated, and the model may improvise from them. A relevance floor in the retriever (topic 6) and a "NOT_FOUND" rule in the prompt (topic 7) should stop it.</li>
+          </ol>
+        </div></details>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Make the stages visible</h4>
+        <div class="prompt-box"><pre><code>In #file:lab06_02_minimal_rag.py, after the "retrieve" stage, print the first 80 characters
+of each retrieved chunk under its source, indented by four spaces. Change nothing else.
+Then explain in two sentences why printing retrieved chunks is the first debugging step in RAG.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it names the file and the exact place, limits the change ("nothing else"), and asks for the reasoning as well, so you learn the habit, not just the code.</div>
+        <p>You should see the instalments text under the first source. Make this a habit: every RAG script you write should be able to show what it retrieved.</p>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d06-2"> I've completed Drill 06.2</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Architecture.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A learner gets a wrong answer about voucher validity. What is the first thing you check?</summary><div><p>Which chunks were retrieved for that question. If the "How long it is valid" section wasn't among them, it's a retrieval problem (chunking, embedding, filters or the floor), not a prompt problem.</p></div></details>
+  <details><summary>2. Which pipeline runs when the support team edits a help article?</summary><div><p>The offline indexing pipeline: re-ingest the article, re-chunk it, re-embed the changed chunks and update the store. The query pipeline doesn't change.</p></div></details>
+  <details><summary>3. When would you choose tool-based RAG over a fixed pipeline?</summary><div><p>Inside a conversational assistant that also uses other tools, needs to decide when looking things up is useful, may search more than once, and must turn follow-ups into proper search queries.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Two pipelines, eight components, one debugging rule: check what was retrieved before you touch the prompt.</p></div>

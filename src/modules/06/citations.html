@@ -1,0 +1,153 @@
+<!--meta
+{"id": "m06-cite", "short": "Citation and Source Attribution", "h1": "Citation and Source Attribution", "description": "Module 06, topic 9: why RAG answers cite sources, citation formats and granularity, showing sources in the UI, and verifying citations in code: invented citation numbers, factual sentences without citations, and numbers that don't appear in the cited source; with a drill that checks four answers and renders the sources.", "lead": "A citation turns 'trust me' into 'check me'. But a model can cite a source that doesn't exist, or cite a real one for a number it made up. Cheap checks in code catch the most damaging cases before the learner reads the answer. You'll build them and run them on four answers, one honest and three with typical mistakes.", "chips": ["Inline citations", "Show sources", "Verify in code", "Drill 06.10"], "time": "Learn 10 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Every fact points somewhere, and code checks the pointer.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Citation and source attribution</strong> link each statement in a generated answer to the retrieved source that supports it, typically with inline markers such as [1] that map to a document, section or URL. <strong>Citation verification</strong> checks those links in code or with another model: that cited sources exist, that factual statements are cited, and that cited sources actually contain what's claimed.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Make the model say where each fact came from, show those sources to the reader, and before you show anything, check the model isn't pointing at a source that doesn't exist or doesn't say that.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A journalist's article and the newspaper's fact-checker. The journalist marks every claim with its source; the fact-checker opens each source and confirms the number is really there. Readers see the sources; the fact-checker catches the "$75" that the source says is $50 before it goes to print.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 300" role="img" aria-labelledby="ci-t ci-d">
+      <title id="ci-t">Checking citations before showing an answer</title>
+      <desc id="ci-d">The model's answer has sentences with markers like [1] and [4]. The checker compares them with the sources that were in the prompt. Unknown: [4] was never sent, so it's an invented citation. Uncited: a sentence states a number but cites nothing. Unsupported: a sentence cites [1] but its number, 75, appears in no cited source. A clean answer goes to the user with its source list; a failing one is repaired, flagged or replaced.</desc>
+      <rect x="20" y="30" width="300" height="230" rx="12" class="s-surface"/>
+      <text x="36" y="56" class="t-b">model answer</text>
+      <text x="36" y="86" class="t-s">"Moving costs $50, once [1]."</text>
+      <text x="36" y="112" class="t-s">"No refund now, but one free</text>
+      <text x="36" y="130" class="t-s">move [2]."</text>
+      <text x="36" y="158" class="t-s">"... no refund [4]."</text>
+      <text x="36" y="184" class="t-s">"Refund in 5 to 10 days."</text>
+      <text x="36" y="210" class="t-s">"Moving costs $75 [1]."</text>
+      <text x="36" y="244" class="t-s">sources sent: [1] [2]</text>
+      <path d="M320 145 H364" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="370" y="30" width="270" height="230" rx="12" class="s-rose"/>
+      <text x="386" y="56" class="t-b">citations.check()</text>
+      <text x="386" y="90" class="t-s">unknown: [4] was never sent</text>
+      <text x="386" y="124" class="t-s">uncited: a sentence with a</text>
+      <text x="386" y="142" class="t-s">number cites nothing</text>
+      <text x="386" y="176" class="t-s">unsupported: 75 is not in [1]</text>
+      <text x="386" y="210" class="t-s">numbers from the question</text>
+      <text x="386" y="228" class="t-s">are allowed</text>
+      <path d="M640 145 H684" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="690" y="30" width="250" height="110" rx="12" class="s-green"/>
+      <text x="706" y="56" class="t-b">ok → show it</text>
+      <text x="706" y="84" class="t-s">answer + "Sources:"</text>
+      <text x="706" y="104" class="t-s">[1] Rescheduling › Fees</text>
+      <rect x="690" y="150" width="250" height="110" rx="12" class="s-amber"/>
+      <text x="706" y="176" class="t-b">not ok → act</text>
+      <text x="706" y="204" class="t-s">strip unknown markers, warn,</text>
+      <text x="706" y="222" class="t-s">retry, or show "related"</text>
+      <text x="706" y="240" class="t-s">sources; log for Module 09</text>
+    </svg>
+  </div>
+  <figcaption><b>Three checks, no extra model call.</b> They don't prove an answer is right, but they catch the errors that hurt most: invented sources and wrong numbers.</figcaption>
+</figure>
+
+<h3>Choices you make</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Choice</th><th>Options</th><th>Our default</th></tr></thead>
+    <tbody>
+      <tr><td>Marker format</td><td>[1] numbers · section ids · quoted spans</td><td>[n]: short, cheap in tokens, easy to check</td></tr>
+      <tr><td>Granularity</td><td>Document · section (chunk) · sentence</td><td>Section: precise enough to check, links to a heading</td></tr>
+      <tr><td>Where shown</td><td>Inline markers · footnote list · hover cards · "related articles"</td><td>Inline markers plus a list of cited sources with links</td></tr>
+      <tr><td>Verification</td><td>Rules in code · a second model judging support · human review</td><td>Rules in code on every answer; model-based groundedness in Module 09</td></tr>
+      <tr><td>When a check fails</td><td>Remove the marker · warn · retry · fall back to "not found"</td><td>Remove unknown markers, log it, warn on unsupported numbers</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Citations are now expected in enterprise assistants: answers show numbered references to files or pages, and users click them, especially for HR, legal and policy questions. Legal and medical tools go further and verify quoted spans against the source text. On Azure, Azure AI Content Safety offers groundedness detection, a model-based check of whether an answer is supported by given sources; Module 09 compares that kind of evaluator with the free rule-based checks you build here.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"If the model includes a reference, the answer is sourced."</p></div>
+  <div><h5>GenAI developer view</h5><p>"A citation is a <strong>claim</strong> made by the model. I verify it against the exact list of sources I sent, show only verified sources, and log failures as quality data."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Showing every retrieved source as if it were cited. The reader sees four authoritative links under an answer that used one of them, or none, and assumes all four support it. Show what the answer cites; if it cites nothing, label the list honestly ("related articles"), as Milestone 6 does.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I number the sources in the prompt, require inline citations, and verify them in code: <strong>no unknown ids, no uncited factual claims, and numbers must appear in the cited source</strong>. The UI shows only verified sources, and failures feed the evaluation dataset."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>One honest answer, three typical mistakes.</p></div></div>
+
+<div class="drill" id="d06-10" data-title="Check citations before the learner sees them" data-time="~20 min" data-steps="run,verify,write">
+  <div class="drill-head"><span class="drill-id">Drill 06.10</span><h3>Check citations before the learner sees them</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-tool">Python · pytest</span><span class="badge b-tool">offline</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> implement three rule-based citation checks, run them on four answers to the same question, and render the verified sources for the learner.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The checker</h4>
+        <pre class="code" data-file="citations.py" data-src="code/genai-labs/citations.py"></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Four answers, one question</h4>
+        <pre class="code" data-file="lab06_10_citations.py" data-src="code/genai-labs/lab06_10_citations.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab06_10_citations.py</code></pre>
+        <span class="out-label">Expected output (exact, no model involved)</span>
+<pre class="out"><code>GROUNDED: OK
+INVENTED CITATION: {'unknown': [4]}
+NUMBER WITHOUT A SOURCE: {'uncited': ['Your refund would arrive in 5 to 10 business days.']}
+NUMBER NOT IN ITS SOURCE: {'unsupported': [{'sentence': 'Moving the course costs $75 [1].', 'numbers': ['75']}]}
+
+Rendered for the learner (grounded answer):
+
+Moving the course within 7 days of the start costs $50, once [1]. Cancelling now gives no refund, but you can move to a later date once, free [2].
+
+Sources:
+[1] Rescheduling a course &gt; Fees (rescheduling.md)
+[2] Refunds and cancellations &gt; How much you get back (refunds-and-cancellations.md)</code></pre>
+        <p>If an answer repeats "3 days" from the question, that number appears in no source, yet it's not a hallucination: the learner wrote it. That's why <code>check()</code> takes the question too and allows its numbers.</p>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>The tests</h4>
+        <pre class="code" data-file="test_citations.py" data-src="code/genai-labs/test_citations.py"></pre>
+<pre class="term"><code><span class="ps">$ </span>pytest -q test_citations.py
+<span class="o">.......                                                                  [100%]
+7 passed in 0.15s</span></code></pre>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Defence in depth: no staff sources in public answers</h4>
+        <p>Retrieval already filters by audience. Add a second, independent check: an answer for a learner must never cite a source whose <code>audience</code> is <code>staff</code>. Write the prompt.</p>
+        <div class="template-box"><pre><code>Goal: extend check() in #file:citations.py with an audience check
+Context: each source dict may have "audience": "public" or "staff" ...
+Constraints: new optional parameter ...; report key ...; ok must be False when ...
+             existing tests must still pass ...
+Done when: a new test in #file:test_citations.py ...</code></pre></div>
+        <p class="hint"><b>Hint:</b> make the new parameter optional (for example <code>audience=None</code> meaning "don't check"), so existing callers and tests keep working. Name the report key clearly, such as <code>"restricted"</code>.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div><div class="prompt-box"><pre><code>In #file:citations.py, add an optional parameter audience: tuple[str, ...] | None = None to check().
+When it's given, any cited source whose "audience" key is not in it is listed under a new report
+key "restricted" (a list of source numbers), and report["ok"] is False if "restricted" is non-empty.
+Sources without an "audience" key count as "public". With audience=None, behave exactly as now
+(the "restricted" key is still present, as an empty list).
+Add one test to #file:test_citations.py: a staff source cited in an answer checked with
+audience=("public",) gives restricted == [2] and ok False. All existing tests must still pass.</code></pre></div></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d06-10"> I've completed Drill 06.10</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Citations.</p></div></div>
+<div class="quiz">
+  <details><summary>1. The answer says "a reissue costs $25 [1]" and source 1 says "After 30 days, a reissue costs $25." Do the checks prove the answer is right?</summary><div><p>No. They prove the number appears in the cited source. The answer could still apply it to the wrong situation (for example, a correction requested within 30 days, which is free). That needs a model-based groundedness check or human review (Module 09).</p></div></details>
+  <details><summary>2. Why does <code>check()</code> ignore codes like TC-10477 and LAB-503 when comparing numbers?</summary><div><p>They're identifiers, often copied from the question or the learner's data, not amounts or durations claimed from a source. Treating them as numbers would flag correct answers.</p></div></details>
+  <details><summary>3. A model often answers correctly but cites nothing. What do you show the learner?</summary><div><p>The answer, without pretending it was sourced: list the top retrieved sections as "related articles", log the missing citations, and measure the citation rate per model. Small local models do this far more often than larger hosted ones.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Citations make answers checkable; code makes them trustworthy. Verify every marker against the sources you sent, show only what's cited, and log every failure.</p></div>

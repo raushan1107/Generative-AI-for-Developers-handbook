@@ -1,0 +1,57 @@
+<!--meta
+{"id": "oss", "short": "Open-Source Lab Guide", "h1": "Open-Source Lab Guide", "description": "A step-by-step hands-on lab guide for Generative AI for Developers using only free, open-source models: Ollama on your own computer, open models such as Llama, Qwen and nomic-embed-text, and Python. One lab per Part, about three hours each, with exact commands and expected output.", "lead": "Everything in this course can be practised without a cloud subscription or a paid API key. This guide runs open-source models on your own computer with Ollama, and walks you through each lab step by step: what to install, where each setting goes, what to type, and what you should see. Follow it after each Part's demonstrations; by the end of each lab you have working code of your own.", "chips": ["Free and local", "Ollama + Python", "Step by step", "≈ 3 hours per lab"]}
+-->
+<h2 id="how">How to use this guide</h2>
+<ul>
+  <li><strong>One lab per Part, about three hours each.</strong> Your trainer demonstrates the Part's topics; then you work through the lab on your own computer. Each lab is a sequence of exercises, each exercise a sequence of tasks, each task a list of numbered steps.</li>
+  <li><strong>Do Lab 0 first, once.</strong> It installs and checks everything: Python, VS Code, Ollama and the models. Allow 30 to 60 minutes, most of it downloading.</li>
+  <li><strong>Every step tells you what to expect.</strong> Commands are in dark boxes; expected output follows. Output from a language model will differ from the examples in wording, which is normal. Numbers, file names and error messages should match.</li>
+  <li><strong>Checkpoints</strong> at the end of each exercise tell you what you should have before moving on. If something doesn't match, use the troubleshooting table in that lab.</li>
+  <li><strong>The code is provided.</strong> You type or paste each file as you go, so you see how it's built. The complete files are also in <code>code/oss-labs/</code> next to this handbook.</li>
+</ul>
+
+<h2 id="labs">The labs</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Lab</th><th>Covers</th><th>You finish with</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td><a href="lab-0-setup.html">Lab 0 · Setup</a></td><td>Python, VS Code, Ollama, open models, <code>.env</code></td><td>A checked lab environment</td><td>30–60 min</td></tr>
+      <tr><td><a href="lab-1.html">Lab 1 · Prompts, APIs and JSON</a></td><td>Part I: Modules 01–03</td><td>A streaming chat app with memory, errors and logs; a triage prompt that returns valid JSON</td><td>≈ 3 h</td></tr>
+      <tr><td><a href="lab-2.html">Lab 2 · Tools and semantic search</a></td><td>Part II: Modules 04–05</td><td>An assistant that calls your functions; a semantic search app over a help centre</td><td>≈ 3 h</td></tr>
+      <tr><td><a href="lab-3.html">Lab 3 · RAG and agents</a></td><td>Part III: Modules 06–07</td><td>A company knowledge assistant with citations; an agent that acts with your approval</td><td>≈ 3 h</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="why">Why open-source models?</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th></th><th>Open models on Ollama (this guide)</th><th>Hosted APIs (the main handbook)</th></tr></thead>
+    <tbody>
+      <tr><td>Cost</td><td>Free; runs on your computer</td><td>Pay per token; needs a subscription or key</td></tr>
+      <tr><td>Privacy</td><td>Nothing leaves your machine</td><td>Data goes to the provider (under its terms)</td></tr>
+      <tr><td>Speed</td><td>Depends on your hardware; seconds to a minute per answer on a laptop</td><td>Fast and consistent</td></tr>
+      <tr><td>Quality</td><td>Good for learning; small models make more mistakes, which is instructive</td><td>Stronger models, better instruction following</td></tr>
+      <tr><td>Code</td><td>The same OpenAI-compatible Python code</td><td>The same code, different URL, key and model</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Ollama exposes an <strong>OpenAI-compatible API</strong> at <code>http://localhost:11434/v1</code>, so the code you write here works with Azure OpenAI, OpenAI or any compatible provider by changing three settings. What you learn transfers directly.</p>
+
+<h2 id="hardware">What your computer needs</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Memory (RAM)</th><th>Chat model</th><th>Agent model (Lab 3)</th><th>Expect</th></tr></thead>
+    <tbody>
+      <tr><td>8 GB</td><td><code>llama3.2</code> (3B, 2 GB download)</td><td><code>llama3.2</code></td><td>5–30 s per answer; agents make more mistakes</td></tr>
+      <tr><td>16 GB or more</td><td><code>llama3.2</code></td><td><code>qwen2.5:7b</code> (4.7 GB download)</td><td>Agents follow multi-step tasks much better</td></tr>
+      <tr><td>A GPU (NVIDIA, or Apple silicon)</td><td>Any of the above</td><td><code>qwen2.5:7b</code> or larger</td><td>Answers in a few seconds</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Plus about 10 GB of free disk space, Windows 10/11, macOS 12 or later, or a recent Linux, and an internet connection for the downloads. If your computer is too slow, Lab 0 shows an alternative: hosted open models with a free API key.</p>
+
+<div class="callout note">
+  <div class="c-label">For trainers</div>
+  <p>Ask learners to complete Lab 0 before the first day; downloads on a shared classroom network are slow. Each lab maps to one Part of the handbook and assumes the Part was demonstrated first. The labs use the same fictional TrainCrest scenario and data as the handbook.</p>
+</div>

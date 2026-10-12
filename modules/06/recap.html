@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 06 Recap</title>
+<meta name="description" content="Module 06 recap: a RAG checklist, the Traincrest Assist RAG design decisions, and a six-question self-check on retrieval-augmented generation, ingestion, chunking, indexing, retrieval, prompt construction, generation and citations.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-recap" data-page="m06-recap">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod"><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<details class="sb-mod" open><summary><span class="sb-num">06</span>Retrieval-Augmented Generation</summary>
+<a class="sb-link sub k-overview " data-page-id="m06" href="../../modules/06/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m06-what" href="../../modules/06/what-is-rag.html"><span class="sb-ico">•</span>What is RAG, and why use it?</a>
+<a class="sb-link sub k-topic " data-page-id="m06-arch" href="../../modules/06/architecture.html"><span class="sb-ico">•</span>RAG architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m06-ingest" href="../../modules/06/ingestion.html"><span class="sb-ico">•</span>Document ingestion</a>
+<a class="sb-link sub k-topic " data-page-id="m06-chunk" href="../../modules/06/chunking.html"><span class="sb-ico">•</span>Text chunking</a>
+<a class="sb-link sub k-topic " data-page-id="m06-embed" href="../../modules/06/embedding-storage.html"><span class="sb-ico">•</span>Embedding generation and vector storage</a>
+<a class="sb-link sub k-topic " data-page-id="m06-retrieve" href="../../modules/06/retrieval.html"><span class="sb-ico">•</span>Retrieval</a>
+<a class="sb-link sub k-topic " data-page-id="m06-prompt" href="../../modules/06/prompt-construction.html"><span class="sb-ico">•</span>Prompt construction</a>
+<a class="sb-link sub k-topic " data-page-id="m06-generate" href="../../modules/06/generation.html"><span class="sb-ico">•</span>Response generation</a>
+<a class="sb-link sub k-topic " data-page-id="m06-cite" href="../../modules/06/citations.html"><span class="sb-ico">•</span>Citation and source attribution</a>
+<a class="sb-link sub k-build " data-page-id="m06-build" href="../../modules/06/build.html"><span class="sb-ico">⚒</span>Build: Milestone 6</a>
+<a class="sb-link sub k-recap active" data-page-id="m06-recap" href="../../modules/06/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">07</span>Building AI Agents</summary>
+<a class="sb-link sub k-overview " data-page-id="m07" href="../../modules/07/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m07-what" href="../../modules/07/what-is-an-agent.html"><span class="sb-ico">•</span>What is an AI agent? Agent vs chatbot</a>
+<a class="sb-link sub k-topic " data-page-id="m07-plan" href="../../modules/07/planning.html"><span class="sb-ico">•</span>Reasoning and planning</a>
+<a class="sb-link sub k-topic " data-page-id="m07-tools" href="../../modules/07/tool-calling.html"><span class="sb-ico">•</span>Tool calling for agents</a>
+<a class="sb-link sub k-topic " data-page-id="m07-flows" href="../../modules/07/workflows.html"><span class="sb-ico">•</span>Agent workflows</a>
+<a class="sb-link sub k-topic " data-page-id="m07-memory" href="../../modules/07/state-memory.html"><span class="sb-ico">•</span>State and memory</a>
+<a class="sb-link sub k-topic " data-page-id="m07-multi" href="../../modules/07/multi-step.html"><span class="sb-ico">•</span>Multi-step tasks</a>
+<a class="sb-link sub k-topic " data-page-id="m07-hitl" href="../../modules/07/human-in-the-loop.html"><span class="sb-ico">•</span>Human-in-the-loop workflows</a>
+<a class="sb-link sub k-topic " data-page-id="m07-reliable" href="../../modules/07/reliability.html"><span class="sb-ico">•</span>Agent reliability</a>
+<a class="sb-link sub k-build " data-page-id="m07-build" href="../../modules/07/build.html"><span class="sb-ico">⚒</span>Build: Milestone 7</a>
+<a class="sb-link sub k-recap " data-page-id="m07-recap" href="../../modules/07/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Open-source lab guide</div>
+<a class="sb-link " data-page-id="oss" href="../../oss/index.html"><span class="sb-ico">▸</span>About the open-source labs</a>
+<a class="sb-link " data-page-id="oss-0" href="../../oss/lab-0-setup.html"><span class="sb-ico">▸</span>Lab 0 · Set up Ollama and Python</a>
+<a class="sb-link " data-page-id="oss-1" href="../../oss/lab-1.html"><span class="sb-ico">▸</span>Lab 1 · Prompts, APIs and JSON</a>
+<a class="sb-link " data-page-id="oss-2" href="../../oss/lab-2.html"><span class="sb-ico">▸</span>Lab 2 · Tools and semantic search</a>
+<a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part III</span><i>/</i><a href="../../modules/06/index.html">Module 06</a><i>/</i><span>Recap and self-check</span></nav>
+  <span class="kind-pill">Recap · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 06 · Recap</span><h1>Module 06 Recap and Self-Check</h1><p class="lead">Check what stuck, review the RAG decisions Traincrest Assist now carries, and see what Module 07 adds: an assistant that can act, not just answer.</p><div class="chips"><span class="chip">Checklist</span><span class="chip">Design decisions</span><span class="chip">6 questions</span></div></header>
+<div class="content">
+
+<h2 id="checklist">RAG checklist</h2>
+<ul class="checklist">
+  <li>You can say when to use RAG, tools, a long prompt or fine-tuning (Drill 06.1).</li>
+  <li>You can name the eight components and debug from retrieval first (Drill 06.2).</li>
+  <li>Every document is ingested with clean text, a source, an audience and a hash; duplicates are reported (Drill 06.3).</li>
+  <li>Chunks keep every word (introductions included), carry a title header and an id, and were chosen by recall <em>and</em> tokens (Drill 06.4).</li>
+  <li>The index embeds only changed chunks and records its embedding model and chunker version (Drill 06.5).</li>
+  <li>Retrieval filters by permission inside the search and uses a relevance floor calibrated for your model (Drill 06.6).</li>
+  <li>Follow-up questions are rewritten into standalone queries before searching (Drill 06.7).</li>
+  <li>The prompt has rules, numbered and tagged sources within a budget, the question last, and a NOT_FOUND exit (Drill 06.8).</li>
+  <li>The pipeline skips the model when nothing is relevant and handles NOT_FOUND in code (Drill 06.9).</li>
+  <li>Citations are checked in code before anyone reads them, and only cited sources are shown (Drill 06.10).</li>
+</ul>
+
+<h2 id="decisions">Traincrest Assist: the RAG design</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Requirement</th><th>Decision</th><th>Why this and not something else</th></tr></thead>
+    <tbody>
+      <tr><td>Policy answers that stay current</td><td>Policy removed from the prompt (<code>assist_system@v4</code>); answers come from the help centre</td><td>One source of truth; editing an article and re-indexing updates answers, with no prompt release</td></tr>
+      <tr><td>Chat that searches when it needs to</td><td>Tool-based RAG: <code>search_help</code> with "a complete question" as its argument</td><td>The model decides when to search and rewrites follow-ups as it writes the query</td></tr>
+      <tr><td>A search box on the help-centre site</td><td>Pipeline RAG: <code>POST /api/ask</code> with <code>rag_answer@v1</code></td><td>Always searches, one model call at most, zero when nothing is relevant</td></tr>
+      <tr><td>Answers learners can check</td><td>Numbered sources; citations checked in code; only cited sources shown, uncited ones labelled "related"</td><td>Invented citations never reach the learner; the UI never overstates its evidence</td></tr>
+      <tr><td>Nothing lost in chunking</td><td>Introductions kept as "Overview"; chunker version recorded and checked</td><td>Drill 06.4 found answers only in introductions; a changed chunker must force a rebuild</td></tr>
+      <tr><td>Off-topic questions</td><td>Relevance floor per embedding model, plus the NOT_FOUND rule</td><td>Cheap first filter, honest second one; neither is enough alone (Drills 06.6, 06.9)</td></tr>
+      <tr><td>Staff documents</td><td>Not in the learner-facing index at all</td><td>Audience filters work (Drill 06.9), but the safest document is the one that isn't there</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="quiz">Self-check</h2>
+<div class="quiz">
+  <details><summary>1. A colleague wants to fine-tune a model on the help centre "so it knows our policies". What do you say?</summary><div><p>Use RAG instead: policies change, fine-tuning is slow and costly to update, a fine-tuned model can't cite where a fact came from, and it still guesses on details. Fine-tuning is for style and behaviour; RAG for changing factual knowledge.</p></div></details>
+  <details><summary>2. An answer about voucher validity is wrong. List the order in which you'd investigate.</summary><div><p>Retrieved chunks first (was the right section there?), then chunking (is the fact in one chunk with its context?), ingestion (is the article current and clean?), the prompt (rules, budget), and only then the model.</p></div></details>
+  <details><summary>3. Why does the knowledge index record its chunker version as well as its embedding model?</summary><div><p>A new chunker produces different chunk ids and texts. Loading an old index with new code would break citations and incremental updates silently; recording the version makes the mismatch an error and forces a rebuild.</p></div></details>
+  <details><summary>4. "Can I bring my dog to class?" scored higher than a real question. What protects the user?</summary><div><p>Layers: the floor drops most off-topic questions; for the rest, the prompt requires answers only from sources and a NOT_FOUND sentinel; citation checks and, later, evaluation catch what slips through. No single layer is enough.</p></div></details>
+  <details><summary>5. A model cites [5] when only four sources were sent. What does Traincrest Assist do?</summary><div><p><code>check_citations</code> removes the [5] marker, the chat sends a <code>replace</code> event with the cleaned text, logs an <code>unknown_citations</code> warning, and lists only the real cited sources.</p></div></details>
+  <details><summary>6. Why is the answer to "how much would I get back?" a combination of RAG and a tool?</summary><div><p>RAG explains the policy with a citation (14+ days 100%, 7 to 13 days 50%); the <code>quote_refund</code> tool applies it to this learner's enrolment, dates and price. Policy from documents, numbers from code.</p></div></details>
+</div>
+
+<div class="callout takeaway">
+  <div class="c-label">Carry this into Module 07</div>
+  <p>Traincrest Assist now knows what TrainCrest's documents say and can prove it. Next it learns to <strong>act</strong>: plan multi-step requests, call tools that change things (extend a lab, move a course date), keep state across steps, and stop for a human's approval before anything irreversible happens.</p>
+</div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m06-recap"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/06/build.html"><small>Previous</small><span>← 06 · Build: Milestone 6</span></a><a class="next" href="../../modules/07/index.html"><small>Next</small><span>07 · Overview and mental map →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

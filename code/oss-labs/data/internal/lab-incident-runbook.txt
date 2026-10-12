@@ -1,0 +1,15 @@
+LAB INCIDENT RUNBOOK
+Owner: Lab Operations. Last reviewed: March 2026.
+
+WHEN TO DECLARE AN INCIDENT
+Declare a lab incident when more than 20 learners report error LAB-503 within 30 minutes, or when the sandbox status page shows a region in red.
+
+WHAT TO TELL LEARNERS
+Use the incident banner text from the status page. Do not promise a fix time.
+Learners who lose more than 2 hours of lab time because of an incident get an automatic 7-day lab extension. It does not count as their one free extension.
+
+AFTER THE INCIDENT
+Lab Operations posts a summary in the support channel within one business day, with the list of affected enrolments.
+
+LAB-409 QUOTA ERRORS
+These are not incidents. Point the learner to the allowed virtual machine sizes and regions in their lab guide.

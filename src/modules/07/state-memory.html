@@ -1,0 +1,125 @@
+<!--meta
+{"id": "m07-memory", "short": "State and Memory", "h1": "State and Memory", "description": "Module 07, topic 5: the kinds of state an agent keeps: the working context of one run, task state that survives pauses, conversation history and its budget, and long-term memory of a user; what to store, where, for how long, and what never to store; with a drill that adds an explicit memory tool and recalls it in a new session.", "lead": "A model remembers nothing between calls. Everything an agent 'knows' about the task so far, the conversation, or the learner is state your code keeps and sends back. Decide deliberately what that is, where it lives, how long it lasts and what it must never contain. You'll give the agent a memory tool, start a fresh session, and watch it use what it saved.", "chips": ["Working context", "Task state", "Long-term memory", "Privacy", "Drill 07.5"], "time": "Learn 12 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The model forgets; your code remembers on purpose.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>State</strong> is everything an agent system keeps between model calls so it can continue a task: the <strong>working context</strong> of the current run (messages, tool results), <strong>task state</strong> (goal, facts found, steps done, pending approvals) that can be saved and resumed, and <strong>conversation history</strong>. <strong>Memory</strong> usually means long-term state about a user or domain that persists across sessions and is recalled into future prompts.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Short-term: what's going on in this task. Long-term: a few things worth knowing next time. Both are data your code stores and puts back into the prompt; the model itself keeps nothing.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A hotel. The guest's current request is on the receptionist's notepad (working context); an open booking that's waiting for the guest's confirmation is in the system (task state); "prefers a quiet room, allergic to feathers" is in the guest profile (long-term memory), and the guest can see and change it. The receptionist doesn't remember you; the hotel does.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 290" role="img" aria-labelledby="sm-t sm-d">
+      <title id="sm-t">Four kinds of agent state</title>
+      <desc id="sm-d">Working context lasts one run and lives in the messages list. Task state lasts until the task finishes, including pauses for approval, and lives in a store keyed by task. Conversation history lasts a session and is trimmed or summarised to fit the budget. Long-term memory lasts across sessions, holds a few explicit facts per user, is recalled into the system prompt, and must exclude sensitive data and be deletable.</desc>
+      <rect x="20" y="20" width="220" height="250" rx="12" class="s-surface2"/><text x="36" y="46" class="t-b">working context</text><text x="36" y="74" class="t-s">lasts: one run</text><text x="36" y="96" class="t-s">where: messages list</text><text x="36" y="118" class="t-s">holds: tool calls,</text><text x="36" y="136" class="t-s">results, drafts</text><text x="36" y="164" class="t-s">risk: grows with</text><text x="36" y="182" class="t-s">every step</text>
+      <rect x="255" y="20" width="220" height="250" rx="12" class="s-teal"/><text x="271" y="46" class="t-b">task state</text><text x="271" y="74" class="t-s">lasts: until done</text><text x="271" y="96" class="t-s">where: a store, by task id</text><text x="271" y="118" class="t-s">holds: goal, facts,</text><text x="271" y="136" class="t-s">steps done, pending</text><text x="271" y="154" class="t-s">approval</text><text x="271" y="182" class="t-s">lets a task pause</text><text x="271" y="200" class="t-s">and resume</text>
+      <rect x="490" y="20" width="220" height="250" rx="12" class="s-blue"/><text x="506" y="46" class="t-b">conversation history</text><text x="506" y="74" class="t-s">lasts: a session</text><text x="506" y="96" class="t-s">where: session store</text><text x="506" y="118" class="t-s">holds: user and</text><text x="506" y="136" class="t-s">assistant turns</text><text x="506" y="164" class="t-s">budget: keep recent,</text><text x="506" y="182" class="t-s">summarise older</text>
+      <rect x="725" y="20" width="215" height="250" rx="12" class="s-violet"/><text x="741" y="46" class="t-b">long-term memory</text><text x="741" y="74" class="t-s">lasts: across sessions</text><text x="741" y="96" class="t-s">where: per-user store</text><text x="741" y="118" class="t-s">holds: a few explicit</text><text x="741" y="136" class="t-s">facts and preferences</text><text x="741" y="164" class="t-s">recalled into the</text><text x="741" y="182" class="t-s">system prompt</text><text x="741" y="210" class="t-s">never: card numbers,</text><text x="741" y="228" class="t-s">passwords, health</text><text x="741" y="250" class="t-s">user can see and delete</text>
+    </svg>
+  </div>
+  <figcaption><b>Short-lived to long-lived, left to right.</b> The longer state lives, the more carefully you choose what goes in it.</figcaption>
+</figure>
+
+<h3>Design decisions</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Decision</th><th>Good default</th></tr></thead>
+    <tbody>
+      <tr><td>Who writes long-term memory?</td><td>An explicit <code>remember</code> tool, used when the user states a lasting preference; not automatic extraction of everything</td></tr>
+      <tr><td>What may it contain?</td><td>Preferences and stable facts; never payment details, passwords, health or other sensitive data; enforce it in code</td></tr>
+      <tr><td>How big?</td><td>Small (tens of facts per user), oldest out first; memory is a prompt cost on every session</td></tr>
+      <tr><td>Can the user see and delete it?</td><td>Yes; privacy law often requires it, and trust does too</td></tr>
+      <tr><td>Where does task state live?</td><td>A store keyed by task id, so a pause for approval survives restarts (Module 08 moves it to a database)</td></tr>
+      <tr><td>Long conversations?</td><td>Keep the last N turns, summarise older ones (Module 02 kept 6 pairs and dropped the rest)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Chat assistants with memory let users view, edit and delete what's remembered, and many store facts only when the user asks or clearly states a preference, because unexpected memories feel creepy and can leak in shared contexts. Enterprise agents keep task state in durable storage so a request waiting for a manager's approval survives a deployment. On Azure, conversation threads and agent state can live in Azure Cosmos DB, a common choice for per-user documents.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"State is the database; the app reads what it needs."</p></div>
+  <div><h5>GenAI developer view</h5><p>"State is also <strong>what goes back into the prompt</strong>. I choose it per kind (working, task, history, memory), budget its tokens, protect it like personal data, and let users control long-term memory."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>"Remember everything" memory: the agent saves every detail a user ever mentioned, including a card number pasted by mistake, and recalls it into future prompts and logs. Store only explicit, useful facts, filter sensitive data in code, and cap the size.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I separate working context, durable task state, session history with summarisation, and a small long-term memory per user that's explicit, filtered for sensitive data, recalled into the system prompt, and viewable and deletable by the user."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Remember in one session, use it in the next.</p></div></div>
+
+<div class="drill" id="d07-5" data-title="State and long-term memory" data-time="~20 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 07.5</span><h3>State and long-term memory</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> implement task state and a small, safe long-term memory, test them offline, then give the agent a <code>remember</code> tool and use the memory in a fresh session.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Three kinds of state in one file</h4>
+        <pre class="code" data-file="memory.py" data-src="code/genai-labs/memory.py"></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Offline tests</h4>
+        <pre class="code" data-file="test_memory.py" data-src="code/genai-labs/test_memory.py"></pre>
+<pre class="term"><code><span class="ps">$ </span>pytest -q test_memory.py
+<span class="o">.....                                                                    [100%]
+5 passed in 0.18s</span></code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Two sessions, one memory</h4>
+        <pre class="code" data-file="lab07_05_memory.py" data-src="code/genai-labs/lab07_05_memory.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab07_05_memory.py</code></pre>
+        <span class="out-label">Real output with qwen2.5:7b (Ollama); dates relative to today</span>
+<pre class="out"><code>SESSION 1
+  1. ✓ remember({"fact":"Preferred class days: Thursday. Contact channel: email."}) -&gt; {"status": "remembered", "fact": "Preferred class days: Thursday. Contact channel: email."}  [5 ms]
+  Your preference for Thursday class days and email communication has been saved. No changes to your enrolments today.
+  stored: ['Preferred class days: Thursday. Contact channel: email.']
+
+SESSION 2 (new conversation; memory goes into the system prompt)
+  1. ✓ my_enrolments({}) -&gt; [{"enrolment_id": "TC-20877", "course_id": "C110", "course": "AZ-104: Azure Administrator", "start": "2026-10-  [9 ms]
+  2. ✓ upcoming_sessions({"course_id":"C110"}) -&gt; ["2026-10-17", "2026-10-29", "2026-11-14"]  [2 ms]
+  The next available dates for AZ-104 are October 29 and November 14. Would you like to reschedule to October 29?
+  available: [('2026-10-17', 'Saturday'), ('2026-10-29', 'Thursday'), ('2026-11-14', 'Saturday')]</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Memory and its risks</h4>
+        <ol>
+          <li>Session 2 had no chat history. How did the agent know Diego's preference?</li>
+          <li>What should happen if Diego says "remember my card 4111 1111 1111 1111 for next time"?</li>
+          <li>Where would a pending approval live, and why not in long-term memory?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li><code>memory.as_prompt()</code> added "Known about this learner from earlier sessions" to the system prompt. The model didn't remember anything; the code did, and put it back in front of the model.</li>
+            <li><code>LearnerMemory.remember</code> refuses it in code (the <code>SENSITIVE</code> check), and the agent should explain that payment details are never stored. Don't rely on the prompt alone for this.</li>
+            <li>In task state (<code>TaskState.pending</code>), keyed by task, with an expiry. It belongs to one task, not to the learner's lasting profile; Milestone 7 keeps pending actions in an <code>ActionStore</code> for the same reason.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d07-5"> I've completed Drill 07.5</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>State and memory.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Does the model "learn" Diego's preference in Drill 07.5?</summary><div><p>No. Its weights never change. The application stored a fact and inserted it into later prompts; delete the file and the "memory" is gone.</p></div></details>
+  <details><summary>2. A conversation reaches 60 turns. What do you send to the model?</summary><div><p>The system prompt, long-term memory, a summary of older turns, and the most recent turns in full, within a token budget; plus the current task state if a task is in progress.</p></div></details>
+  <details><summary>3. Why cap long-term memory at a small number of facts?</summary><div><p>It's sent with every session (cost and latency), old facts go stale, and more stored personal data means more privacy risk. A short list of explicit preferences is enough.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Models are stateless. Choose what your code keeps (working context, task state, history, memory), how long, and what it must never contain.</p></div>

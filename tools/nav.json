@@ -116,8 +116,39 @@
       "title": "Part III · Ground it and let it act",
       "part": "III",
       "modules": [
-        {"num": "06", "title": "Retrieval-Augmented Generation", "soon": true},
-        {"num": "07", "title": "Building AI Agents", "soon": true}
+        {
+          "num": "06", "title": "Retrieval-Augmented Generation", "draft": true,
+          "pages": [
+            {"id": "m06", "title": "Overview and mental map", "path": "modules/06/index.html", "kind": "overview"},
+            {"id": "m06-what", "title": "What is RAG, and why use it?", "path": "modules/06/what-is-rag.html", "kind": "topic"},
+            {"id": "m06-arch", "title": "RAG architecture", "path": "modules/06/architecture.html", "kind": "topic"},
+            {"id": "m06-ingest", "title": "Document ingestion", "path": "modules/06/ingestion.html", "kind": "topic"},
+            {"id": "m06-chunk", "title": "Text chunking", "path": "modules/06/chunking.html", "kind": "topic"},
+            {"id": "m06-embed", "title": "Embedding generation and vector storage", "path": "modules/06/embedding-storage.html", "kind": "topic"},
+            {"id": "m06-retrieve", "title": "Retrieval", "path": "modules/06/retrieval.html", "kind": "topic"},
+            {"id": "m06-prompt", "title": "Prompt construction", "path": "modules/06/prompt-construction.html", "kind": "topic"},
+            {"id": "m06-generate", "title": "Response generation", "path": "modules/06/generation.html", "kind": "topic"},
+            {"id": "m06-cite", "title": "Citation and source attribution", "path": "modules/06/citations.html", "kind": "topic"},
+            {"id": "m06-build", "title": "Build: Milestone 6", "path": "modules/06/build.html", "kind": "build"},
+            {"id": "m06-recap", "title": "Recap and self-check", "path": "modules/06/recap.html", "kind": "recap"}
+          ]
+        },
+        {
+          "num": "07", "title": "Building AI Agents", "draft": true,
+          "pages": [
+            {"id": "m07", "title": "Overview and mental map", "path": "modules/07/index.html", "kind": "overview"},
+            {"id": "m07-what", "title": "What is an AI agent? Agent vs chatbot", "path": "modules/07/what-is-an-agent.html", "kind": "topic"},
+            {"id": "m07-plan", "title": "Reasoning and planning", "path": "modules/07/planning.html", "kind": "topic"},
+            {"id": "m07-tools", "title": "Tool calling for agents", "path": "modules/07/tool-calling.html", "kind": "topic"},
+            {"id": "m07-flows", "title": "Agent workflows", "path": "modules/07/workflows.html", "kind": "topic"},
+            {"id": "m07-memory", "title": "State and memory", "path": "modules/07/state-memory.html", "kind": "topic"},
+            {"id": "m07-multi", "title": "Multi-step tasks", "path": "modules/07/multi-step.html", "kind": "topic"},
+            {"id": "m07-hitl", "title": "Human-in-the-loop workflows", "path": "modules/07/human-in-the-loop.html", "kind": "topic"},
+            {"id": "m07-reliable", "title": "Agent reliability", "path": "modules/07/reliability.html", "kind": "topic"},
+            {"id": "m07-build", "title": "Build: Milestone 7", "path": "modules/07/build.html", "kind": "build"},
+            {"id": "m07-recap", "title": "Recap and self-check", "path": "modules/07/recap.html", "kind": "recap"}
+          ]
+        }
       ]
     },
     {
@@ -135,6 +166,18 @@
       "modules": [
         {"num": "11", "title": "Performance and Cost Optimization", "soon": true},
         {"num": "12", "title": "Productionizing Generative AI", "soon": true}
+      ]
+    },
+    {
+      "title": "Open-source lab guide",
+      "draft": true,
+      "code_dirs": ["code/oss-labs"],
+      "items": [
+        {"id": "oss", "title": "About the open-source labs", "path": "oss/index.html", "kind": "osslab"},
+        {"id": "oss-0", "title": "Lab 0 · Set up Ollama and Python", "path": "oss/lab-0-setup.html", "kind": "osslab"},
+        {"id": "oss-1", "title": "Lab 1 · Prompts, APIs and JSON", "path": "oss/lab-1.html", "kind": "osslab"},
+        {"id": "oss-2", "title": "Lab 2 · Tools and semantic search", "path": "oss/lab-2.html", "kind": "osslab"},
+        {"id": "oss-3", "title": "Lab 3 · RAG and agents", "path": "oss/lab-3.html", "kind": "osslab"}
       ]
     },
     {

@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>State and Memory</title>
+<meta name="description" content="Module 07, topic 5: the kinds of state an agent keeps: the working context of one run, task state that survives pauses, conversation history and its budget, and long-term memory of a user; what to store, where, for how long, and what never to store; with a drill that adds an explicit memory tool and recalls it in a new session.">
+<meta name="author" content="Raushan Ranjan (MCT)">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/handbook.css">
+<script>try{var t=localStorage.getItem('genai-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="../../assets/js/handbook.js" defer></script>
+</head>
+<body class="kind-topic" data-page="m07-memory">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head"/></marker><marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-head-accent"/></marker></defs></svg>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<a class="sb-brand" href="../../index.html"><span class="sb-mark">AI</span><span class="sb-brand-text"><b>Generative AI for Developers</b><small>Raushan Ranjan · RR Skillverse</small></span></a>
+<div class="sb-search"><input type="search" placeholder="Filter pages…" aria-label="Filter pages" data-nav-filter></div>
+<nav class="sb-nav" aria-label="Handbook pages">
+<div class="sb-section"><div class="sb-title">Start here</div>
+<a class="sb-link " data-page-id="home" href="../../index.html"><span class="sb-ico">⌂</span>Home</a>
+<a class="sb-link " data-page-id="how" href="../../start/how-it-works.html"><span class="sb-ico">?</span>How this handbook works</a>
+</div>
+<div class="sb-section"><div class="sb-title">Lab setup</div>
+<a class="sb-link " data-page-id="setup-tracks" href="../../setup/index.html"><span class="sb-ico">›</span>Choose your track</a>
+<a class="sb-link " data-page-id="setup-azure" href="../../setup/azure-foundry.html"><span class="sb-ico">›</span>Azure: Foundry and a model</a>
+<a class="sb-link " data-page-id="setup-workstation" href="../../setup/workstation.html"><span class="sb-ico">›</span>Workstation and AI assistant</a>
+<a class="sb-link " data-page-id="setup-helpers" href="../../setup/helpers.html"><span class="sb-ico">›</span>Helpers and smoke test</a>
+<a class="sb-link " data-page-id="setup-trouble" href="../../setup/troubleshooting.html"><span class="sb-ico">›</span>Troubleshooting and cost</a>
+</div>
+<div class="sb-section"><div class="sb-title">Part I · Foundations</div>
+<details class="sb-mod"><summary><span class="sb-num">01</span>Introduction to Generative AI</summary>
+<a class="sb-link sub k-overview " data-page-id="m01" href="../../modules/01/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m01-genai" href="../../modules/01/what-is-genai.html"><span class="sb-ico">•</span>What is Generative AI?</a>
+<a class="sb-link sub k-topic " data-page-id="m01-vsml" href="../../modules/01/genai-vs-ml.html"><span class="sb-ico">•</span>GenAI vs traditional AI/ML</a>
+<a class="sb-link sub k-topic " data-page-id="m01-llm" href="../../modules/01/llms.html"><span class="sb-ico">•</span>Large Language Models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-tokens" href="../../modules/01/tokens.html"><span class="sb-ico">•</span>Tokens and context windows</a>
+<a class="sb-link sub k-topic " data-page-id="m01-gen" href="../../modules/01/generation.html"><span class="sb-ico">•</span>How LLMs generate responses</a>
+<a class="sb-link sub k-topic " data-page-id="m01-train" href="../../modules/01/training-inference.html"><span class="sb-ico">•</span>Training vs inference</a>
+<a class="sb-link sub k-topic " data-page-id="m01-fm" href="../../modules/01/foundation-models.html"><span class="sb-ico">•</span>Foundation models</a>
+<a class="sb-link sub k-topic " data-page-id="m01-mm" href="../../modules/01/multimodal.html"><span class="sb-ico">•</span>Multimodal AI</a>
+<a class="sb-link sub k-topic " data-page-id="m01-uses" href="../../modules/01/use-cases.html"><span class="sb-ico">•</span>Developer use cases</a>
+<a class="sb-link sub k-build " data-page-id="m01-build" href="../../modules/01/build.html"><span class="sb-ico">⚒</span>Build: Milestone 1</a>
+<a class="sb-link sub k-recap " data-page-id="m01-recap" href="../../modules/01/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">02</span>Working with LLM APIs</summary>
+<a class="sb-link sub k-overview " data-page-id="m02" href="../../modules/02/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m02-arch" href="../../modules/02/architecture.html"><span class="sb-ico">•</span>API-based app architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m02-auth" href="../../modules/02/authentication.html"><span class="sb-ico">•</span>Authentication and API keys</a>
+<a class="sb-link sub k-topic " data-page-id="m02-life" href="../../modules/02/lifecycle.html"><span class="sb-ico">•</span>Request/response lifecycle</a>
+<a class="sb-link sub k-topic " data-page-id="m02-roles" href="../../modules/02/roles.html"><span class="sb-ico">•</span>System, user, assistant messages</a>
+<a class="sb-link sub k-topic " data-page-id="m02-params" href="../../modules/02/parameters.html"><span class="sb-ico">•</span>Temperature and parameters</a>
+<a class="sb-link sub k-topic " data-page-id="m02-stream" href="../../modules/02/streaming.html"><span class="sb-ico">•</span>Streaming responses</a>
+<a class="sb-link sub k-topic " data-page-id="m02-errors" href="../../modules/02/errors.html"><span class="sb-ico">•</span>Error handling</a>
+<a class="sb-link sub k-topic " data-page-id="m02-rate" href="../../modules/02/rate-limits.html"><span class="sb-ico">•</span>Rate limits and retries</a>
+<a class="sb-link sub k-topic " data-page-id="m02-cost" href="../../modules/02/cost.html"><span class="sb-ico">•</span>Managing API costs</a>
+<a class="sb-link sub k-build " data-page-id="m02-build" href="../../modules/02/build.html"><span class="sb-ico">⚒</span>Build: Milestone 2</a>
+<a class="sb-link sub k-recap " data-page-id="m02-recap" href="../../modules/02/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">03</span>Prompt Engineering</summary>
+<a class="sb-link sub k-overview " data-page-id="m03" href="../../modules/03/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m03-what" href="../../modules/03/what-is-prompt-engineering.html"><span class="sb-ico">•</span>What is prompt engineering?</a>
+<a class="sb-link sub k-topic " data-page-id="m03-clear" href="../../modules/03/clear-instructions.html"><span class="sb-ico">•</span>Clear instructions and context</a>
+<a class="sb-link sub k-topic " data-page-id="m03-role" href="../../modules/03/role-prompting.html"><span class="sb-ico">•</span>Role prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-zero" href="../../modules/03/zero-shot.html"><span class="sb-ico">•</span>Zero-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-few" href="../../modules/03/few-shot.html"><span class="sb-ico">•</span>Few-shot prompting</a>
+<a class="sb-link sub k-topic " data-page-id="m03-cot" href="../../modules/03/chain-of-thought.html"><span class="sb-ico">•</span>Chain-of-thought</a>
+<a class="sb-link sub k-topic " data-page-id="m03-tmpl" href="../../modules/03/templates.html"><span class="sb-ico">•</span>Prompt templates</a>
+<a class="sb-link sub k-topic " data-page-id="m03-struct" href="../../modules/03/structured-prompts.html"><span class="sb-ico">•</span>Structured prompts</a>
+<a class="sb-link sub k-topic " data-page-id="m03-out" href="../../modules/03/output-constraints.html"><span class="sb-ico">•</span>Output constraints</a>
+<a class="sb-link sub k-topic " data-page-id="m03-inject" href="../../modules/03/prompt-injection.html"><span class="sb-ico">•</span>Prompt injection awareness</a>
+<a class="sb-link sub k-build " data-page-id="m03-build" href="../../modules/03/build.html"><span class="sb-ico">⚒</span>Build: Milestone 3</a>
+<a class="sb-link sub k-recap " data-page-id="m03-recap" href="../../modules/03/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part II · Connect the model to your app</div>
+<details class="sb-mod"><summary><span class="sb-num">04</span>Structured Outputs and Function Calling</summary>
+<a class="sb-link sub k-overview " data-page-id="m04" href="../../modules/04/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m04-why" href="../../modules/04/why-structured.html"><span class="sb-ico">•</span>Why structured outputs matter</a>
+<a class="sb-link sub k-topic " data-page-id="m04-json" href="../../modules/04/json-mode.html"><span class="sb-ico">•</span>JSON responses</a>
+<a class="sb-link sub k-topic " data-page-id="m04-schema" href="../../modules/04/schema-outputs.html"><span class="sb-ico">•</span>Schema-based generation</a>
+<a class="sb-link sub k-topic " data-page-id="m04-tools" href="../../modules/04/function-calling.html"><span class="sb-ico">•</span>Function calling</a>
+<a class="sb-link sub k-topic " data-page-id="m04-logic" href="../../modules/04/app-logic.html"><span class="sb-ico">•</span>Connecting LLMs to app logic</a>
+<a class="sb-link sub k-topic " data-page-id="m04-valid" href="../../modules/04/validation.html"><span class="sb-ico">•</span>Validating model outputs</a>
+<a class="sb-link sub k-topic " data-page-id="m04-malformed" href="../../modules/04/malformed.html"><span class="sb-ico">•</span>Handling malformed responses</a>
+<a class="sb-link sub k-build " data-page-id="m04-build" href="../../modules/04/build.html"><span class="sb-ico">⚒</span>Build: Milestone 4</a>
+<a class="sb-link sub k-recap " data-page-id="m04-recap" href="../../modules/04/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">05</span>Embeddings and Semantic Search</summary>
+<a class="sb-link sub k-overview " data-page-id="m05" href="../../modules/05/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m05-emb" href="../../modules/05/embeddings.html"><span class="sb-ico">•</span>What are embeddings?</a>
+<a class="sb-link sub k-topic " data-page-id="m05-sim" href="../../modules/05/similarity.html"><span class="sb-ico">•</span>Vector similarity</a>
+<a class="sb-link sub k-topic " data-page-id="m05-models" href="../../modules/05/embedding-models.html"><span class="sb-ico">•</span>Embedding models</a>
+<a class="sb-link sub k-topic " data-page-id="m05-vdb" href="../../modules/05/vector-databases.html"><span class="sb-ico">•</span>Vector databases</a>
+<a class="sb-link sub k-topic " data-page-id="m05-search" href="../../modules/05/similarity-search.html"><span class="sb-ico">•</span>Similarity search</a>
+<a class="sb-link sub k-topic " data-page-id="m05-chunk" href="../../modules/05/chunking.html"><span class="sb-ico">•</span>Chunking strategies</a>
+<a class="sb-link sub k-topic " data-page-id="m05-filter" href="../../modules/05/metadata-filtering.html"><span class="sb-ico">•</span>Metadata filtering</a>
+<a class="sb-link sub k-topic " data-page-id="m05-hybrid" href="../../modules/05/hybrid-search.html"><span class="sb-ico">•</span>Hybrid search</a>
+<a class="sb-link sub k-build " data-page-id="m05-build" href="../../modules/05/build.html"><span class="sb-ico">⚒</span>Build: Milestone 5</a>
+<a class="sb-link sub k-recap " data-page-id="m05-recap" href="../../modules/05/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part III · Ground it and let it act</div>
+<details class="sb-mod"><summary><span class="sb-num">06</span>Retrieval-Augmented Generation</summary>
+<a class="sb-link sub k-overview " data-page-id="m06" href="../../modules/06/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m06-what" href="../../modules/06/what-is-rag.html"><span class="sb-ico">•</span>What is RAG, and why use it?</a>
+<a class="sb-link sub k-topic " data-page-id="m06-arch" href="../../modules/06/architecture.html"><span class="sb-ico">•</span>RAG architecture</a>
+<a class="sb-link sub k-topic " data-page-id="m06-ingest" href="../../modules/06/ingestion.html"><span class="sb-ico">•</span>Document ingestion</a>
+<a class="sb-link sub k-topic " data-page-id="m06-chunk" href="../../modules/06/chunking.html"><span class="sb-ico">•</span>Text chunking</a>
+<a class="sb-link sub k-topic " data-page-id="m06-embed" href="../../modules/06/embedding-storage.html"><span class="sb-ico">•</span>Embedding generation and vector storage</a>
+<a class="sb-link sub k-topic " data-page-id="m06-retrieve" href="../../modules/06/retrieval.html"><span class="sb-ico">•</span>Retrieval</a>
+<a class="sb-link sub k-topic " data-page-id="m06-prompt" href="../../modules/06/prompt-construction.html"><span class="sb-ico">•</span>Prompt construction</a>
+<a class="sb-link sub k-topic " data-page-id="m06-generate" href="../../modules/06/generation.html"><span class="sb-ico">•</span>Response generation</a>
+<a class="sb-link sub k-topic " data-page-id="m06-cite" href="../../modules/06/citations.html"><span class="sb-ico">•</span>Citation and source attribution</a>
+<a class="sb-link sub k-build " data-page-id="m06-build" href="../../modules/06/build.html"><span class="sb-ico">⚒</span>Build: Milestone 6</a>
+<a class="sb-link sub k-recap " data-page-id="m06-recap" href="../../modules/06/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod" open><summary><span class="sb-num">07</span>Building AI Agents</summary>
+<a class="sb-link sub k-overview " data-page-id="m07" href="../../modules/07/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m07-what" href="../../modules/07/what-is-an-agent.html"><span class="sb-ico">•</span>What is an AI agent? Agent vs chatbot</a>
+<a class="sb-link sub k-topic " data-page-id="m07-plan" href="../../modules/07/planning.html"><span class="sb-ico">•</span>Reasoning and planning</a>
+<a class="sb-link sub k-topic " data-page-id="m07-tools" href="../../modules/07/tool-calling.html"><span class="sb-ico">•</span>Tool calling for agents</a>
+<a class="sb-link sub k-topic " data-page-id="m07-flows" href="../../modules/07/workflows.html"><span class="sb-ico">•</span>Agent workflows</a>
+<a class="sb-link sub k-topic active" data-page-id="m07-memory" href="../../modules/07/state-memory.html"><span class="sb-ico">•</span>State and memory</a>
+<a class="sb-link sub k-topic " data-page-id="m07-multi" href="../../modules/07/multi-step.html"><span class="sb-ico">•</span>Multi-step tasks</a>
+<a class="sb-link sub k-topic " data-page-id="m07-hitl" href="../../modules/07/human-in-the-loop.html"><span class="sb-ico">•</span>Human-in-the-loop workflows</a>
+<a class="sb-link sub k-topic " data-page-id="m07-reliable" href="../../modules/07/reliability.html"><span class="sb-ico">•</span>Agent reliability</a>
+<a class="sb-link sub k-build " data-page-id="m07-build" href="../../modules/07/build.html"><span class="sb-ico">⚒</span>Build: Milestone 7</a>
+<a class="sb-link sub k-recap " data-page-id="m07-recap" href="../../modules/07/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+</div>
+<div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
+<div class="sb-module soon"><span class="sb-num">08</span>AI Application Architecture<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Part V · Ship it</div>
+<div class="sb-module soon"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-soon">soon</span></div>
+<div class="sb-module soon"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-soon">soon</span></div>
+</div>
+<div class="sb-section"><div class="sb-title">Open-source lab guide</div>
+<a class="sb-link " data-page-id="oss" href="../../oss/index.html"><span class="sb-ico">▸</span>About the open-source labs</a>
+<a class="sb-link " data-page-id="oss-0" href="../../oss/lab-0-setup.html"><span class="sb-ico">▸</span>Lab 0 · Set up Ollama and Python</a>
+<a class="sb-link " data-page-id="oss-1" href="../../oss/lab-1.html"><span class="sb-ico">▸</span>Lab 1 · Prompts, APIs and JSON</a>
+<a class="sb-link " data-page-id="oss-2" href="../../oss/lab-2.html"><span class="sb-ico">▸</span>Lab 2 · Tools and semantic search</a>
+<a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
+</div>
+<div class="sb-section"><div class="sb-title">Practice</div>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
+<a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
+</div>
+</nav>
+<div class="sb-foot">Written by <a href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT)<br><span>RR Skillverse · © 2026</span></div>
+</aside>
+<div class="sb-scrim" data-nav-close></div>
+<div class="main">
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-nav-open aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Handbook</a><i>/</i><span>Part III</span><i>/</i><a href="../../modules/07/index.html">Module 07</a><i>/</i><span>State and memory</span></nav>
+  <span class="kind-pill">Learn · Do · Check · Draft</span>
+  <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<div class="page-wrap">
+<main class="page" id="main">
+<header class="page-hero"><span class="eyebrow">Module 07 · Topic 5 of 8</span><h1>State and Memory</h1><p class="lead">A model remembers nothing between calls. Everything an agent 'knows' about the task so far, the conversation, or the learner is state your code keeps and sends back. Decide deliberately what that is, where it lives, how long it lasts and what it must never contain. You'll give the agent a memory tool, start a fresh session, and watch it use what it saved.</p><div class="chips"><span class="chip">Working context</span><span class="chip">Task state</span><span class="chip">Long-term memory</span><span class="chip">Privacy</span><span class="chip">Drill 07.5</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 20 min</em></div></header>
+<div class="content">
+
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The model forgets; your code remembers on purpose.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>State</strong> is everything an agent system keeps between model calls so it can continue a task: the <strong>working context</strong> of the current run (messages, tool results), <strong>task state</strong> (goal, facts found, steps done, pending approvals) that can be saved and resumed, and <strong>conversation history</strong>. <strong>Memory</strong> usually means long-term state about a user or domain that persists across sessions and is recalled into future prompts.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Short-term: what's going on in this task. Long-term: a few things worth knowing next time. Both are data your code stores and puts back into the prompt; the model itself keeps nothing.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A hotel. The guest's current request is on the receptionist's notepad (working context); an open booking that's waiting for the guest's confirmation is in the system (task state); "prefers a quiet room, allergic to feathers" is in the guest profile (long-term memory), and the guest can see and change it. The receptionist doesn't remember you; the hotel does.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 290" role="img" aria-labelledby="sm-t sm-d">
+      <title id="sm-t">Four kinds of agent state</title>
+      <desc id="sm-d">Working context lasts one run and lives in the messages list. Task state lasts until the task finishes, including pauses for approval, and lives in a store keyed by task. Conversation history lasts a session and is trimmed or summarised to fit the budget. Long-term memory lasts across sessions, holds a few explicit facts per user, is recalled into the system prompt, and must exclude sensitive data and be deletable.</desc>
+      <rect x="20" y="20" width="220" height="250" rx="12" class="s-surface2"/><text x="36" y="46" class="t-b">working context</text><text x="36" y="74" class="t-s">lasts: one run</text><text x="36" y="96" class="t-s">where: messages list</text><text x="36" y="118" class="t-s">holds: tool calls,</text><text x="36" y="136" class="t-s">results, drafts</text><text x="36" y="164" class="t-s">risk: grows with</text><text x="36" y="182" class="t-s">every step</text>
+      <rect x="255" y="20" width="220" height="250" rx="12" class="s-teal"/><text x="271" y="46" class="t-b">task state</text><text x="271" y="74" class="t-s">lasts: until done</text><text x="271" y="96" class="t-s">where: a store, by task id</text><text x="271" y="118" class="t-s">holds: goal, facts,</text><text x="271" y="136" class="t-s">steps done, pending</text><text x="271" y="154" class="t-s">approval</text><text x="271" y="182" class="t-s">lets a task pause</text><text x="271" y="200" class="t-s">and resume</text>
+      <rect x="490" y="20" width="220" height="250" rx="12" class="s-blue"/><text x="506" y="46" class="t-b">conversation history</text><text x="506" y="74" class="t-s">lasts: a session</text><text x="506" y="96" class="t-s">where: session store</text><text x="506" y="118" class="t-s">holds: user and</text><text x="506" y="136" class="t-s">assistant turns</text><text x="506" y="164" class="t-s">budget: keep recent,</text><text x="506" y="182" class="t-s">summarise older</text>
+      <rect x="725" y="20" width="215" height="250" rx="12" class="s-violet"/><text x="741" y="46" class="t-b">long-term memory</text><text x="741" y="74" class="t-s">lasts: across sessions</text><text x="741" y="96" class="t-s">where: per-user store</text><text x="741" y="118" class="t-s">holds: a few explicit</text><text x="741" y="136" class="t-s">facts and preferences</text><text x="741" y="164" class="t-s">recalled into the</text><text x="741" y="182" class="t-s">system prompt</text><text x="741" y="210" class="t-s">never: card numbers,</text><text x="741" y="228" class="t-s">passwords, health</text><text x="741" y="250" class="t-s">user can see and delete</text>
+    </svg>
+  </div>
+  <figcaption><b>Short-lived to long-lived, left to right.</b> The longer state lives, the more carefully you choose what goes in it.</figcaption>
+</figure>
+
+<h3>Design decisions</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Decision</th><th>Good default</th></tr></thead>
+    <tbody>
+      <tr><td>Who writes long-term memory?</td><td>An explicit <code>remember</code> tool, used when the user states a lasting preference; not automatic extraction of everything</td></tr>
+      <tr><td>What may it contain?</td><td>Preferences and stable facts; never payment details, passwords, health or other sensitive data; enforce it in code</td></tr>
+      <tr><td>How big?</td><td>Small (tens of facts per user), oldest out first; memory is a prompt cost on every session</td></tr>
+      <tr><td>Can the user see and delete it?</td><td>Yes; privacy law often requires it, and trust does too</td></tr>
+      <tr><td>Where does task state live?</td><td>A store keyed by task id, so a pause for approval survives restarts (Module 08 moves it to a database)</td></tr>
+      <tr><td>Long conversations?</td><td>Keep the last N turns, summarise older ones (Module 02 kept 6 pairs and dropped the rest)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Chat assistants with memory let users view, edit and delete what's remembered, and many store facts only when the user asks or clearly states a preference, because unexpected memories feel creepy and can leak in shared contexts. Enterprise agents keep task state in durable storage so a request waiting for a manager's approval survives a deployment. On Azure, conversation threads and agent state can live in Azure Cosmos DB, a common choice for per-user documents.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"State is the database; the app reads what it needs."</p></div>
+  <div><h5>GenAI developer view</h5><p>"State is also <strong>what goes back into the prompt</strong>. I choose it per kind (working, task, history, memory), budget its tokens, protect it like personal data, and let users control long-term memory."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>"Remember everything" memory: the agent saves every detail a user ever mentioned, including a card number pasted by mistake, and recalls it into future prompts and logs. Store only explicit, useful facts, filter sensitive data in code, and cap the size.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I separate working context, durable task state, session history with summarisation, and a small long-term memory per user that's explicit, filtered for sensitive data, recalled into the system prompt, and viewable and deletable by the user."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Remember in one session, use it in the next.</p></div></div>
+
+<div class="drill" id="d07-5" data-title="State and long-term memory" data-time="~20 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 07.5</span><h3>State and long-term memory</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> implement task state and a small, safe long-term memory, test them offline, then give the agent a <code>remember</code> tool and use the memory in a fresh session.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Three kinds of state in one file</h4>
+        <pre class="code" data-file="memory.py"><code>"""Module 07: state and memory for agents, three kinds:
+- TaskState: short-term working state of one multi-step task (goal, facts, steps, a pending
+  approval), saved as JSON so the task can pause, for example while a human decides, and resume.
+- LearnerMemory: long-term memory, small facts a learner asked us to remember, recalled at the
+  start of each session. Explicit, inspectable and deletable, and it refuses sensitive data.
+- trim_history: keep a long conversation within budget by summarising its older turns."""
+import json
+import re
+import time
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+
+STATE_DIR = Path(__file__).parent / "data" / "agent_state"
+SENSITIVE = re.compile(r"\b(?:\d[ -]?){13,19}\b|password|passcode|\bcvv\b|\bpin\b", re.I)
+
+
+@dataclass
+class TaskState:
+    task_id: str
+    goal: str
+    facts: dict = field(default_factory=dict)         <span class="c"># what the agent has found out so far</span>
+    done: list = field(default_factory=list)          <span class="c"># steps completed, in order</span>
+    pending: dict | None = None                       <span class="c"># an action waiting for a human's decision</span>
+    status: str = "running"                           <span class="c"># running | waiting | finished | failed</span>
+
+    def save(self, folder=STATE_DIR):
+        folder = Path(folder)
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / f"{self.task_id}.json").write_text(json.dumps(asdict(self), indent=1), encoding="utf-8")
+
+    @classmethod
+    def load(cls, task_id, folder=STATE_DIR):
+        return cls(**json.loads((Path(folder) / f"{task_id}.json").read_text(encoding="utf-8")))
+
+
+class LearnerMemory:
+    MAX_FACTS = 20
+
+    def __init__(self, path=STATE_DIR / "memory.json"):
+        self.path = Path(path)
+        self.data = json.loads(self.path.read_text(encoding="utf-8")) if self.path.exists() else {}
+
+    def _save(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.write_text(json.dumps(self.data, indent=1, ensure_ascii=False), encoding="utf-8")
+
+    def remember(self, learner: str, fact: str) -&gt; dict:
+        fact = " ".join(fact.split())
+        if SENSITIVE.search(fact):
+            return {"error": "not stored: memory never keeps card numbers, passwords or PINs"}
+        facts = self.data.setdefault(learner, [])
+        if any(f["fact"].lower() == fact.lower() for f in facts):
+            return {"status": "already remembered"}
+        facts.append({"fact": fact, "saved": time.strftime("%Y-%m-%d")})
+        del facts[:-self.MAX_FACTS]                   <span class="c"># oldest go first: memory is small on purpose</span>
+        self._save()
+        return {"status": "remembered", "fact": fact}
+
+    def forget(self, learner: str, containing: str) -&gt; int:
+        before = len(self.data.get(learner, []))
+        self.data[learner] = [f for f in self.data.get(learner, []) if containing.lower() not in f["fact"].lower()]
+        self._save()
+        return before - len(self.data[learner])
+
+    def recall(self, learner: str) -&gt; list[str]:
+        return [f["fact"] for f in self.data.get(learner, [])]
+
+    def as_prompt(self, learner: str) -&gt; str:
+        facts = self.recall(learner)
+        return "" if not facts else "Known about this learner from earlier sessions:\n" + "\n".join(f"- {f}" for f in facts)
+
+
+def trim_history(messages, keep_last: int = 6, summarize=None):
+    """Keep the last `keep_last` messages; replace older ones with one summary message.
+    `summarize(text) -&gt; str` is usually a cheap model call; without it, older turns are dropped."""
+    if len(messages) &lt;= keep_last:
+        return list(messages)
+    older, recent = messages[:-keep_last], messages[-keep_last:]
+    if summarize is None:
+        return list(recent)
+    text = "\n".join(f"{m['role']}: {m['content']}" for m in older if m.get("content"))
+    return [{"role": "system", "content": "Summary of the earlier conversation: " + summarize(text)}] + list(recent)</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Offline tests</h4>
+        <pre class="code" data-file="test_memory.py"><code>"""Drill 07.5: agent state and memory, offline.  Run:  pytest -q test_memory.py"""
+from memory import LearnerMemory, TaskState, trim_history
+
+
+def test_task_state_survives_a_restart(tmp_path):
+    state = TaskState("t1", goal="move Diego's AZ-104 class", facts={"enrolment_id": "TC-20877"},
+                      pending={"tool": "reschedule", "preview": "Move TC-20877 ($50)"}, status="waiting")
+    state.save(tmp_path)
+    again = TaskState.load("t1", tmp_path)
+    assert again == state and again.status == "waiting" and again.pending["tool"] == "reschedule"
+
+
+def test_memory_remembers_recalls_and_forgets(tmp_path):
+    memory = LearnerMemory(tmp_path / "memory.json")
+    assert memory.remember("L-MEI", "Prefers  weekend classes")["status"] == "remembered"
+    assert memory.remember("L-MEI", "prefers weekend classes")["status"] == "already remembered"
+    assert LearnerMemory(tmp_path / "memory.json").recall("L-MEI") == ["Prefers weekend classes"]   <span class="c"># persisted</span>
+    assert memory.recall("L-DIEGO") == []                                                          <span class="c"># per learner</span>
+    assert "weekend" in memory.as_prompt("L-MEI") and memory.as_prompt("L-DIEGO") == ""
+    assert memory.forget("L-MEI", "weekend") == 1 and memory.recall("L-MEI") == []
+
+
+def test_memory_refuses_sensitive_data(tmp_path):
+    memory = LearnerMemory(tmp_path / "memory.json")
+    assert "error" in memory.remember("L-MEI", "Card 4111 1111 1111 1111 for future payments")
+    assert "error" in memory.remember("L-MEI", "My password is hunter2")
+    assert memory.recall("L-MEI") == []
+
+
+def test_memory_is_small_on_purpose(tmp_path):
+    memory = LearnerMemory(tmp_path / "memory.json")
+    for i in range(25):
+        memory.remember("L-MEI", f"fact number {i}")
+    facts = memory.recall("L-MEI")
+    assert len(facts) == 20 and facts[0] == "fact number 5"
+
+
+def test_trim_history_summarises_older_turns():
+    messages = [{"role": "user" if i % 2 == 0 else "assistant", "content": f"m{i}"} for i in range(10)]
+    trimmed = trim_history(messages, keep_last=4, summarize=lambda text: f"{text.count(chr(10)) + 1} older messages")
+    assert trimmed[0] == {"role": "system", "content": "Summary of the earlier conversation: 6 older messages"}
+    assert trimmed[1:] == messages[-4:]
+    assert trim_history(messages, keep_last=4) == messages[-4:]
+    assert trim_history(messages[:3], keep_last=4) == messages[:3]</code></pre>
+<pre class="term"><code><span class="ps">$ </span>pytest -q test_memory.py
+<span class="o">.....                                                                    [100%]
+5 passed in 0.18s</span></code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Two sessions, one memory</h4>
+        <pre class="code" data-file="lab07_05_memory.py"><code>"""Drill 07.5: long-term memory as a tool. In session 1 the learner states preferences and the
+agent stores them with `remember`; session 2 starts fresh (no chat history), recalls them,
+and uses them to pick a date."""
+from datetime import date
+
+from pydantic import BaseModel, Field
+
+import desk
+from agent import Agent, print_step
+from desk_tools import SYSTEM, WRITE_TOOLS, kit
+from llm import MODEL, get_client
+from memory import STATE_DIR, LearnerMemory
+
+memory = LearnerMemory(STATE_DIR / "memory.json")
+memory.forget("L-DIEGO", "")              <span class="c"># every fact contains "": start the drill with an empty memory</span>
+
+
+class FactArgs(BaseModel):
+    fact: str = Field(description="A short, lasting preference or fact the learner asked you to remember")
+
+
+@kit.register(FactArgs, needs_context=True)
+def remember(args, context):
+    """Save a lasting preference the learner states (for example preferred class days or contact channel),
+    so future sessions know it. Never store payment details, passwords or health information."""
+    return memory.remember(context["learner"], args.fact)
+
+
+client = get_client()
+context = {"learner": "L-DIEGO"}
+
+print("SESSION 1")
+agent = Agent(client, MODEL, kit, SYSTEM, write_tools=WRITE_TOOLS, on_step=print_step)
+<span class="c"># A weekday that matches one later AZ-104 session (dates are relative to today in desk.py).</span>
+weekday = date.fromisoformat(desk.upcoming_sessions("C110")[1]).strftime("%A")
+print(" ", agent.run(f"Please remember that I can only attend classes that start on a {weekday}, "
+                     "and that I prefer email over phone calls.", context).answer)
+print("  stored:", memory.recall("L-DIEGO"))
+
+print("\nSESSION 2 (new conversation; memory goes into the system prompt)")
+agent = Agent(client, MODEL, kit, SYSTEM + "\n\n" + memory.as_prompt("L-DIEGO"),
+              write_tools=WRITE_TOOLS, on_step=print_step)
+print(" ", agent.run("Which later AZ-104 date would suit me? Don't book anything yet.", context).answer)
+print("  available:", [(d, date.fromisoformat(d).strftime("%A")) for d in desk.upcoming_sessions("C110")])</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab07_05_memory.py</code></pre>
+        <span class="out-label">Real output with qwen2.5:7b (Ollama); dates relative to today</span>
+<pre class="out"><code>SESSION 1
+  1. ✓ remember({"fact":"Preferred class days: Thursday. Contact channel: email."}) -&gt; {"status": "remembered", "fact": "Preferred class days: Thursday. Contact channel: email."}  [5 ms]
+  Your preference for Thursday class days and email communication has been saved. No changes to your enrolments today.
+  stored: ['Preferred class days: Thursday. Contact channel: email.']
+
+SESSION 2 (new conversation; memory goes into the system prompt)
+  1. ✓ my_enrolments({}) -&gt; [{"enrolment_id": "TC-20877", "course_id": "C110", "course": "AZ-104: Azure Administrator", "start": "2026-10-  [9 ms]
+  2. ✓ upcoming_sessions({"course_id":"C110"}) -&gt; ["2026-10-17", "2026-10-29", "2026-11-14"]  [2 ms]
+  The next available dates for AZ-104 are October 29 and November 14. Would you like to reschedule to October 29?
+  available: [('2026-10-17', 'Saturday'), ('2026-10-29', 'Thursday'), ('2026-11-14', 'Saturday')]</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Memory and its risks</h4>
+        <ol>
+          <li>Session 2 had no chat history. How did the agent know Diego's preference?</li>
+          <li>What should happen if Diego says "remember my card 4111 1111 1111 1111 for next time"?</li>
+          <li>Where would a pending approval live, and why not in long-term memory?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li><code>memory.as_prompt()</code> added "Known about this learner from earlier sessions" to the system prompt. The model didn't remember anything; the code did, and put it back in front of the model.</li>
+            <li><code>LearnerMemory.remember</code> refuses it in code (the <code>SENSITIVE</code> check), and the agent should explain that payment details are never stored. Don't rely on the prompt alone for this.</li>
+            <li>In task state (<code>TaskState.pending</code>), keyed by task, with an expiry. It belongs to one task, not to the learner's lasting profile; Milestone 7 keeps pending actions in an <code>ActionStore</code> for the same reason.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d07-5"> I've completed Drill 07.5</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>State and memory.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Does the model "learn" Diego's preference in Drill 07.5?</summary><div><p>No. Its weights never change. The application stored a fact and inserted it into later prompts; delete the file and the "memory" is gone.</p></div></details>
+  <details><summary>2. A conversation reaches 60 turns. What do you send to the model?</summary><div><p>The system prompt, long-term memory, a summary of older turns, and the most recent turns in full, within a token budget; plus the current task state if a task is in progress.</p></div></details>
+  <details><summary>3. Why cap long-term memory at a small number of facts?</summary><div><p>It's sent with every session (cost and latency), old facts go stale, and more stored personal data means more privacy risk. A short list of explicit preferences is enough.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Models are stateless. Choose what your code keeps (working context, task state, history, memory), how long, and what it must never contain.</p></div>
+
+</div>
+<label class="page-done"><input type="checkbox" data-page-done="m07-memory"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../../modules/07/workflows.html"><small>Previous</small><span>← 07 · Agent workflows</span></a><a class="next" href="../../modules/07/multi-step.html"><small>Next</small><span>07 · Multi-step tasks →</span></a></nav>
+</main>
+<aside class="otp" aria-label="On this page"></aside>
+</div>
+<footer class="site-footer">
+  <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+</footer>
+</div>
+</div>
+</body>
+</html>

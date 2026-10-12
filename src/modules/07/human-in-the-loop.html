@@ -1,0 +1,145 @@
+<!--meta
+{"id": "m07-hitl", "short": "Human-in-the-Loop Workflows", "h1": "Human-in-the-Loop Workflows", "description": "Module 07, topic 7: keeping people in control of agent actions: which actions need approval, approval requests that show the real effect (computed by code), frozen arguments, expiry, one decision per action, escalation to staff, and audit; with a drill where the learner approves or declines a lab extension.", "lead": "The safest agent proposes and a person decides. But an approval is only as good as what the person is shown: \"approve extend_lab({...})?\" teaches people to click yes. Show the real effect, computed by code (\"lab open until 16 Oct becomes 23 Oct, free\"), and make sure that exactly what was approved is what runs. You'll decline once and approve once, and check the audit log both times.", "chips": ["Approve the effect", "Frozen arguments", "Expiry, one decision", "Escalation", "Drill 07.7"], "time": "Learn 12 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The model proposes; a person decides; code executes.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A <strong>human-in-the-loop (HITL) workflow</strong> pauses an agent before selected actions and asks a person to <strong>approve, reject or edit</strong> them. A sound design shows the action's real effect, freezes the approved arguments, executes only after approval (in code, not by the model), expires stale requests, accepts one decision per request, and records who decided what.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Before anything changes, show the person exactly what will happen and let them say yes or no. Then do exactly that, once, and write it down.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Paying by card in a shop. The terminal shows the exact amount and merchant; you confirm with your PIN; the charge is what was on the screen, not what the cashier types afterwards; if you walk away, the request times out; and the receipt is your record. Agents need the same ritual.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 300" role="img" aria-labelledby="hl-t hl-d">
+      <title id="hl-t">Propose, approve, execute</title>
+      <desc id="hl-d">The model calls a write tool. Code checks the rules and identity, freezes the arguments, computes a preview of the real effect and stores a proposal with an id and expiry. The person sees the preview with Approve and Decline. On Approve, code re-checks the rules, executes once using the proposal id as idempotency key, and logs it; the result goes back into the conversation. On Decline, nothing changes and the model is told. Riskier actions, such as refunds, escalate to staff instead.</desc>
+      <rect x="20" y="40" width="170" height="80" rx="12" class="s-violet"/><text x="105" y="72" class="t-b mid">model</text><text x="105" y="94" class="t-s mid">calls a write tool</text>
+      <path d="M190 80 H224" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="230" y="20" width="240" height="120" rx="12" class="s-teal"/><text x="246" y="44" class="t-b">code prepares a proposal</text><text x="246" y="68" class="t-s">check identity and rules</text><text x="246" y="88" class="t-s">freeze the arguments</text><text x="246" y="108" class="t-s">preview the real effect</text><text x="246" y="128" class="t-s">id + expiry (15 min)</text>
+      <path d="M470 80 H504" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="510" y="30" width="220" height="100" rx="12" class="s-amber"/><text x="526" y="56" class="t-b">the person sees</text><text x="526" y="80" class="t-s">"Lab open until 16 Oct</text><text x="526" y="98" class="t-s">becomes 23 Oct, free"</text><text x="526" y="120" class="t-s">[Approve]  [Decline]</text>
+      <path d="M730 60 H764" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="736" y="52" class="t-s">yes</text>
+      <rect x="770" y="20" width="170" height="90" rx="12" class="s-green"/><text x="855" y="46" class="t-b mid">code executes</text><text x="855" y="68" class="t-s mid">re-check, run once,</text><text x="855" y="86" class="t-s mid">log, tell the model</text>
+      <path d="M730 112 H764" class="s-arrow" marker-end="url(#ah)"/><text x="736" y="130" class="t-s">no</text>
+      <rect x="770" y="120" width="170" height="56" rx="12" class="s-surface2"/><text x="855" y="146" class="t-b mid">nothing changes</text><text x="855" y="164" class="t-s mid">model is told</text>
+      <rect x="20" y="196" width="920" height="88" rx="12" class="s-rose"/><text x="36" y="222" class="t-b">risk decides who approves</text><text x="36" y="246" class="t-s">read: nobody · reversible changes to your own booking (lab extension, date change): the learner</text><text x="36" y="268" class="t-s">money out, exceptions, other people's data: staff, via a ticket · irreversible and high risk: don't give the agent the tool</text>
+    </svg>
+  </div>
+  <figcaption><b>Approve the effect, not the function call.</b> The preview is computed by code from real data, so a model can't describe an action more kindly than it is.</figcaption>
+</figure>
+
+<h3>Rules that make approval meaningful</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Rule</th><th>What goes wrong without it</th></tr></thead>
+    <tbody>
+      <tr><td>Preview computed by code from current data</td><td>The model describes "$50" as "a small fee", or gets the date wrong</td></tr>
+      <tr><td>Arguments frozen at proposal time</td><td>The model changes the date after the person approved</td></tr>
+      <tr><td>Re-check rules at execution</td><td>The fee changed overnight; the approved price is no longer the real one</td></tr>
+      <tr><td>Expiry</td><td>A week-old "yes" executes in a different situation</td></tr>
+      <tr><td>One decision per proposal; idempotent execution</td><td>A double-click or retry moves the booking twice</td></tr>
+      <tr><td>Only the right person can decide</td><td>Another user, or the model itself, approves it</td></tr>
+      <tr><td>Declines are told to the model</td><td>The agent proposes the same thing again, or claims it happened</td></tr>
+      <tr><td>Audit log</td><td>No answer to "who approved this?"</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Coding agents ask before running shell commands or editing files outside the workspace, and let you allow-list safe commands so approvals stay meaningful. Expense and procurement agents prepare a purchase and route it to the budget holder. Support agents issue small goodwill credits on their own but escalate refunds above a limit to a person, mirroring the approval table in TrainCrest's internal wiki from Module 06. Too many approval prompts and people click yes without reading; place them where the risk is.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Confirmation dialogs are UX polish."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Approval is a <strong>security control</strong> between a probabilistic decision and a real change: computed preview, frozen arguments, expiry, one decision, re-check, idempotent execution, audit."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Letting the model execute after "the user said yes" in chat. A message saying "yes" can be ambiguous, injected or about something else. Approval should be an out-of-band, structured decision (a button, a signed request) bound to one proposal id.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I classify actions by risk: reads run freely, reversible self-service changes need the user's approval, money and exceptions go to staff. Approvals show a code-computed preview, bind to a frozen proposal with an expiry, and execution re-checks rules, runs idempotently and is logged."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Decline once, approve once, read the log.</p></div></div>
+
+<div class="drill" id="d07-7" data-title="Approve or decline: the learner decides" data-time="~15 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 07.7</span><h3>Approve or decline: the learner decides</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> run Mei's lab-extension request with a real approval step: see the preview code computes, decline it and confirm nothing changed, then approve it and confirm exactly one change.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The approver</h4>
+        <pre class="code" data-file="lab07_07_approval.py" data-src="code/genai-labs/lab07_07_approval.py"></pre>
+        <p>The preview comes from <code>preview()</code> in <code>desk_tools.py</code>: it reads the current lab date from the system, so the person sees facts, not the model's description. In <code>agent.py</code>, a declined write returns an error result to the model and never reaches <code>desk</code>.</p>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Decline, then approve</h4>
+        <pre class="term"><code><span class="ps">$ </span>python lab07_07_approval.py      <span class="c"># answer n</span>
+<span class="ps">$ </span>python lab07_07_approval.py      <span class="c"># answer y</span></code></pre>
+        <span class="out-label">Real output with qwen2.5:7b (Ollama): declined</span>
+<pre class="out"><code>  1. ✗ lab_status({"enrolment_id":"TC-12345"}) -&gt; {"error": "TC-12345 is not one of this learner's enrolments; call the my_enrolments tool yourself to get their  [3 ms]
+  2. ✓ my_enrolments({}) -&gt; [{"enrolment_id": "TC-10293", "course_id": "C112", "course": "AI-102: Azure AI Engineer", "start": "2026-09-26  [6 ms]
+
+  APPROVAL NEEDED: Extend the lab for TC-10293 by 7 days, free (one-time): open until 2026-10-16 becomes 7 days later.
+  Approve? [y/n] n
+  3. ⊘ extend_lab({"enrolment_id":"TC-10293"}) -&gt; {"error": "the learner did not approve this action: the learner said no"}  [1 ms]
+
+ANSWER: The learner declined to extend the lab for the AI-102 course (TC-10293). No changes were made.
+
+If you want to proceed, please confirm and we can try again.
+lab open until: 2026-10-16 -&gt; 2026-10-16
+audit log: no changes</code></pre>
+        <span class="out-label">Real output: approved</span>
+<pre class="out"><code>  APPROVAL NEEDED: extend_lab with {"enrolment_id":"TC-12345"} (can't preview: TC-12345 is not one of this learner's enrolments; call the my_enrolments tool yourself to get their real enrolment IDs)
+  Approve? [y/n] y
+  1. ✗ extend_lab({"enrolment_id":"TC-12345"}) -&gt; {"error": "TC-12345 is not one of this learner's enrolments; call the my_enrolments tool yourself to get their  [4 ms]
+  2. ✓ my_enrolments({}) -&gt; [{"enrolment_id": "TC-10293", "course_id": "C112", "course": "AI-102: Azure AI Engineer", "start": "2026-09-26  [0 ms]
+
+  APPROVAL NEEDED: Extend the lab for TC-10293 by 7 days, free (one-time): open until 2026-10-16 becomes 7 days later.
+  Approve? [y/n] y
+  3. ✓ extend_lab({"enrolment_id":"TC-10293"}) -&gt; {"enrolment_id": "TC-10293", "lab_until": "2026-10-23", "fee_usd": 0}  [0 ms]
+
+ANSWER: Your AI-102 lab booking has been extended until 2026-10-23. No fee was applied as you have a free extension available.
+lab open until: 2026-10-16 -&gt; 2026-10-23
+audit log: [{'action': 'extend_lab', 'enrolment_id': 'TC-10293', 'lab_until': '2026-10-23', 'fee_usd': 0}]</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Where the control lives</h4>
+        <ol>
+          <li>After the decline, what told the model it had been declined, and what stopped it from trying again?</li>
+          <li>In this drill the approver runs inside the agent loop, so the program waits. Why doesn't that work for a web app, and what does Milestone 7 do instead?</li>
+          <li>Which TrainCrest actions would you never give the agent, even with approval?</li>
+          <li>In the approved run, the first approval request says "can't preview": the model had guessed an ID. What should happen instead of asking the person?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>The tool result <code>{"error": "the learner did not approve this action: ..."}</code>, plus the system prompt rule "If they decline, don't try again". Even if the model ignored the rule, every retry would hit the approver again.</li>
+            <li>A web request can't wait minutes for a click. Milestone 7 ends the turn with a stored proposal and an Approve/Decline card; a separate request executes it later. That's the pause-and-resume pattern, with the proposal as task state.</li>
+            <li>Refunds and other money going out, exceptions to policy, changes to someone else's data, and anything irreversible like deleting an account. Those go to staff through a ticket (Module 06's approval limits), or stay manual.</li>
+            <li>Validate first, ask second. An action that fails identity or policy checks should go straight back to the model as an error; asking a person to approve something impossible wastes their attention and trains them to click yes. (Here the tool still refused it after the "yes", so nothing broke.) Milestone 7's <code>request_…</code> tools check ownership and rules before a proposal ever reaches the learner.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d07-7"> I've completed Drill 07.7</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Human in the loop.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why compute the approval preview in code instead of asking the model to describe the action?</summary><div><p>The model can be wrong, vague or manipulated (by an injected instruction) into describing an action more favourably than it is. Code reads the real data and shows the actual effect and fee.</p></div></details>
+  <details><summary>2. A learner approves a reschedule quoted at $0; it runs the next morning, now within 7 days of the start. What should happen?</summary><div><p>Execution re-checks the rules, sees the fee is now $50, refuses, and asks the learner again. An approval covers the action as shown, not whatever it becomes later; the expiry also limits how stale it can be.</p></div></details>
+  <details><summary>3. Two browser tabs click Approve on the same proposal. What prevents a double change?</summary><div><p>One decision per proposal (the first removes it from the pending store) and idempotent execution keyed by the proposal id, so even a retry returns the first result.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Agents propose; people decide; code executes exactly what was approved, once, with a record. Put approvals where the risk is, and show the real effect.</p></div>

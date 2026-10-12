@@ -1,0 +1,182 @@
+<!--meta
+{"id": "m06-build", "short": "Build: Milestone 6", "h1": "Build · Milestone 6: Answers from the Help Centre", "description": "Traincrest Assist milestone 6, the Module 06 hands-on project: a company knowledge assistant. Policy moves out of the system prompt into retrieval over the help centre: a search_help tool with numbered sources, citations checked in code, sources shown in the UI and CLI, a POST /api/ask pipeline for a help-centre search box, and a chunker that keeps article introductions.", "lead": "Version 0.6 stops reciting a five-line policy from its prompt and starts answering from TrainCrest's help centre, every policy fact cited and checked. The same retrieval powers a new /api/ask endpoint for a help-centre search box. This is the module's hands-on project: a company knowledge assistant that answers questions from the company's own documents.", "chips": ["search_help tool", "Citations checked", "/api/ask", "Sources in the UI", "≈ 75 min"], "time": "Plan 10 min · Build 45 min · Verify 20 min"}
+-->
+<div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From a policy in the prompt to policies in documents.</p></div></div>
+
+<div class="case">
+  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 6</span></div>
+  <div class="case-body">
+    <p>The support team has updated the lab, voucher and certificate rules twice since Traincrest Assist launched, and both times someone had to edit the system prompt and redeploy. Learners also ask about things the five-line policy never covered: instalments, name corrections, accessibility, group discounts. The brief: answer policy questions <strong>from the help centre</strong>, show learners where each answer comes from, say clearly when the help centre doesn't cover something, and offer a search box on the help-centre site that uses the same engine. Constraints: no policy text in prompts, nothing shown as a source that the answer didn't use, and the chat must keep working if search is down.</p>
+  </div>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 340" role="img" aria-labelledby="b6-t b6-d">
+      <title id="b6-t">Traincrest Assist v0.6</title>
+      <desc id="b6-d">Two entry points share app/rag.py. In chat, the model calls the search_help tool with a complete question; the tool retrieves help sections above the relevance floor, numbers them across the turn and returns them; the model answers with citations; the chat service checks the citations, removes any to sections it never saw, and sends the cited sources in the done event, which the web UI and CLI show as links. POST /api/ask runs a fixed pipeline: retrieve, and if nothing is relevant return 'not found' without a model call; otherwise build a prompt with rag_answer@v1, generate, detect NOT_FOUND, check citations and return the answer with sources, or related sections if it cited none. Both use the milestone 5 search index, now built with introductions.</desc>
+      <text x="20" y="28" class="t-m">CHAT · TOOL-BASED RAG</text>
+      <rect x="20" y="40" width="170" height="70" rx="12" class="s-surface"/><text x="105" y="68" class="t-b mid">POST /api/chat</text><text x="105" y="88" class="t-s mid">assist_system@v4</text>
+      <path d="M190 75 H224" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="230" y="40" width="200" height="70" rx="12" class="s-violet"/><text x="330" y="68" class="t-b mid">model calls</text><text x="330" y="88" class="t-s mid">search_help(query)</text>
+      <path d="M430 75 H464" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="470" y="40" width="220" height="70" rx="12" class="s-teal"/><text x="580" y="68" class="t-b mid">sections [1]..[n]</text><text x="580" y="88" class="t-s mid">numbered across the turn</text>
+      <path d="M690 75 H724" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="730" y="40" width="210" height="70" rx="12" class="s-rose"/><text x="835" y="68" class="t-b mid">check_citations</text><text x="835" y="88" class="t-s mid">→ "sources" in done</text>
+      <text x="20" y="160" class="t-m">HELP-CENTRE BOX · PIPELINE RAG</text>
+      <rect x="20" y="172" width="170" height="70" rx="12" class="s-surface"/><text x="105" y="200" class="t-b mid">POST /api/ask</text><text x="105" y="220" class="t-s mid">{"question": ...}</text>
+      <path d="M190 207 H224" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="230" y="172" width="200" height="70" rx="12" class="s-teal"/><text x="330" y="200" class="t-b mid">retrieve + floor</text><text x="330" y="220" class="t-s mid">none → not found, 0 calls</text>
+      <path d="M430 207 H464" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="470" y="172" width="220" height="70" rx="12" class="s-violet"/><text x="580" y="200" class="t-b mid">rag_answer@v1</text><text x="580" y="220" class="t-s mid">generate · NOT_FOUND?</text>
+      <path d="M690 207 H724" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="730" y="172" width="210" height="70" rx="12" class="s-rose"/><text x="835" y="200" class="t-b mid">check_citations</text><text x="835" y="220" class="t-s mid">sources or "related"</text>
+      <rect x="230" y="276" width="460" height="50" rx="12" class="s-blue"/><text x="460" y="298" class="t-b mid">app/rag.py over the milestone 5 index</text><text x="460" y="316" class="t-s mid">47 help sections, introductions included (chunker headings-v2)</text>
+      <path d="M580 110 V140 M330 242 V270" class="s-dash"/>
+    </svg>
+  </div>
+  <figcaption><b>One retrieval module, two ways in.</b> The chat lets the model decide when to search; the help-centre box always searches. Both check citations in code.</figcaption>
+</figure>
+
+<span class="out-label">Files after this milestone (new or changed)</span>
+<pre class="out"><code>traincrest-assist/
+├── .env.example              + RAG_TOP_K, RAG_MIN_SCORE, RAG_MAX_CONTEXT_TOKENS, HELP_CENTRE_URL
+├── cli.py                    prints the cited sources
+├── app/
+│   ├── config.py             + RAG settings, relevance floor per embedding model
+│   ├── search.py             keeps introductions as "Overview"; titles "Article > Section"; CHUNKER_VERSION
+│   ├── rag.py                NEW  retrieve, number_sources, format_sources, check_citations, ask
+│   ├── prompts.py            + assist_system@v4 (no policy text), rag_answer@v1
+│   ├── tools.py              + search_help (numbered sources, collected per turn)
+│   ├── chat.py               checks citations; "sources" in the done event
+│   └── main.py               + POST /api/ask; v0.6
+├── web/index.html            shows sources as links under each answer
+└── tests/
+    ├── test_rag.py           NEW  retrieval, numbering, budget, citations, /api/ask, search_help in chat
+    ├── test_search.py        47 help sections; chunker version check
+    └── test_offline.py       assist_system@v4 has no "$" amounts</code></pre>
+
+<div class="phase do" id="build"><span class="ph-num">2</span><div><h2>Build</h2><p>Settings, chunks, the RAG module, the tool, then the wiring.</p></div></div>
+
+<div class="drill exercise" id="b06-1" data-title="Milestone 6: help-centre RAG with checked citations" data-time="~75 min" data-steps="run,write,ask,verify">
+  <div class="drill-head"><span class="drill-id">Milestone 6</span><h3>Help-centre RAG with checked citations</h3>
+    <div class="drill-meta"><span class="time">~75 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · numpy · pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> the Module 06 hands-on project, a company knowledge assistant. Traincrest Assist answers policy questions only from TrainCrest's help centre, cites every fact, checks the citations in code, and exposes the same engine as <code>POST /api/ask</code>.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Settings</h4>
+        <p>Add to <code>app/config.py</code>, and the matching lines to <code>.env</code> (leave <code>RAG_MIN_SCORE</code> empty unless you calibrated your own in Drill 06.6):</p>
+        <pre class="code" data-file="app/config.py (added)" data-src="code/traincrest-assist/m06/app/config.py" data-lines="42-48"></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Keep the introductions, then rebuild the index</h4>
+        <p>Drill 06.4 showed Milestone 5's chunker dropping every article's introduction. Replace <code>chunk_by_headings</code> in <code>app/search.py</code>, add <code>CHUNKER_VERSION = "headings-v2"</code> near the top, and record it in <code>LocalIndex.save()</code> and check it in <code>load()</code> (see the reference code), so an old index is refused instead of silently mismatched:</p>
+        <pre class="code" data-file="app/search.py (chunk_by_headings)" data-src="code/traincrest-assist/m06/app/search.py" data-lines="27-37"></pre>
+<pre class="term"><code><span class="ps">$ </span>python -m scripts.build_index</code></pre>
+        <span class="out-label">Real output (local backend, nomic-embed-text)</span>
+<pre class="out"><code>Local index: 20 courses + 47 help sections, 768-dimension vectors from nomic-embed-text.
+Done in 10.2s.</code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>The RAG module</h4>
+        <p>Everything from this module in one file, sized for the app: retrieval with the floor, numbering within a budget (about 4 characters per token is close enough and needs no tokenizer download), tagged sources, public source links, citation checks, and the <code>ask()</code> pipeline.</p>
+        <pre class="code" data-file="app/rag.py" data-src="code/traincrest-assist/m06/app/rag.py"></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Prompts: policy out, help centre in</h4>
+        <p>Add two prompts to <code>app/prompts.py</code> and make them active. <code>assist_system@v4</code> has no policy text and no dollar amounts at all; it tells the model to search, to write complete queries (query rewriting, done by the model), and to cite.</p>
+        <pre class="code" data-file="app/prompts.py (added)" data-src="code/traincrest-assist/m06/app/prompts.py" data-lines="66-99"></pre>
+        <pre class="code" data-file="app/prompts.py (ACTIVE)" data-src="code/traincrest-assist/m06/app/prompts.py" data-lines="143-144"></pre>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>The <code>search_help</code> tool</h4>
+        <p>Write a prompt for your assistant that adds the tool to <code>app/tools.py</code>.</p>
+        <div class="template-box"><pre><code>Goal: add a search_help tool to #file:app/tools.py
+Context: app/rag.py has retrieve(search, question) and number_sources(hits, start=...);
+         the search service is the module's _search (set at start-up)
+Constraints: one argument ...
+             citation numbers must not restart when the model searches twice in one turn ...
+             when search isn't available ...
+             return only ...
+Done when: pytest -q passes ...</code></pre></div>
+        <p class="hint"><b>Hint:</b> the tool needs the per-turn <code>context</code> (register it with <code>needs_context=True</code>) so it can keep a <code>context["sources"]</code> list and continue numbering from <code>len(sources) + 1</code>. Describe the argument as "a complete question" so the model rewrites follow-ups for you. Add a status label for the UI.</p>
+        <details class="solution"><summary>Compare with my version</summary><div>
+          <pre class="code" data-file="app/tools.py (search_help)" data-src="code/traincrest-assist/m06/app/tools.py" data-lines="99-116"></pre>
+        </div></details>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Check citations in the chat service</h4>
+        <div class="prompt-box"><pre><code>In #file:app/chat.py, ChatService.stream():
+1. Create the per-turn context as {"learner_id": learner_id, "sources": []}.
+2. After the tool loop, before check_output, run
+   reply, cited, unknown = check_citations(full_reply, context["sources"]) from #file:app/rag.py.
+   If unknown is not empty, yield {"type": "replace", "text": reply} and log a warning event
+   "unknown_citations" with the numbers.
+3. Add "sources": [public(s) for s in cited] to the done event, or [] if the output guard flagged
+   the reply.
+Keep everything else as it is. Then run pytest -q.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it gives the exact order (citations before the output guard, so a replaced reply is what gets guarded and saved), reuses the existing <code>replace</code> event instead of inventing a new one, and names the functions to import, so the change stays small and reviewable.</div>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="app/chat.py (end of stream)" data-src="code/traincrest-assist/m06/app/chat.py" data-lines="136-162"></pre>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>The help-centre endpoint, UI and CLI</h4>
+        <pre class="code" data-file="app/main.py (POST /api/ask)" data-src="code/traincrest-assist/m06/app/main.py" data-lines="106-120"></pre>
+        <p>In <code>web/index.html</code>, when the <code>done</code> event has <code>sources</code>, add one link per source under the answer (<code>[1] Refunds and cancellations › How much you get back</code>); <code>cli.py</code> prints the same lines. Both are in the reference code.</p>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Tests</h4>
+        <pre class="code" data-file="tests/test_rag.py" data-src="code/traincrest-assist/m06/tests/test_rag.py"></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Evidence</h4>
+<pre class="term"><code><span class="ps">$ </span>pytest -q
+<span class="ps">$ </span>uvicorn app.main:app --reload</code></pre>
+        <span class="out-label">Expected (exact)</span>
+<pre class="out"><code>.............................................                            [100%]
+45 passed in 1.48s</code></pre>
+        <p>In <code>/docs</code>, try <code>POST /api/ask</code>. Real results from my local run (llama3.2 and nomic-embed-text, local backend):</p>
+<pre class="out"><code>How long until my refund shows up on my card?
+  -&gt; Card refunds can take one extra billing cycle to appear on your statement, [1].
+     sources: [1] Refunds and cancellations &gt; When the money arrives          (17.0s)
+I get error LAB-503, what do I do?
+  -&gt; The recommended solution for error LAB-503 is to wait two minutes and then refresh.
+     sources: none cited, so "related" lists the top sections                  (7.0s)
+What is the capital of France?
+  -&gt; I couldn't find that in the TrainCrest help centre. Would you like me to raise a
+     ticket for our support team?                                              (0.1s, no model call)</code></pre>
+        <ul class="verify-list">
+          <li>In the chat, ask "How long do labs stay open after my course ends?" The meta line shows <code>tools: search_help</code>, the answer cites [1] or similar, and a link to the labs section appears under it.</li>
+          <li>Follow up with "And after that, how much is more time?" The <code>search_help</code> query in the log is a complete question about lab extension cost, not "and after that".</li>
+          <li>Ask "Can I bring my dog to class?" The assistant says it couldn't find it in the help centre and offers a ticket.</li>
+          <li>Sign in as Mei and ask how much she'd get back if she cancelled her RAG course: the policy comes from <code>search_help</code> with a citation, and the amount from <code>quote_refund</code>, never computed by the model.</li>
+          <li>Edit a help article (for example change the $49 lab extension price), run <code>python -m scripts.build_index</code>, restart, and ask again: the new price appears, with no prompt change.</li>
+        </ul>
+        <div class="callout note">
+          <div class="c-label">About small local models</div>
+          <p>With <code>llama3.2</code> (3B), answers are usually right but citations are often missing, and in multi-turn chat the model sometimes writes a tool call as plain text instead of calling the tool. That's the model, not your code: the tests prove the plumbing. Use your Azure <code>chat</code> deployment, or a larger local model such as <code>qwen2.5:7b</code>, to see reliable citations.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="b06-1"> I've completed Milestone 6</label></div>
+</div>
+
+<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where Traincrest Assist stands after Milestone 6.</p></div></div>
+<ul class="checklist">
+  <li>No policy text in any prompt: the help centre is the single source of truth for policy answers.</li>
+  <li>Every help section, introductions included, is indexed with a chunker version the app checks.</li>
+  <li>Chat answers cite numbered sections; citations to sections the model never saw are removed and logged.</li>
+  <li>Learners see links to the sections an answer actually cites, and "related" sections are labelled as such.</li>
+  <li><code>/api/ask</code> answers from the help centre or says it can't find it, without a model call when nothing is relevant.</li>
+  <li>45 offline tests, including RAG, run in under two seconds.</li>
+</ul>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Still to do</th><th>Fixed in</th></tr></thead>
+    <tbody>
+      <tr><td>Assist can explain and quote, but can't <em>do</em> things for the learner (extend a lab, move a date)</td><td>M07 (agent actions with human approval)</td></tr>
+      <tr><td>Groundedness and citation rate aren't measured; only rule-based checks run</td><td>M09 (evaluation, groundedness)</td></tr>
+      <tr><td>The index is rebuilt by hand when articles change</td><td>M08 (architecture), M12 (pipelines)</td></tr>
+      <tr><td>Retrieved text could carry injected instructions; only tag neutralising protects against it</td><td>M10 (Prompt Shields, least privilege)</td></tr>
+      <tr><td>Each answer re-retrieves and regenerates, even for the most common questions</td><td>M11 (caching)</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="callout note">
+  <div class="c-label">Fell behind? Catch up here</div>
+  <p>The complete reference code is in <a href="../../code/traincrest-assist/m06/app/rag.py"><code>code/traincrest-assist/m06/</code></a>. Copy it over your project, keep your <code>.env</code>, run <code>python -m scripts.build_index</code> (the chunker changed, so the old index is refused) and <code>pytest -q</code>, and you're ready for Module 07.</p>
+</div>

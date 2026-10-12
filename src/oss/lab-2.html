@@ -1,0 +1,164 @@
+<!--meta
+{"id": "oss-2", "short": "Lab 2: Tools and Semantic Search", "h1": "Lab 2 · Tools and Semantic Search with Open Models", "description": "Open-source lab guide, Lab 2 (Part II, Modules 04–05): structured outputs from a Pydantic schema, an assistant that calls application functions (search the catalogue, retrieve learner information, check an enrolment, create a ticket), embeddings and similarity with nomic-embed-text, and a hybrid semantic search app over a help centre.", "lead": "In this lab your open model starts working with your code. First it returns data in a shape you define; then it calls your functions to search a catalogue, look up a learner and open a ticket; then you turn text into vectors and build a search engine that finds help articles by meaning. These are the hands-on exercises of Modules 04 and 05.", "chips": ["Modules 04–05", "Pydantic schemas", "Function calling", "Embeddings", "Hybrid search", "≈ 3 hours"], "time": "Estimated time: 3 hours"}
+-->
+<h2 id="overview">Lab overview</h2>
+<div class="table-wrap min">
+  <table>
+    <tbody>
+      <tr><th>Objectives</th><td>Get schema-valid JSON from an open model · let the model call Python functions in a loop you control · keep identity out of the model's hands · create embeddings and compare meanings · build a semantic and keyword (hybrid) search over documents</td></tr>
+      <tr><th>Prerequisites</th><td>Lab 1 completed · <code>nomic-embed-text</code> pulled (Lab 0) · the <code>data</code> folder in your project · Part II demonstrated</td></tr>
+      <tr><th>You finish with</th><td><code>l2_structured.py</code>, <code>l2_tools.py</code> (an assistant that calls your functions), <code>l2_embeddings.py</code> and <code>l2_search.py</code> (a search app with a saved index)</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Exercise</th><th>Module</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td><a href="#ex1">1 · Structured output from a schema</a></td><td>04</td><td>30 min</td></tr>
+      <tr><td><a href="#ex2">2 · An assistant that calls your functions</a></td><td>04</td><td>60 min</td></tr>
+      <tr><td><a href="#ex3">3 · Embeddings: meaning as numbers</a></td><td>05</td><td>25 min</td></tr>
+      <tr><td><a href="#ex4">4 · A semantic search app</a></td><td>05</td><td>55 min</td></tr>
+      <tr><td><a href="#review">Review and cleanup</a></td><td></td><td>10 min</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="ex1">Exercise 1 · Structured output from a schema</h2>
+<h3>Task 1: Extract a course request as validated data</h3>
+<ol>
+  <li>Create <code>l2_structured.py</code>:
+    <pre class="code" data-file="l2_structured.py" data-src="code/oss-labs/l2_structured.py"></pre></li>
+  <li>Note <code>client.chat.completions.parse(... response_format=CourseRequest)</code>: the OpenAI library turns the Pydantic class into a JSON Schema, Ollama constrains the model's output to it, and the library returns a <code>CourseRequest</code> object. If it says <code>parse</code> doesn't exist, run <code>pip install -U openai</code>.</li>
+  <li>Run it:
+<pre class="term"><code><span class="ps">$ </span>python l2_structured.py</code></pre>
+    <span class="out-label">Real output with llama3.2 (yours will differ)</span>
+<pre class="out"><code>I'm new to the cloud and want something on Azure basics, under 400 dollars please.
+  -&gt; topic='Azure Basics' level='beginner' max_price_usd=400 format=None
+
+Looking for an advanced course on building RAG apps, online with a trainer.
+  -&gt; topic='RAG app development' level='advanced' max_price_usd=None format='live-online'
+
+Any self-paced Python course? Budget is about $300.
+  -&gt; topic='Python' level='beginner' max_price_usd=300 format='self-paced'</code></pre></li>
+  <li>Check each result against the request. A schema guarantees the <em>shape</em> (only allowed values for <code>level</code> and <code>format</code>, an integer price) but not that every value is <em>right</em>. Where did the model fill a value the learner didn't state?</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You get <code>CourseRequest</code> objects, not text, and can say what a schema does and doesn't guarantee.</p></div>
+
+<h2 id="ex2">Exercise 2 · An assistant that calls your functions</h2>
+<p>Module 04's hands-on exercise: an AI assistant that calls application functions: search products (here, courses), retrieve customer information, create a support ticket and check order (enrolment) status.</p>
+<h3>Task 1: Build the assistant</h3>
+<ol>
+  <li>Create <code>l2_tools.py</code>:
+    <pre class="code" data-file="l2_tools.py" data-src="code/oss-labs/l2_tools.py"></pre></li>
+  <li>Read the three parts: the <strong>functions</strong> are ordinary Python; <code>TOOLS</code> describes them to the model as JSON Schema; <code>ask()</code> is the <strong>tool loop</strong>: call the model, run any function it asks for, send the result back, repeat until it answers (at most 5 rounds).</li>
+  <li>This exercise uses <code>AGENT_MODEL</code> from <code>.env</code>, the model for tool calling. Set it to <code>qwen2.5:7b</code> if you pulled it: <code>llama3.2</code> often writes a tool call as text, or tells you to call the functions yourself.</li>
+  <li>Notice <code>SIGNED_IN = "L-MEI"</code>: the app decides who the learner is. No tool takes a learner ID from the model, so a prompt can't make it read someone else's data.</li>
+</ol>
+<h3>Task 2: Run it and watch the calls</h3>
+<ol>
+  <li>Run it with the three built-in questions:
+<pre class="term"><code><span class="ps">$ </span>python l2_tools.py</code></pre>
+    <span class="out-label">Real output with qwen2.5:7b (yours will differ)</span>
+<pre class="out"><code>Q: Which beginner courses cost less than $300?
+  -&gt; search_courses({'level': 'beginner', 'max_price_usd': 300, 'text': ''}) = [{"id": "C101", "title": "Python Foundations", "level": "beginner", "price_usd": 290}, {"i
+A: Here are some beginner courses under $300: 
+- Python Foundations (C101, $290)
+- Docker Quick Start (C114, $190)
+- Secure Coding Fundamentals (C116, $240)
+- SQL for Everyone (C117, $210)
+
+Q: What's the status of my RAG course?
+  -&gt; check_enrolment_status({'enrolment_id': 'TC-RAG'}) = {"error": "not one of the signed-in learner's enrolments; call get_my_profile to see them"
+A: It seems there was an error. Let's get your profile to check your enrolments first.
+
+Q: My invoice is wrong, please open a ticket for me.
+  -&gt; create_support_ticket({'summary': 'Incorrect invoice amount', 'category': 'billing'}) = {"ticket_id": "T-D4BBD9", "status": "created", "category": "billing"}
+A: A support ticket has been created for you regarding your billing issue. Your ticket ID is T-D4BBD9.</code></pre></li>
+  <li>For each question, check the arrows (<code>-&gt;</code>): which function did the model choose, with which arguments, and did the final answer use the result?</li>
+  <li>Look closely at the RAG question in the real run: the model guessed an ID (<code>TC-RAG</code>), got a clear error, said "Let's get your profile"… and stopped without calling it. Announcing a step instead of taking it is a common habit of smaller models. Run it again: the result varies from run to run, which is why real systems measure tool use over many runs (Module 09). A larger model, or the handbook's Azure deployment, does this reliably.</li>
+  <li>Try your own: <code>python l2_tools.py "Is there an advanced course under $1,300?"</code> and <code>python l2_tools.py "Show me Diego's enrolments."</code> (the second should fail safely: only Mei is signed in).</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>The model calls functions for the catalogue and ticket questions, your code runs them, and the answers use the results. You can explain what went wrong in any question where it didn't.</p></div>
+
+<h2 id="ex3">Exercise 3 · Embeddings: meaning as numbers</h2>
+<ol>
+  <li>Create <code>l2_embeddings.py</code>:
+    <pre class="code" data-file="l2_embeddings.py" data-src="code/oss-labs/l2_embeddings.py"></pre></li>
+  <li>Run it:
+<pre class="term"><code><span class="ps">$ </span>python l2_embeddings.py</code></pre>
+    <span class="out-label">Real output with nomic-embed-text</span>
+<pre class="out"><code>6 texts -&gt; vectors of 768 numbers. First five of the first: [0.063, 0.024, -0.171, 0.017, 0.036]
+
+How do I get my money back?            closest: Can I have a refund for my course?     (0.67)
+Can I have a refund for my course?     closest: How do I get my money back?            (0.67)
+¿Cómo pido un reembolso?               closest: How do I get my money back?            (0.44)
+My lab says quota exceeded             closest: Can I have a refund for my course?     (0.40)
+The sandbox won't start                closest: How do I get my money back?            (0.38)
+What's the weather in Paris?           closest: Can I have a refund for my course?     (0.35)</code></pre></li>
+  <li>Each text became 768 numbers. Texts with similar meaning have a high cosine similarity even when they share no words. Look at the Spanish sentence: how close is it to its English equivalents with this mostly English model?</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You can explain why "money back" and "refund" are close in vector space.</p></div>
+
+<h2 id="ex4">Exercise 4 · A semantic search app</h2>
+<p>Module 05's hands-on exercise: a semantic search application over a collection of documents.</p>
+<h3>Task 1: Build the index and the search</h3>
+<ol>
+  <li>Create <code>l2_search.py</code>:
+    <pre class="code" data-file="l2_search.py" data-src="code/oss-labs/l2_search.py"></pre></li>
+  <li>Follow the pipeline in the code: <code>sections()</code> splits each article at its headings (keeping the introduction), <code>load_index()</code> embeds every section once and saves the vectors to <code>data/search_index.json</code>, and <code>search()</code> ranks by meaning and by keywords and merges the two rankings with Reciprocal Rank Fusion.</li>
+</ol>
+<h3>Task 2: Search</h3>
+<ol>
+  <li>Run it with the built-in queries:
+<pre class="term"><code><span class="ps">$ </span>python l2_search.py</code></pre>
+    <span class="out-label">Real output with nomic-embed-text</span>
+<pre class="out"><code>(indexed 47 help sections with nomic-embed-text)
+
+money back if the trainer is ill
+  0.66  Refunds and cancellations &gt; If TrainCrest cancels
+  0.56  Refunds and cancellations &gt; When the money arrives
+  0.59  Refunds and cancellations &gt; How much you get back
+
+LAB-503
+  0.58  Labs and cloud sandboxes &gt; Common problems
+  0.52  Labs and cloud sandboxes &gt; How long labs stay open
+  0.49  Course formats &gt; Classroom
+
+pay in parts
+  0.58  Payments and invoices &gt; Ways to pay
+  0.54  Payments and invoices &gt; Invoices and receipts
+  0.57  Payments and invoices &gt; Paying in instalments
+
+discount for my team
+  0.70  Training for teams and companies &gt; Group discounts
+  0.58  Training for teams and companies &gt; Training credits
+  0.52  Training for teams and companies &gt; Reports for managers</code></pre></li>
+  <li>Run it again: no "(indexed …)" line this time, because the saved index is reused.</li>
+  <li>Try paraphrases and codes: <code>python l2_search.py "my sandbox stopped while I was at lunch" "AZ-104 voucher expiry"</code>. Keyword search finds exact codes; meaning search finds paraphrases; hybrid gets both.</li>
+  <li>In <code>.env</code>, if you change <code>EMBED_MODEL</code>, the index is rebuilt automatically: vectors from different models can't be compared.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>Your search finds the right help section for paraphrased questions and for error codes, and reuses its saved index.</p></div>
+
+<h2 id="trouble">Troubleshooting</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><code>AttributeError: ... has no attribute 'parse'</code></td><td>Your <code>openai</code> package is old: <code>pip install -U openai</code>.</td></tr>
+      <tr><td>The model answers without calling any function</td><td>Small models sometimes do. Ask more specifically ("check my enrolment status"), or try <code>qwen2.5:7b</code> as <code>CHAT_MODEL</code> if you have 16 GB of RAM.</td></tr>
+      <tr><td><code>does not support tools</code></td><td>The chosen model has no tool support in Ollama. Use <code>llama3.2</code> or <code>qwen2.5</code>.</td></tr>
+      <tr><td><code>model "nomic-embed-text" not found</code></td><td><code>ollama pull nomic-embed-text</code>.</td></tr>
+      <tr><td>Search results look random after changing data</td><td>Delete <code>data/search_index.json</code> to rebuild the index.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="review">Review and cleanup</h2>
+<ul class="checklist">
+  <li>A schema makes output shape reliable; validation and common sense check the values.</li>
+  <li>Function calling is a loop you control: the model asks, your code decides and runs, the result goes back.</li>
+  <li>Identity comes from the app, never from the model's arguments.</li>
+  <li>Embeddings turn meaning into vectors; hybrid search combines meaning with exact keywords.</li>
+</ul>
+<p><strong>Cleanup:</strong> keep <code>data/search_index.json</code>; Lab 3 builds a similar index for its knowledge assistant.</p>

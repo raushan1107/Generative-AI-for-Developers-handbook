@@ -1,0 +1,178 @@
+<!--meta
+{"id": "m06-generate", "short": "Response Generation in RAG", "h1": "Response Generation", "description": "Module 06, topic 8: generating grounded answers: low temperature, the NOT_FOUND path, skipping the model when nothing is relevant, answers that combine sources, other languages, conflicting or outdated sources, model choice, and a drill that runs the complete pipeline and the Company Knowledge Assistant on public and staff questions.", "lead": "With good sources in a good prompt, generation is the easy part, until it isn't. The model may add a detail the sources don't contain, ignore the 'not found' rule, or answer in English when asked in Spanish. You'll run the complete pipeline on six questions chosen to trigger each behaviour, and see what a small local model gets right and wrong.", "chips": ["Grounded answers", "Not found", "Languages", "Company Knowledge Assistant", "Drill 06.9"], "time": "Learn 10 min · Do 30 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Answer from the sources, all of them, only them.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Response generation</strong> is the final RAG step: the chat model reads the constructed prompt and produces an answer that should be <strong>grounded</strong> (every claim supported by a source), <strong>complete</strong> (it uses every relevant source), <strong>attributed</strong> (it cites them) and <strong>honest</strong> (it says when the sources don't answer the question), in the user's language and tone.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>The model writes the answer from the extracts, combines them if the question needs two, points to them, and admits when they don't cover it.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>An interpreter at a meeting. A good one renders exactly what was said, in the listener's language, and says "the speaker didn't mention a date" rather than inventing one. A bad one "helps" by filling gaps. You want the first, and you check the transcript afterwards.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 250" role="img" aria-labelledby="gn-t gn-d">
+      <title id="gn-t">The generation step and its exits</title>
+      <desc id="gn-d">If retrieval returned no sources above the floor, the pipeline answers 'I couldn't find that' without calling the model. Otherwise the model is called at low temperature. If it replies NOT_FOUND, the same friendly message is shown. Otherwise the answer goes to the citation checks, then to the user with its sources.</desc>
+      <rect x="20" y="40" width="170" height="80" rx="12" class="s-teal"/><text x="105" y="72" class="t-b mid">sources?</text><text x="105" y="94" class="t-s mid">from retrieval</text>
+      <path d="M105 120 V170" class="s-arrow" marker-end="url(#ah)"/><text x="115" y="150" class="t-s">none</text>
+      <rect x="20" y="176" width="300" height="56" rx="12" class="s-amber"/><text x="36" y="200" class="t-b">"I couldn't find that..."</text><text x="36" y="220" class="t-s">no model call · offer a ticket</text>
+      <path d="M190 80 H254" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="198" y="70" class="t-s">1 to k</text>
+      <rect x="260" y="40" width="210" height="80" rx="12" class="s-violet"/><text x="365" y="72" class="t-b mid">generate</text><text x="365" y="94" class="t-s mid">temperature 0</text>
+      <path d="M470 80 H534" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="540" y="40" width="170" height="80" rx="12" class="s-surface2"/><text x="625" y="72" class="t-b mid">NOT_FOUND?</text><text x="625" y="94" class="t-s mid">exact sentinel</text>
+      <path d="M625 120 V150 H250 V170" class="s-arrow" marker-end="url(#ah)"/><text x="470" y="146" class="t-s">yes</text>
+      <path d="M710 80 H774" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="722" y="70" class="t-s">no</text>
+      <rect x="780" y="40" width="160" height="80" rx="12" class="s-rose"/><text x="860" y="72" class="t-b mid">check citations</text><text x="860" y="94" class="t-s mid">topic 9</text>
+      <path d="M860 120 V170" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="700" y="176" width="240" height="56" rx="12" class="s-green"/><text x="716" y="200" class="t-b">answer + sources</text><text x="716" y="220" class="t-s">in the user's language</text>
+    </svg>
+  </div>
+  <figcaption><b>Two ways to say "not found", one way to say "here's the answer".</b> The cheapest exit skips the model entirely.</figcaption>
+</figure>
+
+<h3>Behaviours to design for</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Situation</th><th>What you want</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>Nothing relevant retrieved</td><td>A polite "not found", no cost</td><td>Skip the model when retrieval returns nothing (floor, topic 6)</td></tr>
+      <tr><td>Retrieved, but no answer in it</td><td>"Not found", not an improvised answer</td><td>The NOT_FOUND rule; detect the sentinel in code</td></tr>
+      <tr><td>Answer spans two sections</td><td>Both used and both cited</td><td>k ≥ 3, "[1][3]" allowed in the prompt</td></tr>
+      <tr><td>Question in another language</td><td>Answer in that language, from English sources</td><td>Rule in the prompt, and rewrite the <em>query</em> into the index language (Drill 06.7)</td></tr>
+      <tr><td>Two sources disagree</td><td>The newer or more authoritative one, or say they differ</td><td>Dates and source type in metadata; tell the model which wins</td></tr>
+      <tr><td>Numbers and money</td><td>Copied exactly, never computed</td><td>"Don't guess numbers", citation checks, and tools for calculations</td></tr>
+      <tr><td>Factual tone</td><td>Consistent answers</td><td>Low temperature (0 to 0.3) where the model supports it</td></tr>
+    </tbody>
+  </table>
+</div>
+<p><strong>Model choice matters more here than anywhere else in RAG.</strong> Following "only from the sources, cite each fact, else NOT_FOUND" is an instruction-following skill: larger hosted models do it reliably; small local models often skip citations, ignore the sentinel or add details. Use small models to learn and prototype; measure before shipping (Module 09).</p>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Support teams typically roll out RAG answers in stages: first as suggested replies that an agent edits and sends, then as automatic answers for the topics where measured accuracy is high, with a visible "Was this helpful?" and a hand-off to a person. The NOT_FOUND path isn't a failure in that setup; it's the router that sends the hard questions to people.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"The model generates the answer; if it's wrong, the model is bad."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Generation is one controlled step with <strong>defined exits</strong>: no sources, not found, answer. I choose the model by how well it follows grounding rules, and I check its output before anyone reads it."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Treating "the answer sounds right" as "the answer is grounded". In this drill, a model answers a refund question in fluent English with a real citation, and still adds a "1-2 billing cycles" claim that no source contains. Only the check in topic 9 notices.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Generation has explicit exits: skip the model when nothing is retrieved, detect a NOT_FOUND sentinel, otherwise answer at low temperature in the user's language and verify citations. I pick the generator model by its <strong>groundedness and citation rate</strong> on my evaluation set."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>The whole pipeline, six questions, one assistant.</p></div></div>
+
+<div class="drill" id="d06-9" data-title="The Company Knowledge Assistant, end to end" data-time="~30 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 06.9</span><h3>The Company Knowledge Assistant, end to end</h3>
+    <div class="drill-meta"><span class="time">~30 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> put ingestion, chunking, the index, retrieval, the prompt and the checks together in one function, run it on six questions that each test a behaviour, then use it as an interactive assistant over TrainCrest's public and internal documents.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The pipeline in one function</h4>
+        <pre class="code" data-file="rag.py" data-src="code/genai-labs/rag.py"></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Six questions, six behaviours</h4>
+        <pre class="code" data-file="lab06_09_answers.py" data-src="code/genai-labs/lab06_09_answers.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab06_09_answers.py</code></pre>
+        <span class="out-label">Real output with llama3.2 and nomic-embed-text (Ollama), mistakes included; yours will differ</span>
+<pre class="out"><code>[public] How long until my refund shows up on my card?
+Your refund will appear on your card within one extra billing cycle after the refund is processed, which is typically 1-2 billing cycles after the refund is processed, [1].
+
+Sources:
+[1] Refunds and cancellations &gt; When the money arrives (refunds-and-cancellations.md)
+checks: {'unsupported': [{'sentence': 'Your refund will appear on your card within one extra billing cycle after the refund is processed, which is typically 1-2 billing cycles after the refund is processed, [1].', 'numbers': ['1', '2']}]}
+--------------------------------------------------------------------------------
+[public] My lab stopped while I was at lunch and now shows LAB-440. Is my work lost, and how long are labs open?
+Your work is saved, as stated in source [2]. The lab session stopped due to inactivity after 4 hours, but your work is preserved. Labs are available for 30 days after the course ends, and you can ask for a free 7-day extension.
+
+Sources:
+[2] Labs and cloud sandboxes &gt; Common problems (labs-and-sandboxes.md)
+checks: {'uncited': ['The lab session stopped due to inactivity after 4 hours, but your work is preserved.', 'Labs are available for 30 days after the course ends, and you can ask for a free 7-day extension.']}
+--------------------------------------------------------------------------------
+[public] ¿Cuánto cuesta cambiar la fecha de mi curso tres días antes?
+I couldn't find that in TrainCrest's documents. Shall I raise a ticket for the support team? (model calls: 0)
+--------------------------------------------------------------------------------
+[public] Can I bring my dog to a classroom course?
+Unfortunately, the sources do not mention anything about bringing pets to classroom courses.
+checks: ok
+--------------------------------------------------------------------------------
+[public] Who can approve a refund exception of $300?
+I couldn't find that in TrainCrest's documents. Shall I raise a ticket for the support team? (model calls: 1)
+--------------------------------------------------------------------------------
+[staff] Who can approve a refund exception of $300?
+According to the public refund policy, a team lead can approve refund exceptions from $101 to $500. Therefore, a team lead can approve a refund exception of $300. [2]
+
+Sources:
+[2] Refund exceptions and approvals &gt; Who can approve what (exception-approvals.html)
+checks: {'uncited': ['According to the public refund policy, a team lead can approve refund exceptions from $101 to $500.']}</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Grade each answer</h4>
+        <ol>
+          <li>The first answer cites the right section. What's wrong with it, and what caught it?</li>
+          <li>The Spanish question has an answer in the help centre ($50, once). Why did it get "not found" with zero model calls, and what would fix it?</li>
+          <li>The dog question passed the floor and the model said the sources don't mention it, but not with <code>NOT_FOUND</code>. Is that acceptable?</li>
+          <li>The same $300 question gave "not found" for a learner and an answer for staff. Which component made that happen?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>It invents "typically 1-2 billing cycles" and drops the actual "5 to 10 business days". The numbers check flagged 1 and 2 as unsupported by source [1]. Without it, this answer would look perfectly sourced.</li>
+            <li>The English-centric embedding model scored the Spanish question below the 0.55 floor, so retrieval returned nothing and the model was never asked. Fix it at retrieval: rewrite the query into English first (Drill 06.7's stretch) or use a multilingual embedding model; the floor did its job.</li>
+            <li>The content is right, but code can't tell it apart from a real answer, so it's shown as one, with no sources. A stronger model follows the sentinel more reliably; Module 09 measures how often each model does.</li>
+            <li>The audience pre-filter in retrieval. For the learner, the staff-only approvals page was never a candidate, so the model saw only public refund sections and correctly said NOT_FOUND.</li>
+          </ol>
+        </div></details>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>The Company Knowledge Assistant</h4>
+        <p>The module's hands-on project: an interactive assistant over TrainCrest's documents. Run it in the staff view and the learner view:</p>
+        <pre class="code" data-file="kb.py" data-src="code/genai-labs/kb.py"></pre>
+<pre class="term"><code><span class="ps">$ </span>python kb.py --staff
+<span class="ps">$ </span>python kb.py</code></pre>
+        <span class="out-label">Real sessions with llama3.2 (Ollama); yours will differ</span>
+<pre class="out"><code>TrainCrest knowledge assistant (staff view, 66 chunks). Empty line to quit.
+
+Question: How many learners can join a classroom course?
+Classroom courses have at most 16 learners. [1]
+
+Sources:
+[1] Staff FAQ &gt; How many learners can join a classroom course? (staff-faq.csv)
+
+Question: A learner lost 3 hours of lab time in an incident. What do they get?
+A learner who loses more than 2 hours of lab time due to an incident gets an automatic 7-day lab extension. [1]
+
+Sources:
+[1] Lab incident runbook &gt; What to tell learners (lab-incident-runbook.txt)
+
+TrainCrest knowledge assistant (learner view, 47 chunks). Empty line to quit.
+
+Question: How many learners can join a classroom course?
+There is no information on the maximum number of learners that can join a classroom course.</code></pre>
+        <p>Same question, two audiences: the staff view answers from the CSV FAQ and cites it; the learner view never sees that FAQ. Ask your own questions about refunds, labs, vouchers and approvals, in both views.</p>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Stretch:</b> add Drill 06.7's query rewriting to <code>rag.answer()</code> so the Spanish question finds "Rescheduling a course › Fees" and the answer comes back in Spanish.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d06-9"> I've completed Drill 06.9</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Generation.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why skip the model call entirely when retrieval returns nothing?</summary><div><p>There is nothing to ground an answer in, so any answer would come from the model's memory. Skipping saves cost and latency and guarantees the "not found" path is taken.</p></div></details>
+  <details><summary>2. Two retrieved sections give different prices for the same thing. What should the system do?</summary><div><p>Prefer the authoritative or newest source by metadata (for example the help centre over an old FAQ, or the most recent <code>updated</code> date) and tell the model that rule; or have it say the sources differ and cite both. Then fix the content, because the conflict will come back.</p></div></details>
+  <details><summary>3. When would you use temperature 0 for RAG, and when not?</summary><div><p>For factual answers from sources, low temperature gives consistent, literal answers. Some reasoning models don't accept a temperature parameter at all (<code>rag.py</code> retries without it). For creative rewriting of the same facts, a little more is fine.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Generation needs defined exits (no sources, NOT_FOUND, answer), a model that follows grounding rules, and checks on everything it says.</p></div>

@@ -1,0 +1,7 @@
+openai
+python-dotenv
+pydantic
+tiktoken
+numpy
+rank_bm25
+pytest

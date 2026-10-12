@@ -1,0 +1,129 @@
+<!--meta
+{"id": "m07-reliable", "short": "Agent Reliability", "h1": "Agent Reliability", "description": "Module 07, topic 8: how agents fail (wrong tool, invented arguments, loops, giving up, false claims, flaky services, double execution) and the controls for each: step budgets, loop detection, actionable errors, retries with idempotency keys, identity in code, traces and offline tests with a scripted model; with a drill of offline reliability tests and a chaos run against flaky services.", "lead": "A demo agent works once. A production agent works on the thousandth run, when the schedule service times out, the model calls the same tool four times, or a retry arrives after the first call succeeded. You can't make a model reliable, but you can make the system around it reliable. You'll prove the guard rails with offline tests, then break the services on purpose and check that nothing happens twice.", "chips": ["Failure modes", "Budgets and loops", "Idempotency", "Offline tests", "Drill 07.8"], "time": "Learn 12 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Unreliable parts, reliable system.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Agent reliability</strong> is the ability of an agent system to complete tasks correctly and <strong>fail safely</strong> when it can't: bounded in steps and cost, never repeating side effects, never acting outside its permissions, honest about what happened, and observable enough to debug. It comes mostly from <strong>controls in code</strong> around the model, verified with <strong>tests and evaluations</strong>.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Assume the model and the services will sometimes get it wrong. Put limits, checks and logs around them so that "wrong" means "stopped and said so", never "did something twice" or "did something it shouldn't".</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A lift. Its motor can fail and passengers press the wrong buttons, but the lift is safe: a load limit, door sensors, brakes that engage when power fails, a maximum speed, an emergency phone and an inspection log. Nobody makes the motor perfect; they make the system safe around it.</p>
+</div>
+
+<h3>Failure modes and their controls</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Failure</th><th>Example</th><th>Control</th><th>In this module</th></tr></thead>
+    <tbody>
+      <tr><td>Wrong tool</td><td>Calls <code>reschedule</code> when asked for a quote</td><td>Clear tool design; separate read and write tools; approvals on writes</td><td>Drill 07.3</td></tr>
+      <tr><td>Invented arguments</td><td>Uses <code>TC-12345</code> as the ID</td><td>Identity and ownership checked in code; actionable errors</td><td>Drill 07.1</td></tr>
+      <tr><td>Loops</td><td>Calls <code>my_enrolments</code> again and again</td><td>Repeat detection; step budget</td><td><code>agent.py</code>, test</td></tr>
+      <tr><td>Giving up or asking the user to do its job</td><td>"Please run my_enrolments"</td><td>Prompt rules; better error wording; a stronger model; evaluations</td><td>Drill 07.1</td></tr>
+      <tr><td>False claims</td><td>"I've extended your lab" with no tool call</td><td>Report outcomes from logs; check claims against the trace</td><td>Drills 07.1, 07.6</td></tr>
+      <tr><td>Flaky services</td><td>The lab service times out</td><td>Retryable errors; limited retries</td><td>Drill 07.8</td></tr>
+      <tr><td>Double execution</td><td>A retry extends the lab twice</td><td>Idempotency keys on every write</td><td>Drill 07.8</td></tr>
+      <tr><td>Tool call written as text</td><td><code>{"name": "quote_extLAB", ...}</code> shown to the learner</td><td>Detect and replace before display</td><td>Milestone 7</td></tr>
+      <tr><td>Regressions</td><td>A prompt edit breaks the approval flow</td><td>Offline tests with a scripted model; evaluation sets (Module 09)</td><td><code>test_agent.py</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 230" role="img" aria-labelledby="re-t re-d">
+      <title id="re-t">Idempotency keys make retries harmless</title>
+      <desc id="re-d">An approved extension is sent with idempotency key A-7F3C. The lab service extends the lab but the response times out. The agent retries with the same key. The service sees A-7F3C was already done and returns the first result without extending again. Without a key, the retry would extend the lab a second time or fail with 'free extension already used'.</desc>
+      <rect x="20" y="40" width="200" height="70" rx="12" class="s-teal"/><text x="120" y="68" class="t-b mid">extend_lab</text><text x="120" y="90" class="t-s mid">key A-7F3C</text>
+      <path d="M220 75 H284" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="290" y="40" width="220" height="70" rx="12" class="s-green"/><text x="400" y="68" class="t-b mid">service extends lab</text><text x="400" y="90" class="t-s mid">remembers A-7F3C</text>
+      <path d="M510 75 H574" class="s-arrow" marker-end="url(#ah)"/><text x="520" y="64" class="t-s">reply lost</text>
+      <rect x="580" y="40" width="160" height="70" rx="12" class="s-rose"/><text x="660" y="68" class="t-b mid">timeout</text><text x="660" y="90" class="t-s mid">safe to retry</text>
+      <path d="M660 110 V150 H130 V170" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="20" y="174" width="220" height="44" rx="12" class="s-teal"/><text x="130" y="201" class="t-b mid">retry, same key</text>
+      <path d="M240 196 H284" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="290" y="174" width="450" height="44" rx="12" class="s-green"/><text x="306" y="201" class="t-s">already done → same result, no second extension</text>
+      <text x="760" y="66" class="t-s">without a key:</text><text x="760" y="86" class="t-s">extended twice, or</text><text x="760" y="106" class="t-s">"already used" error</text>
+    </svg>
+  </div>
+  <figcaption><b>Retries are only safe when writes are idempotent.</b> The key is created once per approved action and travels with every retry.</figcaption>
+</figure>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Payment APIs pioneered idempotency keys for exactly this reason: networks drop replies, clients retry, and nobody wants to be charged twice. Agent platforms add the rest: per-run step and token limits, tool timeouts, traces of every model and tool call, and test suites where a scripted model replays known conversations so a code change can't silently break the approval flow. Teams then run evaluation sets of real requests against each new prompt or model before release (Module 09).</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"If the code is correct, the feature is reliable."</p></div>
+  <div><h5>GenAI developer view</h5><p>"One component makes probabilistic choices, and services fail. Reliability comes from <strong>bounds, idempotent writes, permissions in code, traces and tests</strong>, and from evaluating behaviour over many runs, not one demo."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Testing an agent only by chatting with it. A manual chat explores one path, once, with one model mood. Script the model (<code>fake_llm.py</code>) to test the loop's guard rails deterministically, and use evaluation sets to test the model's choices statistically.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I make agents reliable with controls in code: step and token budgets, repeat detection, identity and permission checks in tools, actionable errors, idempotency keys on writes, approvals for risky actions, and tracing; I test the loop offline with a scripted model and the behaviour with evaluation sets."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Prove the guard rails, then break the services.</p></div></div>
+
+<div class="drill" id="d07-8" data-title="Reliability: offline tests and a chaos run" data-time="~25 min" data-steps="verify,run,think">
+  <div class="drill-head"><span class="drill-id">Drill 07.8</span><h3>Reliability: offline tests and a chaos run</h3>
+    <div class="drill-meta"><span class="time">~25 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> verify every guard rail of <code>agent.py</code> with a scripted model in milliseconds, then run the real agent five times against services that fail 30% of the time and check the systems end in a correct state.</p>
+    <ol class="dsteps">
+      <li class="dstep verify"><span class="st">Verify</span><h4>A scripted model, and the tests it drives</h4>
+        <pre class="code" data-file="fake_llm.py" data-src="code/genai-labs/fake_llm.py"></pre>
+        <pre class="code" data-file="test_agent.py" data-src="code/genai-labs/test_agent.py"></pre>
+<pre class="term"><code><span class="ps">$ </span>pytest -q test_agent.py
+<span class="o">.........                                                                [100%]
+9 passed in 1.24s</span></code></pre>
+        <p>One of these tests found a real bug while this drill was being written: <code>extend_lab</code> checked "free extension already used" <em>before</em> looking up the idempotency key, so a harmless retry failed with an error. Replaying a key must come first; that's now <code>_replay()</code> in <code>desk.py</code>.</p>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Chaos: 30% of service calls time out</h4>
+        <pre class="code" data-file="lab07_08_chaos.py" data-src="code/genai-labs/lab07_08_chaos.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab07_08_chaos.py</code></pre>
+        <span class="out-label">Real output with qwen2.5:7b (Ollama); yours will differ</span>
+<pre class="out"><code>seed  finished  steps  errors  extensions  answer
+   1       yes      6       3           1  Your AI-102 lab booking has been extended to October 23, 2026, with no
+   2       yes      5       3           0  Your lab access has been extended until October 16, 2026. You have 4 d
+   3       yes      4       2           1  Your lab access for the AI-102 course has been extended until October 
+   4      loop      7       5           0  Sorry, I got stuck repeating the same step. I've stopped; please conta
+   5       yes      4       1           1  Your AI-102 lab access has been extended until October 23, 2026, with</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read the chaos table</h4>
+        <ol>
+          <li>Is "finished" the right success measure? What matters more for the business?</li>
+          <li>Which column must never be greater than 1, whatever the model does, and what guarantees it?</li>
+          <li>Where would you add automatic retries for timeouts: in the model loop, or in code around the tool?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>No. Look at seed 2: it "finished" and told Mei her lab was extended until October 16, but the extensions column is 0, and 16 October is the <em>old</em> date. Seed 4 didn't finish, yet it stopped cleanly and said so. For the business, a correct state and an honest answer matter more than "finished".</li>
+            <li>Extensions. In five runs with 3 to 5 errors each, it was never more than 1: the "one free extension" rule in <code>desk.py</code> and the idempotency key per approved action guarantee it, whatever the model retries.</li>
+            <li>In code, around read tools (a short retry with back-off, as in Module 02), so the model isn't spending steps on transient errors. For writes, retry only with the same idempotency key. Leave the model to handle errors that need a decision.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d07-8"> I've completed Drill 07.8</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Reliability.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why test an agent with a scripted fake model?</summary><div><p>To check the loop's guard rails (budgets, loop detection, approvals, error handling, idempotency) deterministically, in milliseconds, without cost, on every code change. The real model's choices are tested separately, with evaluation sets.</p></div></details>
+  <details><summary>2. What is an idempotency key, and who creates it?</summary><div><p>A unique id sent with a write so the receiving system performs it at most once; repeats with the same key return the first result. The application creates it once per approved action, never the model.</p></div></details>
+  <details><summary>3. Name four controls that keep a misbehaving model from causing harm.</summary><div><p>Any four: step budget; repeat detection; identity and ownership checks in tools; approvals for writes; idempotency keys; least-privilege tool set; output checks (for example tool calls written as text); audit logs.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>You can't make the model reliable; you can make the system reliable. Bound it, check it, make writes idempotent, log everything, and test the guard rails offline.</p></div>

@@ -1,0 +1,136 @@
+<!--meta
+{"id": "m07-multi", "short": "Multi-Step Tasks", "h1": "Multi-Step Tasks", "description": "Module 07, topic 6: requests that need several dependent steps: decomposition, passing results between steps, budgets for steps, tokens and time, traces, partial success and how to report it; with a drill that runs a four-part request through the agent and reads its trace.", "lead": "\"Move me to the next date, tell me the fee, and when will my lab open?\" is four or five steps, and each needs the previous one's result: the enrolment ID, then the course ID, then dates and the fee, then the move. You'll run it through the agent, read the trace step by step, and see what the model got right, what it skipped, and what it cost.", "chips": ["Dependencies", "Budgets", "Traces", "Partial success", "Drill 07.6"], "time": "Learn 10 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Each step feeds the next; every step costs.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>A <strong>multi-step task</strong> is a request whose answer needs several tool calls, where later calls depend on earlier results (an ID found in step 1 is an argument in step 3). Handling one well means <strong>decomposing</strong> the request, <strong>carrying results forward</strong>, staying within <strong>budgets</strong> (steps, tokens, time), recording a <strong>trace</strong>, and reporting <strong>partial success</strong> honestly.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Break the request into steps, use what each step found in the next one, stop before it gets too long or expensive, keep a log, and say clearly what got done and what didn't.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>Running errands with a list: pick up the parcel (you need the slip number from your email), then return the item in it, then buy the replacement with the refund. If the shop is closed, you come home and say "parcel collected, return done, replacement still to buy", not "all done".</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 260" role="img" aria-labelledby="ms-t ms-d">
+      <title id="ms-t">Dependencies in Diego's request</title>
+      <desc id="ms-d">Diego's request needs: my_enrolments to get the enrolment ID TC-20877 and course ID C110; then upcoming_sessions for C110 and reschedule_quote for TC-20877, which can run in either order; then reschedule to the next date with the fee, which needs approval; and lab_status for the enrolment. The final answer reports the new date, the fee and when the lab opens. A budget of 8 steps caps the loop.</desc>
+      <rect x="20" y="100" width="170" height="70" rx="12" class="s-teal"/><text x="105" y="128" class="t-b mid">my_enrolments</text><text x="105" y="150" class="t-s mid">→ TC-20877, C110</text>
+      <path d="M190 120 L244 70 M190 150 L244 200" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="250" y="36" width="200" height="60" rx="12" class="s-teal"/><text x="350" y="62" class="t-b mid">upcoming_sessions</text><text x="350" y="82" class="t-s mid">(C110) → dates</text>
+      <rect x="250" y="170" width="200" height="60" rx="12" class="s-teal"/><text x="350" y="196" class="t-b mid">reschedule_quote</text><text x="350" y="216" class="t-s mid">(TC-20877) → $50</text>
+      <path d="M450 66 L504 116 M450 200 L504 150" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="510" y="100" width="190" height="70" rx="12" class="s-rose"/><text x="605" y="128" class="t-b mid">reschedule</text><text x="605" y="150" class="t-s mid">needs approval</text>
+      <path d="M700 135 H744" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="750" y="100" width="190" height="70" rx="12" class="s-green"/><text x="845" y="128" class="t-b mid">answer</text><text x="845" y="150" class="t-s mid">date · fee · lab</text>
+      <text x="20" y="30" class="t-m">EACH ARROW CARRIES DATA FROM ONE STEP TO THE NEXT</text>
+      <text x="20" y="252" class="t-s">budget: 8 steps · every step adds a model call, tokens and seconds · the trace records all of it</text>
+    </svg>
+  </div>
+  <figcaption><b>Dependencies set the order; budgets set the limit.</b> The model figures out the order; your code enforces the limit.</figcaption>
+</figure>
+
+<h3>What to control</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Concern</th><th>Control</th></tr></thead>
+    <tbody>
+      <tr><td>Runaway loops</td><td>A step budget (<code>max_steps</code>) and a clear message when it's hit</td></tr>
+      <tr><td>Cost</td><td>Count model calls and tokens per run; every step re-sends the growing conversation</td></tr>
+      <tr><td>Latency</td><td>Stream progress ("Checking your enrolments…"); run independent reads in parallel where the API allows</td></tr>
+      <tr><td>Context growth</td><td>Keep tool results small; drop or summarise old observations in long runs</td></tr>
+      <tr><td>Partial success</td><td>Report what was done from the trace and audit log, and what's pending or failed</td></tr>
+      <tr><td>Debugging</td><td>A trace per run: step, tool, arguments, result, time, status</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Observability tools for agents (for example tracing in Microsoft Foundry, or OpenTelemetry-based tracing) show each run as a tree of model calls and tool calls with tokens and timings, because "the agent was slow and expensive yesterday" is unanswerable without them. Teams set budgets per request type and alert when runs regularly hit them, which usually means a tool is missing or badly described.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"A request is one transaction; it succeeds or fails."</p></div>
+  <div><h5>GenAI developer view</h5><p>"A request is a <strong>run</strong> of dependent steps with a budget. I trace every step, count its cost, and report partial success truthfully."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Letting the final answer summarise a run that half-failed as "All done!". Build the answer from the trace: what succeeded, what's waiting for approval, what failed and what the learner can do next.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"For multi-step tasks I let the model decompose and order the steps, but enforce step and token budgets in code, keep tool results small, trace every step with timing and cost, and report partial success from the trace, not from the model's summary."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>One request, a full trace.</p></div></div>
+
+<div class="drill" id="d07-6" data-title="A multi-step request, step by step" data-time="~20 min" data-steps="run,think,write">
+  <div class="drill-head"><span class="drill-id">Drill 07.6</span><h3>A multi-step request, step by step</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> run Diego's three-part request through the agent (approvals granted automatically here; topic 7 makes them real), read the trace, and check the result against the audit log.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The request and its trace</h4>
+        <pre class="code" data-file="lab07_06_multi_step.py" data-src="code/genai-labs/lab07_06_multi_step.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab07_06_multi_step.py</code></pre>
+        <span class="out-label">Real output with qwen2.5:7b (Ollama); dates relative to today</span>
+<pre class="out"><code>TRACE
+  1. ✓ my_enrolments({}) -&gt; [{"enrolment_id": "TC-20877", "course_id": "C110", "course": "AZ-104: Azure Administrator", "start": "2026-10-  [3 ms]
+  2. ✓ reschedule_quote({"enrolment_id":"TC-20877"}) -&gt; {"allowed": true, "fee_usd": 50, "reason": "within 7 days of the start: one reschedule for $50"}  [4 ms]
+  3. ✓ upcoming_sessions({"course_id":"C110"}) -&gt; ["2026-10-17", "2026-10-29", "2026-11-14"]  [0 ms]
+  4. ✓ reschedule({"enrolment_id":"TC-20877","new_start":"2026-10-29"}) -&gt; {"enrolment_id": "TC-20877", "old_start": "2026-10-17", "new_start": "2026-10-29", "fee_usd": 50}  [0 ms]
+  5. ✓ lab_status({"enrolment_id":"TC-20877"}) -&gt; {"enrolment_id": "TC-20877", "lab": "not started", "note": "labs open when the course starts"}  [0 ms]
+
+ANSWER: Your AZ-104 class has been rescheduled to October 29, 2026. The fee is $50. Labs will open on the course start date. Lab access will be available after October 29.
+stopped: no, finished · model calls: 6 · tokens: 6709
+changes: [{'action': 'reschedule', 'enrolment_id': 'TC-20877', 'old_start': '2026-10-17', 'new_start': '2026-10-29', 'fee_usd': 50}]</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Audit the run</h4>
+        <ol>
+          <li>Follow the arguments: where did each ID and date in the trace come from?</li>
+          <li>Compare the answer with the audit log ("changes"). Does the answer claim anything the log doesn't show?</li>
+          <li>How many model calls did this one request take, and roughly how many tokens? What would you do if most requests looked like this?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>In a good run, every ID and date in an argument appears in an earlier tool result (TC-20877 and C110 from <code>my_enrolments</code>; the new date from <code>upcoming_sessions</code>). Any value that appears from nowhere is a guess, and the tools reject guesses about identity.</li>
+            <li>Only the log is evidence. If the answer mentions a fee or date that no tool returned, or a change that isn't in the log, that's exactly the hallucinated action from Drill 07.1, now inside an agent.</li>
+            <li>Each step is a model call that re-sends the whole conversation, so tokens grow quickly. For a common request type, consider a workflow (topic 4), smaller tool results, or a faster model for routine steps (Module 11).</li>
+          </ol>
+        </div></details>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Write the answer from the trace</h4>
+        <p>Make the final report trustworthy: build a short "what happened" summary in code from the steps, and show it under the model's answer.</p>
+        <div class="template-box"><pre><code>Goal: add summarise(result: RunResult) -> str to #file:agent.py
+Context: each Step has tool, arguments, result (JSON text) and status
+Constraints: one line per write step ...; pending/rejected/failed ...; no model call
+Done when: lab07_06_multi_step.py prints it after ANSWER, and a test in #file:test_agent.py ...</code></pre></div>
+        <p class="hint"><b>Hint:</b> only write tools matter for "what changed". For each, report status and the key fields from its JSON result (new date, fee, lab end date); for rejected or failed ones, say so. Read tools can be counted, not listed.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div><div class="prompt-box"><pre><code>Add summarise(result, write_tools) -> str to #file:agent.py, with no model call. For each step whose
+tool is in write_tools, add one line: "✓ reschedule: TC-20877 now starts 2026-10-29 ($50)" when the
+status is ok (take enrolment_id, new_start or lab_until, and fee_usd from the JSON result), or
+"⊘ reschedule: not approved" / "✗ extend_lab: &lt;error&gt;" otherwise. End with "N look-ups".
+Print it after ANSWER in #file:lab07_06_multi_step.py. Add one test in #file:test_agent.py using
+FakeLLM: an approved extend_lab produces a line starting "✓ extend_lab".</code></pre></div></div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d07-6"> I've completed Drill 07.6</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Multi-step tasks.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why does each extra step cost more than the one before?</summary><div><p>Every model call re-sends the system prompt, the tools and the whole conversation so far, including all previous tool results, so input tokens grow with each step.</p></div></details>
+  <details><summary>2. The agent hits its step budget after moving the date but before checking the lab. What should the learner see?</summary><div><p>The truth from the trace: the date was moved (with the fee), the lab check didn't complete, and a next step (ask again, or a ticket). Never a generic success or a generic failure.</p></div></details>
+  <details><summary>3. How do you tell whether an argument was guessed?</summary><div><p>Check whether the value appears in an earlier tool result or in the user's message. Values from nowhere are guesses; identity-bearing ones are rejected by the tools, which is why identity checks live in code.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Multi-step tasks are runs: dependent steps, a budget, a trace, and an honest report of what changed, built from the log rather than from the model's summary.</p></div>

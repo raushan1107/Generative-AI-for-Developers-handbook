@@ -1,0 +1,170 @@
+<!--meta
+{"id": "oss-3", "short": "Lab 3: RAG and Agents", "h1": "Lab 3 · RAG and Agents with Open Models", "description": "Open-source lab guide, Lab 3 (Part III, Modules 06–07): build a company knowledge assistant that answers from public and internal documents with citations and audience filtering, then an agent that understands a request, selects and calls tools, processes the results and answers, and asks for your approval before it changes anything.", "lead": "You'll build the two projects of Part III with open models. First a company knowledge assistant: it ingests TrainCrest's help articles and staff documents, retrieves the right sections for each question, answers only from them and cites them, and shows staff-only documents only to staff. Then an agent that works through a request step by step and stops for your approval before it changes a booking.", "chips": ["Modules 06–07", "RAG with citations", "Audience filter", "Agent loop", "Human approval", "≈ 3 hours"], "time": "Estimated time: 3 hours"}
+-->
+<h2 id="overview">Lab overview</h2>
+<div class="table-wrap min">
+  <table>
+    <tbody>
+      <tr><th>Objectives</th><td>Ingest documents in several formats · chunk, embed and store them · retrieve with a relevance floor and an audience filter · build a grounded prompt with numbered sources · check citations · run an agent loop with tools · require human approval for changes · verify outcomes in an audit log</td></tr>
+      <tr><th>Prerequisites</th><td>Lab 2 completed · <code>llama3.2</code> and <code>nomic-embed-text</code> pulled; <code>qwen2.5:7b</code> recommended for Exercise 2 if you have 16 GB of RAM · Part III demonstrated</td></tr>
+      <tr><th>You finish with</th><td><code>l3_knowledge.py</code>, a company knowledge assistant with learner and staff views, and <code>l3_agent.py</code>, an agent that acts only with your approval</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Exercise</th><th>Module</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td><a href="#ex1">1 · A company knowledge assistant (RAG)</a></td><td>06</td><td>90 min</td></tr>
+      <tr><td><a href="#ex2">2 · An agent that asks before it acts</a></td><td>07</td><td>80 min</td></tr>
+      <tr><td><a href="#review">Review and cleanup</a></td><td></td><td>10 min</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="ex1">Exercise 1 · A company knowledge assistant (RAG)</h2>
+<p>Module 06's hands-on project: a company knowledge assistant that answers questions from internal documents.</p>
+
+<h3>Task 1: Look at the documents</h3>
+<ol>
+  <li>Open a few files in <code>data/help/</code> (public help articles) and all three in <code>data/internal/</code> (staff only): a markdown playbook, a plain-text runbook with upper-case headings, and a CSV FAQ. Real knowledge bases mix formats like this.</li>
+  <li>Find one fact that appears only in an internal document, for example the maximum class size in <code>staff-faq.csv</code>. You'll ask about it later.</li>
+</ol>
+
+<h3>Task 2: Build the assistant</h3>
+<ol>
+  <li>Create <code>l3_knowledge.py</code>:
+    <pre class="code" data-file="l3_knowledge.py" data-src="code/oss-labs/l3_knowledge.py"></pre></li>
+  <li>Follow the numbered stages in the comments, which match the RAG architecture from Module 06:
+    <ol>
+      <li><strong>Ingest:</strong> <code>read_document()</code> turns markdown, text and CSV into one shape.</li>
+      <li><strong>Chunk:</strong> one chunk per section, with the document title on every chunk and the introduction kept.</li>
+      <li><strong>Embed and store:</strong> every chunk once, saved to <code>data/kb_index.json</code> with its source and <strong>audience</strong> (<code>public</code> or <code>staff</code>).</li>
+      <li><strong>Retrieve:</strong> only chunks the current audience may see, only above a relevance floor of 0.55.</li>
+      <li><strong>Prompt:</strong> numbered <code>&lt;source&gt;</code> blocks, rules to answer only from them and cite like [1], and a <code>NOT_FOUND</code> way out.</li>
+      <li><strong>Generate and check:</strong> citations to sources that weren't sent are removed, and the cited sources are listed.</li>
+    </ol></li>
+</ol>
+
+<h3>Task 3: Ask as a learner, then as staff</h3>
+<ol>
+  <li>Start the learner view (the first run builds the index, which takes a few seconds):
+<pre class="term"><code><span class="ps">$ </span>python l3_knowledge.py</code></pre></li>
+  <li>Ask these questions, one at a time:
+<pre class="out"><code>How much do I get back if I cancel 10 days before the course?
+My lab shows LAB-503. What should I do?
+How many learners can join a classroom course?
+What is the capital of France?</code></pre>
+    <span class="out-label">Real session with llama3.2 (yours will differ)</span>
+<pre class="out"><code>TrainCrest knowledge assistant (learner view). Empty line to quit.
+
+Question: How much do I get back if I cancel 10 days before the course?
+50% refund. [1]
+  [1] Refunds and cancellations &gt; How much you get back (refunds-and-cancellations.md)
+
+Question: My lab shows LAB-503. What should I do?
+Wait two minutes and refresh.
+
+Question: How many learners can join a classroom course?
+I couldn't find that in TrainCrest's documents.
+
+Question: What is the capital of France?
+I couldn't find that in TrainCrest's documents.
+
+Question:</code></pre></li>
+  <li>Press <kbd>Enter</kbd> on an empty line to quit, then start the staff view and ask the class-size question again:
+<pre class="term"><code><span class="ps">$ </span>python l3_knowledge.py --staff</code></pre>
+    <span class="out-label">Real session with llama3.2</span>
+<pre class="out"><code>TrainCrest knowledge assistant (staff view). Empty line to quit.
+
+Question: How many learners can join a classroom course?
+16 [1]
+  [1] Staff Faq &gt; How many learners can join a classroom course? (staff-faq.csv)
+
+Question:</code></pre></li>
+  <li>Compare: the same question, two answers. Learners never retrieve staff documents, because the audience filter runs inside the search, before the model sees anything.</li>
+</ol>
+
+<h3>Task 4: Judge the answers</h3>
+<ol>
+  <li>For each answer, open the cited file and check the fact is really there. Citations make answers checkable; they don't make them correct.</li>
+  <li>"What is the capital of France?" should give "I couldn't find that": either no section passed the relevance floor (no model call at all) or the model replied <code>NOT_FOUND</code>.</li>
+  <li>Did any answer state a fact without a citation, or a number that isn't in its source? Small models do this; the handbook's Drill 06.10 shows how to catch it in code.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>Your assistant answers from the documents with cited sources, says when it can't find something, and gives staff-only answers only in the staff view.</p></div>
+
+<h2 id="ex2">Exercise 2 · An agent that asks before it acts</h2>
+<p>Module 07's hands-on exercise: an agent that understands a user request, selects and calls an appropriate tool, processes the result and returns a final response.</p>
+
+<h3>Task 1: Choose the agent model</h3>
+<ol>
+  <li>Agents need a model that's good at multi-step tool use. If you pulled <code>qwen2.5:7b</code>, set <code>AGENT_MODEL=qwen2.5:7b</code> in <code>.env</code>. Otherwise the agent uses <code>llama3.2</code>; it works, but expect more mistakes, and treat them as part of the lesson.</li>
+</ol>
+
+<h3>Task 2: Build the agent</h3>
+<ol>
+  <li>Create <code>l3_agent.py</code>:
+    <pre class="code" data-file="l3_agent.py" data-src="code/oss-labs/l3_agent.py"></pre></li>
+  <li>Find the five steps of the agent flow in <code>run()</code>: (1) understand the task (the model reads the request), (2) select a tool, (3) execute it, (4) evaluate the result (it goes back to the model, which decides the next step), (5) return a final response.</li>
+  <li>Find the guard rails: <code>LEARNER</code> is set by the app; <code>NEEDS_APPROVAL</code> makes <code>extend_lab</code> stop for a person, with a preview computed from real data; <code>max_steps</code> stops runaway loops; <code>AUDIT_LOG</code> records what really changed.</li>
+</ol>
+
+<h3>Task 3: Decline, then approve</h3>
+<ol>
+  <li>Run it and answer <code>n</code> when asked for approval:
+<pre class="term"><code><span class="ps">$ </span>python l3_agent.py</code></pre>
+    <span class="out-label">Real run with qwen2.5:7b, declined (yours will differ)</span>
+<pre class="out"><code>Request: Please extend my AI-102 lab and tell me the new end date.  (agent model: qwen2.5:7b)
+  step 1: my_enrolments({}) -&gt; [{"enrolment_id": "TC-10293", "course": "AI-102: Azure AI Engineer"}, {"enrolment_id": "TC-10477", "course": "Building RAG Applications"}]
+  step 2: lab_status({'enrolment_id': 'TC-10293'}) -&gt; {"enrolment_id": "TC-10293", "lab_until": "2026-10-16", "free_extension_available": true}
+
+  APPROVAL NEEDED: extend TC-10293 by 7 days, free (lab currently open until 2026-10-16)
+  Approve? [y/n] n
+  step 3: extend_lab({'enrolment_id': 'TC-10293'}) -&gt; {"error": "the learner declined this action"}
+
+Answer: The extension for your AI-102 lab was declined. The current end date remains 2026-10-16.
+Audit log (what really changed): nothing</code></pre></li>
+  <li>Run it again and answer <code>y</code>:
+    <span class="out-label">Real run with qwen2.5:7b, approved</span>
+<pre class="out"><code>Request: Please extend my AI-102 lab and tell me the new end date.  (agent model: qwen2.5:7b)
+  step 1: my_enrolments({}) -&gt; [{"enrolment_id": "TC-10293", "course": "AI-102: Azure AI Engineer"}, {"enrolment_id": "TC-10477", "course": "Building RAG Applications"}]
+  step 2: lab_status({'enrolment_id': 'TC-10293'}) -&gt; {"enrolment_id": "TC-10293", "lab_until": "2026-10-16", "free_extension_available": true}
+
+  APPROVAL NEEDED: extend TC-10293 by 7 days, free (lab currently open until 2026-10-16)
+  Approve? [y/n] y
+  step 3: extend_lab({'enrolment_id': 'TC-10293'}) -&gt; {"enrolment_id": "TC-10293", "lab_until": "2026-10-23", "fee_usd": 0}
+
+Answer: The AI-102 lab has been extended to 2026-10-23 with the free extension.
+Audit log (what really changed): [{'action': 'extend_lab', 'enrolment_id': 'TC-10293', 'lab_until': '2026-10-23'}]</code></pre></li>
+  <li>Compare the final answer with the <strong>audit log</strong> line each time. The log is the truth: if the answer ever claims a change the log doesn't show, the model is describing something it didn't do. That happens, which is why real systems report outcomes from logs, not from the model's words.</li>
+</ol>
+
+<h3>Task 4: Push it</h3>
+<ol>
+  <li>Ask for something it can't do: <code>python l3_agent.py "Extend the lab for my RAG course."</code> (that course hasn't started, so there's no lab yet). Does the agent explain the tool's error, or claim success?</li>
+  <li>Ask a question that needs no change: <code>python l3_agent.py "When does my AI-102 lab close?"</code>. No approval should be requested.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>Your agent finds the right enrolment by itself, asks before extending the lab, does nothing when you decline, and its audit log matches what actually happened.</p></div>
+
+<h2 id="trouble">Troubleshooting</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>The knowledge assistant says "couldn't find" for everything</td><td>The relevance floor (0.55) is for <code>nomic-embed-text</code>. With another embedding model, lower <code>MIN_SCORE</code>; delete <code>data/kb_index.json</code> after changing the model.</td></tr>
+      <tr><td>Answers have no [1] citations</td><td>Small models often skip them. The answer may still be right; use a larger model for reliable citations.</td></tr>
+      <tr><td>The agent asks <em>you</em> to look up your enrolments</td><td>A weak-model habit. Use <code>qwen2.5:7b</code>, or strengthen the system prompt ("never ask the learner to call tools").</td></tr>
+      <tr><td>The agent guesses an ID like TC-12345</td><td>The tool refuses it and tells the model to call <code>my_enrolments</code>; good models recover on the next step.</td></tr>
+      <tr><td>Each agent step takes a minute</td><td>Normal for a 7B model on a CPU; the agent makes 3 to 5 calls. Close other apps, or use Lab 0's Option B for <code>AGENT_MODEL</code>.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="review">Review and cleanup</h2>
+<ul class="checklist">
+  <li>RAG answers come from retrieved documents, with citations you can check and a way to say "not found".</li>
+  <li>Permission filters belong inside retrieval: learners never see staff documents.</li>
+  <li>An agent is a loop: understand, select a tool, execute, evaluate, answer, within a step budget.</li>
+  <li>Changes need a human's approval of an effect computed by code, and the audit log, not the model's words, says what happened.</li>
+</ul>
+<p><strong>Cleanup:</strong> delete <code>data/kb_index.json</code> and <code>data/search_index.json</code> if you want the disk space back (they're rebuilt when needed). To remove a model: <code>ollama rm qwen2.5:7b</code>.</p>

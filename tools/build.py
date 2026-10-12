@@ -25,10 +25,11 @@ FONTS = ("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700"
 KIND_LABEL = {
     "home": "Home", "guide": "Guide", "setup": "Lab setup", "overview": "Overview", "topic": "Learn · Do · Check",
     "build": "Build", "recap": "Recap", "project": "Project", "labs": "Practice", "capstone": "Capstone",
+    "osslab": "Open-source lab",
 }
 KIND_ICON = {
     "overview": "◎", "topic": "•", "build": "⚒", "recap": "✓", "setup": "›", "home": "⌂",
-    "guide": "?", "project": "⚒", "labs": "▤", "capstone": "★",
+    "guide": "?", "project": "⚒", "labs": "▤", "capstone": "★", "osslab": "▸",
 }
 STEP_LABEL = {"run": "Run", "ask": "Ask AI", "write": "Your prompt", "verify": "Verify",
               "nocode": "No-code", "think": "Think", "portal": "Portal"}
@@ -39,8 +40,8 @@ def flatten():
     """Ordered list of available pages with their context (section, module)."""
     pages = []
     for section in NAV["sections"]:
-        for item in section.get("items", []):
-            pages.append({**item, "section": section["title"], "module": None})
+        for item in section.get("items", []):          # a section with "draft": true is built but not linked
+            pages.append({**item, "section": section["title"], "module": None, "draft": bool(section.get("draft"))})
         for module in section.get("modules", []):
             if module.get("soon"):
                 continue
@@ -231,6 +232,8 @@ def sidebar_html(page):
         '<nav class="sb-nav" aria-label="Handbook pages">',
     ]
     for section in NAV["sections"]:
+        if section.get("draft") and not page.get("draft"):          # draft sections are invisible on live pages
+            continue
         parts.append(f'<div class="sb-section"><div class="sb-title">{html.escape(section["title"])}</div>')
         for item in section.get("items", []):
             cls = "active" if item["id"] == page["id"] else ""
@@ -437,9 +440,11 @@ def main():
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(page_html(page, metas[page_id], content), encoding="utf-8", newline="\n")
     live = [d for d in drills if not BY_ID[d["page"]].get("draft")]
-    drafts = sorted({p["module"]["num"] for p in DRAFT})
+    drafts = sorted({p["module"]["num"] for p in DRAFT if p.get("module")})
+    draft_sections = sorted({p["section"] for p in DRAFT if not p.get("module")})
     print(f"Built {len(fragments)} pages, {len(live)} drills indexed"
-          + (f" ({len(drills) - len(live)} more in draft modules {', '.join(drafts)}, not linked)." if drafts else "."))
+          + (f" ({len(drills) - len(live)} more in draft modules {', '.join(drafts)}, not linked)." if drafts else ".")
+          + (f" Draft sections: {', '.join(draft_sections)}." if draft_sections else ""))
 
 
 if __name__ == "__main__":

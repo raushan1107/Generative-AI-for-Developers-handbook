@@ -1,0 +1,57 @@
+<!--meta
+{"id": "m07", "short": "Building AI Agents", "h1": "Building AI Agents: From Answering to Acting", "description": "Module 07 overview: what an AI agent is and how it differs from a chatbot, reasoning and planning, tool calling for agents, agent workflows, state and memory, multi-step tasks, human-in-the-loop approval and agent reliability, with 8 drills and Traincrest Assist milestone 7.", "lead": "A chatbot says \"I've extended your lab\". An agent actually extends it, after checking which lab, whether the free extension is left, and whether you agreed. Agents are models in a loop with tools and state: powerful, and able to do real damage. In this module you'll build one you can read in one sitting, then make it safe: budgets, loop detection, idempotent writes, and a human who approves every change.", "chips": ["8 topics", "8 drills", "Milestone 7", "≈ 5 hours hands-on"]}
+-->
+<h2 id="map">The mental map: a loop with guard rails</h2>
+<p>Every agent, from a coding assistant to a travel-booking bot, is the same loop: the model looks at the goal and what it knows so far, chooses a next step, your code runs it, and the result goes back into the loop until the model answers or a limit stops it.</p>
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 340" role="img" aria-labelledby="m7-t m7-d">
+      <title id="m7-t">The agent loop and its guard rails</title>
+      <desc id="m7-d">A request goes to the model, which understands the task and selects a tool. Code executes the tool: read tools run directly; write tools first stop for a human's approval, shown as a preview computed by code. The result goes back to the model, which evaluates it and either chooses another step or returns a final answer. Around the loop are guard rails: a step budget, loop detection, idempotency keys on writes, state and memory, and a trace of every step.</desc>
+      <rect x="20" y="130" width="150" height="76" rx="12" class="s-surface"/><text x="95" y="162" class="t-b mid">request</text><text x="95" y="184" class="t-s mid">"extend my lab"</text>
+      <path d="M170 168 H214" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="220" y="110" width="200" height="116" rx="12" class="s-violet"/><text x="320" y="140" class="t-b mid">model</text><text x="320" y="164" class="t-s mid">1 understand the task (2)</text><text x="320" y="184" class="t-s mid">2 select a tool (3)</text><text x="320" y="204" class="t-s mid">4 evaluate the result</text>
+      <path d="M420 150 H504" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="430" y="142" class="t-s">tool call</text>
+      <rect x="510" y="96" width="210" height="144" rx="12" class="s-teal"/><text x="615" y="124" class="t-b mid">3 · your code runs it</text><text x="615" y="150" class="t-s mid">read tools: run now</text><text x="615" y="172" class="t-s mid">write tools: stop and ask</text><text x="615" y="192" class="t-s mid">a human first (7)</text><text x="615" y="218" class="t-s mid">errors become observations</text>
+      <path d="M510 200 H426" class="s-arrow" marker-end="url(#ah)"/><text x="436" y="218" class="t-s">result</text>
+      <path d="M720 168 H764" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="770" y="120" width="170" height="96" rx="12" class="s-amber"/><text x="855" y="150" class="t-b mid">systems</text><text x="855" y="172" class="t-s mid">labs, schedules,</text><text x="855" y="192" class="t-s mid">tickets</text>
+      <path d="M320 226 V280 H420" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="426" y="256" width="250" height="50" rx="12" class="s-green"/><text x="551" y="286" class="t-b mid">5 · final answer</text>
+      <text x="20" y="30" class="t-m">GUARD RAILS AROUND THE LOOP</text>
+      <text x="20" y="54" class="t-s">step budget · loop detection · idempotent writes (8)   ·   state and memory (5)   ·   workflows where a loop isn't needed (4)</text>
+      <text x="20" y="76" class="t-s">multi-step plans with dependencies (6)   ·   a trace of every step, for debugging and audit</text>
+      <text x="20" y="330" class="t-s">numbers in brackets are this module's topic pages</text>
+    </svg>
+  </div>
+  <figcaption><b>The model proposes; code disposes.</b> The model decides <em>what</em> to try next; your code decides whether it runs, with which identity, how many times, and whether a person must agree first.</figcaption>
+</figure>
+<div class="callout takeaway">
+  <div class="c-label">Takeaway</div>
+  <p>An agent is a model in a loop with tools, state and a goal. The loop is easy; the engineering is in the guard rails.</p>
+</div>
+
+<h2 id="why">Why this module matters</h2>
+<p>After Milestone 6, Traincrest Assist can explain any policy and quote a learner's refund. But when Mei says "please extend my lab", it can only tell her how to do it herself, or raise a ticket that a person handles a day later. Half of TrainCrest's 25,000 monthly requests are of this kind: change a date, extend a lab, resend a voucher. The team wants Assist to do them, provided nothing changes without the learner's say-so, fees are never made up, and a model mistake can't move a booking twice.</p>
+<p>The hands-on exercise of this module is an agent that understands a request, selects and calls the right tools, processes the results and returns a final answer. In Milestone 7 it becomes Traincrest Assist's ability to <strong>act</strong>, with a human approving every change.</p>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A new assistant at a front desk. They can look anything up on their own, but for anything that changes a booking or costs money, they fill in the form, show it to the customer ("move to the 29th, $50, OK?") and only file it once the customer signs. They also have a list of what they may never do, and their manager can read the log of everything they did.</p>
+</div>
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Each feature is a fixed flow: form → validation → API call. Users click through it."</p></div>
+  <div><h5>GenAI developer view</h5><p>"The model chooses the flow at run time from a set of <strong>tools I designed</strong>. I control identity, limits, approvals and idempotency in code, and I keep fixed workflows where the path is always the same."</p></div>
+</div>
+
+<h2 id="pages">Pages and drills in this module</h2>
+<!--MODULE_PAGES:07-->
+
+<h2 id="kit">Lab kit for Module 07</h2>
+<ul>
+  <li><strong>Azure:</strong> your <code>chat</code> deployment from Module 02. Agents call the model several times per request, so a fast, inexpensive model is a good choice; use <code>TOOLS_REASONING_EFFORT=none</code> if a reasoning model rejects tools (Module 04).</li>
+  <li><strong>Free, local alternative:</strong> <code>ollama pull qwen2.5:7b</code>. Agents need a model that's good at tool calling; on these pages, real outputs come from <code>qwen2.5:7b</code>, and you'll also see what a 3B model (<code>llama3.2</code>) gets wrong. On a laptop CPU, expect 20 to 60 seconds per model call.</li>
+  <li><strong>Install:</strong> nothing new. Make sure your <code>openai</code> package is recent (<code>pip install -U openai</code>) so <code>client.chat.completions.parse</code> exists.</li>
+  <li><strong>New files in <code>genai-labs/</code>:</strong> <code>desk.py</code> (stand-in TrainCrest systems that agents can read <em>and change</em>, with an audit log), <code>desk_tools.py</code> (the tools and a shared system prompt), <code>agent.py</code> (the agent loop, about 90 lines), <code>memory.py</code>, <code>fake_llm.py</code> (a scripted model for offline tests), and tests.</li>
+  <li><strong>Cost:</strong> on Azure, a few cents for the module; an agent run costs several model calls, which the drills count for you.</li>
+  <li><strong>Build:</strong> Milestone 7 lets Traincrest Assist propose lab extensions and date changes, shows the learner Approve and Decline buttons, executes approved actions once in code, and adds guards for repeated calls and tool calls written as text.</li>
+</ul>

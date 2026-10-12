@@ -1,0 +1,141 @@
+<!--meta
+{"id": "m07-tools", "short": "Tool Calling for Agents", "h1": "Tool Calling for Agents", "description": "Module 07, topic 3: designing tools an agent can use well: clear names, descriptions and parameters, read versus write tools, small focused tools, errors as observations, identity from the app, and a drill that measures how tool design changes which tool a model picks.", "lead": "In Module 04 you called tools once per question. An agent calls them again and again, choosing among many, and reads their errors to decide what to do next. That makes tool design the main way you shape an agent's behaviour. You'll give a model the same functions twice, once with terse names and once with good descriptions, and count how often it picks the right one.", "chips": ["Names and descriptions", "Read vs write", "Errors as observations", "Drill 07.3"], "time": "Learn 12 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Tools are the agent's user interface.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p>In an agent, <strong>tool calling</strong> is how the model takes each step: it chooses a tool from a set by reading the tools' <strong>names, descriptions and parameter schemas</strong>, sends arguments, and reads the result or error as an <strong>observation</strong> for its next decision. Tools are either <strong>read</strong> (look-ups, safe to repeat) or <strong>write</strong> (change state, need care).</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>The model only knows your tools from how you describe them. Describe them for a reader who has never seen your codebase, and make errors say what to do next.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A toolbox for a temporary worker. Labelled drawers ("torque wrench, 10 to 50 Nm, for wheel nuts") get the right tool used; drawers marked "misc 2" get guesses. And when a bolt won't turn, a note saying "left-hand thread, turn clockwise" beats a red light.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 280" role="img" aria-labelledby="tc-t tc-d">
+      <title id="tc-t">What the model sees, and what it gets back</title>
+      <desc id="tc-d">Left: a terse tool definition, name 'ext', no description, a parameter p0. Right: a clear one, name extend_lab, a description saying it uses the learner's one free 7-day extension and needs approval, and a parameter enrolment_id with an example format. Below: an unhelpful error 'tool failed' versus an actionable one: 'TC12345 is not one of this learner's enrolments; use my_enrolments to see them'.</desc>
+      <text x="20" y="30" class="t-m">THE MODEL SEES ONLY THIS</text>
+      <rect x="20" y="42" width="440" height="100" rx="12" class="s-rose"/><text x="36" y="68" class="t-b">terse</text><text x="36" y="94" class="t-m">ext(p0: string)</text><text x="36" y="118" class="t-s">description: ""</text>
+      <rect x="500" y="42" width="440" height="100" rx="12" class="s-green"/><text x="516" y="68" class="t-b">written for a reader</text><text x="516" y="94" class="t-m">extend_lab(enrolment_id: "TC-12345")</text><text x="516" y="118" class="t-s">"Use the one free 7-day extension. Needs approval."</text>
+      <text x="20" y="178" class="t-m">AND THEN READS THIS</text>
+      <rect x="20" y="190" width="440" height="70" rx="12" class="s-rose"/><text x="36" y="218" class="t-m">{"error": "tool failed: DeskError"}</text><text x="36" y="242" class="t-s">the model can only guess or give up</text>
+      <rect x="500" y="190" width="440" height="70" rx="12" class="s-green"/><text x="516" y="216" class="t-s">{"error": "TC12345 is not one of this learner's</text><text x="516" y="234" class="t-s">enrolments; use my_enrolments to see them"}</text><text x="516" y="252" class="t-s">the next step is in the message</text>
+    </svg>
+  </div>
+  <figcaption><b>Descriptions choose tools; error messages choose the next step.</b> Both are prompts, so write them like prompts.</figcaption>
+</figure>
+
+<h3>Design rules for agent tools</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Rule</th><th>Why</th><th>In <code>desk_tools.py</code></th></tr></thead>
+    <tbody>
+      <tr><td>Names say what happens: verb + object</td><td>The name is read first</td><td><code>extend_lab</code>, <code>reschedule_quote</code>, not <code>ext</code>, <code>quote</code></td></tr>
+      <tr><td>Descriptions say when to use it, and what to call first</td><td>Encodes the workflow without a fixed flow</td><td>"Call reschedule_quote first."</td></tr>
+      <tr><td>Parameters have descriptions and examples</td><td>Fewer malformed arguments</td><td>"Enrolment ID like TC-12345, from my_enrolments"</td></tr>
+      <tr><td>Small, focused tools; separate reads from writes</td><td>Reads can run freely; writes get approvals and idempotency</td><td>Quote (read) and reschedule (write) are separate</td></tr>
+      <tr><td>Errors are observations with a next step</td><td>The model recovers instead of looping or giving up</td><td><code>actionable()</code> returns the system's message</td></tr>
+      <tr><td>Identity never comes from the model</td><td>A prompt can't make the agent act as someone else</td><td><code>context["learner"]</code>, set by the app</td></tr>
+      <tr><td>Return what's needed, not everything</td><td>Every result is tokens in the next call</td><td>Enrolment rows have 5 fields, not the whole record</td></tr>
+      <tr><td>Keep the tool count modest</td><td>Choice gets harder with dozens of similar tools</td><td>7 tools; group or route when you have many more</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Teams that wrap an existing internal API for an agent usually start by exposing its endpoints one-to-one, and the agent struggles: cryptic names, dozens of parameters, error codes like <code>E4012</code>. The fix that works is a thin "agent-facing" layer: fewer, task-shaped tools, descriptions written for the model, and errors translated into sentences. The Model Context Protocol (MCP) has made this layer reusable across assistants, but the design rules are the same.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"An API is documented for developers; the code that calls it is fixed."</p></div>
+  <div><h5>GenAI developer view</h5><p>"A tool is documented for a <strong>model that decides at run time</strong>. Its name, description, parameters and error messages are part of the prompt, and I measure how well the model chooses."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Swallowing errors into "tool failed". The model then retries the same call, guesses, or tells the user something vague. Return the reason and the next sensible step, without internal details like stack traces or other users' data.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I design agent tools like a UI for the model: verb-object names, descriptions that say when to use them and what comes first, typed parameters with examples, read and write tools separated, identity from the session, and errors returned as actionable observations."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Same functions, two descriptions, one score.</p></div></div>
+
+<div class="drill" id="d07-3" data-title="Tool design decides tool choice" data-time="~20 min" data-steps="run,think,ask">
+  <div class="drill-head"><span class="drill-id">Drill 07.3</span><h3>Tool design decides tool choice</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> measure how often a model picks the right first tool for 8 requests when the tools are terse and when they're written for a model to read.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Terse vs clear tools</h4>
+        <pre class="code" data-file="lab07_03_tool_design.py" data-src="code/genai-labs/lab07_03_tool_design.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab07_03_tool_design.py</code></pre>
+        <span class="out-label">Real output with qwen2.5:7b (Ollama); yours will differ</span>
+<pre class="out"><code>  [terse] ✓ What's the status of my lab for TC-10293?            -&gt; lab
+  [terse] ✓ Which start dates are available for course C110?     -&gt; sess
+  [terse] ✗ Can I still move TC-20877, and how much would it cos -&gt; move
+  [terse] ✓ Please use my free lab extension on TC-10293.        -&gt; ext
+  [terse] ✓ Move TC-20877 to the session on 2026-10-29.          -&gt; move
+  [terse] ✓ What am I enrolled in?                               -&gt; enr
+  [terse] ✗ I want to complain about my trainer's behaviour.     -&gt; ext
+  [terse] ✗ Is my sandbox for TC-31002 still running, and until  -&gt; sess
+TERSE tools: 5/8 right first call
+
+  [clear] ✓ What's the status of my lab for TC-10293?            -&gt; lab_status
+  [clear] ✓ Which start dates are available for course C110?     -&gt; upcoming_sessions
+  [clear] ✓ Can I still move TC-20877, and how much would it cos -&gt; reschedule_quote
+  [clear] ✓ Please use my free lab extension on TC-10293.        -&gt; extend_lab
+  [clear] ✓ Move TC-20877 to the session on 2026-10-29.          -&gt; reschedule
+  [clear] ✓ What am I enrolled in?                               -&gt; my_enrolments
+  [clear] ✓ I want to complain about my trainer's behaviour.     -&gt; create_ticket
+  [clear] ✓ Is my sandbox for TC-31002 still running, and until  -&gt; lab_status
+CLEAR tools: 8/8 right first call</code></pre>
+        <span class="out-label">And with llama3.2 (3B)</span>
+<pre class="out"><code>TERSE tools: 2/8 right first call
+CLEAR tools: 6/8 right first call</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read the misses</h4>
+        <ol>
+          <li>Look at the terse misses. Which of them would have been dangerous if the tools had run?</li>
+          <li>"Is my sandbox still running?" never says "lab". How did the clear tool set still get it right?</li>
+          <li>With clear tools, llama3.2 made no call at all for two requests. Is "no tool" always wrong?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>"Can I still move…?" went to <code>move</code> and "I want to complain about my trainer" went to <code>ext</code>: two <em>write</em> tools, for requests that should only read or raise a ticket. Short names carry almost no meaning, so the model matches surface words ("move") or guesses. Without approvals, a vague tool set turns a question into a booking change.</li>
+            <li>The description of <code>lab_status</code> ("Lab access for one enrolment: open until which date…") lets the model connect "sandbox" and "still running" to lab access, as embeddings connected paraphrases in Module 05.</li>
+            <li>Here it was wrong (both requests need facts or an action), but not always: greetings and general questions need no tool. A strict scorer counts only the ideal first step, so read each miss before "fixing" a description, and compare models: the same clear tools got 8/8 with qwen2.5:7b.</li>
+          </ol>
+        </div></details>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Improve one description, then re-measure</h4>
+        <p>With llama3.2, "Can I still move TC-20877, and how much would it cost?" got no tool call even with clear tools. Target that miss:</p>
+        <div class="prompt-box"><pre><code>In #file:desk_tools.py, improve only the docstring of reschedule_quote so that a request like
+"Can I still move TC-20877, and how much would it cost?" clearly maps to it: say it answers
+"can I move and what does it cost" questions, needs only the enrolment ID, and changes nothing.
+Keep it under 30 words. Don't change any code or other docstrings.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it targets one measured failure, gives the wording learners actually use, adds the reassuring fact the model needs ("changes nothing", so it's safe to call), and limits the change so the next run measures only this edit.</div>
+        <p>Run the drill again and compare the clear-tools score. Keep the change only if it helps without breaking another request.</p>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d07-3"> I've completed Drill 07.3</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Tool design.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why separate <code>reschedule_quote</code> from <code>reschedule</code> instead of one tool with a <code>confirm</code> flag?</summary><div><p>Reads and writes need different treatment: the quote can run any time; the change needs approval and idempotency. Separate tools let code apply those rules by tool name, and the model can't flip a flag to skip the check.</p></div></details>
+  <details><summary>2. A tool returns <code>{"error": "E4012"}</code>. What should it return instead?</summary><div><p>A sentence with the cause and a next step, for example "2026-10-29 is no longer available; use upcoming_sessions to see current dates". No stack traces or internal ids.</p></div></details>
+  <details><summary>3. Your agent has 60 tools and picks the wrong one often. Two remedies?</summary><div><p>Group them into fewer task-shaped tools; route first (a classifier or workflow picks a tool subset per request) so the model chooses among a handful; and improve descriptions, measuring choice accuracy as in this drill.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Agents choose tools by reading them. Clear names, descriptions, parameters and error messages are the cheapest way to make an agent better.</p></div>

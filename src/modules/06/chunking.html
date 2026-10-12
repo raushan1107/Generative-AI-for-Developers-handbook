@@ -1,0 +1,133 @@
+<!--meta
+{"id": "m06-chunk", "short": "Text Chunking for RAG", "h1": "Text Chunking for RAG", "description": "Module 06, topic 4: chunking for answers rather than search alone: keep introductions, split long sections at paragraph breaks with the header repeated, carry ids, sources and audience for citations, weigh recall against tokens sent, and a drill that finds the answers Milestone 5's chunker silently dropped.", "lead": "In Module 05 you chose chunks that search well. In RAG every retrieved chunk is also pasted into a prompt, so chunks must be findable, self-contained and affordable. And a chunker can lose text without any error: Milestone 5's dropped every article's introduction, and nobody noticed until a question needed one.", "chips": ["Keep every word", "Recall vs tokens", "Chunk ids for citations", "Drill 06.4"], "time": "Learn 10 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Chunks are what the model reads.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Text chunking</strong> splits each document into passages that are embedded, retrieved and inserted into prompts individually. For RAG a good chunk is <strong>retrievable</strong> (one focused idea), <strong>self-contained</strong> (understandable without its neighbours), <strong>complete</strong> (no part of the document is lost), and <strong>traceable</strong> (an id and source for citations).</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Cut each document into pieces small enough to find precisely and cheap to send, big enough to answer from, each labelled with where it came from. And make sure no text falls through the gaps.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A tailor cutting a pattern from cloth. Pieces must follow the seams (the document's sections), each piece is labelled so it can be put back together (ids and sources), and an experienced tailor checks the offcuts: a piece forgotten on the table means a garment with a hole.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 290" role="img" aria-labelledby="ck-t ck-d">
+      <title id="ck-t">Chunking the refunds article for RAG</title>
+      <desc id="ck-d">The refunds article has an introduction, which defines the start date, and four sections. Milestone 5's chunker produced four chunks and dropped the introduction. The RAG chunker produces five: an Overview chunk for the introduction, then one per section, each starting with 'Refunds and cancellations, then the section name', each with an id like refunds-and-cancellations#2, its source file and its audience. Sections longer than the limit would be split at paragraph breaks, repeating the header.</desc>
+      <text x="20" y="30" class="t-m">THE ARTICLE</text>
+      <rect x="20" y="40" width="250" height="230" rx="12" class="s-surface"/>
+      <text x="34" y="64" class="t-b"># Refunds and cancellations</text>
+      <rect x="34" y="76" width="222" height="40" rx="6" class="s-rose"/><text x="44" y="94" class="t-s">intro: "The start date is</text><text x="44" y="110" class="t-s">the first day of..."</text>
+      <text x="34" y="140" class="t-s">## How much you get back</text>
+      <text x="34" y="166" class="t-s">## How to cancel</text>
+      <text x="34" y="192" class="t-s">## When the money arrives</text>
+      <text x="34" y="218" class="t-s">## If TrainCrest cancels</text>
+      <text x="34" y="252" class="t-s t-rose">Milestone 5 kept 4 sections, lost the intro</text>
+      <path d="M270 155 H320" class="s-arrow" marker-end="url(#ah)"/>
+      <text x="330" y="30" class="t-m">CHUNKS FOR RAG (rag_chunks.py)</text>
+      <rect x="330" y="40" width="610" height="40" rx="8" class="s-green"/><text x="344" y="65" class="t-s">#1 · Refunds and cancellations › Overview · "The start date is the first day of..."</text>
+      <rect x="330" y="86" width="610" height="40" rx="8" class="s-green"/><text x="344" y="111" class="t-s">#2 · Refunds and cancellations › How much you get back · "- Cancel 14 or more days..."</text>
+      <rect x="330" y="132" width="610" height="40" rx="8" class="s-green"/><text x="344" y="157" class="t-s">#3 · › How to cancel</text>
+      <rect x="330" y="178" width="610" height="40" rx="8" class="s-green"/><text x="344" y="203" class="t-s">#4 · › When the money arrives · #5 › If TrainCrest cancels</text>
+      <text x="330" y="244" class="t-s">each chunk: id refunds-and-cancellations#2 · source refunds-and-cancellations.md · audience public</text>
+      <text x="330" y="266" class="t-s">long sections: split at blank lines, header repeated on every piece</text>
+    </svg>
+  </div>
+  <figcaption><b>Every word of the document belongs to exactly one chunk.</b> The intro becomes an "Overview" chunk instead of disappearing.</figcaption>
+</figure>
+
+<h3>What changes when chunks feed a prompt</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Concern</th><th>Search only (Module 05)</th><th>RAG (this module)</th></tr></thead>
+    <tbody>
+      <tr><td>Size</td><td>Whatever ranks best</td><td>Also <strong>tokens sent</strong>: top-k × chunk size is paid on every question</td></tr>
+      <tr><td>Completeness</td><td>A missing paragraph is a missed search result</td><td>A missing paragraph is a fact the model can never use; it will say "not found" or guess</td></tr>
+      <tr><td>Context header</td><td>Helps ranking</td><td>Also tells the model what it's reading ("Labs › How long labs stay open")</td></tr>
+      <tr><td>Identity</td><td>An id for the result list</td><td>A stable id and source for <strong>citations</strong>, and an audience for filtering</td></tr>
+      <tr><td>Long sections</td><td>Split anywhere</td><td>Split at paragraph breaks, repeating the header, so each piece still makes sense alone</td></tr>
+    </tbody>
+  </table>
+</div>
+<ul>
+  <li><strong>Small to retrieve, big to read</strong> is a common upgrade: index small chunks for precise matching, but send the parent section (or neighbours) to the model. Use it when answers need surrounding context.</li>
+  <li><strong>Tables and lists</strong> should stay whole inside one chunk; a price table split in half produces wrong answers with real-looking citations.</li>
+  <li><strong>Version your chunker.</strong> Changing it changes every chunk id and vector, so the index must be rebuilt (Milestone 6 records <code>headings-v2</code> and refuses older indexes).</li>
+</ul>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>A common production bug: a PDF extractor puts each page's header and footer into the text, and a fixed-size chunker splits mid-table. The bot then answers "the fee is $" with a citation. Teams catch these by sampling chunks by eye after every chunker change and by keeping a small set of questions whose answers sit in awkward places (intros, tables, footnotes), exactly like the five intro questions in Drill 06.4.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Chunk size is a tuning knob: try 500, try 1,000, pick one."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Chunking decides what the model can ever know. I check that <strong>no text is lost</strong>, measure <strong>recall and tokens sent</strong> on questions that hit awkward places, and version the chunker like code."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Trusting a hit-rate table built only from "easy" questions. Milestone 5's chunker scored 20/20 in Module 05 and still dropped seven article introductions. Add questions whose answers sit in introductions, tables and footnotes, or you won't see the gap.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"For RAG I chunk along document structure with a title header on every chunk, split oversized sections at paragraph boundaries, keep tables whole, carry ids and sources for citations, and choose settings by measuring <strong>recall at k</strong> together with <strong>tokens per prompt</strong>."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Four chunkers, 25 questions, two numbers each.</p></div></div>
+
+<div class="drill" id="d06-4" data-title="Chunking for answers: recall and tokens" data-time="~20 min" data-steps="run,think">
+  <div class="drill-head"><span class="drill-id">Drill 06.4</span><h3>Chunking for answers: recall and tokens</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI embeddings</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> compare whole articles, Milestone 5's chunks and the new RAG chunker on the 20 help questions plus 5 whose answers sit in introductions, measuring both recall (hit@3) and the tokens each question would send to the model.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The RAG chunker</h4>
+        <pre class="code" data-file="rag_chunks.py" data-src="code/genai-labs/rag_chunks.py"></pre>
+        <p>Its tests are in <code>test_ingest.py</code> (the last two). Run <code>pytest -q test_ingest.py</code> again if you changed anything.</p>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Measure four strategies</h4>
+        <pre class="code" data-file="lab06_04_chunk_sizes.py" data-src="code/genai-labs/lab06_04_chunk_sizes.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab06_04_chunk_sizes.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama); yours will differ</span>
+<pre class="out"><code>strategy                     chunks  hit@3 (20)  intro (5)  tokens sent
+whole articles                   10       20/20        4/5      599 avg
+M5 sections (no intros)          40       20/20        0/5      159 avg
+sections + intros, max 900       47       20/20        5/5      146 avg
+sections + intros, max 200       53       20/20        5/5      123 avg</code></pre>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read the table</h4>
+        <ol>
+          <li>Milestone 5's chunks score 0/5 on intro questions. Why didn't Module 05's measurements show this?</li>
+          <li>Whole articles score almost as well. Why not just retrieve whole articles?</li>
+          <li>"Max 200" sends the fewest tokens. What could go wrong with even smaller chunks?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>None of the 20 original questions had its answer in an introduction, so the gap was invisible. A metric is only as good as the questions behind it.</li>
+            <li>Each question would send about 600 tokens instead of about 150: four times the input cost on every message, and the answer is buried in text about other topics, which makes the model more likely to miss it or mix rules. It also missed one intro answer: a whole article's vector is a blur.</li>
+            <li>Facts get separated from their conditions ("$50 fee" in one chunk, "within 7 days of the start" in another), lists are split, and the model gets fragments. Keep "max 900" (sections stay whole on this help centre) unless measurements on harder questions say otherwise.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Stretch:</b> add a sixth intro-style question of your own to <code>INTRO_QUESTIONS</code> (look for a fact in an article's first paragraph) and confirm the result pattern holds.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d06-4"> I've completed Drill 06.4</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Chunking for RAG.</p></div></div>
+<div class="quiz">
+  <details><summary>1. How can a chunker lose text without any error, and how do you catch it?</summary><div><p>By splitting on headings and keeping only what follows them (text before the first heading, or between unusual markup, is dropped). Catch it with a test that every word of a document appears in some chunk, and with questions whose answers sit in awkward places.</p></div></details>
+  <details><summary>2. Why does a RAG chunk carry an id like <code>refunds-and-cancellations#2</code>?</summary><div><p>So an answer's citation can point to exactly one passage, the UI can link to it, logs can show what was retrieved, and incremental re-indexing can tell which chunk changed.</p></div></details>
+  <details><summary>3. Retrieving k = 4 chunks of about 150 tokens versus k = 4 whole articles of about 600: what's the difference in input tokens per question, before the system prompt?</summary><div><p>About 600 versus about 2,400 tokens: four times the context cost on every question, for no gain in recall here.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>RAG chunks must be findable, self-contained, complete and traceable. Measure recall and tokens together, on questions that probe the awkward corners.</p></div>

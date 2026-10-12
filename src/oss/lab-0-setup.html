@@ -1,0 +1,191 @@
+<!--meta
+{"id": "oss-0", "short": "Lab 0: Set Up Ollama and Python", "h1": "Lab 0 · Set Up Your Open-Source Lab Environment", "description": "Open-source lab guide, Lab 0: install Python and VS Code, install Ollama, download open models (llama3.2, nomic-embed-text, optionally qwen2.5:7b), create the project and virtual environment, configure .env (and where a key goes, if you use a hosted provider), and run an environment check.", "lead": "In this lab you install everything the course needs to run on free, open-source models, on your own computer: Python, VS Code, Ollama and three models. Then you create the project folder, configure it, and run a check that proves every piece works. Do this once, before the first day.", "chips": ["Python + VS Code", "Ollama", "Open models", ".env", "≈ 30–60 min"], "time": "Estimated time: 30–60 minutes (mostly downloads)"}
+-->
+<h2 id="overview">Lab overview</h2>
+<div class="table-wrap min">
+  <table>
+    <tbody>
+      <tr><th>Objectives</th><td>Install Python, VS Code and Ollama · download a chat model and an embedding model · create the lab project with a virtual environment · configure <code>.env</code> · verify everything with a check script</td></tr>
+      <tr><th>Prerequisites</th><td>A computer with 8 GB of RAM or more (16 GB recommended) and about 10 GB of free disk space · administrator rights to install software · an internet connection</td></tr>
+      <tr><th>You finish with</th><td>A folder <code>oss-genai-labs</code> and a check that prints <em>All checks passed</em></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="ex1">Exercise 1 · Install the tools</h2>
+
+<h3>Task 1: Install Python</h3>
+<ol>
+  <li>Open a terminal (Windows: <em>Terminal</em> or <em>PowerShell</em>; macOS: <em>Terminal</em>; Linux: your terminal) and check whether Python 3.10 or later is installed:
+<pre class="term"><code><span class="ps">$ </span>python --version</code></pre>
+    On macOS and Linux, try <code>python3 --version</code> if <code>python</code> isn't found. If you see <code>Python 3.10</code> or higher, skip to Task 2.</li>
+  <li>Otherwise install Python 3.12 from <code>python.org/downloads</code>.
+    <ul>
+      <li><strong>Windows:</strong> run the installer and tick <strong>Add python.exe to PATH</strong> on the first screen, then select <em>Install Now</em>.</li>
+      <li><strong>macOS:</strong> run the <code>.pkg</code> installer. Use <code>python3</code> and <code>pip3</code> in the commands below.</li>
+      <li><strong>Linux (Ubuntu/Debian):</strong> <code>sudo apt install python3 python3-venv python3-pip</code></li>
+    </ul></li>
+  <li>Close and reopen the terminal, then run <code>python --version</code> again. Expected: <code>Python 3.12.x</code> (any 3.10 or later works).</li>
+</ol>
+
+<h3>Task 2: Install VS Code</h3>
+<ol>
+  <li>Download and install Visual Studio Code from <code>code.visualstudio.com</code>.</li>
+  <li>Open VS Code, select the <em>Extensions</em> view (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>, or <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> on macOS), search for <strong>Python</strong> and install the extension published by Microsoft.</li>
+  <li>Optional: install an AI coding assistant (GitHub Copilot, Claude Code or Codex). The labs don't require one.</li>
+</ol>
+
+<h3>Task 3: Install Ollama</h3>
+<p>Ollama downloads and runs open-source models on your computer and serves them on <code>http://localhost:11434</code>.</p>
+<ol>
+  <li>Go to <code>ollama.com/download</code> and install it for your system:
+    <ul>
+      <li><strong>Windows:</strong> download and run <code>OllamaSetup.exe</code>. When it finishes, Ollama runs in the background; you'll see its icon in the system tray.</li>
+      <li><strong>macOS:</strong> download the app, move it to <em>Applications</em> and open it once. It runs in the menu bar.</li>
+      <li><strong>Linux:</strong> run <code>curl -fsSL https://ollama.com/install.sh | sh</code></li>
+    </ul></li>
+  <li>Open a <strong>new</strong> terminal and check the installation:
+<pre class="term"><code><span class="ps">$ </span>ollama --version</code></pre>
+    <span class="out-label">Expected (your version number will differ)</span>
+<pre class="out"><code>ollama version is 0.40.2</code></pre></li>
+  <li>Open <code>http://localhost:11434</code> in your browser. Expected: the text <em>Ollama is running</em>.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>Python, VS Code and Ollama are installed, and <code>http://localhost:11434</code> says <em>Ollama is running</em>.</p></div>
+
+<h2 id="ex2">Exercise 2 · Download open models</h2>
+
+<h3>Task 1: Pull the models</h3>
+<ol>
+  <li>Download the chat model (Meta's Llama 3.2, 3 billion parameters, about 2 GB):
+<pre class="term"><code><span class="ps">$ </span>ollama pull llama3.2</code></pre>
+    You'll see download progress bars, then <code>success</code>.</li>
+  <li>Download the embedding model used in Labs 2 and 3 (about 270 MB):
+<pre class="term"><code><span class="ps">$ </span>ollama pull nomic-embed-text</code></pre></li>
+  <li><strong>Only if your computer has 16 GB of RAM or more:</strong> download a stronger model for Lab 3's agent (Alibaba's Qwen 2.5, 7 billion parameters, about 4.7 GB):
+<pre class="term"><code><span class="ps">$ </span>ollama pull qwen2.5:7b</code></pre></li>
+  <li>List what you have:
+<pre class="term"><code><span class="ps">$ </span>ollama list</code></pre>
+    <span class="out-label">Expected (IDs and dates will differ)</span>
+<pre class="out"><code>NAME                       ID              SIZE      MODIFIED
+qwen2.5:7b                 845dbda0ea48    4.7 GB    22 minutes ago
+llama3.2:latest            a80c4f17acd5    2.0 GB    About an hour ago
+nomic-embed-text:latest    0a109f422b47    274 MB    25 hours ago</code></pre></li>
+</ol>
+
+<h3>Task 2: Talk to a model in the terminal</h3>
+<ol>
+  <li>Start an interactive chat:
+<pre class="term"><code><span class="ps">$ </span>ollama run llama3.2</code></pre></li>
+  <li>At the <code>&gt;&gt;&gt;</code> prompt, type <em>Explain what a token is in one sentence.</em> and press <kbd>Enter</kbd>. The first answer takes longer while the model loads into memory.</li>
+  <li>Type <code>/bye</code> to leave. Ollama keeps running in the background.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p><code>ollama list</code> shows <code>llama3.2</code> and <code>nomic-embed-text</code>, and the model answered in the terminal.</p></div>
+
+<h2 id="ex3">Exercise 3 · Create the lab project</h2>
+
+<h3>Task 1: Create the folder and the virtual environment</h3>
+<ol>
+  <li>Create a folder named <code>oss-genai-labs</code> (for example in your <em>Documents</em> folder) and open it in VS Code: <em>File › Open Folder…</em></li>
+  <li>Open VS Code's terminal: <em>Terminal › New Terminal</em>. Create and activate a virtual environment, an isolated set of Python packages for this project:
+<pre class="term"><code><span class="c"># Windows (PowerShell)</span>
+<span class="ps">$ </span>python -m venv .venv
+<span class="ps">$ </span>.venv\Scripts\Activate.ps1
+<span class="c"># macOS / Linux</span>
+<span class="ps">$ </span>python3 -m venv .venv
+<span class="ps">$ </span>source .venv/bin/activate</code></pre>
+    Your prompt now starts with <code>(.venv)</code>. If PowerShell refuses to run the script, run <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code> once and try again.</li>
+  <li>If VS Code asks whether to use the new environment for the workspace, select <em>Yes</em>.</li>
+</ol>
+
+<h3>Task 2: Install the packages</h3>
+<ol>
+  <li>Create a file <code>requirements.txt</code> in the folder with this content:
+    <pre class="code" data-file="requirements.txt" data-src="code/oss-labs/requirements.txt"></pre></li>
+  <li>Install them:
+<pre class="term"><code><span class="ps">$ </span>pip install -r requirements.txt</code></pre>
+    Expected: the last line starts with <code>Successfully installed</code>.</li>
+</ol>
+
+<h3>Task 3: Copy the lab data</h3>
+<ol>
+  <li>Copy the <code>data</code> folder from <code>code/oss-labs/data</code> in the handbook into your project. It holds the fictional TrainCrest course catalogue, ten help-centre articles and three internal staff documents used in Labs 2 and 3.</li>
+  <li>Your folder now looks like this:
+<pre class="out"><code>oss-genai-labs/
+├── .venv/
+├── data/
+│   ├── courses.json
+│   ├── help/          10 help-centre articles (.md)
+│   └── internal/      3 staff documents (.md, .txt, .csv)
+└── requirements.txt</code></pre></li>
+</ol>
+
+<h2 id="ex4">Exercise 4 · Configure settings and keys</h2>
+<p>Settings live in a file named <code>.env</code>, never in code, so you can change models or providers without editing programs, and secrets never end up in files you share.</p>
+
+<h3>Task 1: Create .env</h3>
+<ol>
+  <li>Create a file named <code>.env</code> (with the leading dot) in the project folder and paste:
+    <pre class="code" data-file=".env" data-src="code/oss-labs/.env.example"></pre></li>
+  <li>Read the comments. With Ollama (Option A) there is <strong>no key to get</strong>: Ollama runs on your computer and doesn't check keys. The OpenAI Python library always sends one, so <code>LLM_API_KEY=ollama</code> is just a placeholder.</li>
+  <li>If you pulled <code>qwen2.5:7b</code>, set <code>AGENT_MODEL=qwen2.5:7b</code>. Otherwise leave it empty: the agent uses <code>CHAT_MODEL</code>.</li>
+</ol>
+
+<h3>Task 2: Create the shared client</h3>
+<ol>
+  <li>Create <code>client.py</code>. Every lab program imports its settings and client from here:
+    <pre class="code" data-file="client.py" data-src="code/oss-labs/client.py"></pre></li>
+</ol>
+
+<h3>Task 3 (optional): Use a hosted open model with a free API key</h3>
+<p>Only if Option A is too slow on your computer (more than about a minute per answer). Hosted providers run the same kind of open models on fast hardware; they need an account and an API key, and your prompts are sent to them, so never paste personal or confidential data.</p>
+<ol>
+  <li>Create a free account with an OpenAI-compatible provider of open models, for example <strong>Groq</strong> (<code>console.groq.com</code>) or <strong>OpenRouter</strong> (<code>openrouter.ai</code>).</li>
+  <li>Create a key: Groq: <em>API Keys › Create API Key</em>; OpenRouter: <em>Keys › Create Key</em>. Copy it immediately: it's shown only once.</li>
+  <li>In <code>.env</code>, replace the three <code>LLM_</code>/<code>CHAT_MODEL</code> lines with the provider's block from the comments, and paste your key after <code>LLM_API_KEY=</code>. Check the provider's model list for a current model name; free tiers and model names change.</li>
+  <li>Keep <code>EMBED_BASE_URL</code> pointing at Ollama: <code>nomic-embed-text</code> is small and runs on any laptop.</li>
+  <li>Treat the key like a password: don't paste it into chats, screenshots or code, and delete it in the provider's console when the course ends.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p><code>.env</code> and <code>client.py</code> exist in your project folder, and you know which option (A or B) you're using.</p></div>
+
+<h2 id="ex5">Exercise 5 · Check everything</h2>
+<ol>
+  <li>Create <code>lab0_check.py</code>:
+    <pre class="code" data-file="lab0_check.py" data-src="code/oss-labs/lab0_check.py"></pre></li>
+  <li>Run it:
+<pre class="term"><code><span class="ps">$ </span>python lab0_check.py</code></pre>
+    <span class="out-label">Real output on a laptop without a GPU (your times and model list will differ)</span>
+<pre class="out"><code>[ OK ] Python: 3.10.0
+[ OK ] Ollama server: Ollama 0.40.2
+[ OK ] Models: llama3.2:latest, nomic-embed-text:latest, qwen2.5:1.5b, qwen2.5:7b
+[ OK ] Chat model: llama3.2 says 'Yes' in 43.7s
+[ OK ] Embedding model: nomic-embed-text returns 768 numbers per text
+
+All checks passed. You're ready for Lab 1.</code></pre>
+    Notice the model said <em>Yes</em> although it was asked to reply <em>ready</em>: small models don't always follow instructions exactly. You'll see that again, and learn to handle it. The first call is slow because the model is loaded into memory; later calls are faster.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>All five checks are <code>[ OK ]</code>. You're ready for Lab 1.</p></div>
+
+<h2 id="trouble">Troubleshooting</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><code>python</code> or <code>ollama</code>: command not found</td><td>Close and reopen the terminal (the installer changed PATH). On Windows, re-run the Python installer with <em>Add python.exe to PATH</em> ticked.</td></tr>
+      <tr><td><code>[FAIL] Ollama server: URLError ... refused</code></td><td>Ollama isn't running. Windows/macOS: start the Ollama app. Linux: <code>ollama serve</code> in another terminal.</td></tr>
+      <tr><td><code>not pulled yet: llama3.2</code></td><td>Run <code>ollama pull llama3.2</code>, then check again. Names must match <code>.env</code> exactly.</td></tr>
+      <tr><td><code>ModuleNotFoundError: No module named 'openai'</code></td><td>The virtual environment isn't active, or packages aren't installed: activate <code>.venv</code> and run <code>pip install -r requirements.txt</code>.</td></tr>
+      <tr><td>Answers take minutes, or the computer freezes</td><td>The model is too big for your RAM. Use <code>llama3.2</code>, close other apps, or use Option B. <code>ollama ps</code> shows what's loaded.</td></tr>
+      <tr><td>Downloads fail on a company network</td><td>A proxy may block them. Ask IT, or download at home. Ollama honours the <code>HTTPS_PROXY</code> environment variable.</td></tr>
+      <tr><td>Option B: <code>AuthenticationError</code> (401)</td><td>The key is wrong, has spaces around it, or was deleted. Create a new one and paste it again.</td></tr>
+      <tr><td>Option B: <code>NotFoundError</code> for the model</td><td>The model name isn't offered (any more). Copy a current name from the provider's model list.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="review">Review</h2>
+<ul class="checklist">
+  <li>Ollama runs open models locally and serves an OpenAI-compatible API on port 11434.</li>
+  <li>You have a chat model (<code>llama3.2</code>) and an embedding model (<code>nomic-embed-text</code>).</li>
+  <li>Settings live in <code>.env</code>; with Ollama the "key" is a placeholder, with a hosted provider it's a secret.</li>
+  <li><code>client.py</code> gives every lab the same client, so switching provider is a three-line change.</li>
+</ul>

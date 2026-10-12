@@ -1,0 +1,153 @@
+<!--meta
+{"id": "m06-embed", "short": "Embedding Generation and Vector Storage", "h1": "Embedding Generation and Vector Storage", "description": "Module 06, topic 5: generating embeddings for a RAG index in batches, re-embedding only new or changed chunks, storing vectors with text and metadata, recording how the index was built in a manifest, choosing a vector store, and a drill that builds and incrementally updates TrainCrest's knowledge index.", "lead": "Embedding is the expensive, slow, easy-to-get-wrong step of indexing: one model change and every vector is useless. Done well, it's boring: batched, incremental, recorded in a manifest, and checked on load. You'll build TrainCrest's knowledge index, run it again to see it embed nothing, then edit one document and watch exactly one chunk being re-embedded.", "chips": ["Batch and incremental", "Manifest", "Store text + metadata", "Drill 06.5"], "time": "Learn 10 min · Do 20 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Embed once, store everything you'll need, remember how.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Embedding generation</strong> turns each chunk into a vector with an embedding model, usually in batches. <strong>Vector storage</strong> keeps each vector together with the chunk's text, id and metadata in a store that supports similarity search and filtering. A RAG index also records <strong>how it was built</strong> (embedding model, dimensions, chunker version) so incompatible queries or updates are refused.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Turn every chunk into numbers, save the numbers next to the words and labels, write down which model and chunker you used, and next time only redo the chunks that changed.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A warehouse. Every item gets a location code (the vector) and a label with what it is and who may collect it (text and metadata). The warehouse logbook says which coding system was used. When a delivery arrives, you shelve only the new and changed items; and if someone changes the coding system, you re-code the whole warehouse rather than mixing two systems on the same shelves.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 290" role="img" aria-labelledby="em6-t em6-d">
+      <title id="em6-t">Incremental embedding into a knowledge index</title>
+      <desc id="em6-d">66 chunks come from ingestion and chunking, each with a hash of its text. The builder compares them with the previous index: unchanged chunks reuse their stored vectors, new or changed chunks are sent to the embedding model in batches, and chunks that disappeared are removed. The result is saved as vectors.npy, chunks.json with text and metadata, and manifest.json recording the embedding model, dimensions and chunker version. If the model or chunker in the manifest differs, nothing is reused.</desc>
+      <rect x="20" y="40" width="190" height="80" rx="12" class="s-amber"/><text x="115" y="72" class="t-b mid">66 chunks</text><text x="115" y="94" class="t-s mid">each with a text hash</text>
+      <path d="M210 80 H244" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="250" y="20" width="250" height="140" rx="12" class="s-surface2"/>
+      <text x="266" y="46" class="t-b">compare with previous index</text>
+      <text x="266" y="72" class="t-s">same id + same hash → reuse vector</text>
+      <text x="266" y="96" class="t-s">new id or new hash → embed</text>
+      <text x="266" y="120" class="t-s">id gone → remove</text>
+      <text x="266" y="144" class="t-s">model or chunker differs → embed all</text>
+      <path d="M500 90 H534" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="540" y="50" width="170" height="80" rx="12" class="s-violet"/><text x="625" y="82" class="t-b mid">embedding model</text><text x="625" y="104" class="t-s mid">batches of 64</text>
+      <path d="M710 90 H744" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="750" y="20" width="190" height="140" rx="12" class="s-blue"/>
+      <text x="766" y="46" class="t-b">data/kb_index/</text>
+      <text x="766" y="72" class="t-s">vectors.npy (66 × 768)</text>
+      <text x="766" y="96" class="t-s">chunks.json: text, id,</text>
+      <text x="766" y="114" class="t-s">source, audience, hash</text>
+      <text x="766" y="140" class="t-s">manifest.json</text>
+      <rect x="250" y="190" width="690" height="80" rx="12" class="s-surface"/>
+      <text x="266" y="216" class="t-b">manifest.json</text>
+      <text x="266" y="242" class="t-m">{"embed_model": "nomic-embed-text", "dimensions": 768, "chunker": "sections-v2", "chunks": 66}</text>
+      <text x="266" y="262" class="t-s">checked on load: a different embedding model refuses to load; a different chunker forces a full re-embed</text>
+    </svg>
+  </div>
+  <figcaption><b>Unchanged text, unchanged vector.</b> The hash makes re-indexing cheap; the manifest makes it safe.</figcaption>
+</figure>
+
+<h3>Embedding generation</h3>
+<ul>
+  <li><strong>Batch:</strong> one API call can embed many texts (<code>embed.py</code> sends 64 at a time). Fewer round trips, fewer rate-limit hits.</li>
+  <li><strong>Incremental:</strong> hash each chunk's text; re-embed only new or changed chunks and delete the removed ones. A nightly job over thousands of pages then costs cents, not dollars.</li>
+  <li><strong>Same model for documents and questions,</strong> recorded in the manifest. Some models (for example <code>nomic-embed-text</code>) also recommend different prefixes for documents and queries; follow the model card.</li>
+  <li><strong>Normalise</strong> vectors to length 1 so a dot product is the cosine similarity.</li>
+  <li><strong>Retries:</strong> embedding APIs rate-limit too. The Module 02 retry rules apply to indexing jobs.</li>
+</ul>
+
+<h3>Vector storage: what each record holds</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Field</th><th>Used by</th></tr></thead>
+    <tbody>
+      <tr><td><code>vector</code></td><td>Similarity search</td></tr>
+      <tr><td><code>text</code> (with its title header)</td><td>The prompt: the model reads this, not the vector</td></tr>
+      <tr><td><code>id</code>, <code>source</code>, <code>title</code></td><td>Citations, links, logs, incremental updates</td></tr>
+      <tr><td><code>audience</code> (or groups, tenant)</td><td>Permission pre-filter: who may retrieve it</td></tr>
+      <tr><td><code>hash</code>, <code>updated</code></td><td>Change detection, freshness</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Where to store it: a numpy file is fine for a few thousand chunks on a laptop. For production, use a service with indexes, filters, security and backups: <strong>Azure AI Search</strong> (vector + keyword + semantic ranking, filters, integrated vectorisation), <strong>Azure Cosmos DB</strong> or <strong>PostgreSQL with pgvector</strong> if your data already lives there, or a dedicated vector database. The record shape above stays the same.</p>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>A team switched embedding deployments from one model to another "for better quality" and re-embedded only new documents. For a week, answers about old policies got worse: old vectors and new query vectors lived in different spaces, and nothing raised an error. A manifest check on load, as in <code>kb_index.py</code>, turns that silent failure into an obvious one. Mature teams build a second index with the new model, compare hit rates on their question set, then switch traffic.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"The index is a cache. If something looks wrong, rebuild it."</p></div>
+  <div><h5>GenAI developer view</h5><p>"The index is a <strong>versioned data asset</strong>. It records the model and chunker that built it, updates incrementally by hash, and refuses to mix incompatible vectors."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Storing only vectors and ids, and fetching text from the source system at query time. The source page may have changed since indexing, so the text you send to the model no longer matches the vector that found it, and the citation points to words that aren't there. Store the text you embedded.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"I embed chunks in batches, re-embed only changed chunks using content hashes, store vector, text and metadata together, and keep a <strong>manifest</strong> of embedding model, dimensions and chunker version, so a mismatch fails loudly instead of degrading results silently."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Build, rebuild, edit, rebuild.</p></div></div>
+
+<div class="drill" id="d06-5" data-title="Build and update the knowledge index" data-time="~20 min" data-steps="run,verify,ask">
+  <div class="drill-head"><span class="drill-id">Drill 06.5</span><h3>Build and update the knowledge index</h3>
+    <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI embeddings</span><span class="badge b-tool">Python · pytest</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> build TrainCrest's knowledge index (help centre + internal documents), prove that a second run embeds nothing, and that editing one document re-embeds exactly one chunk.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The index</h4>
+        <pre class="code" data-file="kb_index.py" data-src="code/genai-labs/kb_index.py"></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Test it offline with a fake embedding function</h4>
+        <pre class="code" data-file="test_kb_index.py" data-src="code/genai-labs/test_kb_index.py" data-lines="1-78"></pre>
+<pre class="term"><code><span class="ps">$ </span>pytest -q test_kb_index.py
+<span class="o">......                                                                   [100%]
+6 passed in 1.35s</span></code></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Build it, twice</h4>
+        <pre class="code" data-file="lab06_05_build_index.py" data-src="code/genai-labs/lab06_05_build_index.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab06_05_build_index.py
+<span class="ps">$ </span>python lab06_05_build_index.py</code></pre>
+        <span class="out-label">Real output with nomic-embed-text (Ollama); dates and times will differ</span>
+<pre class="out"><code>chunks: 66  ->  new 66, changed 0, unchanged 0, removed 0
+embedded this run: 66  ·  0.0s
+saved to kb_index/: vectors.npy (66, 768), chunks.json, manifest.json
+manifest: {'embed_model': 'nomic-embed-text', 'dimensions': 768, 'chunker': 'sections-v2', 'chunks': 66, 'built': '2026-10-12 11:16:21'}
+
+chunks: 66  ->  new 0, changed 0, unchanged 66, removed 0
+embedded this run: 0  ·  0.1s
+...</code></pre>
+        <p>The first run took 0.0s because <code>embed.py</code>'s disk cache already held these texts from earlier drills; without the cache, embedding 66 chunks takes a few seconds. The second line is the one that matters: <strong>unchanged 66, embedded 0</strong>.</p>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Edit one document, build again</h4>
+        <p>In <code>data/internal/staff-faq.csv</code>, change "at most 16 learners" to "at most 18 learners". Save and run the build again:</p>
+<pre class="out"><code>chunks: 66  ->  new 0, changed 1, unchanged 65, removed 0
+embedded this run: 1  ·  0.5s</code></pre>
+        <p>Exactly one chunk, the FAQ section that changed, was embedded. Change the number back to 16 and build once more (one more chunk embedded, from the cache).</p>
+      </li>
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Prove the chunker check</h4>
+        <div class="prompt-box"><pre><code>Add one test to #file:test_kb_index.py, in the style of
+test_a_different_embedding_model_means_a_full_rebuild: when CHUNKER_VERSION changes between
+two builds, nothing is reused (all chunks counted as "new") and the new manifest records the
+new chunker version. Use monkeypatch on kb_index.CHUNKER_VERSION. Don't change kb_index.py.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it points at an existing test to copy the style from, states the behaviour in observable terms (counts and manifest), says how to fake the change, and protects the production file.</div>
+        <details class="solution"><summary>Reference solution</summary><div>
+          <pre class="code" data-file="test_kb_index.py (added)" data-src="code/genai-labs/test_kb_index.py" data-lines="81-85"></pre>
+        </div></details>
+      </li>
+    </ol>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d06-5"> I've completed Drill 06.5</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Embeddings and storage.</p></div></div>
+<div class="quiz">
+  <details><summary>1. A nightly job re-embeds all 50,000 chunks although only 30 pages changed. What do you add?</summary><div><p>A content hash per chunk stored in the index; compare on each run and embed only new or changed chunks, deleting removed ones. The job's cost and time then follow the size of the change, not of the corpus.</p></div></details>
+  <details><summary>2. Why store the chunk's text in the vector store when you could look it up in the source system?</summary><div><p>So the text sent to the model is exactly the text that was embedded and cited. The source may have changed since indexing; and fetching from it adds latency and another failure point.</p></div></details>
+  <details><summary>3. What belongs in an index manifest, and what does each field protect against?</summary><div><p>Embedding model and dimensions (mixing vector spaces), chunker version (ids and texts that no longer match the code), build time and chunk count (stale or partial indexes).</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Batch, embed only what changed, store vector + text + metadata together, and record the model and chunker in a manifest that's checked on load.</p></div>

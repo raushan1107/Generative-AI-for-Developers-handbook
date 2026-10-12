@@ -1,0 +1,154 @@
+<!--meta
+{"id": "m06-what", "short": "What Is RAG?", "h1": "What Is RAG, and Why Use It?", "description": "Module 06, topic 1: retrieval-augmented generation as open-book answering, the problems it solves (cut-off, private and changing knowledge, hallucination, traceability, access control), how it compares with long prompts, fine-tuning and tools, and a drill that asks the same questions closed book and open book.", "lead": "A model answers from what it learned in training. Ask it about your company's refund rules and it either admits it doesn't know or, worse, makes something up. RAG gives it the right page at the moment of the question. You'll see both behaviours side by side.", "chips": ["Open-book answering", "Why RAG", "RAG vs fine-tuning", "Drill 06.1"], "time": "Learn 12 min · Do 15 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Look it up, then answer.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Retrieval-augmented generation (RAG)</strong> is a pattern in which an application <strong>retrieves</strong> relevant information from an external knowledge source at query time, adds it to the prompt, and has the model <strong>generate</strong> an answer grounded in that information. The model's weights don't change; only its input does.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Before the model answers, your code searches your documents for the few passages that matter, pastes them into the prompt, and says "answer from these, and say which one you used".</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A closed-book exam tests what you remember; a confident student who half-remembers writes a fluent wrong answer. An open-book exam lets you look up the right page first. RAG turns every question into an open-book exam, and your code chooses which pages the model may open.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 300" role="img" aria-labelledby="ob-t ob-d">
+      <title id="ob-t">Closed book versus open book</title>
+      <desc id="ob-d">Closed book: the question goes straight to the model, which answers from its training data and may guess. Open book, which is RAG: the question first goes to a search over TrainCrest's documents, the matching passage is added to the prompt with the question, and the model answers from the passage and cites it.</desc>
+      <text x="20" y="34" class="t-m">CLOSED BOOK</text>
+      <rect x="20" y="46" width="230" height="60" rx="12" class="s-surface"/><text x="135" y="72" class="t-b mid">question</text><text x="135" y="92" class="t-s mid">"What does LAB-503 mean?"</text>
+      <path d="M250 76 H304" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="310" y="46" width="200" height="60" rx="12" class="s-violet"/><text x="410" y="72" class="t-b mid">model</text><text x="410" y="92" class="t-s mid">training data only</text>
+      <path d="M510 76 H564" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="570" y="46" width="370" height="60" rx="12" class="s-rose"/><text x="586" y="72" class="t-b">a guess, or "I don't know"</text><text x="586" y="92" class="t-s">"a malfunction in instrument communication"</text>
+      <text x="20" y="152" class="t-m">OPEN BOOK = RAG</text>
+      <rect x="20" y="164" width="230" height="60" rx="12" class="s-surface"/><text x="135" y="190" class="t-b mid">question</text><text x="135" y="210" class="t-s mid">"What does LAB-503 mean?"</text>
+      <path d="M250 194 H284" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="290" y="164" width="170" height="60" rx="12" class="s-teal"/><text x="375" y="190" class="t-b mid">search docs</text><text x="375" y="210" class="t-s mid">help centre</text>
+      <path d="M460 194 H494" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="500" y="164" width="170" height="60" rx="12" class="s-violet"/><text x="585" y="190" class="t-b mid">model</text><text x="585" y="210" class="t-s mid">passage + question</text>
+      <path d="M670 194 H704" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+      <rect x="710" y="164" width="230" height="60" rx="12" class="s-green"/><text x="726" y="190" class="t-b">"Wait two minutes and</text><text x="726" y="210" class="t-b">refresh." [1]</text>
+      <text x="290" y="256" class="t-s">[1] Labs and cloud sandboxes › Common problems</text>
+      <text x="290" y="278" class="t-s">the model's weights never change: only what you put in front of it</text>
+    </svg>
+  </div>
+  <figcaption><b>RAG changes the input, not the model.</b> Update a document and the next answer uses it; no training run needed.</figcaption>
+</figure>
+
+<h3>Why teams use RAG</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Problem without RAG</th><th>What RAG does about it</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Knowledge cut-off:</strong> the model stopped learning months ago</td><td>Retrieves today's version of the document</td></tr>
+      <tr><td><strong>Private knowledge:</strong> your policies and wiki were never in its training data</td><td>Brings them into the prompt for this one question, without sending them to anyone's training pipeline</td></tr>
+      <tr><td><strong>Change:</strong> prices and rules change monthly</td><td>Edit the document and re-index the changed chunks; no model work</td></tr>
+      <tr><td><strong>Hallucination:</strong> fluent guesses about specifics</td><td>Grounds the answer in real text and allows "not found" as a valid answer</td></tr>
+      <tr><td><strong>Trust:</strong> "where does it say that?"</td><td>Citations link each fact to its source, so people and code can check it</td></tr>
+      <tr><td><strong>Access control:</strong> staff and learners may see different things</td><td>Retrieval filters by who is asking, so the model only sees what that person may see</td></tr>
+      <tr><td><strong>Cost:</strong> pasting the whole handbook into every prompt</td><td>Sends only the 3 to 5 passages that matter</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>RAG, long prompts, fine-tuning or tools?</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Approach</th><th>Good for</th><th>Not for</th></tr></thead>
+    <tbody>
+      <tr><td><strong>RAG</strong></td><td>Knowledge in documents: policies, manuals, wikis, FAQs, contracts</td><td>Live records (a learner's enrolment) or calculations</td></tr>
+      <tr><td><strong>Put everything in the prompt</strong></td><td>Small, stable knowledge (Milestone 3's five policy lines)</td><td>Hundreds of pages; it's slow, costly, and details get missed in long contexts</td></tr>
+      <tr><td><strong>Tools / function calling</strong> (Module 04)</td><td>Live data and actions: enrolment status, refund quotes, tickets</td><td>Reading and summarising long text</td></tr>
+      <tr><td><strong>Fine-tuning</strong></td><td>Style, format, tone, a narrow task done many times</td><td>Teaching facts that change; it's expensive to update and can't cite sources</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Real assistants combine them. Traincrest Assist will use RAG for "what is the policy?", tools for "what about <em>my</em> enrolment?" and code for "how much exactly?".</p>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Most enterprise AI assistants are RAG systems. Office-suite copilots answer from your files, mail and chats and show references to them. Customer-service bots answer from a company's help centre and hand over to a person when nothing matches. Internal "ask HR" or "ask IT" assistants search policy sites. On Azure, the usual building blocks are Azure AI Search for retrieval and an Azure OpenAI model for generation. A Foundry agent can also use an Azure AI Search index as its knowledge source. You'll build the same pipeline by hand first, so you know what those services do for you.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"The model is the brain. If it doesn't know something, we need a smarter model or to train it."</p></div>
+  <div><h5>GenAI developer view</h5><p>"The model is a <strong>reader and writer</strong>. Knowledge lives in documents I control. My job is to put the right passages in front of it and check that it used them."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Believing RAG ends hallucination. It reduces it a lot, but the model can still misread a passage, mix two sources, add a "helpful" detail of its own, or answer from the wrong chunk if retrieval missed. In Drill 06.9 a small model cites a real source and still invents "1-2 billing cycles". RAG needs checks (topic 9) and evaluation (Module 09).</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"RAG retrieves relevant passages at query time and grounds the model's answer in them. I'd choose it over fine-tuning for <strong>factual, changing or private knowledge</strong>, because updates are just re-indexing and answers can <strong>cite their sources</strong>. Fine-tuning is for behaviour and style; tools are for live data and actions."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Three questions, closed book and open book.</p></div></div>
+
+<div class="drill" id="d06-1" data-title="Closed book vs open book" data-time="~15 min" data-steps="run,nocode,think">
+  <div class="drill-head"><span class="drill-id">Drill 06.1</span><h3>Closed book vs open book</h3>
+    <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> see what a model does with company-specific questions on its own, and what changes when you paste in the right help-centre section by hand. That manual copy-paste is RAG; the rest of the module automates it.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>The same question, twice</h4>
+        <pre class="code" data-file="lab06_01_open_book.py" data-src="code/genai-labs/lab06_01_open_book.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab06_01_open_book.py</code></pre>
+        <span class="out-label">Real output with llama3.2 (Ollama); yours will differ</span>
+<pre class="out"><code>Q: How much do I get back if I cancel my TrainCrest course 10 days before it starts?
+
+  CLOSED BOOK: I'm TrainCrest's learner-support assistant, but I don't have real-time access to your course details. I recommend checking with TrainCrest directly for the most up-to-date refund policies.
+
+  OPEN BOOK:   According to the help centre, if you cancel 7 to 13 days before the start date, you'll get a 50% refund. Since you're cancelling 10 days before the start, that falls into this category.
+--------------------------------------------------------------------------------
+Q: My TrainCrest lab shows error LAB-503. What should I do?
+
+  CLOSED BOOK: LAB-503 typically indicates a "Malfunction in Instrument Communication". I recommend restarting your device, checking for loose connections, and consulting the user manual or contacting TrainCrest support for further assistance or troubleshooting guidance.
+
+  OPEN BOOK:   Wait two minutes and refresh.
+--------------------------------------------------------------------------------
+Q: How much does extra lab time cost at TrainCrest after the free extension?
+
+  CLOSED BOOK: I don't have the most current information.
+
+  OPEN BOOK:   After the free 7-day extension, extra lab time costs $49 per 14 days.</code></pre>
+      </li>
+      <li class="dstep nocode"><span class="st">No-code</span><h4>Try it in any chat app</h4>
+        <p>Open Copilot, ChatGPT or Claude in a browser. Ask: <em>"My TrainCrest lab shows error LAB-503. What should I do?"</em> Then start a new chat, paste the whole of <code>data/help/labs-and-sandboxes.md</code>, and ask again. Many chat apps do this for you when you attach a file: that's RAG built into the product.</p>
+      </li>
+      <li class="dstep think"><span class="st">Think</span><h4>Read the answers</h4>
+        <ol>
+          <li>Two closed-book answers refused and one invented a meaning for LAB-503. Which is more dangerous in a support product, and why?</li>
+          <li>The open-book answers are shorter and plainer. Is that a problem?</li>
+          <li>In this script, a person chose the right section for each question. What has to happen automatically for this to work on any question?</li>
+        </ol>
+        <details class="solution"><summary>Compare with my answers</summary><div>
+          <ol>
+            <li>The invention. A refusal sends the learner to support; a confident wrong instruction ("check for loose connections") wastes their time and erodes trust in every later answer. A good system prefers "I don't know" to a guess, and RAG makes "I know, here's where it says so" possible.</li>
+            <li>No. They contain exactly what the source says, which is the point. Tone can be added by the system prompt; facts shouldn't be.</li>
+            <li>Ingest the documents, chunk them, embed and index them, then for each question retrieve the best chunks, build the prompt, and check the answer. That's the rest of this module, topic by topic.</li>
+          </ol>
+        </div></details>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Stretch:</b> paste the <em>wrong</em> section (for example "When the money arrives") for the refund question. Does the model say it can't find the answer, or does it improvise? That's why retrieval quality matters more than the prompt.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d06-1"> I've completed Drill 06.1</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>What RAG is for.</p></div></div>
+<div class="quiz">
+  <details><summary>1. TrainCrest changes its lab extension price from $49 to $59. What do you update in a RAG system, and what in a fine-tuned one?</summary><div><p>RAG: edit the help article and re-index its changed chunk; the next answer uses $59. Fine-tuned: prepare new training data, run another fine-tuning job, evaluate and redeploy, and the model may still remember $49.</p></div></details>
+  <details><summary>2. "What is the status of my voucher?" Should that be answered with RAG?</summary><div><p>No. It's a live record for one learner, so it needs a tool that calls the voucher system (Module 04). RAG explains the voucher <em>policy</em>; tools fetch <em>this learner's</em> voucher.</p></div></details>
+  <details><summary>3. Name two things RAG gives you that a long system prompt containing all policies doesn't.</summary><div><p>Any two of: scale beyond what fits in a prompt; lower cost per message; per-user access control by filtering retrieval; citations to specific sections; updates without editing and redeploying the prompt.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>RAG makes every question open book: retrieve the right passages, answer only from them, and allow "not found". Use it for document knowledge; use tools for live data.</p></div>

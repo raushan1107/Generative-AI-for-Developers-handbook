@@ -1,0 +1,180 @@
+<!--meta
+{"id": "m06-ingest", "short": "Document Ingestion", "h1": "Document Ingestion", "description": "Module 06, topic 3: loading documents from many formats into one clean shape, removing page chrome, normalising text, metadata such as source and audience, duplicate detection with content hashes, and a drill that ingests TrainCrest's public help centre and internal staff documents in four formats.", "lead": "Real knowledge doesn't arrive as tidy markdown. It's wiki pages wrapped in navigation menus, text exports from old systems, spreadsheets of FAQs and three copies of the same playbook called FINAL. Ingestion turns that mess into clean text with the metadata RAG needs later. Whatever you skip here shows up as wrong answers later.", "chips": ["Loaders per format", "Clean text", "Metadata", "Duplicates", "Drill 06.3"], "time": "Learn 10 min · Do 25 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Garbage in, confident garbage out.</p></div></div>
+
+<div class="callout definition">
+  <div class="c-label">Definition</div>
+  <p><strong>Document ingestion</strong> is the first stage of a RAG index: discovering source documents, <strong>extracting</strong> their text with a loader per format, <strong>cleaning and normalising</strong> it, attaching <strong>metadata</strong> (source, title, audience, date), and <strong>detecting duplicates and changes</strong> so the rest of the pipeline only processes what's new.</p>
+</div>
+<div class="callout plain">
+  <div class="c-label">In plain words</div>
+  <p>Read every file, keep the words that matter, throw away the menus and footers, remember where each document came from and who may see it, and don't index the same thing twice.</p>
+</div>
+<div class="callout analogy">
+  <div class="c-label">Imagine this</div>
+  <p>A library receiving donations. Someone unpacks each box, throws away the packaging, notices that three boxes contain the same book, writes a catalogue card with the title and shelf, and marks reference-only books "not for loan". Skip that desk and the library fills with packaging and duplicates.</p>
+</div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 300" role="img" aria-labelledby="in-t in-d">
+      <title id="in-t">From mixed files to clean documents</title>
+      <desc id="in-d">Five files go into ingestion: a markdown playbook, an HTML wiki export with navigation and footer, a plain-text runbook with upper-case headings, a CSV FAQ, and a duplicate of the playbook. A loader per format extracts text, the cleaner normalises it, a content hash detects the duplicate, and the output is four documents, each with a title, clean text with sections, its source file and its audience.</desc>
+      <text x="20" y="30" class="t-m">SOURCE FILES</text>
+      <rect x="20" y="40" width="240" height="38" rx="8" class="s-surface"/><text x="34" y="64" class="t-s">support-playbook.md</text>
+      <rect x="20" y="84" width="240" height="38" rx="8" class="s-surface"/><text x="34" y="108" class="t-s">exception-approvals.html (wiki)</text>
+      <rect x="20" y="128" width="240" height="38" rx="8" class="s-surface"/><text x="34" y="152" class="t-s">lab-incident-runbook.txt</text>
+      <rect x="20" y="172" width="240" height="38" rx="8" class="s-surface"/><text x="34" y="196" class="t-s">staff-faq.csv</text>
+      <rect x="20" y="216" width="240" height="38" rx="8" class="s-rose"/><text x="34" y="240" class="t-s">support_playbook_FINAL.md</text>
+      <path d="M260 147 H300" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="306" y="62" width="300" height="170" rx="12" class="s-amber"/>
+      <text x="322" y="88" class="t-b">ingest.py</text>
+      <text x="322" y="114" class="t-s">1. loader per format (md, html, txt, csv)</text>
+      <text x="322" y="138" class="t-s">2. drop chrome: nav, footer, scripts</text>
+      <text x="322" y="162" class="t-s">3. normalise spaces, line endings</text>
+      <text x="322" y="186" class="t-s">4. hash content → skip duplicates</text>
+      <text x="322" y="210" class="t-s">5. attach source + audience</text>
+      <path d="M606 147 H646" class="s-arrow" marker-end="url(#ah)"/>
+      <rect x="652" y="62" width="288" height="170" rx="12" class="s-green"/>
+      <text x="668" y="88" class="t-b">Doc</text>
+      <text x="668" y="114" class="t-s">id: exception-approvals</text>
+      <text x="668" y="138" class="t-s">title: Refund exceptions and...</text>
+      <text x="668" y="162" class="t-s">text: "# ... ## Who can approve"</text>
+      <text x="668" y="186" class="t-s">source: exception-approvals.html</text>
+      <text x="668" y="210" class="t-s">audience: staff · hash: 3aaabd1e2b82</text>
+      <text x="20" y="284" class="t-s">the FINAL copy has the same hash as the original, so it is reported and skipped</text>
+    </svg>
+  </div>
+  <figcaption><b>One shape out, whatever came in.</b> Every later stage (chunking, embedding, citations, filters) depends on this shape.</figcaption>
+</figure>
+
+<h3>What good ingestion takes care of</h3>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Concern</th><th>Why it matters for answers</th><th>Typical fix</th></tr></thead>
+    <tbody>
+      <tr><td>Page chrome (menus, footers, cookie banners)</td><td>"Home · Sign out · 1,204 page views" ends up in chunks, wastes tokens and pollutes vectors</td><td>Keep <code>&lt;main&gt;</code>/<code>&lt;article&gt;</code>; drop <code>nav</code>, <code>header</code>, <code>footer</code>, <code>aside</code>, scripts</td></tr>
+      <tr><td>Structure</td><td>Headings become section titles, which chunking and citations rely on</td><td>Convert headings to <code>#</code>/<code>##</code>, list items to <code>-</code></td></tr>
+      <tr><td>Odd characters</td><td>Non-breaking spaces and Windows line endings make "identical" text differ</td><td>Normalise before hashing</td></tr>
+      <tr><td>Duplicates</td><td>The same passage retrieved three times crowds out other sources</td><td>Content hash; keep the first, report the rest</td></tr>
+      <tr><td>Metadata</td><td>Citations need a source; access control needs an audience; freshness needs a date</td><td>Attach it now; it can't be guessed later</td></tr>
+      <tr><td>Change detection</td><td>Re-embedding everything nightly is slow and costly</td><td>Store the hash; reprocess only documents whose hash changed</td></tr>
+      <tr><td>Hard formats</td><td>Scanned PDFs, tables, slides lose meaning as plain text</td><td>OCR and layout-aware extraction (for example Azure AI Document Intelligence), tables kept as markdown</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout realworld">
+  <div class="c-label">In the real world</div>
+  <p>Enterprise RAG projects spend a surprising share of their time here: connectors to SharePoint, Confluence or Google Drive; PDF extraction that keeps tables; stripping templates that appear on every page; and syncing permissions from the source system so the index knows who may read each document. On Azure, Azure AI Search indexers pull from Blob Storage, SharePoint and databases on a schedule, and its skills can crack documents, run OCR and split text, so the pipeline you write here maps onto configuration there.</p>
+</div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Read the files and dump the text into the index."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Ingestion is <strong>data engineering</strong>. Every document gets a loader, cleaning, a stable id, a source, an audience and a hash, and I can print a report of what was loaded and what was skipped and why."</p></div>
+</div>
+
+<div class="callout pitfall">
+  <div class="c-label">Common trap</div>
+  <p>Ingesting internal and public documents into one index with no audience metadata. The first time a learner's question matches the internal approvals page, the model happily quotes "exceptions up to $100: any support agent". Decide who may see each document at ingestion, while you still know where it came from.</p>
+</div>
+
+<div class="callout exam">
+  <div class="c-label">Interview cue</div>
+  <p>"Ingestion extracts text per format, strips boilerplate, preserves structure, attaches metadata such as source, audience and date, and uses content hashes for de-duplication and incremental updates. Bad ingestion can't be fixed downstream."</p>
+</div>
+
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Four formats, one duplicate, one report.</p></div></div>
+
+<div class="drill" id="d06-3" data-title="Ingest a mixed knowledge base" data-time="~25 min" data-steps="run,verify,write">
+  <div class="drill-head"><span class="drill-id">Drill 06.3</span><h3>Ingest a mixed knowledge base</h3>
+    <div class="drill-meta"><span class="time">~25 min</span><span class="badge b-tool">Python · pytest</span><span class="badge b-tool">offline</span></div></div>
+  <div class="drill-body">
+    <p class="drill-goal"><b>Goal:</b> load TrainCrest's public help centre and its internal staff documents into one clean shape, see what each loader keeps and drops, and catch the duplicate.</p>
+    <ol class="dsteps">
+      <li class="dstep run"><span class="st">Run</span><h4>Look at the raw files first</h4>
+        <p>Open <code>data/internal/exception-approvals.html</code> and <code>data/internal/lab-incident-runbook.txt</code> in VS Code. Note the navigation and footer in the HTML, and the upper-case headings in the text file. Then read the loaders:</p>
+        <pre class="code" data-file="ingest.py" data-src="code/genai-labs/ingest.py"></pre>
+      </li>
+      <li class="dstep run"><span class="st">Run</span><h4>Ingest and read the report</h4>
+        <pre class="code" data-file="lab06_03_ingest.py" data-src="code/genai-labs/lab06_03_ingest.py"></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab06_03_ingest.py</code></pre>
+        <span class="out-label">Expected output (exact, no model involved)</span>
+<pre class="out"><code>help/  (audience: public)
+  accessibility.md                 loaded: 4 sections, 810 chars
+  account-and-sign-in.md           loaded: 5 sections, 911 chars
+  certificates.md                  loaded: 4 sections, 821 chars
+  corporate-training.md            loaded: 4 sections, 661 chars
+  course-formats.md                loaded: 4 sections, 901 chars
+  exam-vouchers.md                 loaded: 4 sections, 852 chars
+  labs-and-sandboxes.md            loaded: 3 sections, 940 chars
+  payments-and-invoices.md         loaded: 5 sections, 1009 chars
+  refunds-and-cancellations.md     loaded: 4 sections, 1237 chars
+  rescheduling.md                  loaded: 3 sections, 935 chars
+
+internal/  (audience: staff)
+  exception-approvals.html         loaded: 3 sections, 799 chars
+  lab-incident-runbook.txt         loaded: 4 sections, 786 chars
+  staff-faq.csv                    loaded: 5 sections, 832 chars
+  support-playbook.md              loaded: 4 sections, 968 chars
+  support_playbook_FINAL.md        skipped: duplicate of support-playbook.md
+
+14 documents. The wiki page: 1726 characters of HTML -&gt; 799 of text:
+
+# Refund exceptions and approvals
+
+The public refund policy covers most cases. Sometimes we make an exception, and this page says who can approve it.
+
+## Who can approve what
+- Exceptions up to $100: any support agent. Record the reason in the ticket.
+- Exceptions from $101 to $500: a team lead.
+- Exceptions over $500: the support manager.
+
+## Medical and bereavement exceptions
+
+With a doctor's note or a similar docu ...</code></pre>
+      </li>
+      <li class="dstep verify"><span class="st">Verify</span><h4>Test the loaders</h4>
+        <pre class="code" data-file="test_ingest.py" data-src="code/genai-labs/test_ingest.py" data-lines="1-41"></pre>
+<pre class="term"><code><span class="ps">$ </span>pytest -q test_ingest.py
+<span class="o">......                                                                   [100%]
+6 passed in 0.05s</span></code></pre>
+        <ul class="verify-list">
+          <li>The HTML text keeps headings and list items but has no "Home", "Sign out" or page-view count.</li>
+          <li>The runbook's <code>LAB-409 QUOTA ERRORS</code> became the section <code>## LAB-409 quota errors</code>: the code survived the case change.</li>
+          <li>Every document has <code>audience</code> set: <code>public</code> for <code>help/</code>, <code>staff</code> for <code>internal/</code>.</li>
+        </ul>
+      </li>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Add a "last updated" date</h4>
+        <p>Answers about policy should prefer the newest document, and Module 09 will flag stale ones. Write a prompt for your assistant that adds an <code>updated</code> field to <code>Doc</code>.</p>
+        <div class="template-box"><pre><code>Goal: add an updated date (YYYY-MM-DD) to every Doc in #file:ingest.py
+Context: ...where the date can come from for each format...
+Constraints: ...default when there's no date in the file...
+             ...what must not change...
+Done when: ...</code></pre></div>
+        <p class="hint"><b>Hint:</b> the runbook has a "Last reviewed: March 2026" line; other files only have a modification time. Give the dataclass field a default so existing tests and callers keep working, and ask for one new test.</p>
+        <details class="solution"><summary>Compare with my prompt</summary><div><div class="prompt-box"><pre><code>Goal: add an `updated: str = ""` field (YYYY-MM-DD) to the Doc dataclass in #file:ingest.py.
+Context: load_folder() creates every Doc. Text files may contain a line like
+"Last reviewed: March 2026"; other formats only have the file's modification time.
+Constraints:
+- Use the "Last reviewed: Month YYYY" line when present (first day of that month);
+  otherwise use the file's modification date (Path.stat().st_mtime).
+- Keep the field last with a default, so existing code and tests still work.
+- Don't change any loader's text output or the report lines.
+Done when: pytest -q test_ingest.py passes, plus one new test that writes a .txt file
+with "Last reviewed: March 2026" and asserts updated == "2026-03-01".</code></pre></div></div></details>
+      </li>
+    </ol>
+    <p class="lab-try"><b>Stretch:</b> drop a PDF or an image into <code>data/internal/</code> and run the drill again. The report says <em>skipped: unsupported format</em> instead of failing silently, which is the behaviour you want from every pipeline step.</p>
+  </div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d06-3"> I've completed Drill 06.3</label></div>
+</div>
+
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Ingestion.</p></div></div>
+<div class="quiz">
+  <details><summary>1. Why hash the text <em>after</em> cleaning rather than the raw file?</summary><div><p>Two copies of the same document can differ in bytes only (Windows line endings, trailing spaces, non-breaking spaces). Hashing the cleaned text catches them as duplicates, and a re-saved but unchanged file isn't re-embedded.</p></div></details>
+  <details><summary>2. Which metadata would you refuse to ship without, and why?</summary><div><p><strong>Source</strong> (needed for citations and debugging) and <strong>audience</strong> or permissions (needed so retrieval never shows a user something they may not see). Both are known at ingestion and can't be reconstructed later.</p></div></details>
+  <details><summary>3. A wiki page's navigation menu is indexed with every page. What goes wrong?</summary><div><p>Every chunk contains the same menu words, so vectors drift toward each other, searches for "support" match every page, and the model gets wasted tokens of "Home · Teams · Sign out" in its context.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Ingestion produces clean text, real structure, a source, an audience and a hash for every document, and a report of what it skipped. Every later stage relies on it.</p></div>
