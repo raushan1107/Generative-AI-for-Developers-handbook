@@ -25,11 +25,11 @@ FONTS = ("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700"
 KIND_LABEL = {
     "home": "Home", "guide": "Guide", "setup": "Lab setup", "overview": "Overview", "topic": "Learn · Do · Check",
     "build": "Build", "recap": "Recap", "project": "Project", "labs": "Practice", "capstone": "Capstone",
-    "osslab": "Open-source lab",
+    "osslab": "Open-source lab", "map": "Concept map",
 }
 KIND_ICON = {
     "overview": "◎", "topic": "•", "build": "⚒", "recap": "✓", "setup": "›", "home": "⌂",
-    "guide": "?", "project": "⚒", "labs": "▤", "capstone": "★", "osslab": "▸",
+    "guide": "?", "project": "⚒", "labs": "▤", "capstone": "★", "osslab": "▸", "map": "◇",
 }
 STEP_LABEL = {"run": "Run", "ask": "Ask AI", "write": "Your prompt", "verify": "Verify",
               "nocode": "No-code", "think": "Think", "portal": "Portal"}

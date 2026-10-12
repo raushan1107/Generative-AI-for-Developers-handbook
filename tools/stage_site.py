@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "_site"
 
 PUBLIC = ["index.html", ".nojekyll", "assets", "start", "setup", "modules",
-          "project", "labs", "capstone", "oss", "code"]
+          "project", "labs", "capstone", "oss", "maps", "code"]
 SKIP = shutil.ignore_patterns("__pycache__", ".pytest_cache", "*.pyc", ".env",
                               ".venv", "usage.jsonl", "response.json")
 

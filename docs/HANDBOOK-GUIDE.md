@@ -221,3 +221,13 @@ On live pages the build switches off, rather than deletes, everything that point
 - **"Before you run this code" box**: `build.py` (`prereq_box`) inserts it after the Do banner of every drill page and the Build banner of every build page. It shows `.env` and `llm.py` (or the milestone `.env`), lists the genai-labs helpers that page's inlined scripts import (found by following imports), and links the downloads. Never hand-write these boxes.
 - **Downloads built by `stage_site.py`** (a static site can't serve folders): `code/genai-labs-kit.zip` (helpers, data and drill scripts of live modules), `code/traincrest-assist-mNN.zip` per live milestone, `code/oss-labs-data.zip`, `code/oss-labs-complete.zip` (code of live labs only). They exist only in `_site`, so locally these links 404.
 - Open-source labs 1–3 start with "Before you start" (folder, venv, Ollama running, `.env`, `client.py`, `lab0_check.py`).
+
+---
+
+## 11. Concept maps
+
+One interactive map per Part (and an overall map at the end): story cards, one picture of every topic, then an expandable tree Part > Module > Topic with definition, example, where it's used, keep in mind, and "connects to" links (click to open and highlight the related topic; also expand/collapse all and find a term).
+
+- Content: `tools/maps/part-N.json`. Generate: `python tools/concept_map.py` (writes `src/maps/part-N.html`; fails if a connection names an unknown topic), then `python tools/build.py`.
+- Add each map to the "Concept maps" nav section. Draft it with the Part (`"draft": true` on the item) and publish it with that Part's day.
+- Next: `part-2.json` (Modules 04–05), `part-3.json` (06–07), then an overall map linking the Parts.

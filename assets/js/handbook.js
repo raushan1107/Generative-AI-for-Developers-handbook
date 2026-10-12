@@ -195,3 +195,39 @@
     }
   });
 })();
+
+// Concept maps: expand/collapse all, find a term, jump to a connected topic.
+(function () {
+  const map = document.querySelector("[data-cmap]");
+  if (!map) return;
+  const all = () => map.querySelectorAll("details");
+  const openTo = (el) => { for (let d = el; d; d = d.parentElement.closest("details")) d.open = true; };
+  document.querySelector('[data-cm="expand"]')?.addEventListener("click", () => all().forEach((d) => (d.open = true)));
+  document.querySelector('[data-cm="collapse"]')?.addEventListener("click", () =>
+    all().forEach((d) => (d.open = d.classList.contains("cm-root"))));
+  map.addEventListener("click", (e) => {
+    const btn = e.target.closest(".cm-link");
+    if (!btn) return;
+    const target = document.getElementById(btn.dataset.target);
+    if (!target) return;
+    openTo(target);
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    target.classList.add("cm-flash");
+    setTimeout(() => target.classList.remove("cm-flash"), 1600);
+  });
+  const jump = () => {                      // links from the overview picture: #t-tokens
+    const target = location.hash && document.getElementById(location.hash.slice(1));
+    if (target && target.classList.contains("cm-topic")) { openTo(target); target.classList.add("cm-flash");
+      setTimeout(() => target.classList.remove("cm-flash"), 1600); }
+  };
+  window.addEventListener("hashchange", jump); jump();
+  const filter = document.querySelector('[data-cm="filter"]');
+  filter?.addEventListener("input", () => {
+    const q = filter.value.trim().toLowerCase();
+    map.querySelectorAll(".cm-topic").forEach((t) => {
+      const hit = !q || t.textContent.toLowerCase().includes(q);
+      t.classList.toggle("cm-hidden", !hit);
+      if (q && hit) openTo(t.parentElement);
+    });
+  });
+})();

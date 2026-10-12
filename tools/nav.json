@@ -173,6 +173,12 @@
       ]
     },
     {
+      "title": "Concept maps",
+      "items": [
+        {"id": "map-part1", "title": "Part I · Foundations", "path": "maps/part-1.html", "kind": "map"}
+      ]
+    },
+    {
       "title": "Open-source lab guide",
       "code_dirs": ["code/oss-labs"],
       "items": [
