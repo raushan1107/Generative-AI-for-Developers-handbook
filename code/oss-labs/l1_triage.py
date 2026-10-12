@@ -1,6 +1,7 @@
 """Lab 1, Exercise 4: turn an unreliable prompt into a structured prompt that returns consistent JSON.
 The same five learner messages go through three versions; code counts how many replies are valid."""
 import json
+import re
 from typing import Literal, Optional
 
 from pydantic import BaseModel, ValidationError
@@ -59,27 +60,37 @@ A JSON object with exactly these keys:
 {message}
 </message>"""
 
+# Structured versions also get a system message: small models follow the system role more strictly.
+SYSTEM = "You are a classification service. You reply with one JSON object only: never code, never explanations."
+
 client = get_client()
 
 
-def run(template, json_mode=False):
+def parse(text):
+    """Remove ```json fences that models often add around JSON, then validate against the schema."""
+    text = re.sub(r"^\s*```(?:json)?\s*|\s*```\s*$", "", text.strip())
+    return Triage.model_validate(json.loads(text))
+
+
+def run(template, structured=False, json_mode=False):
     valid, results = 0, []
     for message in MESSAGES:
         extra = {"response_format": {"type": "json_object"}} if json_mode else {}
-        text = client.chat.completions.create(model=CHAT_MODEL, temperature=0, **extra, messages=[
+        system = [{"role": "system", "content": SYSTEM}] if structured else []
+        text = client.chat.completions.create(model=CHAT_MODEL, temperature=0, **extra, messages=system + [
             {"role": "user", "content": template.format(message=message)}]).choices[0].message.content
         try:
-            results.append(Triage.model_validate(json.loads(text)))
+            results.append(parse(text))
             valid += 1
         except (json.JSONDecodeError, ValidationError):
             results.append(text.strip().replace("\n", " ")[:70])
     return valid, results
 
 
-for name, template, json_mode in (("A. vague prompt", VAGUE, False),
-                                  ("B. structured prompt", STRUCTURED, False),
-                                  ("C. structured prompt + JSON mode", STRUCTURED, True)):
-    valid, results = run(template, json_mode)
+for name, template, structured, json_mode in (("A. vague prompt", VAGUE, False, False),
+                                              ("B. structured prompt", STRUCTURED, True, False),
+                                              ("C. structured prompt + JSON mode", STRUCTURED, True, True)):
+    valid, results = run(template, structured, json_mode)
     print(f"\n{name}: {valid}/{len(MESSAGES)} valid")
     for r in results:
         print("   ", f"{r.category:12} {r.urgency:6} {r.enrolment_id or '-':9} {r.summary}" if isinstance(r, Triage)
