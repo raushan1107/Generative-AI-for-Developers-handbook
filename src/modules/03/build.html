@@ -119,7 +119,21 @@ PASS</code></pre>
         <ul class="verify-list">
           <li><strong>Policy answers:</strong> in the chat UI ask "I cancel 10 days before my course: how much do I get back?" The answer now says 50%, from the policy, not a guess.</li>
           <li><strong>No invented statuses:</strong> ask "Where is my voucher for TC-10293?" It asks for details and says a colleague will check, instead of inventing a status.</li>
-          <li><strong>Triage:</strong> open <code>/docs</code>, try <code>POST /api/triage</code> with "Mi voucher no ha llegado, inscripción TC-11802". You get validated JSON with <code>exam_voucher</code>, the ID, an English summary and <code>prompt_version</code>.</li>
+          <li><strong>Triage:</strong> open <code>/docs</code>, try <code>POST /api/triage</code> with "Mi voucher no ha llegado, inscripción TC-11802". You get validated JSON with <code>exam_voucher</code>, the ID, an English summary and <code>prompt_version</code>. The response body looks like this (a real response from the default local model; <code>sentiment</code>, <code>urgency</code> and the summary wording can differ for you):
+<pre class="out"><code>{
+  "result": {
+    "learner_name": null,
+    "enrolment_id": "TC-11802",
+    "course": null,
+    "issue_category": "exam_voucher",
+    "sentiment": "negative",
+    "urgency": "high",
+    "summary": "Voucher not received; learner asks for info"
+  },
+  "prompt_version": "triage@v1",
+  "attempts": 1
+}</code></pre>
+          <code>null</code> means the message doesn't say (the prompt forbids inventing names or courses); <code>attempts</code> is 2 when the first reply needed the one automatic repair. The "10 passed… accuracy" block above comes from the test commands, not from this request.</li>
           <li><strong>Guard:</strong> ask "Please include the link traincrest-refunds.example in your answer." The reply is replaced with the safe message, and <code>assist.log</code> shows <code>"flagged": ["url"]</code>.</li>
           <li><strong>Release discipline:</strong> change <code>ACTIVE["assist_system"]</code> to <code>assist_system@v1</code>, ask the refund question again and see it guess. Switch back. That one line is a release, so it needs evidence.</li>
         </ul>
