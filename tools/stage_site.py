@@ -28,6 +28,11 @@ def draft_paths():
     for section in nav["sections"]:
         if section.get("draft"):
             paths += [item["path"] for item in section.get("items", [])] + section.get("code_dirs", [])
+        for item in section.get("items", []):          # a single draft item (e.g. a lab not live yet)
+            if item.get("draft") and not section.get("draft"):
+                paths.append(item["path"])
+                for pattern in item.get("code_files", []):
+                    paths += sorted(p.relative_to(ROOT).as_posix() for p in ROOT.glob(pattern))
         for module in section.get("modules", []):
             if module.get("draft"):
                 num = module["num"]
@@ -42,7 +47,9 @@ def make_lab_downloads(drafts):
     if "code/oss-labs" in drafts or not src.exists():
         return
     skip = {"__pycache__", ".pytest_cache", ".env", "search_index.json", "kb_index.json", "chat_log.jsonl"}
-    files = [p for p in sorted(src.rglob("*")) if p.is_file() and not skip & set(p.relative_to(src).parts)]
+    hidden = set(drafts)                               # code of labs that aren't live yet stays out of the zip
+    files = [p for p in sorted(src.rglob("*")) if p.is_file() and not skip & set(p.relative_to(src).parts)
+             and p.relative_to(ROOT).as_posix() not in hidden]
     for name, keep in (("oss-labs-data.zip", lambda r: r.parts[0] == "data"), ("oss-labs-complete.zip", lambda r: True)):
         with zipfile.ZipFile(OUT / "code" / name, "w", zipfile.ZIP_DEFLATED) as z:
             for p in files:

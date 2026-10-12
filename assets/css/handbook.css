@@ -477,3 +477,7 @@ details.solution > div { padding: 0 14px 6px; }
   .sidebar, .topbar, .pager, .otp, .page-done { display: none; }
   .main { margin-left: 0; }
 }
+
+/* Content that exists but isn't live yet (draft in nav.json): shown, greyed, not clickable */
+.is-soon { opacity: .5; cursor: default; pointer-events: none; }
+.page-card.is-soon .pc-tag::after { content: " · coming soon"; }

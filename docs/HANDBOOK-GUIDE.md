@@ -199,3 +199,16 @@ A second, separate track for learners without Azure or paid API access, written 
 - Models: `llama3.2` (chat, 8 GB RAM), `nomic-embed-text` (embeddings), `qwen2.5:7b` (agents, 16 GB RAM).
 - Live since 2026-10-12. The section keeps `"code_dirs": ["code/oss-labs"]`, so if it is ever set back to `"draft": true`, `tools/stage_site.py` hides its pages and code again. When a new Part is built as a draft, put its new lab on a draft section of its own, or keep the whole guide live and add the lab when the Part goes live.
 - Draft sections work like draft modules: any nav section can carry `"draft": true`.
+
+---
+
+## 9. Publishing day by day
+
+Content is built ahead; each training day is switched on separately with `"draft": true` in `tools/nav.json`:
+
+| Day | Turn on (remove `"draft": true`) |
+| --- | --- |
+| Day 2 | modules `04`, `05` and item `oss-2` (Lab 2) |
+| Day 3 | modules `06`, `07` and item `oss-3` (Lab 3) |
+
+On live pages the build switches off, rather than deletes, everything that points at draft content: links and cards become greyed "coming soon" (class `is-soon`), course-map boxes tagged `data-module="NN"` turn grey, and roadmap badges `<span class="badge b-run" data-module="NN">Available</span>` become "Coming soon". Draft labs list their code in `"code_files"`, so `stage_site.py` leaves that code out of the site and out of `oss-labs-complete.zip`. Going live is: edit `nav.json`, `python tools/build.py`, commit, push.

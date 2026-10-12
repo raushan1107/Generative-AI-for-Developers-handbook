@@ -40,8 +40,9 @@ def flatten():
     """Ordered list of available pages with their context (section, module)."""
     pages = []
     for section in NAV["sections"]:
-        for item in section.get("items", []):          # a section with "draft": true is built but not linked
-            pages.append({**item, "section": section["title"], "module": None, "draft": bool(section.get("draft"))})
+        for item in section.get("items", []):          # a draft section, or a draft item, is built but not linked
+            pages.append({**item, "section": section["title"], "module": None,
+                          "draft": bool(section.get("draft") or item.get("draft"))})
         for module in section.get("modules", []):
             if module.get("soon"):
                 continue
@@ -236,6 +237,10 @@ def sidebar_html(page):
             continue
         parts.append(f'<div class="sb-section"><div class="sb-title">{html.escape(section["title"])}</div>')
         for item in section.get("items", []):
+            if item.get("draft") and not page.get("draft"):         # not live yet: shown greyed, not linked
+                parts.append(f'<div class="sb-module soon"><span class="sb-ico">{KIND_ICON.get(item["kind"], "•")}</span>'
+                             f'{html.escape(item["title"])}<span class="sb-soon">soon</span></div>')
+                continue
             cls = "active" if item["id"] == page["id"] else ""
             parts.append(f'<a class="sb-link {cls}" data-page-id="{item["id"]}" href="{rel(here, item["path"])}">'
                          f'<span class="sb-ico">{KIND_ICON.get(item["kind"], "•")}</span>{html.escape(item["title"])}</a>')
@@ -402,6 +407,41 @@ def page_html(page, meta, content):
 META_RE = re.compile(r"\A\s*<!--meta\s*(\{.*?\})\s*-->", re.S)
 
 
+DRAFT_MODULES = {m["num"] for s in NAV["sections"] for m in s.get("modules", []) if m.get("draft") or m.get("soon")}
+
+
+def gate_drafts(content, path, draft_paths):
+    """On a live page, anything that points at content that isn't live yet is switched off, not deleted:
+    links become greyed "coming soon" text, and markers tagged data-module="NN" follow the module's state.
+    Publishing a module or lab (removing "draft" in nav.json) switches them all back on."""
+    base = posixpath.dirname(path)
+
+    def is_draft(href):
+        return posixpath.normpath(posixpath.join(base, href.split("#")[0])) in draft_paths
+
+    def unlink(m):
+        attrs, href, inner = m.group(1) + m.group(3), m.group(2), m.group(4)
+        if not is_draft(href):
+            return m.group(0)
+        tag = "div" if 'class="page-card' in attrs or 'class="btn' in attrs else "span"
+        attrs = re.sub(r'class="([^"]*)"', r'class="\1 is-soon"', attrs) if "class=" in attrs else attrs + ' class="is-soon"'
+        attrs = re.sub(r'\s(?:target|rel)="[^"]*"', "", attrs)
+        return f'<{tag}{attrs} aria-disabled="true" title="Coming soon">{inner}</{tag}>'
+
+    content = re.sub(r'<a\b([^>]*?)\shref="([^"#:][^"]*)"([^>]*)>(.*?)</a>', unlink, content, flags=re.S)
+    # Course-map boxes and roadmap badges carry data-module="NN" and follow the module's state.
+    content = re.sub(r'class="s-surface" data-module="(\d\d)"',
+                     lambda m: f'class="{"s-surface2" if m.group(1) in DRAFT_MODULES else "s-surface"}" data-module="{m.group(1)}"',
+                     content)
+    content = re.sub(r'<span class="badge b-run" data-module="(\d\d)">Available</span>',
+                     lambda m: ('<span class="badge b-tool">Coming soon</span>' if m.group(1) in DRAFT_MODULES else m.group(0)),
+                     content)
+    leaks = [h for h in re.findall(r'href="([^"#:]+)', content) if is_draft(h)]
+    if leaks:
+        sys.exit(f"{path}: still links to draft pages {leaks}")
+    return content
+
+
 def main():
     fragments, metas = {}, {}
     for src in sorted(SRC.rglob("*.html")):
@@ -432,10 +472,7 @@ def main():
         content = re.sub(r"<!--MODULE_PAGES:(\d\d)-->",
                          lambda mm: module_pages_html(mm.group(1), drills, page["path"]), content)
         if not page.get("draft"):
-            base = posixpath.dirname(page["path"])
-            for href in re.findall(r'href="([^"#:]+)', content):
-                if posixpath.normpath(posixpath.join(base, href)) in draft_paths:
-                    sys.exit(f"{page['path']}: links to draft page {href}; publish the module first")
+            content = gate_drafts(content, page["path"], draft_paths)
         out = ROOT / page["path"]
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(page_html(page, metas[page_id], content), encoding="utf-8", newline="\n")
@@ -444,7 +481,7 @@ def main():
     draft_sections = sorted({p["section"] for p in DRAFT if not p.get("module")})
     print(f"Built {len(fragments)} pages, {len(live)} drills indexed"
           + (f" ({len(drills) - len(live)} more in draft modules {', '.join(drafts)}, not linked)." if drafts else ".")
-          + (f" Draft sections: {', '.join(draft_sections)}." if draft_sections else ""))
+          + (f" Draft pages in: {', '.join(draft_sections)}." if draft_sections else ""))
 
 
 if __name__ == "__main__":
