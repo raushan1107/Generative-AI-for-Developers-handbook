@@ -11,16 +11,16 @@ from rag_prompt import count_tokens
 QUESTIONS = json.loads((DATA / "help_questions.json").read_text(encoding="utf-8"))
 # Five more whose answers sit in an article's introduction, before its first '## ' heading.
 INTRO_QUESTIONS = [
-    {"question": "For a self-paced course, which day counts as the start date?",
-     "source": "refunds-and-cancellations", "must_contain": "the day your access begins"},
-    {"question": "Which certification courses come with an exam voucher?", "source": "exam-vouchers",
-     "must_contain": "AZ-900, AZ-104 and AI-102"},
-    {"question": "Is the content different in the self-paced version?", "source": "course-formats",
-     "must_contain": "The content is the same"},
-    {"question": "Do I need my own Azure subscription for the labs?", "source": "labs-and-sandboxes",
-     "must_contain": "without using your own subscription"},
-    {"question": "Can I share my certificate on LinkedIn?", "source": "certificates",
-     "must_contain": "share on professional networks"},
+    {"question": "I don't recognise a payment, should I dispute it?", "source": "card-disputes",
+     "must_contain": "that is fraud, not a dispute"},
+    {"question": "How long does it take to open an account in the app?", "source": "account-opening",
+     "must_contain": "about 10 minutes"},
+    {"question": "What decides the interest rate on my loan?", "source": "loans-and-mortgages",
+     "must_contain": "depends on your credit history"},
+    {"question": "Is the fraud team open at night?", "source": "fraud-and-scams",
+     "must_contain": "24 hours a day, 7 days a week"},
+    {"question": "Where can I see the full list of fees?", "source": "fees-and-charges",
+     "must_contain": "Your account terms list every fee"},
 ]
 docs, _ = load_folder(DATA / "help", "public")
 

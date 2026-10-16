@@ -3,7 +3,7 @@ whole sources being dropped, lowest-ranked first."""
 from kb_index import load_or_build
 from rag_prompt import build_messages, count_tokens
 
-question = "Can I get a refund if I cancel 10 days before the start?"
+question = "Can I get my overdraft fee refunded?"
 hits = load_or_build().search(question, k=4)
 
 messages, sources = build_messages(question, hits, max_context_tokens=1500)

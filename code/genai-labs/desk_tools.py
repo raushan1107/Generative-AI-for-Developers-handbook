@@ -1,5 +1,5 @@
 """Module 07: the agent's tools over desk.py. Read tools look things up; write tools change state.
-The signed-in learner comes from `context`, set by the app, never from the model.
+The signed-in customer comes from `context`, set by the app, never from the model.
 WRITE_TOOLS lists the tools that need a human's approval; preview() says, in plain words,
 exactly what an approval would do, so the human approves an effect, not a function name."""
 import functools
@@ -12,12 +12,12 @@ import desk
 from toolkit import Toolkit
 
 kit = Toolkit()
-WRITE_TOOLS = {"extend_lab", "reschedule"}
+WRITE_TOOLS = {"freeze_card", "open_dispute"}
 
 
 def actionable(func):
     """Errors are observations: return the system's message so the model can recover
-    (pick another date, offer a ticket, retry), instead of a generic "tool failed"."""
+    (pick another payment, offer a case, retry), instead of a generic "tool failed"."""
     @functools.wraps(func)
     def wrapper(args, context):
         try:
@@ -33,97 +33,101 @@ class NoArgs(BaseModel):
     pass
 
 
-class EnrolmentArgs(BaseModel):
-    enrolment_id: str = Field(description="Enrolment ID like TC-12345, from my_enrolments")
+class CardArgs(BaseModel):
+    card_last4: str = Field(description="Last four digits of one of the customer's cards, like 4821, from my_cards")
 
 
-class CourseArgs(BaseModel):
-    course_id: str = Field(description="Course ID like C110, from my_enrolments")
+class TransactionArgs(BaseModel):
+    txn_id: str = Field(description="Transaction ID like TX-1002, from recent_transactions")
 
 
-class RescheduleArgs(BaseModel):
-    enrolment_id: str = Field(description="Enrolment ID like TC-12345")
-    new_start: str = Field(description="New start date, YYYY-MM-DD, one of upcoming_sessions")
+class DisputeArgs(BaseModel):
+    txn_id: str = Field(description="Transaction ID like TX-1002, from recent_transactions")
+    reason: Literal["charged_twice", "wrong_amount", "not_received", "not_recognised"]
 
 
-class TicketArgs(BaseModel):
-    category: Literal["scheduling", "billing", "lab_access", "other"]
+class CaseArgs(BaseModel):
+    category: Literal["card", "dispute", "fraud", "fees", "other"]
     summary: str = Field(description="One or two sentences for the support team")
 
 
 @kit.register(NoArgs, needs_context=True)
 @actionable
-def my_enrolments(args, context):
-    """List the signed-in learner's enrolments: enrolment_id, course_id, course, start date, status."""
-    return desk.my_enrolments(context["learner"])
+def my_cards(args, context):
+    """List the signed-in customer's cards: card_last4, product and status (active or frozen)."""
+    return desk.my_cards(context["customer"])
 
 
-@kit.register(EnrolmentArgs, needs_context=True)
+@kit.register(CardArgs, needs_context=True)
 @actionable
-def lab_status(args, context):
-    """Lab access for one enrolment: open until which date, days left, and whether the free extension is available."""
-    return desk.lab_status(context["learner"], args.enrolment_id)
+def card_status(args, context):
+    """Status of one card: active or frozen, and what that means for payments."""
+    return desk.card_status(context["customer"], args.card_last4)
 
 
-@kit.register(CourseArgs, needs_context=True)
+@kit.register(CardArgs, needs_context=True)
 @actionable
-def upcoming_sessions(args, context):
-    """Upcoming start dates (YYYY-MM-DD) for a course."""
-    return desk.upcoming_sessions(args.course_id)
+def recent_transactions(args, context):
+    """Payments on one card in the last 90 days: txn_id, date, merchant and amount, newest first."""
+    return desk.recent_transactions(context["customer"], args.card_last4)
 
 
-@kit.register(EnrolmentArgs, needs_context=True)
+@kit.register(TransactionArgs, needs_context=True)
 @actionable
-def reschedule_quote(args, context):
-    """Whether this enrolment can be moved to another date today, and the fee. Call it before reschedule."""
-    return desk.reschedule_quote(context["learner"], args.enrolment_id)
+def dispute_quote(args, context):
+    """Whether a payment can be disputed today, and when a provisional credit would arrive. Call it before open_dispute."""
+    return desk.dispute_quote(context["customer"], args.txn_id)
 
 
-@kit.register(EnrolmentArgs, needs_context=True)
+@kit.register(CardArgs, needs_context=True)
 @actionable
-def extend_lab(args, context):
-    """Use the learner's one free 7-day lab extension. Changes the booking: needs the learner's approval."""
-    return desk.extend_lab(context["learner"], args.enrolment_id, key=context.get("idempotency_key"))
+def freeze_card(args, context):
+    """Freeze one card so new payments are declined. Changes the account: needs the customer's approval."""
+    return desk.freeze_card(context["customer"], args.card_last4, key=context.get("idempotency_key"))
 
 
-@kit.register(RescheduleArgs, needs_context=True)
+@kit.register(DisputeArgs, needs_context=True)
 @actionable
-def reschedule(args, context):
-    """Move an enrolment to another upcoming date of the same course. Changes the booking and may cost $50:
-    needs the learner's approval. Call reschedule_quote first."""
-    return desk.reschedule(context["learner"], args.enrolment_id, args.new_start, key=context.get("idempotency_key"))
+def open_dispute(args, context):
+    """Open a dispute for one payment and start the provisional credit. Changes the account: needs the
+    customer's approval. Call dispute_quote first."""
+    return desk.open_dispute(context["customer"], args.txn_id, args.reason, key=context.get("idempotency_key"))
 
 
-@kit.register(TicketArgs, needs_context=True)
+@kit.register(CaseArgs, needs_context=True)
 @actionable
-def create_ticket(args, context):
-    """Create a ticket for the human support team, for anything you can't do yourself."""
-    return desk.create_ticket(context["learner"], args.category, args.summary)
+def create_case(args, context):
+    """Create a case for the human support team, for anything you can't do yourself."""
+    return desk.create_case(context["customer"], args.category, args.summary)
 
 
 def preview(name: str, arguments: str, context: dict) -> str:
-    """What an approval would do, in the learner's terms, computed by code (not described by the model)."""
+    """What an approval would do, in the customer's terms, computed by code (not described by the model)."""
     a = json.loads(arguments or "{}")
-    learner = context["learner"]
+    customer = context["customer"]
     try:
-        if name == "extend_lab":
-            status = desk.lab_status(learner, a["enrolment_id"])
-            return (f"Extend the lab for {a['enrolment_id']} by 7 days, free (one-time): "
-                    f"open until {status.get('lab_until')} becomes 7 days later.")
-        if name == "reschedule":
-            quote = desk.reschedule_quote(learner, a["enrolment_id"])
-            fee = f"${quote['fee_usd']}" if quote["fee_usd"] else "free"
-            return f"Move {a['enrolment_id']} to start on {a['new_start']} ({fee}: {quote['reason']})."
+        if name == "freeze_card":
+            card = desk.card_status(customer, a["card_last4"])
+            return (f"Freeze your {card['product']} ending {a['card_last4']}: new payments and cash withdrawals "
+                    "will be declined until you unfreeze it; direct debits keep working.")
+        if name == "open_dispute":
+            quote = desk.dispute_quote(customer, a["txn_id"])
+            txn = desk.STATE["transactions"][a["txn_id"].upper()]
+            if not quote["allowed"]:
+                return f"Dispute {a['txn_id']} (not possible: {quote['reason']})."
+            return (f"Dispute ${txn['amount_usd']:.2f} to {txn['merchant']} on {txn['date']} ({a.get('reason')}); "
+                    f"a provisional credit by {quote['provisional_credit_by']}.")
     except (desk.DeskError, KeyError) as e:
         return f"{name} with {arguments} (can't preview: {e})"
     return f"{name} with {arguments}"
 
 
-SYSTEM = f"""You are Traincrest Assist, acting for the signed-in TrainCrest learner. Today is {desk.TODAY.isoformat()}.
-- Use tools to look things up and to act. Never guess or invent enrolment IDs, dates or fees.
-- The learner can't see or call tools. Never ask them to; call the tools yourself.
-- Start with my_enrolments whenever you need an enrolment ID or course ID.
-- Before reschedule, call reschedule_quote and upcoming_sessions.
-- extend_lab and reschedule need the learner's approval; the system asks them. If they decline, don't try again.
-- If a tool returns an error, use its message: correct the call, choose another option, or offer create_ticket.
-- Finish with a short answer (at most 80 words) stating what was done, with dates and fees."""
+SYSTEM = f"""You are RR Finance Assist, acting for the signed-in RR Finance Bank customer. Today is {desk.TODAY.isoformat()}.
+- Use tools to look things up and to act. Never guess or invent card numbers, transaction IDs, dates or amounts.
+- The customer can't see or call tools. Never ask them to; call the tools yourself.
+- Never ask for a full card number, a PIN, a password or a one-time code.
+- Start with my_cards whenever you need a card; use recent_transactions to find a payment's txn_id.
+- Before open_dispute, call dispute_quote.
+- freeze_card and open_dispute need the customer's approval; the system asks them. If they decline, don't try again.
+- If a tool returns an error, use its message: correct the call, choose another option, or offer create_case.
+- Finish with a short answer (at most 80 words) stating what was done, with dates and amounts."""

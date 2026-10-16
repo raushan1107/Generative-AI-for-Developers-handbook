@@ -1,7 +1,7 @@
 """Drill 06.2: the smallest RAG that works, every stage in plain sight.
 Index (ahead of time): load the help articles, chunk them by heading, embed the chunks.
 Query (every question): embed the question, take the 3 nearest chunks, put them in the prompt, generate.
-Run:  python lab06_02_minimal_rag.py "Can I pay for a $1,490 course in parts?" """
+Run:  python lab06_02_minimal_rag.py "How much is the fee for an international wire?" """
 import re
 import sys
 import time
@@ -12,7 +12,7 @@ import numpy as np
 from embed import embed
 from llm import MODEL, get_client
 
-question = sys.argv[1] if len(sys.argv) > 1 else "Can I pay for a $1,490 course in parts?"
+question = sys.argv[1] if len(sys.argv) > 1 else "How much is the fee for an international wire?"
 clock = time.perf_counter()
 
 

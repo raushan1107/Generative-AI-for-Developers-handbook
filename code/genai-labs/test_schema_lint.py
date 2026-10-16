@@ -1,17 +1,17 @@
-"""Tests for schema_lint.py and the course enquiry schema. Run:  pytest -q test_schema_lint.py"""
+"""Tests for schema_lint.py and the business enquiry schema. Run:  pytest -q test_schema_lint.py"""
 from typing import Optional
 
 import pytest
 from pydantic import BaseModel, Field, ValidationError
 
-from course_enquiry import CourseEnquiry
+from business_enquiry import BusinessEnquiry
 from schema_lint import lint, strict_schema
 
 
 class TooClever(BaseModel):
-    enrolment_id: str = Field(pattern=r"^TC-\d{5}$")       # pattern: not supported
+    customer_id: str = Field(pattern=r"^RR-\d{5}$")        # pattern: not supported
     summary: str = Field(max_length=200)                    # maxLength: not supported
-    learners: int = Field(ge=1, le=500)                     # minimum/maximum: not supported
+    cards: int = Field(ge=1, le=500)                        # minimum/maximum: not supported
 
 
 class Level5(BaseModel):
@@ -40,7 +40,7 @@ class TooDeep(BaseModel):
 
 
 def test_reference_schema_is_clean():
-    assert lint(strict_schema(CourseEnquiry)) == []
+    assert lint(strict_schema(BusinessEnquiry)) == []
 
 
 def test_unsupported_keywords_are_reported():
@@ -54,10 +54,10 @@ def test_deep_nesting_is_reported():
 
 
 def test_business_rules_live_in_validators():
-    good = {"contact": {"name": "Priya", "company": "Northwind", "email": "priya@northwind.example"},
-            "requests": [{"topic": "AZ-104", "learners": 12, "preferred_format": "live-online"}],
-            "budget_usd": 15000, "wants_private_class": True, "deadline": "2026-12-15"}
-    assert CourseEnquiry.model_validate(good).requests[0].learners == 12
-    bad = {**good, "deadline": "15/12/2026"}
+    good = {"contact": {"name": "Priya", "company": "Northwind Bakery", "email": "priya@northwind.example"},
+            "requests": [{"product_type": "business_card", "amount_usd": 20000, "cards_needed": 12}],
+            "annual_revenue_usd": 1800000, "wants_relationship_manager": True, "decision_deadline": "2026-12-15"}
+    assert BusinessEnquiry.model_validate(good).requests[0].cards_needed == 12
+    bad = {**good, "decision_deadline": "15/12/2026"}
     with pytest.raises(ValidationError):
-        CourseEnquiry.model_validate(bad)
+        BusinessEnquiry.model_validate(bad)

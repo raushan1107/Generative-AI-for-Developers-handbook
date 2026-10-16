@@ -10,46 +10,46 @@ from toolkit import Toolkit
 kit = Toolkit()
 
 
-class PriceArgs(BaseModel):
-    course_id: str
+class RateArgs(BaseModel):
+    product_id: str
 
 
-class MyEnrolmentArgs(BaseModel):
+class MyAccountArgs(BaseModel):
     status: Optional[str]
 
 
-@kit.register(PriceArgs)
-def get_price(args):
-    """Price of a course in USD."""
-    if args.course_id == "BOOM":
+@kit.register(RateArgs)
+def get_rate(args):
+    """Interest rate of a product, in percent."""
+    if args.product_id == "BOOM":
         raise RuntimeError("database down")
-    return {"course_id": args.course_id, "price_usd": 1490}
+    return {"product_id": args.product_id, "rate_pct": 22.99}
 
 
-@kit.register(MyEnrolmentArgs, needs_context=True)
-def my_enrolments(args, context):
-    """Enrolments of the signed-in learner."""
-    return {"learner": context["learner_id"], "status": args.status}
+@kit.register(MyAccountArgs, needs_context=True)
+def my_accounts(args, context):
+    """Accounts of the signed-in customer."""
+    return {"customer": context["customer_id"], "status": args.status}
 
 
 def test_schemas_are_strict_function_tools():
     names = {t["function"]["name"]: t["function"] for t in kit.schemas()}
-    assert set(names) == {"get_price", "my_enrolments"}
-    assert names["get_price"]["strict"] is True
-    assert names["get_price"]["description"] == "Price of a course in USD."
+    assert set(names) == {"get_rate", "my_accounts"}
+    assert names["get_rate"]["strict"] is True
+    assert names["get_rate"]["description"] == "Interest rate of a product, in percent."
 
 
 def test_dispatch_runs_the_function():
-    assert json.loads(kit.dispatch("get_price", '{"course_id": "C104"}')) == {"course_id": "C104", "price_usd": 1490}
+    assert json.loads(kit.dispatch("get_rate", '{"product_id": "P110"}')) == {"product_id": "P110", "rate_pct": 22.99}
 
 
 def test_context_comes_from_the_app_not_the_model():
-    out = json.loads(kit.dispatch("my_enrolments", '{"status": null}', context={"learner_id": "L-MEI"}))
-    assert out["learner"] == "L-MEI"
+    out = json.loads(kit.dispatch("my_accounts", '{"status": null}', context={"customer_id": "RR-10293"}))
+    assert out["customer"] == "RR-10293"
 
 
 def test_problems_become_error_messages_not_crashes():
     assert "unknown tool" in json.loads(kit.dispatch("delete_everything", "{}"))["error"]
-    assert "invalid arguments" in json.loads(kit.dispatch("get_price", '{"id": "C104"}'))["error"]
-    assert "invalid arguments" in json.loads(kit.dispatch("get_price", '{"course_id": '))["error"]
-    assert json.loads(kit.dispatch("get_price", '{"course_id": "BOOM"}')) == {"error": "tool failed: RuntimeError"}
+    assert "invalid arguments" in json.loads(kit.dispatch("get_rate", '{"id": "P110"}'))["error"]
+    assert "invalid arguments" in json.loads(kit.dispatch("get_rate", '{"product_id": '))["error"]
+    assert json.loads(kit.dispatch("get_rate", '{"product_id": "BOOM"}')) == {"error": "tool failed: RuntimeError"}

@@ -14,7 +14,7 @@ from rag_prompt import NOT_FOUND, build_messages
 # Relevance floor on cosine similarity. Model-specific: calibrate it for yours with Drill 06.6.
 FLOORS = {"nomic-embed-text": 0.55, "text-embedding-3-small": 0.30, "text-embedding-3-large": 0.30}
 MIN_SCORE = float(os.getenv("RAG_MIN_SCORE") or FLOORS.get(EMBED_MODEL, 0.30))
-NO_ANSWER = "I couldn't find that in TrainCrest's documents. Shall I raise a ticket for the support team?"
+NO_ANSWER = "I couldn't find that in RR Finance Bank's documents. Shall I raise a case for the support team?"
 
 
 def generate(client, messages):

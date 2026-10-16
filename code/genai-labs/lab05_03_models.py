@@ -12,12 +12,12 @@ from embed import EMBED_MODEL, embed
 
 ARTICLES = {p.stem: p.read_text(encoding="utf-8") for p in sorted((Path(__file__).parent / "data" / "help").glob("*.md"))}
 QUESTIONS = {
-    "Can I get my money back if I cancel next week?": "refunds-and-cancellations",
-    "The sandbox won't start, what do I do?": "labs-and-sandboxes",
-    "My certificate has a typo in my surname": "certificates",
-    "Can my company pay in three parts?": "payments-and-invoices",
-    "Do you offer captions for deaf learners?": "accessibility",
-    "¿Cuánto tiempo es válido mi voucher de examen?": "exam-vouchers",
+    "Can I get my money back for a double charge?": "card-disputes",
+    "Someone stole my wallet with my card in it": "lost-stolen-cards",
+    "Why was I charged $29 last night?": "fees-and-charges",
+    "The money I sent my landlord hasn't arrived": "transfers-and-payments",
+    "I'm locked out of the app": "online-banking-access",
+    "¿Qué pasa si saco el dinero de mi depósito a plazo antes?": "savings-and-cds",
 }
 
 

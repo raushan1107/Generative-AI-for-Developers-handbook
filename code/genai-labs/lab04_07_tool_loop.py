@@ -1,12 +1,12 @@
 """Drill 04.7: the tool loop. Keep calling the model until it stops asking for tools,
 with a hard limit on rounds. This loop is the heart of every assistant that "does things".
-Run:  python lab04_07_tool_loop.py "Which advanced courses are under $1,400, and what does the cheapest cover?" """
+Run:  python lab04_07_tool_loop.py "Which cards have no annual fee, and what does the one with the lowest APR offer?" """
 import sys
 from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
-from catalogue import find_courses, get_course
+from catalogue import find_products, get_product
 from llm import MODEL, get_client
 from llm_tools import TOOL_EXTRAS
 from toolkit import Toolkit
@@ -16,30 +16,33 @@ MAX_ROUNDS = 5
 
 
 class FindArgs(BaseModel):
-    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
-    max_price_usd: Optional[int] = None
-    text: Optional[str] = Field(default=None, description="One keyword, e.g. 'azure'")
+    family: Optional[Literal["accounts", "cards", "loans"]] = None
+    audience: Optional[Literal["personal", "student", "business"]] = None
+    max_annual_fee_usd: Optional[int] = None
+    text: Optional[str] = Field(default=None, description="One keyword, e.g. 'travel'")
 
 
-class CourseArgs(BaseModel):
-    course_id: str = Field(description="Course ID such as C104")
+class ProductArgs(BaseModel):
+    product_id: str = Field(description="Product ID such as P110")
 
 
 @kit.register(FindArgs)
-def search_courses(args):
-    """Search the TrainCrest catalogue by level, maximum price or keyword."""
-    return find_courses(level=args.level, max_price_usd=args.max_price_usd, text=args.text)
+def search_products(args):
+    """Search the RR Finance Bank catalogue by family, audience, maximum annual fee or keyword."""
+    return find_products(family=args.family, audience=args.audience,
+                         max_annual_fee_usd=args.max_annual_fee_usd, text=args.text)
 
 
-@kit.register(CourseArgs)
-def course_details(args):
-    """Full description, format and duration of one course."""
-    return get_course(args.course_id) or {"error": f"no course {args.course_id}"}
+@kit.register(ProductArgs)
+def product_details(args):
+    """Full description, fee and rate of one product."""
+    return get_product(args.product_id) or {"error": f"no product {args.product_id}"}
 
 
 def ask(question: str) -> str:
     client = get_client()
-    messages = [{"role": "system", "content": "You are Traincrest Assist. Use tools for catalogue facts. Be brief."},
+    messages = [{"role": "system", "content": "You are RR Finance Assist. Use tools for product facts. "
+                                              "Explain products; don't recommend what to buy. Be brief."},
                 {"role": "user", "content": question}]
     for round_no in range(1, MAX_ROUNDS + 1):
         r = client.chat.completions.create(model=MODEL, messages=messages, tools=kit.schemas(),
@@ -56,6 +59,6 @@ def ask(question: str) -> str:
 
 
 if __name__ == "__main__":
-    q = sys.argv[1] if len(sys.argv) > 1 else "Which advanced courses are under $1,400, and what does the cheapest cover?"
+    q = sys.argv[1] if len(sys.argv) > 1 else "Which cards have no annual fee, and what does the one with the lowest APR offer?"
     print("Q:", q)
     print("A:", ask(q))

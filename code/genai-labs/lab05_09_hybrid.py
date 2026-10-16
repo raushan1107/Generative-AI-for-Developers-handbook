@@ -5,14 +5,14 @@ from embed import embed
 from hybrid import bm25_ranking, rrf, vector_ranking
 
 TESTS = {                                   # query -> heading of the section that answers it
-    "LAB-503": "Common problems",
-    "what costs $49?": "How long labs stay open",
-    "breakout rooms": "Live online",
-    "one billing cycle": "When the money arrives",
-    "Is there a discount for a team of 12?": "Group discounts",
-    "can I use a screen reader?": "Adjustments",
-    "money back if the trainer is ill": "If TrainCrest cancels",
-    "Docker": None,                         # nothing in the help centre answers this
+    "safe account": "We will never ask",
+    "what costs $45?": "Limits and fees",
+    "4 pm cut-off": "Timing",
+    "provisional credit": "What happens next",
+    "Is there a fee if I'm only $30 overdrawn?": "Overdrafts",
+    "can I log in with my fingerprint?": "Signing in",
+    "I paid the wrong person, can you get it back?": "Sent money to the wrong person",
+    "cryptocurrency trading": None,         # nothing in the help centre answers this
 }
 
 sections = [text for md in load_articles().values() for text in by_headings(md)]

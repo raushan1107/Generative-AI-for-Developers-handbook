@@ -6,27 +6,27 @@ import sys
 from similarity import cosine, cosine_matrix, dot, euclidean
 
 if "--toy" in sys.argv:
-    # Pretend dimension 1 = "about money", dimension 2 = "about labs".
-    refund = [0.9, 0.1]
+    # Pretend dimension 1 = "about getting money back", dimension 2 = "about a missing card".
+    dispute = [0.9, 0.1]
     money_back = [0.8, 0.2]
     money_back_long = [1.6, 0.4]          # same direction, twice as long
-    lab_quota = [0.1, 0.9]
-    for name, v in [("money_back", money_back), ("money_back_long", money_back_long), ("lab_quota", lab_quota)]:
-        print(f"refund vs {name:<16} cosine={cosine(refund, v):.3f}  dot={dot(refund, v):.3f}  "
-              f"euclidean={euclidean(refund, v):.3f}")
+    stolen_card = [0.1, 0.9]
+    for name, v in [("money_back", money_back), ("money_back_long", money_back_long), ("stolen_card", stolen_card)]:
+        print(f"dispute vs {name:<16} cosine={cosine(dispute, v):.3f}  dot={dot(dispute, v):.3f}  "
+              f"euclidean={euclidean(dispute, v):.3f}")
     raise SystemExit
 
 from embed import embed  # noqa: E402  (only needed for the live part)
 
 SENTENCES = [
     "How do I get my money back?",
-    "Can I have a refund for my course?",
-    "¿Cómo puedo obtener un reembolso?",
-    "My lab says quota exceeded.",
-    "The sandbox won't start.",
+    "Can I dispute a double charge?",
+    "¿Cómo puedo reclamar un cargo?",
+    "My card was stolen.",
+    "Someone took my wallet.",
     "What's the weather in Paris?",
 ]
-LABELS = ["money", "refund", "reembolso", "quota", "sandbox", "weather"]
+LABELS = ["money", "dispute", "reclamar", "stolen", "wallet", "weather"]
 
 m = cosine_matrix(embed(SENTENCES))
 print(" " * 10 + "".join(f"{label:>10}" for label in LABELS))

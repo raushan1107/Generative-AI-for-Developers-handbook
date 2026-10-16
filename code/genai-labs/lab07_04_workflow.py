@@ -12,47 +12,47 @@ from agent import Agent
 from desk_tools import SYSTEM, WRITE_TOOLS, kit
 from llm import MODEL, get_client
 
-LEARNER = "L-MEI"
+CUSTOMER = "RR-10293"
 REQUESTS = [
-    "How long is my AI-102 lab still open?",
-    "When are the next dates for my RAG course?",
-    "Please extend my AI-102 lab.",
+    "Is my Cashback Card still active?",
+    "What have I spent on my Cashback Card recently?",
+    "Please freeze my debit card.",
 ]
 
 
 class Route(BaseModel):
-    category: Literal["lab_status", "next_dates", "extend_lab", "other"]
-    course_hint: Optional[str]
+    category: Literal["card_status", "recent_payments", "freeze_card", "other"]
+    card_hint: Optional[str]
 
 
 client = get_client()
 
 
-def find_enrolment(hint):
-    rows = desk.my_enrolments(LEARNER)
-    return next((r for r in rows if hint and hint.lower() in r["course"].lower()), rows[0])
+def find_card(hint):
+    rows = desk.my_cards(CUSTOMER)
+    return next((r for r in rows if hint and hint.lower() in r["product"].lower()), rows[0])
 
 
 def workflow(request):
     calls = 1
     route = client.chat.completions.parse(model=MODEL, response_format=Route, messages=[
-        {"role": "system", "content": "Classify the TrainCrest learner request. course_hint: a word from the course "
-                                      "name they mention (like 'AI-102' or 'RAG'), else null."},
+        {"role": "system", "content": "Classify the RR Finance Bank customer request. card_hint: a word from the card "
+                                      "name they mention (like 'Cashback' or 'debit'), else null."},
         {"role": "user", "content": request}]).choices[0].message.parsed
-    e = find_enrolment(route.course_hint)
+    card = find_card(route.card_hint)
     try:                                       # workflows need error handling too: systems say no
-        if route.category == "lab_status":
-            facts = desk.lab_status(LEARNER, e["enrolment_id"])
-        elif route.category == "next_dates":
-            facts = {"course": e["course"], "dates": desk.upcoming_sessions(e["course_id"])}
-        elif route.category == "extend_lab":
-            facts = desk.extend_lab(LEARNER, e["enrolment_id"])    # a real app asks for approval here (07.7)
+        if route.category == "card_status":
+            facts = desk.card_status(CUSTOMER, card["card_last4"])
+        elif route.category == "recent_payments":
+            facts = {"card": card["product"], "payments": desk.recent_transactions(CUSTOMER, card["card_last4"])[:5]}
+        elif route.category == "freeze_card":
+            facts = desk.freeze_card(CUSTOMER, card["card_last4"])   # a real app asks for approval here (07.7)
         else:
             return route.category, calls, "I'll pass this to the support team."
     except desk.DeskError as err:
-        facts = {"course": e["course"], "error": str(err)}
+        facts = {"card": card["product"], "error": str(err)}
     reply = client.chat.completions.create(model=MODEL, messages=[
-        {"role": "system", "content": "Reply to the learner in one or two sentences using only these facts."},
+        {"role": "system", "content": "Reply to the customer in one or two sentences using only these facts."},
         {"role": "user", "content": f"Request: {request}\nFacts: {json.dumps(facts)}"}]).choices[0].message.content
     return route.category, calls + 1, reply.strip()
 
@@ -62,6 +62,6 @@ for request in REQUESTS:
     desk.reset()
     category, w_calls, w_reply = workflow(request)
     desk.reset()
-    result = agent.run(request, {"learner": LEARNER})
+    result = agent.run(request, {"customer": CUSTOMER})
     print(f"{request}\n  workflow [{category}, {w_calls} model calls]: {w_reply}")
     print(f"  agent    [{len(result.steps)} tool steps, {result.llm_calls} model calls]: {result.answer}\n")

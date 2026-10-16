@@ -13,15 +13,15 @@ from lab04_02_json_mode import MESSAGES
 
 
 class Triage(BaseModel):
-    learner_name: Optional[str] = Field(description="First name if given, else null")
-    enrolment_id: Optional[str] = Field(description="Like TC-12345. Null if not given. Never invent one.")
-    category: Literal["scheduling", "billing", "exam_voucher", "certificate", "lab_access", "account", "other"]
-    urgent: bool = Field(description="True if a deadline is within 3 days or the learner is blocked")
+    customer_name: Optional[str] = Field(description="First name if given, else null")
+    customer_id: Optional[str] = Field(description="Like RR-12345. Null if not given. Never invent one.")
+    category: Literal["card", "dispute", "fraud", "fees", "transfers", "loans", "account", "other"]
+    urgent: bool = Field(description="True for fraud, a lost or stolen card, or a deadline within 3 days")
     summary: str = Field(description="One English sentence, at most 20 words")
 
 
-SYSTEM = ("You triage TrainCrest learner-support messages. A refund request is billing even if it mentions dates; "
-          "asking for more lab time is lab_access.")
+SYSTEM = ("You triage RR Finance Bank customer messages. A payment the customer recognises but that is wrong "
+          "is dispute; a payment they don't recognise is fraud; asking for a fee back is fees.")
 
 
 def show_schema():
@@ -44,7 +44,7 @@ def main():
             print("REFUSED:", message.refusal)
             continue
         t: Triage = message.parsed               # a real Triage object, already validated
-        print(f"{t.category:<13} urgent={t.urgent!s:<5} id={t.enrolment_id}  {t.summary}")
+        print(f"{t.category:<10} urgent={t.urgent!s:<5} id={t.customer_id}  {t.summary}")
 
 
 if __name__ == "__main__":

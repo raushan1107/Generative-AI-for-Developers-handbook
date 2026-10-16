@@ -61,7 +61,7 @@ class Agent:
                     result.answer = "Sorry, I got stuck repeating the same step. I've stopped; please contact support."
                     return result
         result.stopped = "max_steps"
-        result.answer = "Sorry, that needed more steps than I'm allowed. Shall I raise a ticket for the support team?"
+        result.answer = "Sorry, that needed more steps than I'm allowed. Shall I raise a case for the support team?"
         return result
 
     def _execute(self, n, name, arguments, context, seen) -> Step:
@@ -78,7 +78,7 @@ class Agent:
                 result = self.kit.dispatch(name, arguments, context | {"idempotency_key": uuid.uuid4().hex})
                 status = "error" if result.startswith('{"error"') else "ok"
             else:
-                result, status = json.dumps({"error": f"the learner did not approve this action: {reason}"}), "rejected"
+                result, status = json.dumps({"error": f"the customer did not approve this action: {reason}"}), "rejected"
         else:
             result = self.kit.dispatch(name, arguments, context)
             status = "error" if result.startswith('{"error"') else "ok"

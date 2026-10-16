@@ -1,37 +1,37 @@
 """Drill 07.5: agent state and memory, offline.  Run:  pytest -q test_memory.py"""
-from memory import LearnerMemory, TaskState, trim_history
+from memory import CustomerMemory, TaskState, trim_history
 
 
 def test_task_state_survives_a_restart(tmp_path):
-    state = TaskState("t1", goal="move Diego's AZ-104 class", facts={"enrolment_id": "TC-20877"},
-                      pending={"tool": "reschedule", "preview": "Move TC-20877 ($50)"}, status="waiting")
+    state = TaskState("t1", goal="dispute Mei's duplicate airline charge", facts={"txn_id": "TX-1002"},
+                      pending={"tool": "open_dispute", "preview": "Dispute $412.00 to SkyHigh Airlines"}, status="waiting")
     state.save(tmp_path)
     again = TaskState.load("t1", tmp_path)
-    assert again == state and again.status == "waiting" and again.pending["tool"] == "reschedule"
+    assert again == state and again.status == "waiting" and again.pending["tool"] == "open_dispute"
 
 
 def test_memory_remembers_recalls_and_forgets(tmp_path):
-    memory = LearnerMemory(tmp_path / "memory.json")
-    assert memory.remember("L-MEI", "Prefers  weekend classes")["status"] == "remembered"
-    assert memory.remember("L-MEI", "prefers weekend classes")["status"] == "already remembered"
-    assert LearnerMemory(tmp_path / "memory.json").recall("L-MEI") == ["Prefers weekend classes"]   # persisted
-    assert memory.recall("L-DIEGO") == []                                                          # per learner
-    assert "weekend" in memory.as_prompt("L-MEI") and memory.as_prompt("L-DIEGO") == ""
-    assert memory.forget("L-MEI", "weekend") == 1 and memory.recall("L-MEI") == []
+    memory = CustomerMemory(tmp_path / "memory.json")
+    assert memory.remember("RR-10293", "Prefers  email over phone calls")["status"] == "remembered"
+    assert memory.remember("RR-10293", "prefers email over phone calls")["status"] == "already remembered"
+    assert CustomerMemory(tmp_path / "memory.json").recall("RR-10293") == ["Prefers email over phone calls"]   # persisted
+    assert memory.recall("RR-20877") == []                                                          # per customer
+    assert "email" in memory.as_prompt("RR-10293") and memory.as_prompt("RR-20877") == ""
+    assert memory.forget("RR-10293", "email") == 1 and memory.recall("RR-10293") == []
 
 
 def test_memory_refuses_sensitive_data(tmp_path):
-    memory = LearnerMemory(tmp_path / "memory.json")
-    assert "error" in memory.remember("L-MEI", "Card 4111 1111 1111 1111 for future payments")
-    assert "error" in memory.remember("L-MEI", "My password is hunter2")
-    assert memory.recall("L-MEI") == []
+    memory = CustomerMemory(tmp_path / "memory.json")
+    assert "error" in memory.remember("RR-10293", "Card 4111 1111 1111 1111 for future payments")
+    assert "error" in memory.remember("RR-10293", "My password is hunter2")
+    assert memory.recall("RR-10293") == []
 
 
 def test_memory_is_small_on_purpose(tmp_path):
-    memory = LearnerMemory(tmp_path / "memory.json")
+    memory = CustomerMemory(tmp_path / "memory.json")
     for i in range(25):
-        memory.remember("L-MEI", f"fact number {i}")
-    facts = memory.recall("L-MEI")
+        memory.remember("RR-10293", f"fact number {i}")
+    facts = memory.recall("RR-10293")
     assert len(facts) == 20 and facts[0] == "fact number 5"
 
 

@@ -6,26 +6,27 @@ from typing import Literal, Optional
 import openai
 from pydantic import BaseModel, Field
 
-from catalogue import find_courses
+from catalogue import find_products
 from llm import MODEL, get_client
 from llm_tools import TOOL_EXTRAS
 
 
-class FindCourses(BaseModel):
-    """Search the TrainCrest catalogue. Use it for any question about courses, levels or prices."""
-    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
-    max_price_usd: Optional[int] = Field(default=None, description="Highest price the learner will pay, in USD")
-    text: Optional[str] = Field(default=None, description="One keyword to look for in titles and descriptions, e.g. 'python'")
+class FindProducts(BaseModel):
+    """Search the RR Finance Bank product catalogue. Use it for any question about accounts, cards, loans, fees or rates."""
+    family: Optional[Literal["accounts", "cards", "loans"]] = None
+    audience: Optional[Literal["personal", "student", "business"]] = None
+    max_annual_fee_usd: Optional[int] = Field(default=None, description="Highest annual fee the customer will pay, in USD")
+    text: Optional[str] = Field(default=None, description="One keyword to look for in names and descriptions, e.g. 'travel'")
 
 
-TOOLS = [openai.pydantic_function_tool(FindCourses, name="find_courses")]
+TOOLS = [openai.pydantic_function_tool(FindProducts, name="find_products")]
 
 
 def main():
     client = get_client()
     messages = [
-        {"role": "system", "content": "You are Traincrest Assist. Use tools for catalogue facts; never guess prices."},
-        {"role": "user", "content": "Is there a beginner Python course under $300?"},
+        {"role": "system", "content": "You are RR Finance Assist. Use tools for product facts; never guess fees or rates."},
+        {"role": "user", "content": "Do you have a credit card with no annual fee for students?"},
     ]
 
     # Step 1: send the question AND the tool descriptions.
@@ -42,8 +43,8 @@ def main():
         print(f"2) model asks: {call.function.name}({call.function.arguments})")
         # Validate before you call: strict mode guarantees the shape on Azure/OpenAI, but not every
         # provider enforces it, and a model can still send values your function can't use.
-        args = FindCourses.model_validate_json(call.function.arguments)
-        result = find_courses(**args.model_dump())
+        args = FindProducts.model_validate_json(call.function.arguments)
+        result = find_products(**args.model_dump())
         print(f"   we ran it:  {len(result)} result(s)")
         messages.append({"role": "tool", "tool_call_id": call.id, "content": json.dumps(result)})
 

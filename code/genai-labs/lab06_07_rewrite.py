@@ -5,15 +5,15 @@ from kb_index import load_or_build
 from llm import MODEL, get_client
 
 CONVERSATIONS = [
-    [("user", "How long do labs stay open after my course?"),
-     ("assistant", "Labs stay open for 30 days after the course ends, and you can ask for one free 7-day extension."),
-     ("user", "And after that, how much is it?")],
-    [("user", "I want to cancel my AZ-104 course."),
-     ("assistant", "I can help. How many days are left before it starts?"),
-     ("user", "ten days. what do i get back?")],
-    [("user", "My certificate came with my old surname."),
-     ("assistant", "Sorry about that! When was it issued?"),
-     ("user", "about two months ago, does it cost anything?")],
+    [("user", "My card was stolen yesterday."),
+     ("assistant", "I'm sorry. Freeze it in the app first; a replacement arrives in 5 to 7 business days."),
+     ("user", "And if I need it faster, how much is that?")],
+    [("user", "I want to take money out of my 12-month CD."),
+     ("assistant", "I can help. Is it before the CD matures?"),
+     ("user", "yes, three months early. what do i lose?")],
+    [("user", "I sent $300 to the wrong account by mistake."),
+     ("assistant", "Sorry to hear that! Was it a wire or a standard transfer?"),
+     ("user", "a wire, yesterday. can you still cancel it?")],
 ]
 
 REWRITE = """Rewrite the user's last message as one standalone question that can be understood without

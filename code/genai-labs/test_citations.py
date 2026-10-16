@@ -2,47 +2,47 @@
 from citations import check, render, sentences
 
 SOURCES = [
-    {"title": "Refunds > How much you get back", "source": "refunds-and-cancellations.md",
-     "text": "Cancel 7 to 13 days before the start date: 50% refund."},
-    {"title": "Rescheduling > Fees", "source": "rescheduling.md",
-     "text": "Within 7 days of the start date: you can reschedule once for a $50 fee."},
+    {"title": "Fees and charges > Overdrafts", "source": "fees-and-charges.md",
+     "text": "If a payment takes your balance below zero, we charge an overdraft fee of $29, at most 3 times per day."},
+    {"title": "Lost or stolen cards > Report it and get a replacement", "source": "lost-stolen-cards.md",
+     "text": "Express delivery within 2 business days costs $15."},
 ]
 
 
 def test_a_well_cited_answer_passes():
-    question = "What if I cancel 10 days before?"
-    report = check("Cancelling 10 days before gives a 50% refund [1]. Moving the date costs $50 [2].", SOURCES, question)
+    question = "I was overdrawn by $80, what's the fee?"
+    report = check("Being $80 overdrawn costs a $29 fee [1]. Express card delivery costs $15 [2].", SOURCES, question)
     assert report["ok"] and report["cited"] == [1, 2]
-    assert check("Cancelling 10 days before gives a 50% refund [1].", SOURCES)["unsupported"]   # 10 is in no source
+    assert check("Being $80 overdrawn costs a $29 fee [1].", SOURCES)["unsupported"]   # 80 is in no source
 
 
 def test_invented_citation_numbers_are_caught():
-    report = check("You get a 50% refund [1][7].", SOURCES)
+    report = check("The overdraft fee is $29 [1][7].", SOURCES)
     assert report["unknown"] == [7] and not report["ok"]
 
 
 def test_numbers_without_a_citation_are_caught():
-    report = check("You get a 50% refund. It arrives in 5 days [1].", SOURCES)
-    assert report["uncited"] == ["You get a 50% refund."]
-    assert report["unsupported"] == [{"sentence": "It arrives in 5 days [1].", "numbers": ["5"]}]
+    report = check("The overdraft fee is $29. A new card arrives in 5 days [1].", SOURCES)
+    assert report["uncited"] == ["The overdraft fee is $29."]
+    assert report["unsupported"] == [{"sentence": "A new card arrives in 5 days [1].", "numbers": ["5"]}]
 
 
 def test_a_number_missing_from_the_cited_source_is_caught():
-    report = check("Moving the date costs $75 [2].", SOURCES)
-    assert report["unsupported"] == [{"sentence": "Moving the date costs $75 [2].", "numbers": ["75"]}]
+    report = check("Express delivery costs $25 [2].", SOURCES)
+    assert report["unsupported"] == [{"sentence": "Express delivery costs $25 [2].", "numbers": ["25"]}]
 
 
 def test_citation_after_the_full_stop_belongs_to_that_sentence():
-    assert sentences("You get 50% back. [1] Thanks!") == ["You get 50% back. [1]", "Thanks!"]
-    assert check("You get 50% back. [1] Thanks!", SOURCES)["ok"]
+    assert sentences("The fee is $29. [1] Thanks!") == ["The fee is $29. [1]", "Thanks!"]
+    assert check("The fee is $29. [1] Thanks!", SOURCES)["ok"]
 
 
 def test_codes_are_not_treated_as_amounts():
-    assert check("For TC-10477, see the refund rules [1].", SOURCES)["ok"]
+    assert check("For RR-10477, see the overdraft rules [1].", SOURCES)["ok"]
 
 
 def test_render_drops_invented_citations_and_lists_real_sources():
-    answer = "You get a 50% refund [1][7]."
+    answer = "The overdraft fee is $29 [1][7]."
     text = render(answer, SOURCES, check(answer, SOURCES))
-    assert text == ("You get a 50% refund [1].\n\nSources:\n"
-                    "[1] Refunds > How much you get back (refunds-and-cancellations.md)")
+    assert text == ("The overdraft fee is $29 [1].\n\nSources:\n"
+                    "[1] Fees and charges > Overdrafts (fees-and-charges.md)")

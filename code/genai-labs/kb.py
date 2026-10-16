@@ -1,6 +1,6 @@
-"""Drill 06.9: the Company Knowledge Assistant. Ask questions about TrainCrest's documents in the
+"""Drill 06.9: the Company Knowledge Assistant. Ask questions about RR Finance Bank's documents in the
 terminal; answers come only from the documents, with checked citations.
-Run:  python kb.py            (as a learner: public help centre only)
+Run:  python kb.py            (as a customer: public help centre only)
       python kb.py --staff    (as support staff: help centre + internal documents)"""
 import sys
 
@@ -11,7 +11,7 @@ from rag import answer
 staff = "--staff" in sys.argv
 audience = ("public", "staff") if staff else ("public",)
 index = load_or_build()
-print(f"TrainCrest knowledge assistant ({'staff' if staff else 'learner'} view, "
+print(f"RR Finance Bank knowledge assistant ({'staff' if staff else 'customer'} view, "
       f"{sum(c['audience'] in audience for c in index.chunks)} chunks). Empty line to quit.\n")
 while question := input("Question: ").strip():
     result = answer(question, audience=audience, index=index)

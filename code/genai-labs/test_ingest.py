@@ -3,23 +3,23 @@ from ingest import Doc, load_csv_faq, load_folder, load_html, load_text
 from rag_chunks import chunk
 
 PAGE = """<html><head><title>x</title><script>track()</script></head><body>
-<nav><a href="/">Home</a> Sign out</nav><main><h1>Lab rules</h1><p>Intro &amp; scope.</p>
-<h2>Limits</h2><ul><li>Four hours idle</li><li>Two VMs</li></ul></main><footer>&copy; 2026 · 1,204 views</footer></body></html>"""
+<nav><a href="/">Home</a> Sign out</nav><main><h1>Card rules</h1><p>Intro &amp; scope.</p>
+<h2>Limits</h2><ul><li>Two cards per account</li><li>$500 a day at ATMs</li></ul></main><footer>&copy; 2026 · 1,204 views</footer></body></html>"""
 
 
 def test_html_keeps_content_and_drops_page_chrome(tmp_path):
     (tmp_path / "rules.html").write_text(PAGE, encoding="utf-8")
     title, text = load_html(tmp_path / "rules.html")
-    assert title == "Lab rules"
-    assert "## Limits" in text and "- Four hours idle" in text and "Intro & scope." in text
+    assert title == "Card rules"
+    assert "## Limits" in text and "- Two cards per account" in text and "Intro & scope." in text
     assert not any(junk in text for junk in ("Home", "Sign out", "track()", "views"))
 
 
 def test_text_upper_case_lines_become_sections(tmp_path):
-    (tmp_path / "runbook.txt").write_text("LAB RUNBOOK\nOwner: Ops.\n\nLAB-409 QUOTA ERRORS\nNot incidents.\n",
+    (tmp_path / "runbook.txt").write_text("FRAUD RUNBOOK\nOwner: Ops.\n\nRULE FR-12 ALERTS\nNot confirmed fraud.\n",
                                           encoding="utf-8")
     title, text = load_text(tmp_path / "runbook.txt")
-    assert title == "Lab runbook" and "## LAB-409 quota errors\nNot incidents." in text
+    assert title == "Fraud runbook" and "## Rule FR-12 alerts\nNot confirmed fraud." in text
 
 
 def test_csv_rows_become_sections(tmp_path):
@@ -42,12 +42,12 @@ def test_folder_report_skips_duplicates_unsupported_and_empty(tmp_path):
 
 
 def test_chunks_keep_intro_header_source_and_audience():
-    doc = Doc("refunds", "Refunds", "# Refunds\nThe start date is day one.\n\n## How much\n- 14+ days: 100%\n- 7-13 days: 50%",
-              "refunds.md", "public")
+    doc = Doc("disputes", "Disputes", "# Disputes\nThe statement date is day one.\n\n## Deadlines\n- Within 60 days: recoverable\n- After 60 days: not guaranteed",
+              "disputes.md", "public")
     first, second = chunk(doc)
-    assert first["id"] == "refunds#1" and first["title"] == "Refunds > Overview" and "start date" in first["text"]
-    assert second["text"] == "Refunds > How much\n- 14+ days: 100%\n- 7-13 days: 50%"
-    assert second["source"] == "refunds.md" and second["audience"] == "public"
+    assert first["id"] == "disputes#1" and first["title"] == "Disputes > Overview" and "statement date" in first["text"]
+    assert second["text"] == "Disputes > Deadlines\n- Within 60 days: recoverable\n- After 60 days: not guaranteed"
+    assert second["source"] == "disputes.md" and second["audience"] == "public"
 
 
 def test_long_sections_split_at_paragraphs_and_keep_the_header():

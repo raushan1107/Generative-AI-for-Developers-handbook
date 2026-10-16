@@ -1,6 +1,6 @@
 """Drill 04.4: check a Pydantic model against the rules of strict structured outputs
 before you send it to the model.
-Run:  python schema_lint.py course_enquiry:CourseEnquiry"""
+Run:  python schema_lint.py business_enquiry:BusinessEnquiry"""
 import importlib
 import sys
 
@@ -69,7 +69,7 @@ def lint(schema):
 
 
 if __name__ == "__main__":
-    target = sys.argv[1] if len(sys.argv) > 1 else "course_enquiry:CourseEnquiry"
+    target = sys.argv[1] if len(sys.argv) > 1 else "business_enquiry:BusinessEnquiry"
     module_name, class_name = target.split(":")
     model = getattr(importlib.import_module(module_name), class_name)
     found = lint(strict_schema(model))

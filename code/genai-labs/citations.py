@@ -8,7 +8,7 @@ import re
 
 CITE = re.compile(r"\[(\d+)\]")
 NUMBER = re.compile(r"\d[\d,]*(?:\.\d+)?")
-IDS = re.compile(r"\b[A-Z]{1,3}-\d+\b")                 # codes like TC-10477 or LAB-503 are names, not amounts
+IDS = re.compile(r"\b[A-Z]{1,3}-\d+\b")                 # codes like RR-10477 or FR-12 are names, not amounts
 
 
 def sentences(answer: str):
@@ -31,7 +31,7 @@ def numbers(text: str) -> set[str]:
 
 
 def check(answer: str, sources, question: str = "") -> dict:
-    """sources[n-1] is the chunk shown to the model as [n]. Numbers the learner wrote are allowed."""
+    """sources[n-1] is the chunk shown to the model as [n]. Numbers the customer wrote are allowed."""
     report = {"cited": [], "unknown": [], "uncited": [], "unsupported": []}
     for sentence in sentences(answer):
         cited = [int(n) for n in CITE.findall(sentence)]

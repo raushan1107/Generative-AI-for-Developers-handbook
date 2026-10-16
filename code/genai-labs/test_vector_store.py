@@ -8,17 +8,17 @@ from vector_store import VectorStore, matches
 @pytest.fixture
 def store():
     s = VectorStore()
-    s.add(ids=["refunds", "labs", "vouchers"],
+    s.add(ids=["disputes", "cards", "fees"],
           vectors=[[1, 0, 0], [0, 1, 0], [0.7, 0, 0.7]],
-          texts=["Refund rules", "Lab extensions", "Exam vouchers"],
-          metadatas=[{"topic": "billing", "words": 180}, {"topic": "labs", "words": 120},
-                     {"topic": "exams", "words": 90}])
+          texts=["Dispute rules", "Lost cards", "Overdraft fees"],
+          metadatas=[{"topic": "disputes", "words": 180}, {"topic": "cards", "words": 120},
+                     {"topic": "fees", "words": 90}])
     return s
 
 
 def test_nearest_first(store):
     hits = store.search([0.9, 0.1, 0.1], k=2)
-    assert [h["id"] for h in hits] == ["refunds", "vouchers"]
+    assert [h["id"] for h in hits] == ["disputes", "fees"]
     assert hits[0]["score"] > hits[1]["score"]
 
 
@@ -28,17 +28,17 @@ def test_length_does_not_matter(store):
 
 def test_filter_before_ranking(store):
     hits = store.search([1, 0, 0], k=3, where={"words": {"$lte": 120}})
-    assert [h["id"] for h in hits] == ["vouchers", "labs"]
+    assert [h["id"] for h in hits] == ["fees", "cards"]
 
 
 def test_matches_operators():
-    meta = {"level": "beginner", "price_usd": 290}
-    assert matches(meta, {"level": "beginner", "price_usd": {"$lte": 300}})
-    assert not matches(meta, {"level": {"$in": ["advanced", "intermediate"]}})
-    assert not matches(meta, {"format": "classroom"})          # missing field never matches
+    meta = {"family": "cards", "annual_fee_usd": 0}
+    assert matches(meta, {"family": "cards", "annual_fee_usd": {"$lte": 100}})
+    assert not matches(meta, {"family": {"$in": ["accounts", "loans"]}})
+    assert not matches(meta, {"audience": "business"})         # missing field never matches
 
 
 def test_save_and_load(store, tmp_path):
     store.save(tmp_path / "idx")
     again = VectorStore.load(tmp_path / "idx")
-    assert again.search([0, 1, 0], k=1)[0]["text"] == "Lab extensions"
+    assert again.search([0, 1, 0], k=1)[0]["text"] == "Lost cards"

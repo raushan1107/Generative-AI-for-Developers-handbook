@@ -8,26 +8,27 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-ENROLMENT_ID = re.compile(r"TC-\d{5}")
+CUSTOMER_ID = re.compile(r"RR-\d{5}")
+MAX_AGE_DAYS = 90                        # older disputes go to a person, not an automatic case
 
 
 def today() -> date:                     # a function, so tests can pretend it's another day
     return date.today()
 
 
-class TicketDraft(BaseModel):
-    """Arguments the model sends to create_support_ticket."""
-    category: Literal["scheduling", "billing", "exam_voucher", "certificate", "lab_access", "account", "other"]
+class CaseDraft(BaseModel):
+    """Arguments the model sends to open_support_case."""
+    category: Literal["card", "dispute", "fraud", "fees", "transfers", "loans", "account", "other"]
     summary: str = Field(description="One sentence for the support team")
-    enrolment_id: Optional[str] = Field(description="Like TC-12345, or null")
+    customer_id: Optional[str] = Field(description="Like RR-12345, or null")
     urgency: Literal["low", "medium", "high"]
-    preferred_date: Optional[str] = Field(description="New class date the learner wants, YYYY-MM-DD, or null")
+    transaction_date: Optional[str] = Field(description="Date of the payment in question, YYYY-MM-DD, or null")
 
-    @field_validator("enrolment_id")
+    @field_validator("customer_id")
     @classmethod
-    def enrolment_id_format(cls, v):
-        if v is not None and not ENROLMENT_ID.fullmatch(v):
-            raise ValueError("enrolment_id must look like TC-12345")
+    def customer_id_format(cls, v):
+        if v is not None and not CUSTOMER_ID.fullmatch(v):
+            raise ValueError("customer_id must look like RR-12345")
         return v
 
     @field_validator("summary")
@@ -38,23 +39,25 @@ class TicketDraft(BaseModel):
             raise ValueError("summary must be 10 to 200 characters")
         return v
 
-    @field_validator("preferred_date")
+    @field_validator("transaction_date")
     @classmethod
-    def date_in_next_year(cls, v):
+    def date_in_the_last_90_days(cls, v):
         if v is None:
             return v
         try:
             d = date.fromisoformat(v)
         except ValueError:
-            raise ValueError("preferred_date must be YYYY-MM-DD") from None
-        if not today() < d <= today() + timedelta(days=365):
-            raise ValueError("preferred_date must be in the future and within 365 days")
+            raise ValueError("transaction_date must be YYYY-MM-DD") from None
+        if d > today():
+            raise ValueError("transaction_date can't be in the future")
+        if d < today() - timedelta(days=MAX_AGE_DAYS):
+            raise ValueError(f"transaction_date is more than {MAX_AGE_DAYS} days ago; route to a person")
         return v
 
     @model_validator(mode="after")
-    def scheduling_needs_an_enrolment(self):
-        if self.category == "scheduling" and self.enrolment_id is None:
-            raise ValueError("a scheduling ticket needs the enrolment_id; ask the learner for it")
+    def disputes_need_a_customer(self):
+        if self.category in ("dispute", "fraud") and self.customer_id is None:
+            raise ValueError(f"a {self.category} case needs the customer_id; ask the customer for it")
         return self
 
 

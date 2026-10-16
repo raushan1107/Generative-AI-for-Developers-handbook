@@ -6,7 +6,7 @@ HELP_DIR = Path(__file__).parent / "data" / "help"
 
 
 def load_articles():
-    """{"refunds-and-cancellations": "# Refunds and cancellations\n...", ...}"""
+    """{"card-disputes": "# Disputing a card transaction\n...", ...}"""
     return {p.stem: p.read_text(encoding="utf-8") for p in sorted(HELP_DIR.glob("*.md"))}
 
 

@@ -36,7 +36,7 @@ def split_long(body: str, max_chars: int):
 
 
 def chunk(doc: Doc, max_chars: int = 900):
-    """Chunks as dicts: id like 'refunds-and-cancellations#2', the header, text, source and audience."""
+    """Chunks as dicts: id like 'card-disputes#2', the header, text, source and audience."""
     chunks = []
     for heading, body in sections(doc):
         for piece in split_long(body, max_chars):

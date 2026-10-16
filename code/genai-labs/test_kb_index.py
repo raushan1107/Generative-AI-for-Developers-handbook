@@ -31,9 +31,9 @@ def offline(monkeypatch):
 
 def chunks():
     return [
-        {"id": "refunds#1", "title": "Refunds > How much", "text": "refund 50 percent cancel early", "audience": "public"},
-        {"id": "labs#1", "title": "Labs > Extensions", "text": "lab extension 49 dollars 14 days", "audience": "public"},
-        {"id": "approvals#1", "title": "Approvals > Limits", "text": "refund exception approval team lead",
+        {"id": "disputes#1", "title": "Disputes > Deadlines", "text": "dispute deadline statement window", "audience": "public"},
+        {"id": "cards#1", "title": "Cards > Replacement", "text": "card replacement express 15 dollars", "audience": "public"},
+        {"id": "approvals#1", "title": "Approvals > Limits", "text": "fee refund exception approval team lead",
          "audience": "staff"},
     ]
 
@@ -42,7 +42,7 @@ def test_only_new_and_changed_chunks_are_embedded():
     first, stats = KnowledgeIndex.build(chunks())
     assert stats == {"new": 3, "changed": 0, "unchanged": 0, "removed": 0} and CALLS == [3]
     edited = chunks()[:2]
-    edited[1] = edited[1] | {"text": "lab extension 59 dollars 14 days"}
+    edited[1] = edited[1] | {"text": "card replacement express 25 dollars"}
     second, stats = KnowledgeIndex.build(edited, previous=first)
     assert stats == {"new": 0, "changed": 1, "unchanged": 1, "removed": 1} and CALLS == [3, 1]
     assert np.allclose(second.vectors[0], first.vectors[0])
@@ -57,14 +57,14 @@ def test_a_different_embedding_model_means_a_full_rebuild(monkeypatch):
 
 def test_audience_is_a_pre_filter():
     index, _ = KnowledgeIndex.build(chunks())
-    public = index.search("refund exception approval", k=3)
+    public = index.search("fee refund exception approval", k=3)
     assert "approvals#1" not in [h["id"] for h in public]
-    assert index.search("refund exception approval", k=1, audience=("public", "staff"))[0]["id"] == "approvals#1"
+    assert index.search("fee refund exception approval", k=1, audience=("public", "staff"))[0]["id"] == "approvals#1"
 
 
 def test_relevance_floor_can_return_nothing():
     index, _ = KnowledgeIndex.build(chunks())
-    assert index.search("lab extension", min_score=0.2)[0]["id"] == "labs#1"
+    assert index.search("card replacement", min_score=0.2)[0]["id"] == "cards#1"
     assert index.search("capital of france", min_score=0.5) == []
 
 

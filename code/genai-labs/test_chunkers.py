@@ -1,7 +1,7 @@
 """Tests for chunkers.py (offline). Run:  pytest -q test_chunkers.py"""
 from chunkers import by_headings, by_sentences, fixed_size, load_articles
 
-MD = "# Labs\n\nIntro line.\n\n## How long\nThirty days. One free extension.\n\n## Problems\nQuota exceeded.\n"
+MD = "# Cards\n\nIntro line.\n\n## Freeze it first\nFreeze it in the app. It takes effect instantly.\n\n## Replacement\n5 to 7 business days.\n"
 
 
 def test_fixed_size_respects_size_and_overlaps():
@@ -19,8 +19,8 @@ def test_sentences_are_never_cut():
 
 def test_headings_keep_their_context():
     chunks = by_headings(MD)
-    assert chunks[0] == "Labs\nIntro line."
-    assert chunks[1].startswith("Labs > How long\n") and "free extension" in chunks[1]
+    assert chunks[0] == "Cards\nIntro line."
+    assert chunks[1].startswith("Cards > Freeze it first\n") and "instantly" in chunks[1]
     assert len(chunks) == 3
 
 

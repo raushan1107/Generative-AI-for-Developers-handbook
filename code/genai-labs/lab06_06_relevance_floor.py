@@ -14,8 +14,8 @@ OFF_TOPIC = [
     "How do I reverse a list in Python?",
     "What's the weather like in Toronto tomorrow?",
     "Do you sell gift cards?",
-    "Is TrainCrest hiring trainers?",
-    "Can I bring my dog to a classroom course?",
+    "Is RR Finance Bank hiring?",
+    "Should I buy shares in an electric car company?",
 ]
 
 index = load_or_build()

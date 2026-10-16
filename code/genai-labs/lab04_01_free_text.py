@@ -1,28 +1,28 @@
 """Drill 04.1: why free text breaks your code.
-We ask for a course recommendation and try to pull the price out with a regex,
+We ask which card matches a customer's need and try to pull the APR out with a regex,
 the way a quick prototype would. Run with --offline to use three saved replies."""
 import re
 import sys
 
-QUESTION = """A learner wants a beginner Python course under $300.
-Recommend one course from this list and say its price.
-- C101 Python Foundations, beginner, $290
-- C114 Docker Quick Start, beginner, $190
-- C103 Machine Learning Essentials, intermediate, $1190"""
+QUESTION = """A customer wants a credit card with no annual fee and the lowest APR.
+Which card on this list matches? Name it and say its APR.
+- P110 Cashback Card, no annual fee, 22.99% APR
+- P111 Voyager Travel Card, $95 annual fee, 24.49% APR
+- P112 Starter Credit Card, no annual fee, 26.99% APR"""
 
 # Three real-looking replies to the same question. All are fine for a human reader.
 SAVED_REPLIES = [
-    "I recommend Python Foundations (C101). It costs $290 and is designed for complete beginners.",
-    "Python Foundations is the best fit. If budget is tight, Docker Quick Start is only $190, "
-    "but Python Foundations at $290 teaches programming from zero.",
-    "Go for **Python Foundations**: beginner level, 290 USD, five days.",
+    "The Cashback Card (P110) matches: no annual fee and a 22.99% APR.",
+    "Both the Starter Credit Card (26.99% APR) and the Cashback Card have no annual fee, "
+    "so the Cashback Card at 22.99% is the better match.",
+    "Go for the **Cashback Card**: no annual fee, APR of 22.99 percent.",
 ]
 
 
-def parse_price(reply: str):
-    """The 'quick prototype' parser: first dollar amount in the text."""
-    match = re.search(r"\$(\d+)", reply)
-    return int(match.group(1)) if match else None
+def parse_apr(reply: str):
+    """The 'quick prototype' parser: first percentage in the text."""
+    match = re.search(r"(\d+(?:\.\d+)?)\s?%", reply)
+    return float(match.group(1)) if match else None
 
 
 def get_replies():
@@ -39,7 +39,7 @@ def get_replies():
 
 if __name__ == "__main__":
     for i, reply in enumerate(get_replies(), 1):
-        price = parse_price(reply)
-        verdict = "OK" if price == 290 else ("WRONG" if price else "FAILED")
+        apr = parse_apr(reply)
+        verdict = "OK" if apr == 22.99 else ("WRONG" if apr else "FAILED")
         print(f"Reply {i}: {reply[:70]}{'...' if len(reply) > 70 else ''}")
-        print(f"  parsed price -> {price}   {verdict}\n")
+        print(f"  parsed APR -> {apr}   {verdict}\n")

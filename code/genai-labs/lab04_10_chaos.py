@@ -9,11 +9,11 @@ from robust import structured_call
 
 
 class Reply(BaseModel):
-    category: Literal["billing", "scheduling", "other"]
+    category: Literal["fees", "dispute", "other"]
     urgent: bool
 
 
-GOOD = '{"category": "billing", "urgent": false}'
+GOOD = '{"category": "fees", "urgent": false}'
 
 
 def says(content=None, finish="stop", refusal=None):
@@ -32,8 +32,8 @@ SCENARIOS = {
     "fenced JSON": [says("```json\n" + GOOD + "\n```")],
     "sentence + JSON": [says("Sure! Here it is: " + GOOD + " Hope that helps.")],
     "wrong value, then fixed": [says('{"category": "refund", "urgent": false}'), says(GOOD)],
-    "garbage twice": [says("I think it's billing."), says("billing, not urgent")],
-    "cut off, then fixed": [says('{"category": "bil', finish="length"), says(GOOD)],
+    "garbage twice": [says("I think it's about fees."), says("fees, not urgent")],
+    "cut off, then fixed": [says('{"category": "fe', finish="length"), says(GOOD)],
     "cut off twice": [says('{"cat', finish="length"), says('{"category"', finish="length")],
     "refusal": [says(refusal="I can't help with that request.")],
     "content filter": [says(None, finish="content_filter")],

@@ -40,7 +40,7 @@ def load_markdown(path: Path) -> tuple[str, str]:
 
 
 def sentence_case(text: str) -> str:
-    """'LAB-409 QUOTA ERRORS' -> 'LAB-409 quota errors': lower-case words, but keep codes with digits."""
+    """'RULE FR-12 ALERTS' -> 'Rule FR-12 alerts': lower-case words, but keep codes with digits."""
     words = [w if any(ch.isdigit() for ch in w) else w.lower() for w in text.split()]
     out = " ".join(words)
     return out[:1].upper() + out[1:]
@@ -123,7 +123,7 @@ def load_folder(folder, audience: str):
 
 
 def load_knowledge_base():
-    """TrainCrest's knowledge base: public help-centre articles plus internal staff documents."""
+    """RR Finance Bank's knowledge base: public help-centre articles plus internal staff documents."""
     public, _ = load_folder(DATA / "help", "public")
     staff, _ = load_folder(DATA / "internal", "staff")
     return public + staff

@@ -8,18 +8,18 @@ from collections import Counter
 from llm import MODEL, get_client
 
 MESSAGES = [
-    "Hi, I'm Mei. My lab for TC-10293 says quota exceeded and my exam is on Friday!",
-    "Can I get a refund for TC-20877? I can't attend next week.",
-    "Where is my AZ-104 exam voucher? I finished the course 5 days ago. Diego",
-    "Hola, ¿puedo cambiar la fecha de mi curso? Soy Asha, inscripción TC-31002.",
-    "My certificate says Omar Farouk but my name is Omar Faruk.",
+    "Hi, I'm Mei, customer RR-10293. I was charged twice for a $412 flight and I fly on Friday!",
+    "Can you refund the $29 overdraft fee on RR-20877? It was a one-off.",
+    "My card was stolen at the station an hour ago. Diego",
+    "Hola, soy Asha, cliente RR-31002. Mi transferencia lleva cinco días pendiente.",
+    "There's a $640 payment to an online casino that I never made.",
 ]
 
-LOOSE = "Extract the useful details from this support message as JSON."
-TIGHT = """Extract details from this support message.
+LOOSE = "Extract the useful details from this bank customer's message as JSON."
+TIGHT = """Extract details from this bank customer's message.
 Return a JSON object with exactly these keys:
-"learner_name" (string or null), "enrolment_id" (string or null),
-"category" (one of scheduling, billing, exam_voucher, certificate, lab_access, account, other),
+"customer_name" (string or null), "customer_id" (string or null),
+"category" (one of card, dispute, fraud, fees, transfers, loans, account, other),
 "urgent" (true or false)."""
 
 

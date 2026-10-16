@@ -5,9 +5,9 @@ from embed import EMBED_MODEL
 from llm import get_client
 
 texts = [
-    "How do I get a refund for my course?",
-    "Can I have my money back?",
-    "My lab says quota exceeded.",
+    "How do I dispute a double charge?",
+    "Can I have my money back for a wrong payment?",
+    "My card was stolen.",
 ]
 
 client = get_client()

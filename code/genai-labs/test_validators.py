@@ -5,10 +5,10 @@ import pytest
 from pydantic import ValidationError
 
 import validators
-from validators import TicketDraft, unsupported_amounts
+from validators import CaseDraft, unsupported_amounts
 
-GOOD = {"category": "scheduling", "summary": "Learner wants to move AZ-104 to a later date.",
-        "enrolment_id": "TC-20877", "urgency": "medium", "preferred_date": "2026-11-16"}
+GOOD = {"category": "dispute", "summary": "Customer was charged twice for the same $412 flight.",
+        "customer_id": "RR-10293", "urgency": "medium", "transaction_date": "2026-09-09"}
 
 
 @pytest.fixture(autouse=True)
@@ -16,25 +16,29 @@ def fixed_today(monkeypatch):
     monkeypatch.setattr(validators, "today", lambda: date(2026, 10, 11))
 
 
-def test_good_ticket_passes():
-    assert TicketDraft.model_validate(GOOD).preferred_date == "2026-11-16"
+def test_good_case_passes():
+    assert CaseDraft.model_validate(GOOD).transaction_date == "2026-09-09"
 
 
 @pytest.mark.parametrize("change, message", [
-    ({"enrolment_id": "20877"}, "TC-12345"),
+    ({"customer_id": "10293"}, "RR-12345"),
     ({"summary": "help"}, "10 to 200"),
-    ({"preferred_date": "16/11/2026"}, "YYYY-MM-DD"),
-    ({"preferred_date": "2026-10-01"}, "future"),
-    ({"preferred_date": "2028-01-01"}, "365 days"),
-    ({"enrolment_id": None}, "needs the enrolment_id"),
+    ({"transaction_date": "09/09/2026"}, "YYYY-MM-DD"),
+    ({"transaction_date": "2026-10-20"}, "future"),
+    ({"transaction_date": "2026-06-01"}, "90 days"),
+    ({"customer_id": None}, "needs the customer_id"),
 ])
 def test_business_rules(change, message):
     with pytest.raises(ValidationError) as info:
-        TicketDraft.model_validate({**GOOD, **change})
+        CaseDraft.model_validate({**GOOD, **change})
     assert message in str(info.value)
 
 
+def test_other_categories_may_omit_the_customer():
+    assert CaseDraft.model_validate({**GOOD, "category": "other", "customer_id": None}).customer_id is None
+
+
 def test_facts_layer_catches_invented_amounts():
-    answer = "You'll get a 50% refund of $745.00, and a $50 fee applies if you reschedule."
-    assert unsupported_amounts(answer, {745.0, 50.0}) == []
-    assert unsupported_amounts("Good news: a full refund of $1,490!", {745.0}) == [1490.0]
+    answer = "We'll refund one $29 overdraft fee, and express delivery of the new card costs $15."
+    assert unsupported_amounts(answer, {29.0, 15.0}) == []
+    assert unsupported_amounts("Good news: we'll refund all $145 of fees!", {29.0}) == [145.0]

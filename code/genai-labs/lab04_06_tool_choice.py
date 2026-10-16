@@ -2,7 +2,7 @@
 Run:  python lab04_06_tool_choice.py                 (tool_choice="auto")
       python lab04_06_tool_choice.py none            (never call a tool)
       python lab04_06_tool_choice.py required        (must call some tool)
-      python lab04_06_tool_choice.py get_course      (must call this one)
+      python lab04_06_tool_choice.py get_product     (must call this one)
       python lab04_06_tool_choice.py auto --parallel (allow several calls in one turn)"""
 import json
 import sys
@@ -15,35 +15,36 @@ from llm import MODEL, get_client
 from llm_tools import TOOL_EXTRAS
 
 
-class FindCourses(BaseModel):
-    """Search the catalogue by level, budget or keyword."""
-    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
-    max_price_usd: Optional[int] = None
+class FindProducts(BaseModel):
+    """Search the product catalogue by family, audience, annual fee or keyword."""
+    family: Optional[Literal["accounts", "cards", "loans"]] = None
+    audience: Optional[Literal["personal", "student", "business"]] = None
+    max_annual_fee_usd: Optional[int] = None
     text: Optional[str] = None
 
 
-class GetCourse(BaseModel):
-    """Full details of one course by its ID, like C104."""
-    course_id: str = Field(description="Course ID such as C104")
+class GetProduct(BaseModel):
+    """Full details of one product by its ID, like P110."""
+    product_id: str = Field(description="Product ID such as P110")
 
 
-class GetVoucherStatus(BaseModel):
-    """Exam voucher status for the signed-in learner's enrolment."""
-    enrolment_id: str = Field(description="Like TC-12345")
+class GetCardStatus(BaseModel):
+    """Status of one of the signed-in customer's cards: active, frozen, replacement sent."""
+    card_last4: str = Field(description="Last four digits of the card, like 4821")
 
 
 QUESTIONS = [
-    "What does C104 cover?",
-    "Has my voucher for TC-10293 been issued?",
-    "Compare C110 and C111 for me.",
+    "What does P111 offer?",
+    "Has the replacement for my card ending 4821 been sent?",
+    "Compare P104 and P106 for me.",
     "Thanks, that's all!",
 ]
 
 choice = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else "auto"
 parallel = "--parallel" in sys.argv
-tools = [openai.pydantic_function_tool(FindCourses, name="find_courses"),
-         openai.pydantic_function_tool(GetCourse, name="get_course"),
-         openai.pydantic_function_tool(GetVoucherStatus, name="get_voucher_status")]
+tools = [openai.pydantic_function_tool(FindProducts, name="find_products"),
+         openai.pydantic_function_tool(GetProduct, name="get_product"),
+         openai.pydantic_function_tool(GetCardStatus, name="get_card_status")]
 if parallel:
     for t in tools:                    # strict tools can't be combined with parallel calls
         t["function"]["strict"] = False

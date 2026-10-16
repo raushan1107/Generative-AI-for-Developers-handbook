@@ -2,25 +2,26 @@
 Offline: the answers are written out here, so you can see exactly what each check catches."""
 from citations import check, render
 
-QUESTION = "I need to move my course, it starts in 3 days. What does it cost, and can I get money back instead?"
+QUESTION = "My card was stolen this morning. How fast can I get a new one, and do I pay for payments the thief made?"
 SOURCES = [
-    {"title": "Rescheduling a course > Fees", "source": "rescheduling.md",
-     "text": "Within 7 days of the start date: you can reschedule once for a $50 fee."},
-    {"title": "Refunds and cancellations > How much you get back", "source": "refunds-and-cancellations.md",
-     "text": "Cancel less than 7 days before the start date: no refund. Instead, you can move to a later date "
-             "once, free of charge."},
+    {"title": "Lost or stolen cards > Report it and get a replacement", "source": "lost-stolen-cards.md",
+     "text": "We cancel the card permanently and send a replacement with a new number within 5 to 7 business days. "
+             "Express delivery within 2 business days costs $15, and is free for Premier Checking customers."},
+    {"title": "Lost or stolen cards > Your liability", "source": "lost-stolen-cards.md",
+     "text": "You pay nothing for payments you didn't make if you report the card within 2 business days of "
+             "noticing it is missing."},
 ]
 ANSWERS = {
-    "grounded": "Moving the course within 7 days of the start costs $50, once [1]. Cancelling now gives no refund, "
-                "but you can move to a later date once, free [2].",
-    "invented citation": "Moving the course costs $50 [1]. Cancelling gives no refund [4].",
-    "number without a source": "Moving the course costs $50 [1]. Your refund would arrive in 5 to 10 business days.",
-    "number not in its source": "Moving the course costs $75 [1]. Cancelling now gives no refund [2].",
+    "grounded": "A new card arrives within 5 to 7 business days, or in 2 business days for $15 [1]. "
+                "You pay nothing for payments you didn't make, because you're reporting it within 2 business days [2].",
+    "invented citation": "A new card arrives within 5 to 7 business days [1]. You pay nothing for the thief's payments [4].",
+    "number without a source": "A new card arrives within 5 to 7 business days [1]. We'll refund the payments within 10 business days.",
+    "number not in its source": "Express delivery costs $25 [1]. You pay nothing for payments you didn't make [2].",
 }
 
 for name, text in ANSWERS.items():
     report = check(text, SOURCES, QUESTION)
     problems = {k: v for k, v in report.items() if v and k not in ("ok", "cited")}
     print(f"{name.upper()}: {'OK' if report['ok'] else problems}")
-print("\nRendered for the learner (grounded answer):\n")
+print("\nRendered for the customer (grounded answer):\n")
 print(render(ANSWERS["grounded"], SOURCES, check(ANSWERS["grounded"], SOURCES, QUESTION)))

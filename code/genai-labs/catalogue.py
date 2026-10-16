@@ -1,25 +1,26 @@
-"""The TrainCrest course catalogue (fictional), used by Module 04 and 05 drills."""
+"""The RR Finance Bank product catalogue (fictional), used by Module 04 and 05 drills."""
 import json
 from pathlib import Path
 
-COURSES = json.loads((Path(__file__).parent / "data" / "courses.json").read_text(encoding="utf-8"))
+PRODUCTS = json.loads((Path(__file__).parent / "data" / "products.json").read_text(encoding="utf-8"))
+FIELDS = ("id", "name", "family", "audience", "annual_fee_usd", "rate_pct", "rate_type")
 
 
-def find_courses(level=None, max_price_usd=None, course_format=None, text=None):
+def find_products(family=None, audience=None, max_annual_fee_usd=None, text=None):
     """Plain keyword filter over the catalogue: the kind of function your app already has."""
     hits = []
-    for c in COURSES:
-        if level and c["level"] != level:
+    for p in PRODUCTS:
+        if family and p["family"] != family:
             continue
-        if max_price_usd is not None and c["price_usd"] > max_price_usd:
+        if audience and p["audience"] != audience:
             continue
-        if course_format and c["format"] != course_format:
+        if max_annual_fee_usd is not None and p["annual_fee_usd"] > max_annual_fee_usd:
             continue
-        if text and text.lower() not in (c["title"] + " " + c["description"]).lower():
+        if text and text.lower() not in (p["name"] + " " + p["description"]).lower():
             continue
-        hits.append({k: c[k] for k in ("id", "title", "level", "format", "price_usd")})
+        hits.append({k: p[k] for k in FIELDS})
     return hits
 
 
-def get_course(course_id):
-    return next((c for c in COURSES if c["id"] == course_id.upper()), None)
+def get_product(product_id):
+    return next((p for p in PRODUCTS if p["id"] == product_id.strip().upper()), None)
