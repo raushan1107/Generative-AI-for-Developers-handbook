@@ -1,26 +1,38 @@
-"""TrainCrest policy as code (fictional). Money and dates are decided here, never by the model."""
-from datetime import date
+"""RR Finance Bank policy as code (fictional). Money and dates are decided here, never by the model."""
+from datetime import date, timedelta
+
+FEE_USD = 29                  # overdraft fee per overdrawn payment
+FREE_BUFFER_USD = 50          # no fee if overdrawn by this much or less at the end of the day
+MAX_FEES_PER_DAY = 3
+DISPUTE_WINDOW_DAYS = 60      # stand-in rule: the payment date counts as the statement date
 
 
-def refund_quote(start_date: date, today: date, paid_usd: float) -> dict:
-    days = (start_date - today).days
-    if days < 0:
-        return {"days_before_start": days, "refund_percent": 0, "refund_usd": 0.0,
-                "note": "The course has already started, so it can't be cancelled for a refund."}
-    if days >= 14:
-        percent, note = 100, "Full refund: 14 or more days before the start."
-    elif days >= 7:
-        percent, note = 50, "50% refund: 7 to 13 days before the start."
-    else:
-        percent, note = 0, "No refund under 7 days, but the learner can move to a later date once, free."
-    return {"days_before_start": days, "refund_percent": percent,
-            "refund_usd": round(paid_usd * percent / 100, 2), "note": note}
+def fee_refund_quote(overdraft_days: list[dict], courtesy_used: bool) -> dict:
+    """Which overdraft fees were charged in error (always refunded), plus one courtesy refund
+    per 12 months if it hasn't been used. The Drill 03.7 case, decided by code."""
+    charged = errors = 0
+    lines = []
+    for d in overdraft_days:
+        allowed = 0 if -d["end_of_day_balance_usd"] <= FREE_BUFFER_USD else MAX_FEES_PER_DAY
+        wrong = max(0, d["fees_charged"] - allowed)
+        charged += d["fees_charged"]
+        errors += wrong
+        lines.append({"date": d["date"], "fees_charged": d["fees_charged"], "charged_in_error": wrong})
+    courtesy = 1 if not courtesy_used and charged > errors else 0
+    refund_fees = errors + courtesy
+    return {"fees_charged": charged, "fees_charged_usd": charged * FEE_USD,
+            "charged_in_error": errors, "courtesy_refund": bool(courtesy),
+            "refund_usd": refund_fees * FEE_USD, "days": lines,
+            "note": (f"{errors} fee(s) charged in error are refunded" if errors else "no fees were charged in error")
+                    + ("; plus one courtesy refund" if courtesy else "")
+                    + ("; the courtesy refund was already used this year" if courtesy_used else "")}
 
 
-def reschedule_fee(start_date: date, today: date) -> dict:
-    days = (start_date - today).days
-    if days < 0:
-        return {"allowed": False, "fee_usd": None, "note": "The course has started; rescheduling isn't possible."}
-    if days >= 7:
-        return {"allowed": True, "fee_usd": 0, "note": "Free: 7 or more days before the start."}
-    return {"allowed": True, "fee_usd": 50, "note": "Within 7 days: one reschedule for $50."}
+def dispute_quote(payment_date: date, today: date) -> dict:
+    days = (today - payment_date).days
+    if days > DISPUTE_WINDOW_DAYS:
+        return {"allowed": False, "days_since_payment": days,
+                "note": f"Disputes must be raised within {DISPUTE_WINDOW_DAYS} days; a case can ask the team to review it."}
+    return {"allowed": True, "days_since_payment": days,
+            "provisional_credit_by": (today + timedelta(days=14)).isoformat(),
+            "note": "Inside the 60-day window: a provisional credit within 10 business days."}

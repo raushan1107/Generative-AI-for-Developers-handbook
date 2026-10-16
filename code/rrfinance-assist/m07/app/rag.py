@@ -4,15 +4,15 @@ Used in two ways:
 - the search_help tool in chat: the model decides when to look something up (tools.py);
 - POST /api/ask: a fixed pipeline for the help-centre search box: retrieve -> prompt -> generate -> check.
 Both number the sections they retrieve, so answers can cite them like [1], and both check the
-citations in code before the learner sees them."""
+citations in code before the customer sees them."""
 import re
 
 from app.config import HELP_CENTRE_URL, MODEL, RAG_MAX_CONTEXT_TOKENS, RAG_MIN_SCORE, RAG_TOP_K
 from app.prompts import render
 
 NOT_FOUND = "NOT_FOUND"
-NO_ANSWER = ("I couldn't find that in the TrainCrest help centre. "
-             "Would you like me to raise a ticket for our support team?")
+NO_ANSWER = ("I couldn't find that in the RR Finance Bank help centre. "
+             "Would you like me to raise a case for our support team?")
 SOURCE_TAG = re.compile(r"</?\s*sources?\b[^>]*>", re.I)
 CITE = re.compile(r"\[(\d+)\]")
 

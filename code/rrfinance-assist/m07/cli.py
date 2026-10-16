@@ -1,7 +1,7 @@
 """RR Finance Assist in the terminal, milestone 7: same ChatService as the web app, streamed.
 
 Run from the project folder:  python cli.py               (not signed in)
-                              python cli.py --as L-MEI    (demo sign-in as Mei; also L-DIEGO, L-ASHA)
+                              python cli.py --as RR-10293    (demo sign-in as Mei; also RR-20877, RR-31002)
 """
 import sys
 import uuid
@@ -15,11 +15,11 @@ from app.search import SearchService
 def main():
     chat, session = ChatService(), uuid.uuid4().hex
     try:
-        tools.set_search_service(SearchService(chat.client))     # courses (milestone 5) and help centre (6)
+        tools.set_search_service(SearchService(chat.client))     # products (milestone 5) and help centre (6)
     except Exception as e:
         print(f"(search index not available, using keyword search: {e})")
-    learner = sys.argv[sys.argv.index("--as") + 1] if "--as" in sys.argv else None
-    print(f"RR Finance Assist v0.7 [{PROVIDER} · {MODEL}] signed in as {learner or 'nobody'}. "
+    customer = sys.argv[sys.argv.index("--as") + 1] if "--as" in sys.argv else None
+    print(f"RR Finance Assist v0.7 [{PROVIDER} · {MODEL}] signed in as {customer or 'nobody'}. "
           "Type 'exit' to quit, '/reset' for a new chat.\n")
     while True:
         try:
@@ -35,7 +35,7 @@ def main():
         if not question:
             continue
         print("Assist: ", end="", flush=True)
-        for event in chat.stream(session, question, learner_id=learner):
+        for event in chat.stream(session, question, customer_id=customer):
             if event["type"] == "tool":
                 print(f"[{event['label']}...] ", end="", flush=True)
             elif event["type"] == "delta":
@@ -49,9 +49,9 @@ def main():
                     print(f"\n  [{source['n']}] {source['title']}  {source['url']}", end="")
                 print(f"\n  ({event['ttft_s']}s to first word · {event['total_s']}s · "
                       f"{event['tokens_in']} in / {event['tokens_out']} out · ${event['cost_usd']})")
-                for a in event.get("approvals", []):              # milestone 7: the learner decides
+                for a in event.get("approvals", []):              # milestone 7: the customer decides
                     answer = input(f"  APPROVE? {a['summary']} [y/n] ").strip().lower()
-                    result = chat.decide(session, a["action_id"], learner, answer == "y")
+                    result = chat.decide(session, a["action_id"], customer, answer == "y")
                     print(f"  {result['message']}")
         print()
 

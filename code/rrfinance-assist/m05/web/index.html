@@ -83,7 +83,7 @@
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId, message: text, learner_id: who.value || null }),
+        body: JSON.stringify({ session_id: sessionId, message: text, customer_id: who.value || null }),
       });
       if (!res.ok) throw new Error("HTTP " + res.status);
       const reader = res.body.getReader();
@@ -108,10 +108,10 @@
     }
   });
 
-  // Demo sign-in: a real app gets the learner from its login, on the server.
+  // Demo sign-in: a real app gets the customer from its login, on the server.
   const who = document.getElementById("who");
-  fetch("/api/demo-learners").then(r => r.json()).then(list => {
-    for (const l of list) who.add(new Option(l.name, l.learner_id));
+  fetch("/api/demo-customers").then(r => r.json()).then(list => {
+    for (const l of list) who.add(new Option(l.name, l.customer_id));
   });
   who.addEventListener("change", () => document.getElementById("reset").click());
 

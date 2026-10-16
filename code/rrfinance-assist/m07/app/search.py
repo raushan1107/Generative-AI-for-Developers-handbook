@@ -1,4 +1,4 @@
-"""Semantic and hybrid search over the course catalogue and help-centre articles (milestone 5).
+"""Semantic and hybrid search over the product catalogue and help-centre articles (milestone 5).
 Milestone 6: help sections keep the article's introduction, titles read 'Article > Section' for
 citations, and the index records its chunker version as well as its embedding model.
 
@@ -37,16 +37,16 @@ def chunk_by_headings(markdown: str):
 
 
 def load_documents():
-    """Everything we search, as plain dicts: one per course and one per help-article section."""
+    """Everything we search, as plain dicts: one per product and one per help-article section."""
     docs = []
-    for c in backend.COURSES.values():
-        docs.append({"id": c["id"], "kind": "course", "title": c["title"],
-                     "text": f"{c['title']}. {c['description']}",
-                     "level": c["level"], "format": c["format"], "price_usd": c["price_usd"]})
+    for p in backend.PRODUCTS.values():
+        docs.append({"id": p["id"], "kind": "product", "title": p["name"],
+                     "text": f"{p['name']}. {p['description']}",
+                     "family": p["family"], "audience": p["audience"], "annual_fee_usd": p["annual_fee_usd"]})
     for path in sorted(HELP_DIR.glob("*.md")):
         for n, (title, text) in enumerate(chunk_by_headings(path.read_text(encoding="utf-8")), 1):
             docs.append({"id": f"{path.stem}-{n}", "kind": "help", "title": title, "text": text,
-                         "source": f"{path.stem}.md", "level": None, "format": None, "price_usd": None})
+                         "source": f"{path.stem}.md", "family": None, "audience": None, "annual_fee_usd": None})
     return docs
 
 
@@ -76,11 +76,11 @@ def rrf(rankings, k=60):
 def _matches(doc, filters):
     if filters.get("kind") and doc["kind"] != filters["kind"]:
         return False
-    if filters.get("level") and doc["level"] != filters["level"]:
+    if filters.get("family") and doc["family"] != filters["family"]:
         return False
-    if filters.get("format") and doc["format"] != filters["format"]:
+    if filters.get("audience") and doc["audience"] != filters["audience"]:
         return False
-    if filters.get("max_price_usd") is not None and (doc["price_usd"] is None or doc["price_usd"] > filters["max_price_usd"]):
+    if filters.get("max_annual_fee_usd") is not None and (doc["annual_fee_usd"] is None or doc["annual_fee_usd"] > filters["max_annual_fee_usd"]):
         return False
     return True
 
@@ -138,15 +138,15 @@ class AzureIndex:
     def search(self, query, query_vector, k=5, **filters):
         from azure.search.documents.models import VectorizedQuery
         clauses = []
-        for field in ("kind", "level", "format"):
+        for field in ("kind", "family", "audience"):
             if filters.get(field):
                 clauses.append(f"{field} eq '{filters[field]}'")          # values come from enums, not free text
-        if filters.get("max_price_usd") is not None:
-            clauses.append(f"price_usd le {int(filters['max_price_usd'])}")
+        if filters.get("max_annual_fee_usd") is not None:
+            clauses.append(f"annual_fee_usd le {int(filters['max_annual_fee_usd'])}")
         results = self.client.search(
             search_text=query, top=k, filter=" and ".join(clauses) or None,
             vector_queries=[VectorizedQuery(vector=query_vector.tolist(), k_nearest_neighbors=k, fields="contentVector")])
-        return [{**{key: r.get(key) for key in ("id", "kind", "title", "text", "source", "level", "format", "price_usd")},
+        return [{**{key: r.get(key) for key in ("id", "kind", "title", "text", "source", "family", "audience", "annual_fee_usd")},
                  "score": round(r["@search.score"], 4)} for r in results]
 
 

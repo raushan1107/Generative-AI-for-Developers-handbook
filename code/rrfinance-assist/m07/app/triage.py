@@ -13,26 +13,28 @@ from app.config import MODEL
 from app.guard import neutralise_tags
 from app.prompts import render
 
-ENROLMENT_ID = re.compile(r"TC-\d{5}")
+CUSTOMER_ID = re.compile(r"RR-\d{5}")
+# Small models follow the system role more strictly than instructions buried in a long user message.
+SYSTEM = "You are a classification service. You reply with one JSON object only: never code, never explanations."
 
 
 class Triage(BaseModel):
     model_config = ConfigDict(extra="forbid")          # unexpected keys are an error, not a surprise
 
     # No pattern/max_length here: Azure structured outputs doesn't support them. Validators below do the job.
-    learner_name: Optional[str] = Field(description="First name if given, else null")
-    enrolment_id: Optional[str] = Field(description="Like TC-12345, only if it appears in the message, else null")
-    course: Optional[str] = Field(description="Course name if mentioned, else null")
-    issue_category: Literal["scheduling", "billing", "exam_voucher", "certificate", "lab_access", "account", "other"]
+    customer_name: Optional[str] = Field(description="First name if given, else null")
+    customer_id: Optional[str] = Field(description="Like RR-12345, only if it appears in the message, else null")
+    product: Optional[str] = Field(description="Product or card name if mentioned, else null")
+    issue_category: Literal["card", "dispute", "fraud", "fees", "transfers", "loans", "account", "other"]
     sentiment: Literal["positive", "neutral", "negative"]
     urgency: Literal["low", "medium", "high"]
     summary: str = Field(description="English, at most 20 words")
 
-    @field_validator("enrolment_id")
+    @field_validator("customer_id")
     @classmethod
-    def enrolment_id_format(cls, v):
-        if v is not None and not ENROLMENT_ID.fullmatch(v):
-            raise ValueError("enrolment_id must look like TC-12345")
+    def customer_id_format(cls, v):
+        if v is not None and not CUSTOMER_ID.fullmatch(v):
+            raise ValueError("customer_id must look like RR-12345")
         return v
 
     @field_validator("summary")
@@ -54,7 +56,8 @@ def triage(client, message: str, max_attempts: int = 2):
     for attempt in range(1, max_attempts + 1):
         try:
             completion = client.chat.completions.parse(
-                model=MODEL, messages=[{"role": "user", "content": prompt}], response_format=Triage)
+                model=MODEL, response_format=Triage,
+                messages=[{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}])
         except openai.BadRequestError:
             return _triage_json_repair(client, message)       # provider/model without structured outputs
         except openai.LengthFinishReasonError:
@@ -75,7 +78,7 @@ def triage(client, message: str, max_attempts: int = 2):
 def _triage_json_repair(client, message: str, max_attempts: int = 2):
     """Milestone 3's approach: ask for JSON in the prompt, validate, repair once."""
     prompt, version = render("triage_fallback", message=neutralise_tags(message))
-    messages = [{"role": "user", "content": prompt}]
+    messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}]
     problem = ""
     for attempt in range(1, max_attempts + 1):
         response = client.chat.completions.create(model=MODEL, messages=messages)

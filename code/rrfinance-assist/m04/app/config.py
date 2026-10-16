@@ -22,7 +22,7 @@ LOG_FILE = os.getenv("LOG_FILE", "assist.log")
 
 # New in milestone 4
 MAX_TOOL_ROUNDS = int(os.getenv("MAX_TOOL_ROUNDS", "4"))          # tool calls allowed per turn, then stop
-TICKETS_FILE = os.getenv("TICKETS_FILE", "data/tickets.jsonl")     # where create_support_ticket writes
+TICKETS_FILE = os.getenv("TICKETS_FILE", "data/tickets.jsonl")     # where create_support_case writes
 # Some reasoning models reject tools on Chat Completions unless reasoning effort is "none".
 _effort = os.getenv("TOOLS_REASONING_EFFORT", "").strip()
 TOOL_EXTRAS = {"reasoning_effort": _effort} if _effort else {}

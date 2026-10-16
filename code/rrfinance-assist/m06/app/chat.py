@@ -1,6 +1,6 @@
 """Chat service: conversation memory, streaming, error handling and usage logging.
 Milestone 3 added a versioned system prompt and an output guard.
-Milestone 4 adds tools: the model can look things up and create tickets, inside a loop we control.
+Milestone 4 adds tools: the model can look things up and create cases, inside a loop we control.
 Milestone 6 grounds policy answers in the help centre: search_help numbers the sections it finds,
 and the reply's citations are checked against them before it is saved."""
 import time
@@ -25,12 +25,12 @@ FRIENDLY = {
     "server": "Something went wrong on our side. Please try again shortly.",
 }
 SAFE_REPLY = ("Sorry, I can't share that. Could you rephrase your question, "
-              "or shall I raise a ticket for our support team?")
-TOO_MANY_STEPS = "Sorry, that took more steps than I'm allowed. Shall I raise a ticket for our support team?"
+              "or shall I raise a case for our support team?")
+TOO_MANY_STEPS = "Sorry, that took more steps than I'm allowed. Shall I raise a case for our support team?"
 
 
 class Turn:
-    """What we track during one learner turn, across several model calls."""
+    """What we track during one customer turn, across several model calls."""
     def __init__(self):
         self.id, self.start = uuid.uuid4().hex[:8], time.perf_counter()
         self.ttft, self.parts, self.tools = None, [], []
@@ -79,7 +79,7 @@ class ChatService:
                     slot["arguments"] += part.function.arguments or ""
         return [calls[i] for i in sorted(calls)], finish
 
-    def stream(self, session_id: str, user_message: str, learner_id: str | None = None):
+    def stream(self, session_id: str, user_message: str, customer_id: str | None = None):
         """Yield events for one turn: "delta" text, "tool" status lines, an optional "replace"
         if the guard blocks the answer, then one "done" or "error" event."""
         system_prompt, prompt_version = render("assist_system")
@@ -89,7 +89,7 @@ class ChatService:
         # This turn's working messages: history plus any tool calls and results. Only the final answer is kept.
         messages = [{"role": "system", "content": system_prompt}] + history
         # Identity comes from the app, not the model. "sources" collects help sections found this turn (milestone 6).
-        context = {"learner_id": learner_id, "sources": []}
+        context = {"customer_id": customer_id, "sources": []}
         turn, finish, error, detail = Turn(), None, None, ""
 
         try:

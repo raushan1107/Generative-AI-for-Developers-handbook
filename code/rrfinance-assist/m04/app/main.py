@@ -25,9 +25,9 @@ WEB = Path(__file__).resolve().parent.parent / "web"
 class ChatRequest(BaseModel):
     session_id: str = Field(min_length=8, max_length=64)
     message: str = Field(min_length=1, max_length=4000)
-    # DEMO ONLY: the UI says who is "signed in". A real app takes the learner from a verified
+    # DEMO ONLY: the UI says who is "signed in". A real app takes the customer from a verified
     # sign-in token on the server (Module 10), never from a field the browser can change.
-    learner_id: Optional[str] = None
+    customer_id: Optional[str] = None
 
 
 class ResetRequest(BaseModel):
@@ -48,20 +48,20 @@ def health():
     return {"status": "ok"}
 
 
-@app.get("/api/demo-learners")
-def demo_learners():
-    """New in milestone 4: the fictional learners the demo UI can 'sign in' as."""
-    return [{"learner_id": k, "name": v["name"]} for k, v in backend.LEARNERS.items()]
+@app.get("/api/demo-customers")
+def demo_customers():
+    """New in milestone 4: the fictional customers the demo UI can 'sign in' as."""
+    return [{"customer_id": k, "name": v["name"]} for k, v in backend.CUSTOMERS.items()]
 
 
 @app.post("/api/chat")
 def chat_endpoint(req: ChatRequest):
     """Stream the answer as server-sent events: one `data: {json}` line per event."""
-    if req.learner_id is not None and req.learner_id not in backend.LEARNERS:
-        raise HTTPException(status_code=400, detail="Unknown learner.")
+    if req.customer_id is not None and req.customer_id not in backend.CUSTOMERS:
+        raise HTTPException(status_code=400, detail="Unknown customer.")
 
     def events():
-        for event in chat.stream(req.session_id, req.message, learner_id=req.learner_id):
+        for event in chat.stream(req.session_id, req.message, customer_id=req.customer_id):
             yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
     return StreamingResponse(events(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
@@ -75,7 +75,7 @@ def reset(req: ResetRequest):
 
 @app.post("/api/triage")
 def triage_endpoint(req: TriageRequest):
-    """Classify a learner message into validated JSON for routing (structured outputs since milestone 4)."""
+    """Classify a customer message into validated JSON for routing (structured outputs since milestone 4)."""
     try:
         result, version, attempts = triage(chat.client, req.message)
     except TriageError as e:

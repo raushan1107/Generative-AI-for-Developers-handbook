@@ -1,11 +1,11 @@
 """Chat service: conversation memory, streaming, error handling and usage logging.
 Milestone 3 added a versioned system prompt and an output guard.
-Milestone 4 adds tools: the model can look things up and create tickets, inside a loop we control.
+Milestone 4 adds tools: the model can look things up and create cases, inside a loop we control.
 Milestone 6 grounds policy answers in the help centre: search_help numbers the sections it finds,
 and the reply's citations are checked against them before it is saved.
-Milestone 7 lets the assistant propose actions (extend a lab, move a date). Proposals wait in an
-ActionStore until the learner approves them; repeated identical tool calls are refused, and a tool
-call written as plain text never reaches the learner."""
+Milestone 7 lets the assistant propose actions (freeze a card, open a dispute). Proposals wait in an
+ActionStore until the customer approves them; repeated identical tool calls are refused, and a tool
+call written as plain text never reaches the customer."""
 import json
 import time
 import uuid
@@ -31,30 +31,29 @@ FRIENDLY = {
     "server": "Something went wrong on our side. Please try again shortly.",
 }
 SAFE_REPLY = ("Sorry, I can't share that. Could you rephrase your question, "
-              "or shall I raise a ticket for our support team?")
-TOO_MANY_STEPS = "Sorry, that took more steps than I'm allowed. Shall I raise a ticket for our support team?"
+              "or shall I raise a case for our support team?")
+TOO_MANY_STEPS = "Sorry, that took more steps than I'm allowed. Shall I raise a case for our support team?"
 GARBLED = "Sorry, something went wrong while I was working on that. Could you ask me again?"
 
 
 def looks_like_tool_call(text: str) -> bool:
-    """Small models sometimes write a tool call as text ('{"name": "quote_refund", ...}') instead of
-    calling it. Never show that to a learner (milestone 7)."""
+    """Small models sometimes write a tool call as text ('{"name": "quote_fee_refund", ...}') instead of
+    calling it. Never show that to a customer (milestone 7)."""
     t = text.strip().strip("`").removeprefix("json").strip()
     return t.startswith("{") and '"name"' in t and ('"arguments"' in t or '"parameters"' in t)
 
 
-def learner_context(learner_id: str) -> str:
-    """Who is signed in and their own enrolments, from the app, not the model (milestone 7). Saves a tool
-    call on almost every request, and contains nothing the learner isn't allowed to see."""
-    rows = backend.enrolments_of(learner_id)
-    lines = [f"- {r['enrolment_id']}: {r['course_title']} (course {r['course_id']}), starts {r['start_date']}, {r['status']}"
-             for r in rows]
-    return (f"## Signed-in learner\n{backend.LEARNERS[learner_id]['name']} ({learner_id}). Their enrolments:\n"
-            + "\n".join(lines))
+def customer_context(customer_id: str) -> str:
+    """Who is signed in, with their own accounts and cards, from the app, not the model (milestone 7). Saves a
+    tool call on almost every request, and contains nothing the customer isn't allowed to see."""
+    accounts = [f"- account {a['account_id']}: {a['product']}" for a in backend.accounts_of(customer_id)]
+    cards = [f"- card ending {c['card_last4']}: {c['product']}, {c['status']}" for c in backend.cards_of(customer_id)]
+    return (f"## Signed-in customer\n{backend.CUSTOMERS[customer_id]['name']} ({customer_id}). "
+            "Their accounts and cards:\n" + "\n".join(accounts + cards))
 
 
 class Turn:
-    """What we track during one learner turn, across several model calls."""
+    """What we track during one customer turn, across several model calls."""
     def __init__(self):
         self.id, self.start = uuid.uuid4().hex[:8], time.perf_counter()
         self.ttft, self.parts, self.tools = None, [], []
@@ -104,12 +103,12 @@ class ChatService:
                     slot["arguments"] += part.function.arguments or ""
         return [calls[i] for i in sorted(calls)], finish
 
-    def stream(self, session_id: str, user_message: str, learner_id: str | None = None):
+    def stream(self, session_id: str, user_message: str, customer_id: str | None = None):
         """Yield events for one turn: "delta" text, "tool" status lines, an optional "replace"
         if the guard blocks the answer, then one "done" or "error" event."""
         system_prompt, prompt_version = render("assist_system")
-        if learner_id in backend.LEARNERS:                       # milestone 7: session context from the app
-            system_prompt += "\n\n" + learner_context(learner_id)
+        if customer_id in backend.CUSTOMERS:                       # milestone 7: session context from the app
+            system_prompt += "\n\n" + customer_context(customer_id)
         history = self.sessions.setdefault(session_id, [])
         history[:] = history[-(MAX_TURNS_KEPT * 2):]            # keep whole user/assistant pairs
         history.append({"role": "user", "content": user_message})
@@ -117,7 +116,7 @@ class ChatService:
         messages = [{"role": "system", "content": system_prompt}] + history
         # Identity comes from the app, not the model. "sources" collects help sections found this turn (milestone 6).
         # "proposals" collects actions the model proposes this turn (milestone 7).
-        context = {"learner_id": learner_id, "sources": [], "proposals": []}
+        context = {"customer_id": customer_id, "sources": [], "proposals": []}
         turn, finish, error, detail, seen = Turn(), None, None, "", {}
 
         try:
@@ -178,7 +177,7 @@ class ChatService:
             reply = SAFE_REPLY
             yield {"type": "replace", "text": SAFE_REPLY}
         history.append({"role": "assistant", "content": reply})
-        for proposal in context["proposals"]:                   # milestone 7: wait for the learner
+        for proposal in context["proposals"]:                   # milestone 7: wait for the customer
             self.actions.add(session_id, proposal)
 
         cost = cost_usd(SimpleNamespace(prompt_tokens=turn.tokens_in, completion_tokens=turn.tokens_out)
@@ -201,10 +200,10 @@ class ChatService:
                   flagged=flagged, **{k: v for k, v in event.items() if k != "type"})
         yield event
 
-    def decide(self, session_id: str, action_id: str, learner_id: str | None, approve: bool) -> dict:
-        """The learner pressed Approve or Decline (milestone 7). Code executes; the model isn't involved.
+    def decide(self, session_id: str, action_id: str, customer_id: str | None, approve: bool) -> dict:
+        """The customer pressed Approve or Decline (milestone 7). Code executes; the model isn't involved.
         The outcome is added to the conversation, so the next turn knows what really happened."""
-        result = self.actions.decide(session_id, action_id, learner_id, approve)
+        result = self.actions.decide(session_id, action_id, customer_id, approve)
         if result["status"] != "unknown":
             self.sessions.setdefault(session_id, []).append(
                 {"role": "assistant", "content": f"[{action_id} {result['status']}] {result['message']}"})

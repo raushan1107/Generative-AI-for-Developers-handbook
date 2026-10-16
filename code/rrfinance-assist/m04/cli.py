@@ -1,7 +1,7 @@
 """RR Finance Assist in the terminal, milestone 4: same ChatService as the web app, streamed.
 
 Run from the project folder:  python cli.py               (not signed in)
-                              python cli.py --as L-MEI    (demo sign-in as Mei; also L-DIEGO, L-ASHA)
+                              python cli.py --as RR-10293    (demo sign-in as Mei; also RR-20877, RR-31002)
 """
 import sys
 import uuid
@@ -12,8 +12,8 @@ from app.config import MODEL, PROVIDER
 
 def main():
     chat, session = ChatService(), uuid.uuid4().hex
-    learner = sys.argv[sys.argv.index("--as") + 1] if "--as" in sys.argv else None
-    print(f"RR Finance Assist v0.4 [{PROVIDER} · {MODEL}] signed in as {learner or 'nobody'}. "
+    customer = sys.argv[sys.argv.index("--as") + 1] if "--as" in sys.argv else None
+    print(f"RR Finance Assist v0.4 [{PROVIDER} · {MODEL}] signed in as {customer or 'nobody'}. "
           "Type 'exit' to quit, '/reset' for a new chat.\n")
     while True:
         try:
@@ -29,7 +29,7 @@ def main():
         if not question:
             continue
         print("Assist: ", end="", flush=True)
-        for event in chat.stream(session, question, learner_id=learner):
+        for event in chat.stream(session, question, customer_id=customer):
             if event["type"] == "tool":
                 print(f"[{event['label']}...] ", end="", flush=True)
             elif event["type"] == "delta":

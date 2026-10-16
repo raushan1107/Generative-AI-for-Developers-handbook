@@ -33,9 +33,9 @@ WEB = Path(__file__).resolve().parent.parent / "web"
 class ChatRequest(BaseModel):
     session_id: str = Field(min_length=8, max_length=64)
     message: str = Field(min_length=1, max_length=4000)
-    # DEMO ONLY: the UI says who is "signed in". A real app takes the learner from a verified
+    # DEMO ONLY: the UI says who is "signed in". A real app takes the customer from a verified
     # sign-in token on the server (Module 10), never from a field the browser can change.
-    learner_id: Optional[str] = None
+    customer_id: Optional[str] = None
 
 
 class ResetRequest(BaseModel):
@@ -60,20 +60,20 @@ def health():
     return {"status": "ok"}
 
 
-@app.get("/api/demo-learners")
-def demo_learners():
-    """New in milestone 4: the fictional learners the demo UI can 'sign in' as."""
-    return [{"learner_id": k, "name": v["name"]} for k, v in backend.LEARNERS.items()]
+@app.get("/api/demo-customers")
+def demo_customers():
+    """New in milestone 4: the fictional customers the demo UI can 'sign in' as."""
+    return [{"customer_id": k, "name": v["name"]} for k, v in backend.CUSTOMERS.items()]
 
 
 @app.post("/api/chat")
 def chat_endpoint(req: ChatRequest):
     """Stream the answer as server-sent events: one `data: {json}` line per event."""
-    if req.learner_id is not None and req.learner_id not in backend.LEARNERS:
-        raise HTTPException(status_code=400, detail="Unknown learner.")
+    if req.customer_id is not None and req.customer_id not in backend.CUSTOMERS:
+        raise HTTPException(status_code=400, detail="Unknown customer.")
 
     def events():
-        for event in chat.stream(req.session_id, req.message, learner_id=req.learner_id):
+        for event in chat.stream(req.session_id, req.message, customer_id=req.customer_id):
             yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
     return StreamingResponse(events(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
@@ -86,20 +86,20 @@ def reset(req: ResetRequest):
 
 
 @app.get("/api/search")
-def search_endpoint(q: str = Query(min_length=2, max_length=200), kind: Literal["course", "help"] = "course",
-                    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None,
-                    max_price_usd: Optional[int] = Query(default=None, ge=0),
+def search_endpoint(q: str = Query(min_length=2, max_length=200), kind: Literal["product", "help"] = "product",
+                    family: Optional[Literal["accounts", "cards", "loans"]] = None,
+                    max_annual_fee_usd: Optional[int] = Query(default=None, ge=0),
                     k: int = Query(default=5, ge=1, le=20)):
-    """New in milestone 5: semantic + keyword (hybrid) search over courses or help-centre sections."""
+    """New in milestone 5: semantic + keyword (hybrid) search over products or help-centre sections."""
     if search is None:
         raise HTTPException(status_code=503, detail="Search index not built. Run: python -m scripts.build_index")
     try:
-        hits = search.search(q, k=k, kind=kind, level=level, max_price_usd=max_price_usd)
+        hits = search.search(q, k=k, kind=kind, family=family, max_annual_fee_usd=max_annual_fee_usd)
     except openai.APIError as e:
         log_event(level="error", event="search_api_error", error=type(e).__name__)
         raise HTTPException(status_code=503, detail="The embedding service is unavailable. Please try again shortly.")
     return {"query": q, "kind": kind, "results": [
-        {k_: h.get(k_) for k_ in ("id", "title", "score", "source", "level", "price_usd")} | {"text": h["text"][:300]}
+        {k_: h.get(k_) for k_ in ("id", "title", "score", "source", "family", "annual_fee_usd")} | {"text": h["text"][:300]}
         for h in hits]}
 
 
@@ -122,7 +122,7 @@ def ask_endpoint(req: AskRequest):
 
 @app.post("/api/triage")
 def triage_endpoint(req: TriageRequest):
-    """Classify a learner message into validated JSON for routing (structured outputs since milestone 4)."""
+    """Classify a customer message into validated JSON for routing (structured outputs since milestone 4)."""
     try:
         result, version, attempts = triage(chat.client, req.message)
     except TriageError as e:

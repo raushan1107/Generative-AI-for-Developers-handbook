@@ -1,9 +1,9 @@
 """Build the search index for RR Finance Assist (milestones 5 and 6).
 
 From the project folder:  python -m scripts.build_index
-SEARCH_BACKEND=local  -> embeds courses and help sections, saves data/index/ (vectors.npy + docs.json)
+SEARCH_BACKEND=local  -> embeds products and help sections, saves data/index/ (vectors.npy + docs.json)
 SEARCH_BACKEND=azure  -> creates or updates the Azure AI Search index and uploads the same documents
-Re-run it whenever courses or help articles change, or when you switch embedding model or chunker."""
+Re-run it whenever products or help articles change, or when you switch embedding model or chunker."""
 import time
 
 from app.config import AZURE_SEARCH_API_KEY, AZURE_SEARCH_ENDPOINT, AZURE_SEARCH_INDEX, EMBED_MODEL, SEARCH_BACKEND
@@ -27,9 +27,9 @@ def build_azure(client):
         SearchableField(name="title", type=s.String),
         SearchableField(name="text", type=s.String, analyzer_name="en.microsoft"),   # stemming, stop words
         SimpleField(name="source", type=s.String),
-        SimpleField(name="level", type=s.String, filterable=True),
-        SimpleField(name="format", type=s.String, filterable=True),
-        SimpleField(name="price_usd", type=s.Int32, filterable=True, sortable=True),
+        SimpleField(name="family", type=s.String, filterable=True),
+        SimpleField(name="audience", type=s.String, filterable=True),
+        SimpleField(name="annual_fee_usd", type=s.Int32, filterable=True, sortable=True),
         SearchField(name="contentVector", type=s.Collection(s.Single), searchable=True,
                     vector_search_dimensions=vectors.shape[1], vector_search_profile_name="vprofile"),
     ]
@@ -51,7 +51,7 @@ def main():
         index = LocalIndex.build(client)
         index.save()
         kinds = [d["kind"] for d in index.docs]
-        print(f"Local index: {kinds.count('course')} courses + {kinds.count('help')} help sections, "
+        print(f"Local index: {kinds.count('product')} products + {kinds.count('help')} help sections, "
               f"{index.vectors.shape[1]}-dimension vectors from {EMBED_MODEL}.")
     print(f"Done in {time.perf_counter() - start:.1f}s.")
 
