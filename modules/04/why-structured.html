@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -326,30 +326,30 @@ MODEL = {
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Three good answers, one quick parser</h4>
         <pre class="code" data-file="lab04_01_free_text.py"><code>"""Drill 04.1: why free text breaks your code.
-We ask for a course recommendation and try to pull the price out with a regex,
+We ask which card matches a customer's need and try to pull the APR out with a regex,
 the way a quick prototype would. Run with --offline to use three saved replies."""
 import re
 import sys
 
-QUESTION = """A learner wants a beginner Python course under $300.
-Recommend one course from this list and say its price.
-- C101 Python Foundations, beginner, $290
-- C114 Docker Quick Start, beginner, $190
-- C103 Machine Learning Essentials, intermediate, $1190"""
+QUESTION = """A customer wants a credit card with no annual fee and the lowest APR.
+Which card on this list matches? Name it and say its APR.
+- P110 Cashback Card, no annual fee, 22.99% APR
+- P111 Voyager Travel Card, $95 annual fee, 24.49% APR
+- P112 Starter Credit Card, no annual fee, 26.99% APR"""
 
 <span class="c"># Three real-looking replies to the same question. All are fine for a human reader.</span>
 SAVED_REPLIES = [
-    "I recommend Python Foundations (C101). It costs $290 and is designed for complete beginners.",
-    "Python Foundations is the best fit. If budget is tight, Docker Quick Start is only $190, "
-    "but Python Foundations at $290 teaches programming from zero.",
-    "Go for **Python Foundations**: beginner level, 290 USD, five days.",
+    "The Cashback Card (P110) matches: no annual fee and a 22.99% APR.",
+    "Both the Starter Credit Card (26.99% APR) and the Cashback Card have no annual fee, "
+    "so the Cashback Card at 22.99% is the better match.",
+    "Go for the **Cashback Card**: no annual fee, APR of 22.99 percent.",
 ]
 
 
-def parse_price(reply: str):
-    """The 'quick prototype' parser: first dollar amount in the text."""
-    match = re.search(r"\$(\d+)", reply)
-    return int(match.group(1)) if match else None
+def parse_apr(reply: str):
+    """The 'quick prototype' parser: first percentage in the text."""
+    match = re.search(r"(\d+(?:\.\d+)?)\s?%", reply)
+    return float(match.group(1)) if match else None
 
 
 def get_replies():
@@ -366,10 +366,10 @@ def get_replies():
 
 if __name__ == "__main__":
     for i, reply in enumerate(get_replies(), 1):
-        price = parse_price(reply)
-        verdict = "OK" if price == 290 else ("WRONG" if price else "FAILED")
+        apr = parse_apr(reply)
+        verdict = "OK" if apr == 22.99 else ("WRONG" if apr else "FAILED")
         print(f"Reply {i}: {reply[:70]}{'...' if len(reply) &gt; 70 else ''}")
-        print(f"  parsed price -&gt; {price}   {verdict}\n")</code></pre>
+        print(f"  parsed APR -&gt; {apr}   {verdict}\n")</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab04_01_free_text.py --offline</code></pre>
         <span class="out-label">Output (exact, offline)</span>
 <pre class="out"><code>Reply 1: I recommend Python Foundations (C101). It costs $290 and is designed f...
@@ -414,7 +414,7 @@ Reply 3: For a beginner Python course that costs under $300, I recommend the fo.
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

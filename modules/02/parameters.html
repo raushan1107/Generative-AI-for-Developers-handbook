@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -166,8 +166,8 @@
     <thead><tr><th>Task</th><th>Non-reasoning model</th><th>Reasoning model</th></tr></thead>
     <tbody>
       <tr><td>Extract fields, classify a ticket</td><td>temperature 0–0.2, small output cap</td><td>reasoning_effort <code>none</code> or <code>low</code></td></tr>
-      <tr><td>Learner chat</td><td>temperature ~0.5–0.7</td><td><code>low</code> for speed, <code>medium</code> for tricky policy questions</td></tr>
-      <tr><td>Course descriptions, slogans</td><td>temperature ~0.9–1.2</td><td>default</td></tr>
+      <tr><td>Customer chat</td><td>temperature ~0.5–0.7</td><td><code>low</code> for speed, <code>medium</code> for tricky policy questions</td></tr>
+      <tr><td>Product descriptions, slogans</td><td>temperature ~0.9–1.2</td><td>default</td></tr>
       <tr><td>Multi-step reasoning, code</td><td>low temperature</td><td><code>medium</code> or <code>high</code></td></tr>
     </tbody>
   </table>
@@ -175,6 +175,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>A sensible split for a bank: <strong>temperature low</strong> (or the model's default on reasoning models) for anything a customer relies on, such as fee explanations, dispute steps and extracted amounts; <strong>higher</strong> only for internal drafting such as marketing ideas that compliance reviews anyway. Output caps protect the budget and stop rambling replies, but set them generously and check <code>finish_reason</code>, because a truncated disclosure is worse than a long one. For multi-step calculations such as working out which fees were charged in error, a reasoning model at higher effort earns its extra tokens, although the arithmetic itself still belongs in code.</p>
+</div>
   <p>Teams tune these per feature, not per app. The same product might run ticket classification at the lowest reasoning effort with a 50-token cap, chat at low effort, and a "deep analysis" button at high effort, because each feature trades quality, speed and cost differently. They keep the settings in configuration so they can change them without a release.</p>
 </div>
 
@@ -287,41 +292,50 @@ def try_call(label, prompt, **params):
 print("Temperature (3 samples each):")
 for t in (0.0, 1.0, 1.8):
     for _ in range(3):
-        try_call(f"temperature={t}", "Suggest a name for a new online cloud course. Name only.", temperature=t)
+        try_call(f"temperature={t}", "Suggest a name for a new savings account. Name only.", temperature=t)
 
 print("\nOutput cap:")
-try_call("max_completion_tokens=40", "Explain what an exam voucher is in three paragraphs.", max_completion_tokens=40)
+try_call("max_completion_tokens=40", "Explain what an overdraft is in three paragraphs.", max_completion_tokens=40)
 
 print("\nStop sequence:")
-try_call("stop=['4.']", "List 5 cloud certifications, numbered 1. to 5., one per line.", stop=["4."])
+try_call("stop=['4.']", "List 5 types of bank account, numbered 1. to 5., one per line.", stop=["4."])
 
 print("\nReasoning effort (reasoning models only):")
 for effort in ("low", "high"):
     try_call(f"reasoning_effort={effort}",
-             "A course costs $1,200. The learner cancels 10 days before the start and gets 50% back, "
-             "plus a $180 add-on refunded in full. Total refund? Number only.",
+             "A customer paid three $29 overdraft fees and a $15 express card fee. The bank refunds "
+             "one overdraft fee as a courtesy and the express fee in full. Total refund in USD? Number only.",
              reasoning_effort=effort)</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab02_07_parameters.py</code></pre>
         <p>Then set <code>LLM_PROVIDER=ollama</code> and run again: local non-reasoning models accept temperature, so you'll see its effect clearly. Switch back afterwards.</p>
         <span class="out-label">Typical output on a reasoning deployment (abridged)</span>
 <pre class="out"><code>Temperature (3 samples each):
   temperature=0.0            -&gt; REJECTED: Unsupported value: 'temperature' does not support 0.0 with this model...
-  temperature=1.0            -&gt; 'CloudCraft Essentials'  [finish=stop, out=148]
+  temperature=1.0            -&gt; 'Harbor Growth Savings'  [finish=stop, out=148]
   temperature=1.8            -&gt; REJECTED: Unsupported value: 'temperature' does not support 1.8 with this model...
 
 Output cap:
   max_completion_tokens=40   -&gt; ''  [finish=length, out=40]
 
 Reasoning effort (reasoning models only):
-  reasoning_effort=low       -&gt; '780'  [finish=stop, out=64]
-  reasoning_effort=high      -&gt; '780'  [finish=stop, out=402]</code></pre>
+  reasoning_effort=low       -&gt; '44'  [finish=stop, out=64]
+  reasoning_effort=high      -&gt; '44'  [finish=stop, out=402]</code></pre>
+        <span class="out-label">Real output on Ollama (llama3.2), abridged</span>
+<pre class="out"><code>  temperature=0.0            -&gt; 'Prospera'  [finish=stop, out=4]
+  temperature=0.0            -&gt; 'Prospera'  [finish=stop, out=4]
+  temperature=1.8            -&gt; 'HorizonWallet'  [finish=stop, out=4]
+  temperature=1.8            -&gt; 'Eagl Save'  [finish=stop, out=5]
+  max_completion_tokens=40   -&gt; "An overdraft is a situation where an individual's checking or savings "  [finish=stop, out=300]
+  stop=['4.']                -&gt; '1. Checking account 2. Savings account 3. Money market account'  [finish=stop, out=18]
+  reasoning_effort=low       -&gt; REJECTED: Error code: 400 - {'error': {'message': '"llama3.2" does not support thinking'...</code></pre>
+        <p class="small muted">Two lessons from the local run: temperature 1.8 already produced a misspelled name ("Eagl Save"), and this Ollama version <strong>ignored</strong> <code>max_completion_tokens</code> (300 tokens out, not 40). Parameters are requests, not guarantees: check <code>usage</code> and <code>finish_reason</code> on every provider you support.</p>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Fill in your model's parameter card</h4>
         <ul class="verify-list">
           <li><strong>Temperature:</strong> accepted or rejected? On a model that accepts it, 0.0 repeats the same name; 1.8 gives odd, sometimes broken names.</li>
           <li><strong>Output cap:</strong> <code>finish=length</code>. On a reasoning model the text may be <em>empty</em>, because all 40 tokens went to hidden reasoning. A too-small cap can silently eat the whole answer.</li>
           <li><strong>Stop:</strong> the list ends at item 3, if supported.</li>
-          <li><strong>Reasoning effort:</strong> same answer ($780), several times more output tokens at high effort. You pay for thinking.</li>
+          <li><strong>Reasoning effort:</strong> same answer ($44: one $29 overdraft fee refunded as a courtesy, plus the $15 express fee), several times more output tokens at high effort. You pay for thinking.</li>
         </ul>
       </li>
     </ol>
@@ -344,7 +358,7 @@ Reasoning effort (reasoning models only):
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -342,7 +342,7 @@ MODEL = {
       <li class="dstep run"><span class="st">Run</span><h4>Systems that can change, and the tools over them</h4>
         <p><code>desk.py</code> holds fictional enrolments, labs and course dates in memory, with dates relative to today. Every successful write lands in <code>desk.ACTIONS</code>, the audit log. Skim it, then read the tools:</p>
         <pre class="code" data-file="desk_tools.py"><code>"""Module 07: the agent's tools over desk.py. Read tools look things up; write tools change state.
-The signed-in learner comes from `context`, set by the app, never from the model.
+The signed-in customer comes from `context`, set by the app, never from the model.
 WRITE_TOOLS lists the tools that need a human's approval; preview() says, in plain words,
 exactly what an approval would do, so the human approves an effect, not a function name."""
 import functools
@@ -355,12 +355,12 @@ import desk
 from toolkit import Toolkit
 
 kit = Toolkit()
-WRITE_TOOLS = {"extend_lab", "reschedule"}
+WRITE_TOOLS = {"freeze_card", "open_dispute"}
 
 
 def actionable(func):
     """Errors are observations: return the system's message so the model can recover
-    (pick another date, offer a ticket, retry), instead of a generic "tool failed"."""
+    (pick another payment, offer a case, retry), instead of a generic "tool failed"."""
     @functools.wraps(func)
     def wrapper(args, context):
         try:
@@ -376,100 +376,104 @@ class NoArgs(BaseModel):
     pass
 
 
-class EnrolmentArgs(BaseModel):
-    enrolment_id: str = Field(description="Enrolment ID like TC-12345, from my_enrolments")
+class CardArgs(BaseModel):
+    card_last4: str = Field(description="Last four digits of one of the customer's cards, like 4821, from my_cards")
 
 
-class CourseArgs(BaseModel):
-    course_id: str = Field(description="Course ID like C110, from my_enrolments")
+class TransactionArgs(BaseModel):
+    txn_id: str = Field(description="Transaction ID like TX-1002, from recent_transactions")
 
 
-class RescheduleArgs(BaseModel):
-    enrolment_id: str = Field(description="Enrolment ID like TC-12345")
-    new_start: str = Field(description="New start date, YYYY-MM-DD, one of upcoming_sessions")
+class DisputeArgs(BaseModel):
+    txn_id: str = Field(description="Transaction ID like TX-1002, from recent_transactions")
+    reason: Literal["charged_twice", "wrong_amount", "not_received", "not_recognised"]
 
 
-class TicketArgs(BaseModel):
-    category: Literal["scheduling", "billing", "lab_access", "other"]
+class CaseArgs(BaseModel):
+    category: Literal["card", "dispute", "fraud", "fees", "other"]
     summary: str = Field(description="One or two sentences for the support team")
 
 
 @kit.register(NoArgs, needs_context=True)
 @actionable
-def my_enrolments(args, context):
-    """List the signed-in learner's enrolments: enrolment_id, course_id, course, start date, status."""
-    return desk.my_enrolments(context["learner"])
+def my_cards(args, context):
+    """List the signed-in customer's cards: card_last4, product and status (active or frozen)."""
+    return desk.my_cards(context["customer"])
 
 
-@kit.register(EnrolmentArgs, needs_context=True)
+@kit.register(CardArgs, needs_context=True)
 @actionable
-def lab_status(args, context):
-    """Lab access for one enrolment: open until which date, days left, and whether the free extension is available."""
-    return desk.lab_status(context["learner"], args.enrolment_id)
+def card_status(args, context):
+    """Status of one card: active or frozen, and what that means for payments."""
+    return desk.card_status(context["customer"], args.card_last4)
 
 
-@kit.register(CourseArgs, needs_context=True)
+@kit.register(CardArgs, needs_context=True)
 @actionable
-def upcoming_sessions(args, context):
-    """Upcoming start dates (YYYY-MM-DD) for a course."""
-    return desk.upcoming_sessions(args.course_id)
+def recent_transactions(args, context):
+    """Payments on one card in the last 90 days: txn_id, date, merchant and amount, newest first."""
+    return desk.recent_transactions(context["customer"], args.card_last4)
 
 
-@kit.register(EnrolmentArgs, needs_context=True)
+@kit.register(TransactionArgs, needs_context=True)
 @actionable
-def reschedule_quote(args, context):
-    """Whether this enrolment can be moved to another date today, and the fee. Call it before reschedule."""
-    return desk.reschedule_quote(context["learner"], args.enrolment_id)
+def dispute_quote(args, context):
+    """Whether a payment can be disputed today, and when a provisional credit would arrive. Call it before open_dispute."""
+    return desk.dispute_quote(context["customer"], args.txn_id)
 
 
-@kit.register(EnrolmentArgs, needs_context=True)
+@kit.register(CardArgs, needs_context=True)
 @actionable
-def extend_lab(args, context):
-    """Use the learner's one free 7-day lab extension. Changes the booking: needs the learner's approval."""
-    return desk.extend_lab(context["learner"], args.enrolment_id, key=context.get("idempotency_key"))
+def freeze_card(args, context):
+    """Freeze one card so new payments are declined. Changes the account: needs the customer's approval."""
+    return desk.freeze_card(context["customer"], args.card_last4, key=context.get("idempotency_key"))
 
 
-@kit.register(RescheduleArgs, needs_context=True)
+@kit.register(DisputeArgs, needs_context=True)
 @actionable
-def reschedule(args, context):
-    """Move an enrolment to another upcoming date of the same course. Changes the booking and may cost $50:
-    needs the learner's approval. Call reschedule_quote first."""
-    return desk.reschedule(context["learner"], args.enrolment_id, args.new_start, key=context.get("idempotency_key"))
+def open_dispute(args, context):
+    """Open a dispute for one payment and start the provisional credit. Changes the account: needs the
+    customer's approval. Call dispute_quote first."""
+    return desk.open_dispute(context["customer"], args.txn_id, args.reason, key=context.get("idempotency_key"))
 
 
-@kit.register(TicketArgs, needs_context=True)
+@kit.register(CaseArgs, needs_context=True)
 @actionable
-def create_ticket(args, context):
-    """Create a ticket for the human support team, for anything you can't do yourself."""
-    return desk.create_ticket(context["learner"], args.category, args.summary)
+def create_case(args, context):
+    """Create a case for the human support team, for anything you can't do yourself."""
+    return desk.create_case(context["customer"], args.category, args.summary)
 
 
 def preview(name: str, arguments: str, context: dict) -&gt; str:
-    """What an approval would do, in the learner's terms, computed by code (not described by the model)."""
+    """What an approval would do, in the customer's terms, computed by code (not described by the model)."""
     a = json.loads(arguments or "{}")
-    learner = context["learner"]
+    customer = context["customer"]
     try:
-        if name == "extend_lab":
-            status = desk.lab_status(learner, a["enrolment_id"])
-            return (f"Extend the lab for {a['enrolment_id']} by 7 days, free (one-time): "
-                    f"open until {status.get('lab_until')} becomes 7 days later.")
-        if name == "reschedule":
-            quote = desk.reschedule_quote(learner, a["enrolment_id"])
-            fee = f"${quote['fee_usd']}" if quote["fee_usd"] else "free"
-            return f"Move {a['enrolment_id']} to start on {a['new_start']} ({fee}: {quote['reason']})."
+        if name == "freeze_card":
+            card = desk.card_status(customer, a["card_last4"])
+            return (f"Freeze your {card['product']} ending {a['card_last4']}: new payments and cash withdrawals "
+                    "will be declined until you unfreeze it; direct debits keep working.")
+        if name == "open_dispute":
+            quote = desk.dispute_quote(customer, a["txn_id"])
+            txn = desk.STATE["transactions"][a["txn_id"].upper()]
+            if not quote["allowed"]:
+                return f"Dispute {a['txn_id']} (not possible: {quote['reason']})."
+            return (f"Dispute ${txn['amount_usd']:.2f} to {txn['merchant']} on {txn['date']} ({a.get('reason')}); "
+                    f"a provisional credit by {quote['provisional_credit_by']}.")
     except (desk.DeskError, KeyError) as e:
         return f"{name} with {arguments} (can't preview: {e})"
     return f"{name} with {arguments}"
 
 
-SYSTEM = f"""You are Traincrest Assist, acting for the signed-in TrainCrest learner. Today is {desk.TODAY.isoformat()}.
-- Use tools to look things up and to act. Never guess or invent enrolment IDs, dates or fees.
-- The learner can't see or call tools. Never ask them to; call the tools yourself.
-- Start with my_enrolments whenever you need an enrolment ID or course ID.
-- Before reschedule, call reschedule_quote and upcoming_sessions.
-- extend_lab and reschedule need the learner's approval; the system asks them. If they decline, don't try again.
-- If a tool returns an error, use its message: correct the call, choose another option, or offer create_ticket.
-- Finish with a short answer (at most 80 words) stating what was done, with dates and fees."""</code></pre>
+SYSTEM = f"""You are RR Finance Assist, acting for the signed-in RR Finance Bank customer. Today is {desk.TODAY.isoformat()}.
+- Use tools to look things up and to act. Never guess or invent card numbers, transaction IDs, dates or amounts.
+- The customer can't see or call tools. Never ask them to; call the tools yourself.
+- Never ask for a full card number, a PIN, a password or a one-time code.
+- Start with my_cards whenever you need a card; use recent_transactions to find a payment's txn_id.
+- Before open_dispute, call dispute_quote.
+- freeze_card and open_dispute need the customer's approval; the system asks them. If they decline, don't try again.
+- If a tool returns an error, use its message: correct the call, choose another option, or offer create_case.
+- Finish with a short answer (at most 80 words) stating what was done, with dates and amounts."""</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The agent loop</h4>
         <pre class="code" data-file="agent.py"><code>"""Module 07: a small agent loop you can read in one sitting.
@@ -535,7 +539,7 @@ class Agent:
                     result.answer = "Sorry, I got stuck repeating the same step. I've stopped; please contact support."
                     return result
         result.stopped = "max_steps"
-        result.answer = "Sorry, that needed more steps than I'm allowed. Shall I raise a ticket for the support team?"
+        result.answer = "Sorry, that needed more steps than I'm allowed. Shall I raise a case for the support team?"
         return result
 
     def _execute(self, n, name, arguments, context, seen) -&gt; Step:
@@ -552,7 +556,7 @@ class Agent:
                 result = self.kit.dispatch(name, arguments, context | {"idempotency_key": uuid.uuid4().hex})
                 status = "error" if result.startswith('{"error"') else "ok"
             else:
-                result, status = json.dumps({"error": f"the learner did not approve this action: {reason}"}), "rejected"
+                result, status = json.dumps({"error": f"the customer did not approve this action: {reason}"}), "rejected"
         else:
             result = self.kit.dispatch(name, arguments, context)
             status = "error" if result.startswith('{"error"') else "ok"
@@ -567,27 +571,27 @@ def print_step(step: Step):
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Same request, chatbot and agent</h4>
         <pre class="code" data-file="lab07_01_chatbot_vs_agent.py"><code>"""Drill 07.1: chatbot vs agent. The same request to a model with no tools, then to an agent
-with tools over TrainCrest's (stand-in) systems. Then look at what actually changed."""
+with tools over RR Finance Bank's (stand-in) systems. Then look at what actually changed."""
 import desk
 from agent import Agent, print_step
 from desk_tools import SYSTEM, WRITE_TOOLS, kit
 from llm import MODEL, get_client
 
-REQUEST = "Hi, it's Mei. My AI-102 lab closes in a few days. Please extend it and tell me the new end date."
+REQUEST = "Hi, it's Mei. I think I left my Cashback Card in a taxi. Please freeze it and tell me what that means."
 client = get_client()
 
 print("CHATBOT (no tools)")
 reply = client.chat.completions.create(model=MODEL, messages=[
     {"role": "system", "content": SYSTEM}, {"role": "user", "content": REQUEST}]).choices[0].message.content
 print(" ", reply.strip())
-print("  changes in TrainCrest's systems:", desk.ACTIONS or "none")
+print("  changes in RR Finance Bank's systems:", desk.ACTIONS or "none")
 
 print("\nAGENT (tools; approvals granted automatically for this demo, see Drill 07.7)")
 agent = Agent(client, MODEL, kit, SYSTEM, write_tools=WRITE_TOOLS,
               approve=lambda name, arguments, context: (True, "demo"), on_step=print_step)
-result = agent.run(REQUEST, {"learner": "L-MEI"})
+result = agent.run(REQUEST, {"customer": "RR-10293"})
 print(" ", result.answer)
-print("  changes in TrainCrest's systems:", desk.ACTIONS or "none")
+print("  changes in RR Finance Bank's systems:", desk.ACTIONS or "none")
 print(f"  model calls: {result.llm_calls}, tool steps: {len(result.steps)}")</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab07_01_chatbot_vs_agent.py</code></pre>
         <span class="out-label">Real output with qwen2.5:7b (Ollama); dates are relative to today, so yours will differ</span>
@@ -668,7 +672,7 @@ AGENT (tools; approvals granted automatically for this demo, see Drill 07.7)
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

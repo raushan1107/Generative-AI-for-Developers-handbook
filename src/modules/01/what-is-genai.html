@@ -27,7 +27,7 @@
       <rect x="620" y="44" width="260" height="62" rx="10" class="s-rose"/><text x="750" y="72" class="t-b mid">Label: SPAM (97%)</text><text x="750" y="92" class="t-s mid">picks from fixed options</text>
       <path d="M240 75 H324" class="s-arrow" marker-end="url(#ah)"/><path d="M530 75 H614" class="s-arrow" marker-end="url(#ah)"/>
       <text x="20" y="150" class="t-m t-accent">GENERATIVE · CREATES</text>
-      <rect x="20" y="164" width="220" height="62" rx="10" class="s-surface"/><text x="130" y="190" class="t-b mid">A prompt</text><text x="130" y="210" class="t-s mid">"Reply kindly, offer a reschedule"</text>
+      <rect x="20" y="164" width="220" height="62" rx="10" class="s-surface"/><text x="130" y="190" class="t-b mid">A prompt</text><text x="130" y="210" class="t-s mid">"Reply kindly, explain the fee"</text>
       <rect x="330" y="164" width="200" height="62" rx="10" class="s-violet"/><text x="430" y="192" class="t-b mid">LLM</text><text x="430" y="212" class="t-s mid">generative model</text>
       <rect x="620" y="164" width="260" height="62" rx="10" class="s-green"/><text x="750" y="190" class="t-b mid">New text, never seen before</text><text x="750" y="210" class="t-s mid">"Hi Omar, I'm sorry to hear…"</text>
       <path d="M240 195 H324" class="s-arrow" marker-end="url(#ah)"/><path d="M530 195 H614" class="s-arrow" marker-end="url(#ah)"/>
@@ -44,6 +44,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banks and investment firms use generative AI in exactly these shapes: drafting replies to customer complaints, summarising a 90-page credit memo for a lending committee, turning an analyst's bullet notes into a client-ready market commentary, and explaining a statement line in plain words. What they don't hand over is the decision itself. Whether a loan is approved or a fee is refunded stays with rules and people; the model writes the words around that decision.</p>
+</div>
   <p>You already use generative AI daily. A coding assistant completing your function, an email client drafting a reply, a meeting app writing minutes, a support widget answering in full sentences: all of these generate new text from a prompt the product builds for you. Behind each one is a developer who decided what goes into that prompt, which is what you're learning to do.</p>
 </div>
 
@@ -68,8 +73,8 @@
       <li class="dstep nocode"><span class="st">No-code</span><h4>Open a chat window</h4><p>Use the chat playground in Microsoft Foundry with your <code>chat</code> deployment, or ChatGPT or Claude.ai.</p></li>
       <li class="dstep nocode"><span class="st">No-code</span><h4>Run five tiny experiments</h4>
         <ol>
-          <li><strong>Variety:</strong> "Suggest a name for an online tech training company." Regenerate three times.</li>
-          <li><strong>Confident errors:</strong> "What is TrainCrest's refund policy if I cancel 10 days before my course?" (TrainCrest's policy here is fictional.)</li>
+          <li><strong>Variety:</strong> "Suggest a name for a digital savings account." Regenerate three times.</li>
+          <li><strong>Confident errors:</strong> "What does RR Finance Bank charge if my account is overdrawn by $80?" (RR Finance Bank and its policies are fictional, so any confident number is invented.)</li>
           <li><strong>Arithmetic:</strong> "What is 48,739 × 6,218? Answer with the number only." (Correct: 303,059,102.)</li>
           <li><strong>Frozen knowledge:</strong> "What's today's date, and what was the biggest tech news this week?"</li>
           <li><strong>No memory:</strong> say "My name is Mei." Then start a <em>new</em> chat and ask "What's my name?"</li>
@@ -96,37 +101,37 @@
   <div class="drill-head"><span class="drill-id">Drill 01.2</span><h3>One brief, three outputs, and test the generated code</h3>
     <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · AI assistant</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> see one model generate marketing text, working code and structured data from the same brief, then treat generated code the way a professional does: test it.</p>
+    <p class="drill-goal"><b>Goal:</b> see one model generate marketing text, working code and structured data from the same savings-account brief, then treat generated code the way a professional does: test it.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Create and run the script</h4>
         <pre class="code" data-file="lab01_02_one_brief.py" data-src="code/genai-labs/lab01_02_one_brief.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab01_02_one_brief.py</code></pre>
-        <span class="out-label">Expected output (abridged; yours will differ)</span>
+        <span class="out-label">Real output (llama3.2 on Ollama; yours will differ)</span>
 <pre class="out"><code>===== Marketing text =====
-New course alert! 'Generative AI for Developers' starts 20 March 2027: 3 days of hands-on Azure labs...
+"Launch Date: March 1st, 2027. Earn up to 4.10% APY without fees or minimums! Opening a High-Yield Savings account in our mobile app is now available. Download and start growing your savings today."
 
 ===== Python code =====
-from datetime import date
-def days_until_start(today: date) -> int:
-    return (date(2027, 3, 20) - today).days
+def monthly_interest(balance: float) -> float:
+    return balance * (4.10/100)/12
 
 ===== JSON record =====
-{"title": "Generative AI for Developers", "start_date": "2027-03-20", "price_usd": 1200, "format": "online"}</code></pre>
+{"product": "High-Yield Savings", "launch_date": "2027-03-01", "apy_pct": "4.10", "monthly_fee_usd": "0"}</code></pre>
       </li>
       <li class="dstep ask"><span class="st">Ask AI</span><h4>Turn the generated function into tested code</h4>
-        <p>Copy the generated function into a new file <code>course_dates.py</code>. Then ask your assistant:</p>
-        <div class="prompt-box"><pre><code>In #course_dates.py there is a function days_until_start(today). Write pytest tests in
-test_course_dates.py covering: a date well before the start, the day before, the start day
-itself (expect 0) and a date after the start (expect a negative number). Use fixed dates,
-not date.today(). Then run pytest and show me the result. Don't modify course_dates.py.</code></pre></div>
-        <div class="why"><b>Why this prompt works:</b> it names the file and function, lists the exact cases including edge cases, forbids flaky <code>date.today()</code>, and stops the assistant from "fixing" the code to fit its own tests.</div>
+        <p>Copy the generated function into a new file <code>savings.py</code>. Then ask your assistant:</p>
+        <div class="prompt-box"><pre><code>In #savings.py there is a function monthly_interest(balance). Write pytest tests in
+test_savings.py covering: a balance of 0 (expect 0), a balance of 1000 (expect 3.35,
+because 4.10% APY compounded monthly is a monthly rate of 1.041 ** (1/12) - 1), a balance
+of 25000 (expect 83.85) and a negative balance (expect ValueError). Compare money with
+pytest.approx(abs=0.01). Then run pytest and show me the result. Don't modify savings.py.</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> it names the file and function, gives exact expected amounts (computed outside the model), includes an edge case, and stops the assistant from "fixing" the code to fit its own tests. In finance the expected numbers always come from the product terms, never from the model.</div>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
-        <pre class="term"><code><span class="ps">$ </span>pytest -q test_course_dates.py</code></pre>
-        <ul class="verify-list"><li>All four tests pass, or a failing test shows the generated code was wrong (it happens: that's the lesson).</li><li>The JSON output parses: save it as <code>record.json</code> and run <code>python -m json.tool record.json</code>. If the model wrapped it in <code>```json</code> fences, it won't parse as-is (Module 03 fixes that).</li></ul>
+        <pre class="term"><code><span class="ps">$ </span>pytest -q test_savings.py</code></pre>
+        <ul class="verify-list"><li>All four tests pass, or a failing test shows the generated code was wrong. A very common miss: the model divides 4.10% by 12, which gives $3.42 instead of $3.35, because APY already includes compounding. That's the lesson: generated code is plausible, and only a test with numbers you trust proves it right.</li><li>Look closely at the JSON: <code>"4.10"</code> and <code>"0"</code> are <em>strings</em>, not numbers. Code that adds up fees would break. The output parses: save it as <code>record.json</code> and run <code>python -m json.tool record.json</code>. If the model wrapped it in <code>```json</code> fences, it won't parse as-is (Module 03 fixes that).</li></ul>
       </li>
     </ol>
-    <p class="lab-try"><b>Try this:</b> change the brief's start date and run again. Does the generated code update the date? Generation follows the prompt, not a database.</p>
+    <p class="lab-try"><b>Try this:</b> change the brief's rate to 3.75% APY and run again. Does the generated code update the rate? Generation follows the prompt, not the bank's rate table.</p>
   </div>
   <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d01-2"> I've completed Drill 01.2</label></div>
 </div>

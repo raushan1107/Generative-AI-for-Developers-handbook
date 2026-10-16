@@ -8,7 +8,7 @@ from pathlib import Path
 def main():
     parser = argparse.ArgumentParser(description="Summarise LLM usage from a JSON-lines log.")
     parser.add_argument("log", nargs="?", default="usage.jsonl")
-    parser.add_argument("--turns-per-month", type=int, default=100_000)
+    parser.add_argument("--turns-per-month", type=int, default=160_000)
     args = parser.parse_args()
 
     totals = defaultdict(lambda: {"calls": 0, "in": 0, "out": 0, "cost": 0.0})

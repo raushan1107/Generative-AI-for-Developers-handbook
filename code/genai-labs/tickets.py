@@ -1,31 +1,32 @@
-"""Synthetic TrainCrest learner-support tickets (fictional, no real data).
+"""Synthetic RR Finance Bank contact-centre tickets (fictional bank, no real customer data).
 Shared by drills in Module 01 and Module 03."""
 
-CATEGORIES = ["scheduling", "billing", "exam_voucher", "certificate", "lab_access", "account", "other"]
+CATEGORIES = ["card", "dispute", "fraud", "fees", "transfers", "loans", "account", "other"]
 
-# TrainCrest house rules the model can't know unless you tell it:
-#   - a refund request is "billing", even when it mentions dates or batches
-#   - asking for more lab time is "lab_access", not "scheduling"
+# RR Finance Bank house rules the model can't know unless you tell it:
+#   - a charge the customer recognises but is wrong (twice, wrong amount, never delivered) is "dispute";
+#     a charge they don't recognise at all is "fraud"
+#   - asking for a fee to be refunded is "fees", even when it mentions a card or a transfer
 TEST_TICKETS = [
-    ("I paid for the AZ-305 batch but my card was charged twice.", "billing"),
-    ("Can I move my Generative AI course from the March batch to April?", "scheduling"),
-    ("I finished the course two weeks ago and still have no exam voucher.", "exam_voucher"),
-    ("My certificate says 'Asha Kumari' but my name is 'Asha Kumar'.", "certificate"),
-    ("The lab VM says my subscription has expired, I can't start the exercise.", "lab_access"),
-    ("I can't log in, the password reset email never arrives.", "account"),
-    ("Do you offer corporate discounts for a team of 20 engineers?", "other"),
-    ("My lab ran out yesterday, can I get one more week to finish?", "lab_access"),
-    ("Quiero cambiar mi curso al grupo del próximo mes.", "scheduling"),
-    ("I want a refund, the course starts in 3 days and I can't attend.", "billing"),
-    ("The voucher code you sent shows as already used.", "exam_voucher"),
-    ("Please update the email on my account to my new work address.", "account"),
+    ("I was charged twice for the same flight on my credit card.", "dispute"),
+    ("My debit card is missing, I think I left it in a taxi.", "card"),
+    ("There's a $640 payment to a shop in another country I've never been to.", "fraud"),
+    ("Why did you charge me $29? I was only overdrawn for one night.", "fees"),
+    ("My transfer to my sister has been pending since Monday.", "transfers"),
+    ("Can I take a payment holiday on my personal loan?", "loans"),
+    ("I can't log in, the one-time code never arrives.", "account"),
+    ("Do you have a branch open on Sundays?", "other"),
+    ("Please refund the $45 fee you took for my international wire.", "fees"),
+    ("Quiero bloquear mi tarjeta, me la robaron ayer.", "card"),
+    ("The online shop charged me $89 but the order was cancelled.", "dispute"),
+    ("Someone texted me a link and now money is missing from my savings.", "fraud"),
 ]
 
 # Few-shot examples: different from the test tickets, covering the house rules.
 FEW_SHOT_EXAMPLES = [
-    ("I can't attend next week, please refund my fee.", "billing"),
-    ("I need 5 more days of lab access to finish module 6.", "lab_access"),
-    ("I was charged in EUR instead of USD.", "billing"),
-    ("My voucher expired before I could book the exam.", "exam_voucher"),
-    ("Please shift me to the weekend batch.", "scheduling"),
+    ("The supermarket charged me twice for one shop.", "dispute"),
+    ("I don't recognise a payment to an online casino.", "fraud"),
+    ("Can you give me back the overdraft fee on my card account?", "fees"),
+    ("My card was stolen at the gym.", "card"),
+    ("How long does a wire to Canada take?", "transfers"),
 ]

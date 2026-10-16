@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -137,7 +137,7 @@
 </div>
 <div class="callout plain">
   <div class="c-label">In plain words</div>
-  <p>Your phone keyboard suggests the next word from your last couple of words. An LLM does the same job, but it has learned from a large part of the internet, books and code, and it looks at <em>thousands</em> of previous words at once. That scale is what turns autocomplete into something that can write SQL and explain a refund policy.</p>
+  <p>Your phone keyboard suggests the next word from your last couple of words. An LLM does the same job, but it has learned from a large part of the internet, books and code, and it looks at <em>thousands</em> of previous words at once. That scale is what turns autocomplete into something that can write SQL and explain an overdraft policy.</p>
 </div>
 
 <h3>The three words in the name</h3>
@@ -192,6 +192,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>The same next-token habit explains why an LLM can write a fluent paragraph about "your account's current APR" without seeing your account: the sentence is <em>statistically</em> likely, not looked up. In a bank, every number a customer sees (a balance, a rate, a fee, a due date) must come from a system of record, and the model only phrases it. You'll build exactly that split later: tools fetch the facts (Module 04), retrieved policies ground the wording (Module 06).</p>
+</div>
   <p>Code completion in your editor is the clearest LLM-as-autocomplete you'll see: the assistant sends the code around your cursor as context and asks the model to continue it. The quality differences between coding tools come largely from <em>what context they send</em> (open files, related symbols, your recent edits), not just from the model.</p>
 </div>
 
@@ -285,14 +290,14 @@ Done when:   it prints the next-word probabilities after "the" and 3 generated s
         <p class="hint"><b>Hint:</b> a bigram model counts, for each word, which words followed it in the corpus. The probability of the next word is its count divided by the total. Ask for <code>collections.Counter</code> and <code>random.choices</code> with weights.</p>
         <details class="solution"><summary>Compare with my prompt</summary><div>
           <div class="prompt-box"><pre><code>Write lab01_04_bigram.py, a tiny bigram language model in pure Python (standard library only).
-- CORPUS: about 10 short lowercase sentences about an online course, its labs, exam vouchers
-  and trainers, with "." as separate tokens.
+- CORPUS: about 10 short lowercase sentences about bank cards, payments, transfers and fees,
+  with "." as separate tokens.
 - "Training": split on whitespace and count, for each word, which words follow it
   (defaultdict of Counter).
 - predict(word) returns {next_word: probability} from those counts.
 - generate(start, length=12, seed=None) repeatedly samples the next word with random.choices
   using the probabilities as weights; use random.Random(seed) so runs are repeatable.
-- Print the probabilities after "the" and after "labs", then 3 generated sentences (seeds 0,1,2).
+- Print the probabilities after "the" and after "card", then 3 generated sentences (seeds 0,1,2).
 Keep it under 50 lines with short comments.</code></pre></div>
         </div></details>
       </li>
@@ -303,10 +308,10 @@ import random
 from collections import Counter, defaultdict
 
 CORPUS = """
-the course starts on monday . the course includes hands-on labs .
-the labs run on azure . the exam voucher arrives after the course .
-the voucher is valid for twelve months . the labs are available for thirty days .
-the course is online . the trainer explains the labs . the learner completes the labs .
+the card is frozen . the card is blocked after three wrong pins .
+the payment is pending . the payment arrives in three days . the transfer is instant .
+the customer freezes the card . the bank refunds the fee . the fee is waived this month .
+the customer disputes the payment . the bank reviews the payment . the card arrives in five days .
 """
 
 <span class="c"># "Training": count which word follows which.</span>
@@ -336,26 +341,26 @@ def generate(start, length=12, seed=None):
 
 
 print("After 'the': ", {w: f"{p:.0%}" for w, p in predict("the").items()})
-print("After 'labs':", {w: f"{p:.0%}" for w, p in predict("labs").items()})
+print("After 'card':", {w: f"{p:.0%}" for w, p in predict("card").items()})
 print()
 for seed in range(3):
     print("Generated:", generate("the", seed=seed))</code></pre>
         </div></details>
         <pre class="term"><code><span class="ps">$ </span>python lab01_04_bigram.py</code></pre>
         <span class="out-label">Real output of the reference solution</span>
-<pre class="out"><code>After 'the':  {'course': '33%', 'labs': '33%', 'exam': '8%', 'voucher': '8%', 'trainer': '8%', 'learner': '8%'}
-After 'labs': {'.': '60%', 'run': '20%', 'are': '20%'}
+<pre class="out"><code>After 'the':  {'card': '27%', 'payment': '27%', 'customer': '13%', 'bank': '13%', 'fee': '13%', 'transfer': '7%'}
+After 'card': {'is': '50%', '.': '25%', 'arrives': '25%'}
 
-Generated: the trainer explains the course . the voucher arrives after the trainer explains
-Generated: the course is online . the labs run on monday . the labs
-Generated: the learner completes the course is online . the labs run on monday</code></pre>
+Generated: the fee is pending . the payment arrives in three days . the
+Generated: the card arrives in three wrong pins . the card is waived this
+Generated: the transfer is frozen . the bank reviews the customer disputes the card</code></pre>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>From toy to LLM</h4>
-        <p>Your model generated fluent-looking fragments and nonsense like "the course is online . the labs run on monday" (nobody said that). Answer: what's missing compared with a real LLM?</p>
+        <p>Your model generated fluent-looking fragments and nonsense like "the fee is pending" and "the transfer is frozen" (nobody said that, and in a bank both statements would be wrong). Answer: what's missing compared with a real LLM?</p>
         <details class="solution"><summary>Compare with my answer</summary><div>
           <ul>
             <li><strong>Context:</strong> yours looks at one previous word; an LLM looks at thousands of tokens, with attention deciding which ones matter.</li>
-            <li><strong>Learned meaning:</strong> yours counts exact words; an LLM learns representations where "voucher" and "coupon" are related.</li>
+            <li><strong>Learned meaning:</strong> yours counts exact words; an LLM learns representations where "overdraft" and "negative balance" are related.</li>
             <li><strong>Scale:</strong> 100 words of corpus vs trillions of tokens, and a handful of counts vs billions of parameters.</li>
             <li><strong>The same job:</strong> both predict a probability for each next token and sample. That part you've now built yourself.</li>
           </ul>
@@ -381,7 +386,7 @@ Generated: the learner completes the course is online . the labs run on monday</
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

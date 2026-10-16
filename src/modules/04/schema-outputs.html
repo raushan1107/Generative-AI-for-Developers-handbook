@@ -158,8 +158,8 @@ for text in MESSAGES:
   <div class="drill-body">
     <p class="drill-goal"><b>Goal:</b> have your assistant design a nested schema for company course enquiries, and check it against strict-mode rules <em>before</em> any model sees it.</p>
     <ol class="dsteps">
-      <li class="dstep ask"><span class="st">Ask AI</span><h4>Design <code>course_enquiry.py</code></h4>
-        <div class="prompt-box"><pre><code>Create course_enquiry.py with Pydantic v2 models for extracting a company's training enquiry
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Design <code>business_enquiry.py</code></h4>
+        <div class="prompt-box"><pre><code>Create business_enquiry.py with Pydantic v2 models for extracting a company's training enquiry
 from an email, for use with OpenAI/Azure strict structured outputs.
 
 Models:
@@ -177,13 +177,13 @@ Rules:
 - Don't create or change any other file.</code></pre></div>
         <div class="why"><b>Why this prompt works:</b> it names every field and type, states the strict-mode rules (required fields, nullable via <code>Optional</code>), lists the keywords to avoid <em>and</em> where those rules should go instead, and fences the change to one file. Without the middle rule, assistants reach straight for <code>EmailStr</code> and <code>Field(ge=1)</code>.</div>
         <details class="solution"><summary>Reference solution</summary><div>
-          <pre class="code" data-file="course_enquiry.py" data-src="code/genai-labs/course_enquiry.py"></pre>
+          <pre class="code" data-file="business_enquiry.py" data-src="code/genai-labs/business_enquiry.py"></pre>
         </div></details>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Lint it like a compiler would</h4>
         <p><code>schema_lint.py</code> builds the exact schema the SDK would send and checks it against Azure's rules: unsupported keywords, required fields, extra properties, nesting depth and property count.</p>
         <pre class="code" data-file="schema_lint.py" data-src="code/genai-labs/schema_lint.py"></pre>
-<pre class="term"><code><span class="ps">$ </span>python schema_lint.py course_enquiry:CourseEnquiry
+<pre class="term"><code><span class="ps">$ </span>python schema_lint.py business_enquiry:BusinessEnquiry
 <span class="ps">$ </span>python schema_lint.py test_schema_lint:TooClever</code></pre>
         <span class="out-label">Output (exact)</span>
 <pre class="out"><code>CourseEnquiry: OK, ready for strict structured outputs

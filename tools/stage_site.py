@@ -36,7 +36,7 @@ def draft_paths():
         for module in section.get("modules", []):
             if module.get("draft"):
                 num = module["num"]
-                paths += [f"modules/{num}", f"code/traincrest-assist/m{num}"]
+                paths += [f"modules/{num}", f"code/rrfinance-assist/m{num}"]
     return paths
 
 
@@ -52,15 +52,15 @@ def zip_folder(src, target, top, keep=lambda rel: True):
 
 def make_handbook_downloads(drafts):
     """genai-labs-kit.zip (helpers, data and the drill scripts of live modules) and one complete project
-    zip per live milestone, traincrest-assist-mNN.zip. A static site can't serve a folder."""
+    zip per live milestone, rrfinance-assist-mNN.zip. A static site can't serve a folder."""
     nav = json.loads((ROOT / "tools" / "nav.json").read_text(encoding="utf-8"))
     draft_nums = {m["num"] for s in nav["sections"] for m in s.get("modules", []) if m.get("draft") or m.get("soon")}
     labs = ROOT / "code" / "genai-labs"
     zip_folder(labs, OUT / "code" / "genai-labs-kit.zip", "genai-labs",
                keep=lambda rel: not (rel.name.startswith("lab") and rel.name[3:5] in draft_nums))
-    for project in sorted((ROOT / "code" / "traincrest-assist").glob("m[0-9][0-9]")):
+    for project in sorted((ROOT / "code" / "rrfinance-assist").glob("m[0-9][0-9]")):
         if project.name[1:] not in draft_nums:
-            zip_folder(project, OUT / "code" / f"traincrest-assist-{project.name}.zip", "traincrest-assist")
+            zip_folder(project, OUT / "code" / f"rrfinance-assist-{project.name}.zip", "rrfinance-assist")
 
 
 def make_lab_downloads(drafts):

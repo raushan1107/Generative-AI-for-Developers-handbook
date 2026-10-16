@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -177,12 +177,17 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Rates, fees and product terms change constantly in a bank: a savings rate can move the day after a central-bank decision. A model trained last year still "believes" last year's rates, so a fine-tuned model would confidently quote a stale APY. Banks therefore keep facts in systems of record and retrieve them at request time, and use fine-tuning, if at all, for narrow jobs such as classifying complaint types or matching the house writing style of research notes. Model risk teams also prefer this: a retrieved document can be checked and versioned; a fact buried in weights cannot.</p>
+</div>
   <p>Almost every enterprise "chat with your documents" product uses retrieval, not fine-tuning: help-centre bots, HR policy assistants, internal knowledge search. Documents change weekly, retrieval picks up the change instantly, and answers can cite their source. Fine-tuning shows up for narrower jobs: a consistent house writing style, a specialised classification, or making a small model behave like a bigger one on one task.</p>
 </div>
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>"Let's fine-tune the model on our policy documents so it knows our refund policy." Fine-tuning teaches <em>patterns and style</em>, not reliable facts, and the policy will change next quarter. For facts that change, use RAG: update the document and the next answer is right.</p>
+  <p>"Let's fine-tune the model on our fee schedule so it knows our fees." Fine-tuning teaches <em>patterns and style</em>, not reliable facts, and the fee schedule will change next quarter. For facts that change, use RAG: update the document and the next answer is right.</p>
 </div>
 
 <div class="callout exam">
@@ -278,14 +283,14 @@ def ask(messages):
     return r.choices[0].message.content.strip()
 
 
-question = "What is TrainCrest's refund policy if I cancel 10 days before my course starts?"
+question = "What does RR Finance Bank charge if my account is overdrawn by $80 at the end of the day?"
 
 print("1) WITHOUT the facts:\n", ask([{"role": "user", "content": question}]))
 
-POLICY = """TrainCrest cancellation policy (fictional, effective 1 October 2026)
-- Cancel 14 or more days before the start date: 100% refund.
-- Cancel 7 to 13 days before the start date: 50% refund.
-- Cancel less than 7 days before: no refund, but one free reschedule."""
+POLICY = """RR Finance Bank overdraft policy (fictional, effective 1 October 2026)
+- Overdrawn by more than $50 at the end of the day: $29 overdraft fee, at most 3 fees per day.
+- Overdrawn by $50 or less at the end of the day: no fee.
+- One overdraft fee per account can be refunded as a courtesy every 12 months."""
 
 RULES = "Answer only from the policy provided. If the policy doesn't cover it, say so."
 
@@ -296,22 +301,26 @@ print("\n2) WITH the facts in the prompt:\n", ask([
 
 print("\n3) A question the policy doesn't cover:\n", ask([
     {"role": "system", "content": RULES},
-    {"role": "user", "content": f"Policy:\n{POLICY}\n\nQuestion: Can I transfer my seat to a colleague?"},
+    {"role": "user", "content": f"Policy:\n{POLICY}\n\nQuestion: What is the late fee on my credit card bill?"},
 ]))</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab01_09_frozen_knowledge.py</code></pre>
-        <span class="out-label">Expected output (abridged)</span>
+        <span class="out-label">Real output (llama3.2 on Ollama, abridged)</span>
 <pre class="out"><code>1) WITHOUT the facts:
- I don't have TrainCrest's specific policy. Many training providers refund in full if you cancel
- 7-14 days ahead... please check your enrolment terms.
+ I don't have access to specific information about RR Finance Bank's policies or fees. However,
+ I can provide some general information... Some common overdraft fee ranges include:
+ * $20-$30 for a single-day overdraft
+ * $25-$35 for an overdraft that needs to be paid back the following day ...
 
 2) WITH the facts in the prompt:
- Cancelling 10 days before the start date falls in the 7-13 day window, so you'd get a 50% refund.
+ According to the policy, if your account is overdrawn by more than $50 at the end of the day,
+ you are charged a $29 overdraft fee, with a maximum of 3 fees per day.
+ Since your account is overdrawn by $80 ($80 &gt; $50), you would be charged 3 overdraft fees...
 
 3) A question the policy doesn't cover:
- The policy provided doesn't mention transferring a seat, so I can't confirm that.</code></pre>
+ The policy doesn't cover credit card bills or fees for them.</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
-        <ul class="verify-list"><li>Answer 1 is a guess or a generic deflection: the weights never saw TrainCrest's policy.</li><li>Answer 2 is specific and correct (50%) with no training at all: only the <strong>prompt</strong> changed.</li><li>Answer 3 refuses to invent. Now delete the system message from call 3 and run again: does it start guessing? That one sentence is a guardrail.</li></ul>
+        <ul class="verify-list"><li>Answer 1 is a guess or a generic deflection: the weights never saw RR Finance Bank's fee schedule.</li><li>Answer 2 should be specific and correct ($29, because $80 is more than $50) with no training at all: only the <strong>prompt</strong> changed. Check the reasoning, not just the number. In the run above the small model found the right rule and then claimed <em>three</em> fees (one overdrawn day means one $29 fee). In an earlier run it subtracted $50 from $80 and said "no fee". Grounding fixes missing facts; it doesn't fix weak reasoning. A larger model, a clearer prompt (Module 03) or a calculation in code (Module 04) does.</li><li>Answer 3 refuses to invent. Now delete the system message from call 3 and run again: does it start guessing? That one sentence is a guardrail.</li></ul>
       </li>
     </ol>
   </div>
@@ -326,17 +335,17 @@ print("\n3) A question the policy doesn't cover:\n", ask([
     <ol class="dsteps">
       <li class="dstep think"><span class="st">Think</span><h4>Decide each case before opening the answers</h4>
         <ol>
-          <li>Traincrest Assist must answer questions about the refund policy, which changes every quarter.</li>
-          <li>All replies must use TrainCrest's friendly tone and sign off with "Happy learning!".</li>
-          <li>Learners ask about courses launched last week, after the model's knowledge cutoff.</li>
-          <li>TrainCrest wants a cheap small model to classify 25,000 tickets a month as accurately as a big model does, and has 20,000 labelled historical tickets.</li>
-          <li>Trainers want answers grounded in the exact wording of each course's lab guide, with a citation.</li>
+          <li>RR Finance Assist must answer questions about the fee schedule, which changes every quarter.</li>
+          <li>All replies must use RR Finance Bank's friendly tone and end with "Was there anything else I can help with today?".</li>
+          <li>Customers ask about a savings account launched last week, after the model's knowledge cutoff.</li>
+          <li>RR Finance Bank wants a cheap small model to classify 40,000 messages a month as accurately as a big model does, and has 20,000 labelled historical messages.</li>
+          <li>Compliance wants answers grounded in the exact wording of each product's terms and conditions, with a citation.</li>
         </ol>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
             <li><strong>RAG.</strong> Changing facts: retrieve the current policy at request time.</li>
             <li><strong>Prompting.</strong> Tone and a sign-off are instructions in the system prompt.</li>
-            <li><strong>RAG.</strong> New facts after the cutoff must come from retrieval (the course catalogue).</li>
+            <li><strong>RAG.</strong> New facts after the cutoff must come from retrieval (the product catalogue).</li>
             <li><strong>Fine-tuning</strong> is a reasonable candidate: a narrow skill, lots of labelled data, cost pressure. Try few-shot prompting first and measure.</li>
             <li><strong>RAG with citations.</strong> Grounding plus source attribution (Module 06).</li>
           </ol>
@@ -357,7 +366,7 @@ haven't considered, and what I should measure to decide. Under 150 words.</code>
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Quick decisions.</p></div></div>
 <div class="quiz">
-  <details><summary>1. A colleague wants to fine-tune a model on the course catalogue so it "knows" prices. Good idea?</summary><div><p>No. Prices change, and fine-tuning doesn't reliably store facts. <strong>Retrieve</strong> current prices (search or a tool call) at request time.</p></div></details>
+  <details><summary>1. A colleague wants to fine-tune a model on the product catalogue so it "knows" interest rates. Good idea?</summary><div><p>No. Rates change, sometimes weekly, and fine-tuning doesn't reliably store facts. <strong>Retrieve</strong> current rates (search or a tool call) at request time.</p></div></details>
   <details><summary>2. What is a knowledge cutoff, and how do apps answer questions about events after it?</summary><div><p>The date the training data ends. Apps add <strong>fresh information to the prompt</strong>: retrieved documents, tool results or web search.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Your app can't teach the model; it can only brief it. Prompt first, retrieve facts second, fine-tune last.</p></div>
@@ -369,7 +378,7 @@ haven't considered, and what I should measure to decide. Under 150 words.</code>
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

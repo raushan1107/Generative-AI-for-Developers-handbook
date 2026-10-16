@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -137,44 +137,49 @@
 </div>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
-  <p>On a new joiner's first day at TrainCrest support, a senior agent doesn't read out a 20-page labelling manual. They sit beside them: "This one asks for a refund but mentions the start date: we tag <em>billing</em>. This one wants more lab days: <em>lab_access</em>, not scheduling." A few examples and the new joiner gets it. Few-shot is that senior agent.</p>
+  <p>On a new joiner's first day at RR Finance Bank support, a senior agent doesn't read out a 20-page labelling manual. They sit beside them: "This customer was charged twice by a shop they used: we tag <em>dispute</em>. This one doesn't recognise the payment at all: <em>fraud</em>, and it goes to the fraud team straight away." A few examples and the new joiner gets it. Few-shot is that senior agent.</p>
 </div>
 
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 290" role="img" aria-labelledby="fs-t fs-d">
       <title id="fs-t">Few-shot prompting</title>
-      <desc id="fs-d">Three example pairs, each a ticket and its label, come before a new ticket. The model infers the pattern, including the house rule that a refund request mentioning dates is billing, and labels the new ticket accordingly.</desc>
+      <desc id="fs-d">Three example pairs, each a ticket and its label, come before a new ticket. The model infers the pattern, including the house rule that a payment the customer doesn't recognise is fraud, and labels the new message accordingly.</desc>
       <text x="20" y="28" class="t-m t-accent">EXAMPLES IN THE PROMPT</text>
-      <rect x="20" y="40" width="430" height="44" rx="9" class="s-surface"/><text x="36" y="67" class="t">"I can't attend next week, please refund my fee"</text>
-      <rect x="460" y="40" width="130" height="44" rx="9" class="s-violet"/><text x="525" y="67" class="t-b mid">billing</text>
-      <rect x="20" y="94" width="430" height="44" rx="9" class="s-surface"/><text x="36" y="121" class="t">"Need 5 more days of lab access"</text>
-      <rect x="460" y="94" width="130" height="44" rx="9" class="s-violet"/><text x="525" y="121" class="t-b mid">lab_access</text>
-      <rect x="20" y="148" width="430" height="44" rx="9" class="s-surface"/><text x="36" y="175" class="t">"Please shift me to the weekend batch"</text>
-      <rect x="460" y="148" width="130" height="44" rx="9" class="s-violet"/><text x="525" y="175" class="t-b mid">scheduling</text>
+      <rect x="20" y="40" width="430" height="44" rx="9" class="s-surface"/><text x="36" y="67" class="t">"The supermarket charged me twice for one shop"</text>
+      <rect x="460" y="40" width="130" height="44" rx="9" class="s-violet"/><text x="525" y="67" class="t-b mid">dispute</text>
+      <rect x="20" y="94" width="430" height="44" rx="9" class="s-surface"/><text x="36" y="121" class="t">"I don't recognise a payment to an online casino"</text>
+      <rect x="460" y="94" width="130" height="44" rx="9" class="s-violet"/><text x="525" y="121" class="t-b mid">fraud</text>
+      <rect x="20" y="148" width="430" height="44" rx="9" class="s-surface"/><text x="36" y="175" class="t">"Can you give me back the overdraft fee?"</text>
+      <rect x="460" y="148" width="130" height="44" rx="9" class="s-violet"/><text x="525" y="175" class="t-b mid">fees</text>
       <text x="20" y="224" class="t-m t-accent">NEW INPUT</text>
-      <rect x="20" y="234" width="430" height="44" rx="9" class="s-blue"/><text x="36" y="261" class="t">"Want a refund, course starts in 3 days"</text>
-      <rect x="460" y="234" width="130" height="44" rx="9" class="s-green"/><text x="525" y="261" class="t-b mid">billing ✓</text>
+      <rect x="20" y="234" width="430" height="44" rx="9" class="s-blue"/><text x="36" y="261" class="t">"Someone texted me a link, now money is missing"</text>
+      <rect x="460" y="234" width="130" height="44" rx="9" class="s-green"/><text x="525" y="261" class="t-b mid">fraud ✓</text>
       <path d="M610 110 Q700 110 730 160" class="s-dash" marker-end="url(#ah)"/>
       <rect x="680" y="166" width="260" height="96" rx="12" class="s-amber"/>
       <text x="810" y="194" class="t-b mid">The model infers:</text>
       <text x="810" y="216" class="t-s mid">• your label set and spelling</text>
-      <text x="810" y="234" class="t-s mid">• "refund = billing, dates or not"</text>
-      <text x="810" y="252" class="t-s mid">• "more lab time = lab_access"</text>
+      <text x="810" y="234" class="t-s mid">• "not recognised = fraud"</text>
+      <text x="810" y="252" class="t-s mid">• "a fee back = fees"</text>
       <path d="M676 240 Q630 256 596 256" class="s-arrow-accent" marker-end="url(#ah-a)"/>
     </svg>
   </div>
-  <figcaption><b>Learning by analogy, inside one request.</b> Without the first example, "refund… starts in 3 days" often gets labelled <em>scheduling</em>. The example taught the house rule without a line of explanation.</figcaption>
+  <figcaption><b>Learning by analogy, inside one request.</b> Without the second example, "money is missing after a text" often gets labelled <em>dispute</em>. The example taught the house rule without a line of explanation.</figcaption>
 </figure>
 
 <h3>Getting examples right</h3>
 <ul>
   <li><strong>Two to five examples</strong> usually suffice; more costs tokens on every call.</li>
   <li><strong>Cover the tricky cases</strong>, not just the easy ones. Examples should sit on the boundaries you care about.</li>
-  <li><strong>Vary and balance them.</strong> Four billing examples and one other nudge the model towards billing.</li>
+  <li><strong>Vary and balance them.</strong> Four dispute examples and one other nudge the model towards dispute.</li>
   <li><strong>Keep the format identical.</strong> The model copies format faithfully, mistakes included.</li>
   <li>Use <strong>user/assistant pairs</strong> or a clearly delimited block in the system message; both work.</li>
 </ul>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Few-shot examples are how banks teach a model their <strong>internal taxonomy</strong>: complaint reason codes, dispute reason codes from the card networks, or the bank's own split between "fraud" and "dispute", which decides which team, deadline and regulation applies. The examples are chosen from reviewed historical cases (anonymised), deliberately include the borderline ones, and are versioned with the prompt, because changing an example changes how thousands of customers are routed.</p>
+</div>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
@@ -271,21 +276,29 @@ MODEL = {
         <p>The examples are <code>FEW_SHOT_EXAMPLES</code> in <code>tickets.py</code> (Drill 01.3); the script is <code>lab03_05_triage.py</code> from Drill 03.5.</p>
         <pre class="term"><code><span class="ps">$ </span>python lab03_05_triage.py --mode both
 <span class="ps">$ </span>python lab03_05_triage.py --mode both --data data/eval_tickets.json</code></pre>
-        <span class="out-label">Typical result (yours will vary)</span>
+        <span class="out-label">Real output (llama3.2 on Ollama; yours will vary)</span>
 <pre class="out"><code>===== ZERO-SHOT =====
 …
-Accuracy 10/12 (83%) · off-list labels: 0 · avg input tokens: 71
+Accuracy 5/12 (42%) · off-list labels: 0 · avg input tokens: 76
+Most common mistakes: card -&gt; dispute x2, fraud -&gt; other x1, loans -&gt; other x1
 
 ===== FEW-SHOT =====
-…
-Accuracy 12/12 (100%) · off-list labels: 0 · avg input tokens: 156</code></pre>
+ ✓ card          (expected card        ) My debit card is missing, I think I left it in a
+ ✗ dispute       (expected fraud       ) There's a $640 payment to a shop in another coun
+ ✗ dispute       (expected account     ) I can't log in, the one-time code never arrives.
+ ✓ fees          (expected fees        ) Please refund the $45 fee you took for my intern
+ ✓ card          (expected card        ) Quiero bloquear mi tarjeta, me la robaron ayer.
+ ✓ fraud         (expected fraud       ) Someone texted me a link and now money is missin
+ …
+Accuracy 10/12 (83%) · off-list labels: 0 · avg input tokens: 186
+Most common mistakes: fraud -&gt; dispute x1, account -&gt; dispute x1</code></pre></code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
-        <ul class="verify-list"><li>Few-shot fixed the house-rule mistakes from the baseline.</li><li>Input tokens roughly doubled. At 25,000 tickets a month, work out the extra cost with your price (Drill 02.14). Is the accuracy gain worth it? Usually, yes.</li></ul>
+        <ul class="verify-list"><li>Five examples took the same small model from 5/12 to 10/12, and fixed the "money missing after a text" fraud case and the fee-refund rule.</li><li>One fraud message ("a payment to a shop in another country") is still labelled <em>dispute</em>: the examples don't cover "a payment in a place I've never been". Which example would you add?</li><li>Input tokens more than doubled. At 40,000 messages a month, work out the extra cost with your price (Drill 02.14). Is the accuracy gain worth it? Usually, yes.</li></ul>
       </li>
       <li class="dstep think"><span class="st">Think</span>
-        <p>Edit <code>FEW_SHOT_EXAMPLES</code> to contain four billing examples and one scheduling example, and rerun. What happens to tickets in other categories?</p>
-        <details class="solution"><summary>What usually happens</summary><div><p>Borderline tickets drift towards <strong>billing</strong>: the model treats the example distribution as a hint about what's common. Balanced examples matter. Restore the original list afterwards.</p></div></details>
+        <p>Edit <code>FEW_SHOT_EXAMPLES</code> to contain four dispute examples and one card example, and rerun. What happens to tickets in other categories?</p>
+        <details class="solution"><summary>What usually happens</summary><div><p>Borderline messages drift towards <strong>dispute</strong> (including some fraud, which is the costly direction): the model treats the example distribution as a hint about what's common. Balanced examples matter. Restore the original list afterwards.</p></div></details>
       </li>
     </ol>
   </div>
@@ -294,7 +307,7 @@ Accuracy 12/12 (100%) · off-list labels: 0 · avg input tokens: 156</code></pre
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Examples.</p></div></div>
 <div class="quiz">
-  <details><summary>1. Zero-shot labels refund requests that mention dates as "scheduling". Cheapest fix?</summary><div><p><strong>Few-shot examples</strong> that include such a request labelled "billing", in a balanced set. Fine-tuning would be overkill for a rule that examples teach instantly.</p></div></details>
+  <details><summary>1. Zero-shot labels "money disappeared after I clicked a link" as "dispute". Cheapest fix?</summary><div><p><strong>Few-shot examples</strong> that include such a message labelled "fraud", in a balanced set. Fine-tuning would be overkill for a rule that examples teach instantly.</p></div></details>
   <details><summary>2. What's the cost of few-shot, and how do you decide if it's worth it?</summary><div><p>More <strong>input tokens on every call</strong>. Compare the accuracy gain on your test set against the extra cost at your volume.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>When the model keeps missing your conventions, show it a few balanced examples, and measure the gain.</p></div>
@@ -306,7 +319,7 @@ Accuracy 12/12 (100%) · off-list labels: 0 · avg input tokens: 156</code></pre
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

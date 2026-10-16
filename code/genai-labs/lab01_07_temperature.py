@@ -4,7 +4,7 @@ import random
 from collections import Counter
 
 # Scores ("logits") a model might give five candidate words after:
-#   "Your exam voucher will arrive ..."
+#   "Your replacement card will arrive ..."
 LOGITS = {"soon": 4.0, "tomorrow": 3.2, "today": 2.5, "eventually": 1.0, "never": -1.0}
 
 

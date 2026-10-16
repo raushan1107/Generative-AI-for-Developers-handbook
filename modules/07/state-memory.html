@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -322,7 +322,7 @@ MODEL = {
         <pre class="code" data-file="memory.py"><code>"""Module 07: state and memory for agents, three kinds:
 - TaskState: short-term working state of one multi-step task (goal, facts, steps, a pending
   approval), saved as JSON so the task can pause, for example while a human decides, and resume.
-- LearnerMemory: long-term memory, small facts a learner asked us to remember, recalled at the
+- CustomerMemory: long-term memory, small facts a customer asked us to remember, recalled at the
   start of each session. Explicit, inspectable and deletable, and it refuses sensitive data.
 - trim_history: keep a long conversation within budget by summarising its older turns."""
 import json
@@ -354,7 +354,7 @@ class TaskState:
         return cls(**json.loads((Path(folder) / f"{task_id}.json").read_text(encoding="utf-8")))
 
 
-class LearnerMemory:
+class CustomerMemory:
     MAX_FACTS = 20
 
     def __init__(self, path=STATE_DIR / "memory.json"):
@@ -365,11 +365,11 @@ class LearnerMemory:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps(self.data, indent=1, ensure_ascii=False), encoding="utf-8")
 
-    def remember(self, learner: str, fact: str) -&gt; dict:
+    def remember(self, customer: str, fact: str) -&gt; dict:
         fact = " ".join(fact.split())
         if SENSITIVE.search(fact):
             return {"error": "not stored: memory never keeps card numbers, passwords or PINs"}
-        facts = self.data.setdefault(learner, [])
+        facts = self.data.setdefault(customer, [])
         if any(f["fact"].lower() == fact.lower() for f in facts):
             return {"status": "already remembered"}
         facts.append({"fact": fact, "saved": time.strftime("%Y-%m-%d")})
@@ -377,18 +377,18 @@ class LearnerMemory:
         self._save()
         return {"status": "remembered", "fact": fact}
 
-    def forget(self, learner: str, containing: str) -&gt; int:
-        before = len(self.data.get(learner, []))
-        self.data[learner] = [f for f in self.data.get(learner, []) if containing.lower() not in f["fact"].lower()]
+    def forget(self, customer: str, containing: str) -&gt; int:
+        before = len(self.data.get(customer, []))
+        self.data[customer] = [f for f in self.data.get(customer, []) if containing.lower() not in f["fact"].lower()]
         self._save()
-        return before - len(self.data[learner])
+        return before - len(self.data[customer])
 
-    def recall(self, learner: str) -&gt; list[str]:
-        return [f["fact"] for f in self.data.get(learner, [])]
+    def recall(self, customer: str) -&gt; list[str]:
+        return [f["fact"] for f in self.data.get(customer, [])]
 
-    def as_prompt(self, learner: str) -&gt; str:
-        facts = self.recall(learner)
-        return "" if not facts else "Known about this learner from earlier sessions:\n" + "\n".join(f"- {f}" for f in facts)
+    def as_prompt(self, customer: str) -&gt; str:
+        facts = self.recall(customer)
+        return "" if not facts else "Known about this customer from earlier sessions:\n" + "\n".join(f"- {f}" for f in facts)
 
 
 def trim_history(messages, keep_last: int = 6, summarize=None):
@@ -404,39 +404,39 @@ def trim_history(messages, keep_last: int = 6, summarize=None):
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Offline tests</h4>
         <pre class="code" data-file="test_memory.py"><code>"""Drill 07.5: agent state and memory, offline.  Run:  pytest -q test_memory.py"""
-from memory import LearnerMemory, TaskState, trim_history
+from memory import CustomerMemory, TaskState, trim_history
 
 
 def test_task_state_survives_a_restart(tmp_path):
-    state = TaskState("t1", goal="move Diego's AZ-104 class", facts={"enrolment_id": "TC-20877"},
-                      pending={"tool": "reschedule", "preview": "Move TC-20877 ($50)"}, status="waiting")
+    state = TaskState("t1", goal="dispute Mei's duplicate airline charge", facts={"txn_id": "TX-1002"},
+                      pending={"tool": "open_dispute", "preview": "Dispute $412.00 to SkyHigh Airlines"}, status="waiting")
     state.save(tmp_path)
     again = TaskState.load("t1", tmp_path)
-    assert again == state and again.status == "waiting" and again.pending["tool"] == "reschedule"
+    assert again == state and again.status == "waiting" and again.pending["tool"] == "open_dispute"
 
 
 def test_memory_remembers_recalls_and_forgets(tmp_path):
-    memory = LearnerMemory(tmp_path / "memory.json")
-    assert memory.remember("L-MEI", "Prefers  weekend classes")["status"] == "remembered"
-    assert memory.remember("L-MEI", "prefers weekend classes")["status"] == "already remembered"
-    assert LearnerMemory(tmp_path / "memory.json").recall("L-MEI") == ["Prefers weekend classes"]   <span class="c"># persisted</span>
-    assert memory.recall("L-DIEGO") == []                                                          <span class="c"># per learner</span>
-    assert "weekend" in memory.as_prompt("L-MEI") and memory.as_prompt("L-DIEGO") == ""
-    assert memory.forget("L-MEI", "weekend") == 1 and memory.recall("L-MEI") == []
+    memory = CustomerMemory(tmp_path / "memory.json")
+    assert memory.remember("RR-10293", "Prefers  email over phone calls")["status"] == "remembered"
+    assert memory.remember("RR-10293", "prefers email over phone calls")["status"] == "already remembered"
+    assert CustomerMemory(tmp_path / "memory.json").recall("RR-10293") == ["Prefers email over phone calls"]   <span class="c"># persisted</span>
+    assert memory.recall("RR-20877") == []                                                          <span class="c"># per customer</span>
+    assert "email" in memory.as_prompt("RR-10293") and memory.as_prompt("RR-20877") == ""
+    assert memory.forget("RR-10293", "email") == 1 and memory.recall("RR-10293") == []
 
 
 def test_memory_refuses_sensitive_data(tmp_path):
-    memory = LearnerMemory(tmp_path / "memory.json")
-    assert "error" in memory.remember("L-MEI", "Card 4111 1111 1111 1111 for future payments")
-    assert "error" in memory.remember("L-MEI", "My password is hunter2")
-    assert memory.recall("L-MEI") == []
+    memory = CustomerMemory(tmp_path / "memory.json")
+    assert "error" in memory.remember("RR-10293", "Card 4111 1111 1111 1111 for future payments")
+    assert "error" in memory.remember("RR-10293", "My password is hunter2")
+    assert memory.recall("RR-10293") == []
 
 
 def test_memory_is_small_on_purpose(tmp_path):
-    memory = LearnerMemory(tmp_path / "memory.json")
+    memory = CustomerMemory(tmp_path / "memory.json")
     for i in range(25):
-        memory.remember("L-MEI", f"fact number {i}")
-    facts = memory.recall("L-MEI")
+        memory.remember("RR-10293", f"fact number {i}")
+    facts = memory.recall("RR-10293")
     assert len(facts) == 20 and facts[0] == "fact number 5"
 
 
@@ -452,50 +452,45 @@ def test_trim_history_summarises_older_turns():
 5 passed in 0.18s</span></code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Two sessions, one memory</h4>
-        <pre class="code" data-file="lab07_05_memory.py"><code>"""Drill 07.5: long-term memory as a tool. In session 1 the learner states preferences and the
+        <pre class="code" data-file="lab07_05_memory.py"><code>"""Drill 07.5: long-term memory as a tool. In session 1 the customer states preferences and the
 agent stores them with `remember`; session 2 starts fresh (no chat history), recalls them,
-and uses them to pick a date."""
-from datetime import date
-
+and uses them when it raises a case."""
 from pydantic import BaseModel, Field
 
-import desk
 from agent import Agent, print_step
 from desk_tools import SYSTEM, WRITE_TOOLS, kit
 from llm import MODEL, get_client
-from memory import STATE_DIR, LearnerMemory
+from memory import STATE_DIR, CustomerMemory
 
-memory = LearnerMemory(STATE_DIR / "memory.json")
-memory.forget("L-DIEGO", "")              <span class="c"># every fact contains "": start the drill with an empty memory</span>
+memory = CustomerMemory(STATE_DIR / "memory.json")
+memory.forget("RR-20877", "")             <span class="c"># every fact contains "": start the drill with an empty memory</span>
 
 
 class FactArgs(BaseModel):
-    fact: str = Field(description="A short, lasting preference or fact the learner asked you to remember")
+    fact: str = Field(description="A short, lasting preference or fact the customer asked you to remember")
 
 
 @kit.register(FactArgs, needs_context=True)
 def remember(args, context):
-    """Save a lasting preference the learner states (for example preferred class days or contact channel),
-    so future sessions know it. Never store payment details, passwords or health information."""
-    return memory.remember(context["learner"], args.fact)
+    """Save a lasting preference the customer states (for example how they want to be contacted or when
+    they travel), so future sessions know it. Never store card numbers, passwords, PINs or health information."""
+    return memory.remember(context["customer"], args.fact)
 
 
 client = get_client()
-context = {"learner": "L-DIEGO"}
+context = {"customer": "RR-20877"}
 
 print("SESSION 1")
 agent = Agent(client, MODEL, kit, SYSTEM, write_tools=WRITE_TOOLS, on_step=print_step)
-<span class="c"># A weekday that matches one later AZ-104 session (dates are relative to today in desk.py).</span>
-weekday = date.fromisoformat(desk.upcoming_sessions("C110")[1]).strftime("%A")
-print(" ", agent.run(f"Please remember that I can only attend classes that start on a {weekday}, "
-                     "and that I prefer email over phone calls.", context).answer)
-print("  stored:", memory.recall("L-DIEGO"))
+print(" ", agent.run("Please remember that I want to be contacted by email only, never by phone, "
+                     "and that I'm abroad in Japan every March.", context).answer)
+print("  stored:", memory.recall("RR-20877"))
 
 print("\nSESSION 2 (new conversation; memory goes into the system prompt)")
-agent = Agent(client, MODEL, kit, SYSTEM + "\n\n" + memory.as_prompt("L-DIEGO"),
+agent = Agent(client, MODEL, kit, SYSTEM + "\n\n" + memory.as_prompt("RR-20877"),
               write_tools=WRITE_TOOLS, on_step=print_step)
-print(" ", agent.run("Which later AZ-104 date would suit me? Don't book anything yet.", context).answer)
-print("  available:", [(d, date.fromisoformat(d).strftime("%A")) for d in desk.upcoming_sessions("C110")])</code></pre>
+print(" ", agent.run("My March statement never arrived. Please raise a case and tell me how the team will "
+                     "contact me.", context).answer)</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab07_05_memory.py</code></pre>
         <span class="out-label">Real output with qwen2.5:7b (Ollama); dates relative to today</span>
 <pre class="out"><code>SESSION 1
@@ -543,7 +538,7 @@ SESSION 2 (new conversation; memory goes into the system prompt)
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

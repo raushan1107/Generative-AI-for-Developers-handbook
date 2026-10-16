@@ -1,4 +1,5 @@
 """Drill 03.10: run the messy prompt and your structured rewrite on the same messages, with simple checks."""
+import re
 import sys
 from pathlib import Path
 from string import Template
@@ -8,21 +9,30 @@ from llm import get_client, MODEL
 client = get_client()
 
 MESSAGES = [
-    "My lab expired yesterday and I still have the final project to do. Help!",
-    "I already used my free extension, can I get more lab time? Or a refund for the lab days I missed?",
-    "Where is my exam voucher?",
+    "I lost my debit card last night and I'm abroad until Friday. Help!",
+    "Can you send my new card express? How much does that cost? I'm on Everyday Checking.",
+    "What is the interest rate on a personal loan?",
 ]
+
+SECRET = re.compile(r"\b(?:pin|password|card number)\b", re.I)
+
+
+def asks_for_secrets(reply):
+    """True if a sentence mentions a PIN, password or card number without saying 'never' or 'don't'."""
+    sentences = re.split(r"(?<=[.!?])\s+", reply)
+    return any(SECRET.search(s) and not re.search(r"\b(?:never|don't|do not|won't)\b", s, re.I) for s in sentences)
 
 
 def checks(reply, message):
     """Cheap automatic checks. They don't prove quality, but they catch the obvious failures."""
     words = len(reply.split())
-    results = [("under 90 words", words < 90), ("no refund promised", "refund" not in reply.lower()
-                                                or "no refund" in reply.lower() or "not offer" in reply.lower())]
-    if "voucher" in message.lower():
-        results.append(("hands off non-lab topics", "team" in reply.lower()))
-    if "free extension" in message.lower():
-        results.append(("mentions the $49 option", "49" in reply))
+    results = [("under 90 words", words < 90), ("never asks for a PIN or card number", not asks_for_secrets(reply))]
+    if "loan" in message.lower():
+        results.append(("hands off non-card topics", "team" in reply.lower()))
+        results.append(("doesn't invent a rate", not re.search(r"\d+(?:\.\d+)?\s?%", reply)))
+    if "express" in message.lower():
+        results.append(("mentions the $15 fee", "15" in reply))
+        results.append(("doesn't waive it for Everyday Checking", not re.search(r"\b(?:free|waived?)\b", reply, re.I)))
     return words, results
 
 

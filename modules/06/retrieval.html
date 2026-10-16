@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -346,8 +346,8 @@ OFF_TOPIC = [
     "How do I reverse a list in Python?",
     "What's the weather like in Toronto tomorrow?",
     "Do you sell gift cards?",
-    "Is TrainCrest hiring trainers?",
-    "Can I bring my dog to a classroom course?",
+    "Is RR Finance Bank hiring?",
+    "Should I buy shares in an electric car company?",
 ]
 
 index = load_or_build()
@@ -424,15 +424,15 @@ from kb_index import load_or_build
 from llm import MODEL, get_client
 
 CONVERSATIONS = [
-    [("user", "How long do labs stay open after my course?"),
-     ("assistant", "Labs stay open for 30 days after the course ends, and you can ask for one free 7-day extension."),
-     ("user", "And after that, how much is it?")],
-    [("user", "I want to cancel my AZ-104 course."),
-     ("assistant", "I can help. How many days are left before it starts?"),
-     ("user", "ten days. what do i get back?")],
-    [("user", "My certificate came with my old surname."),
-     ("assistant", "Sorry about that! When was it issued?"),
-     ("user", "about two months ago, does it cost anything?")],
+    [("user", "My card was stolen yesterday."),
+     ("assistant", "I'm sorry. Freeze it in the app first; a replacement arrives in 5 to 7 business days."),
+     ("user", "And if I need it faster, how much is that?")],
+    [("user", "I want to take money out of my 12-month CD."),
+     ("assistant", "I can help. Is it before the CD matures?"),
+     ("user", "yes, three months early. what do i lose?")],
+    [("user", "I sent $300 to the wrong account by mistake."),
+     ("assistant", "Sorry to hear that! Was it a wire or a standard transfer?"),
+     ("user", "a wire, yesterday. can you still cancel it?")],
 ]
 
 REWRITE = """Rewrite the user's last message as one standalone question that can be understood without
@@ -517,7 +517,7 @@ after a first turn about rescheduling. Done when its rewrite is English and retr
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

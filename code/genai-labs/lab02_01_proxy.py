@@ -27,7 +27,7 @@ def page():
 @app.post("/api/ask")
 def ask(q: Question):
     r = client.chat.completions.create(model=MODEL, messages=[
-        {"role": "system", "content": "You help TrainCrest learners. Be brief and friendly."},
+        {"role": "system", "content": "You help RR Finance Bank customers. Be brief and friendly."},
         {"role": "user", "content": q.question},
     ])
     return {"answer": r.choices[0].message.content}

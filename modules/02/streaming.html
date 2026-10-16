@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -183,6 +183,11 @@ data: [DONE]</code></pre>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Streaming makes a banking chat feel responsive, but it creates a compliance wrinkle: text reaches the customer <em>before</em> you have checked it. Banks handle this by streaming only low-risk answers, checking the text in small chunks as it arrives (and replacing the message if a check fails, as Milestone 3 does), or buffering anything that quotes a rate, a fee or a balance until the full answer has been validated. Analyst tools that summarise long reports stream freely, because a human reviews the output anyway.</p>
+</div>
   <p>Every major chat product streams, and teams track TTFT as a headline metric alongside total latency. Voice assistants go further: they start speaking the first sentence while the rest is still being generated. Back-end jobs (summarising 10,000 tickets overnight) don't stream at all: nobody is watching, so they use batch processing instead (Module 11).</p>
 </div>
 
@@ -274,7 +279,7 @@ import time
 from llm import get_client, MODEL
 
 client = get_client()
-messages = [{"role": "user", "content": "Write a 150-word guide to preparing for a cloud certification exam."}]
+messages = [{"role": "user", "content": "Write a 150-word guide to building an emergency fund."}]
 
 <span class="c"># A) Wait for the whole answer</span>
 start = time.perf_counter()
@@ -307,7 +312,7 @@ if usage:
         <span class="out-label">Expected (end of run)</span>
 <pre class="out"><code>Without streaming: blank screen for 5.8s, then everything at once.
 
-Preparing for a cloud certification starts with the official skills outline…
+An emergency fund is money you set aside for the unexpected: a car repair, a medical bill…
 
 With streaming: first words after 0.7s, done after 5.6s, 212 chunks.
 Usage: 24 in / 231 out</code></pre>
@@ -325,7 +330,7 @@ from claude_llm import client, CLAUDE_MODEL, FALLBACK
 start, ttft = time.perf_counter(), None
 with client.beta.messages.stream(
     model=CLAUDE_MODEL, max_tokens=4000,
-    messages=[{"role": "user", "content": "Write a 150-word guide to preparing for a cloud certification exam."}],
+    messages=[{"role": "user", "content": "Write a 150-word guide to building an emergency fund."}],
     **FALLBACK,
 ) as stream:
     for text in stream.text_stream:
@@ -359,7 +364,7 @@ url = os.environ["AZURE_OPENAI_BASE_URL"].rstrip("/") + "/chat/completions"
 headers = {"api-key": os.environ["AZURE_OPENAI_API_KEY"], "Content-Type": "application/json"}
 body = {
     "model": os.getenv("AZURE_OPENAI_DEPLOYMENT", "chat"),
-    "messages": [{"role": "user", "content": "Name three cloud providers, comma separated."}],
+    "messages": [{"role": "user", "content": "Name three types of bank account, comma separated."}],
     "stream": True,
 }
 
@@ -393,7 +398,7 @@ with requests.post(url, headers=headers, json=body, stream=True, timeout=60) as 
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

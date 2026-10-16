@@ -17,8 +17,8 @@ headers = {
 body = {
     "model": os.getenv("AZURE_OPENAI_DEPLOYMENT", "chat"),
     "messages": [
-        {"role": "system", "content": "You are Traincrest Assist, TrainCrest's learner-support assistant. Be brief."},
-        {"role": "user", "content": "What does 'batch confirmed' mean on my enrolment?"},
+        {"role": "system", "content": "You are RR Finance Assist, RR Finance Bank's customer-support assistant. Be brief."},
+        {"role": "user", "content": "What does 'pending' mean on a card payment?"},
     ],
 }
 

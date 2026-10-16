@@ -42,7 +42,7 @@
 </figure>
 
 <span class="out-label">Files after this milestone (new or changed)</span>
-<pre class="out"><code>traincrest-assist/
+<pre class="out"><code>rrfinance-assist/
 ├── requirements.txt          + numpy, rank_bm25, azure-search-documents
 ├── .env.example              + embedding deployment, SEARCH_BACKEND, INDEX_DIR, AZURE_SEARCH_*
 ├── cli.py                    loads the search service
@@ -69,11 +69,11 @@
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Settings</h4>
         <p>Copy <code>data/help/</code> from <code>genai-labs</code>, then add to <code>app/config.py</code> (and the matching lines to <code>.env</code>):</p>
-        <pre class="code" data-file="app/config.py (added)" data-src="code/traincrest-assist/m05/app/config.py" data-lines="30-40"></pre>
+        <pre class="code" data-file="app/config.py (added)" data-src="code/rrfinance-assist/m05/app/config.py" data-lines="30-40"></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The search module</h4>
         <p>Everything from this module in one file: chunk by heading (the winner in Drill 05.7), embed in batches, pre-filter, BM25 with a small analyzer, cosine, RRF (Drill 05.9), and the same <code>search()</code> on Azure AI Search. <code>LocalIndex.load()</code> refuses an index built with a different embedding model.</p>
-        <pre class="code" data-file="app/search.py" data-src="code/traincrest-assist/m05/app/search.py"></pre>
+        <pre class="code" data-file="app/search.py" data-src="code/rrfinance-assist/m05/app/search.py"></pre>
       </li>
       <li class="dstep ask"><span class="st">Ask AI</span><h4>The index builder</h4>
         <div class="prompt-box"><pre><code>Create scripts/build_index.py (and an empty scripts/__init__.py) for this project, runnable as
@@ -90,7 +90,7 @@ python -m scripts.build_index from the project folder.
 - Print the elapsed time. No other files.</code></pre></div>
         <div class="why"><b>Why this prompt works:</b> it reuses the functions that already exist instead of letting the assistant reinvent chunking or embedding, spells out the index schema field by field (filterable versus searchable is the decision that matters), and asks for lazy Azure imports so the local path stays simple.</div>
         <details class="solution"><summary>Reference solution</summary><div>
-          <pre class="code" data-file="scripts/build_index.py" data-src="code/traincrest-assist/m05/scripts/build_index.py"></pre>
+          <pre class="code" data-file="scripts/build_index.py" data-src="code/rrfinance-assist/m05/scripts/build_index.py"></pre>
         </div></details>
         <pre class="term"><code><span class="ps">$ </span>python -m scripts.build_index</code></pre>
         <span class="out-label">Real output (local backend, nomic-embed-text)</span>
@@ -109,15 +109,15 @@ Constraints: arguments: query (the learner's words) + optional typed filters ...
 Done when: pytest -q passes and "cheap intro to containers" returns Docker Quick Start first</code></pre></div>
         <p class="hint"><b>Hint:</b> tools are plain functions, so give the module a <code>set_search_service()</code> that <code>main.py</code> calls at start-up. Filters must be <code>Literal</code>/<code>int</code> fields, never free text pasted into a filter. Fall back to the Milestone 4 keyword filter when no service is set <em>or</em> the search raises (embedding service down).</p>
         <details class="solution"><summary>Compare with my version</summary><div>
-          <pre class="code" data-file="app/tools.py (search_courses)" data-src="code/traincrest-assist/m05/app/tools.py" data-lines="60-94"></pre>
+          <pre class="code" data-file="app/tools.py (search_courses)" data-src="code/rrfinance-assist/m05/app/tools.py" data-lines="60-94"></pre>
           <p>And in <code>main.py</code>, the service is created at start-up (a missing index is logged, not fatal) and exposed as <code>GET /api/search</code>:</p>
-          <pre class="code" data-file="app/main.py" data-src="code/traincrest-assist/m05/app/main.py"></pre>
+          <pre class="code" data-file="app/main.py" data-src="code/rrfinance-assist/m05/app/main.py"></pre>
         </div></details>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Tests with a fake embedding model</h4>
         <p>Search code needs embeddings, but tests shouldn't call a model. <code>FakeEmbeddings</code> hashes words into a 256-dimension vector: texts that share words get similar vectors. It can't understand meaning, but it's deterministic, which is perfect for testing the plumbing (filters, ranking, save/load, fallbacks).</p>
-        <pre class="code" data-file="tests/fakes.py (FakeEmbeddings)" data-src="code/traincrest-assist/m05/tests/fakes.py" data-lines="62-85"></pre>
-        <pre class="code" data-file="tests/test_search.py" data-src="code/traincrest-assist/m05/tests/test_search.py"></pre>
+        <pre class="code" data-file="tests/fakes.py (FakeEmbeddings)" data-src="code/rrfinance-assist/m05/tests/fakes.py" data-lines="62-85"></pre>
+        <pre class="code" data-file="tests/test_search.py" data-src="code/rrfinance-assist/m05/tests/test_search.py"></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Evidence</h4>
 <pre class="term"><code><span class="ps">$ </span>pytest -q
@@ -166,5 +166,5 @@ hands-on cloud course, beginner, max $500 -> C109 AZ-900 ($350), C114 Docker ($1
 </div>
 <div class="callout note">
   <div class="c-label">Fell behind? Catch up here</div>
-  <p>The complete reference code is in <a href="../../code/traincrest-assist/m05/app/search.py"><code>code/traincrest-assist/m05/</code></a>, including tests, help articles and the index builder. Copy it over your project, keep your <code>.env</code>, run <code>pytest -q</code> and <code>python -m scripts.build_index</code>, and you're ready for Part III.</p>
+  <p>The complete reference code is in <a href="../../code/rrfinance-assist/m05/app/search.py"><code>code/rrfinance-assist/m05/</code></a>, including tests, help articles and the index builder. Copy it over your project, keep your <code>.env</code>, run <code>pytest -q</code> and <code>python -m scripts.build_index</code>, and you're ready for Part III.</p>
 </div>

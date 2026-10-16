@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -164,11 +164,16 @@
   <li>On Azure you assign <strong>TPM per deployment</strong> within your quota, and an RPM limit is derived from it. Limits count the <em>maximum</em> output tokens you request, so a huge <code>max_completion_tokens</code> eats budget even if unused.</li>
   <li>Responses carry headers like <code>x-ratelimit-remaining-tokens</code>; 429s often include <code>retry-after</code>.</li>
   <li>The OpenAI and Anthropic Python SDKs <strong>already retry</strong> 408, 409, 429 and 5xx twice with backoff by default. Tune <code>max_retries</code>; don't wrap a second blind retry loop around it.</li>
-  <li>For bulk work (summarising 25,000 tickets), don't retry harder: <strong>queue</strong> it and process at a steady rate, or use a batch API (Modules 08, 11).</li>
+  <li>For bulk work (summarising 40,000 complaint cases), don't retry harder: <strong>queue</strong> it and process at a steady rate, or use a batch API (Modules 08, 11).</li>
 </ul>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banking traffic is spiky: salary day, the first of the month when bills go out, a card-network outage, or a fraud scare in the news can multiply chat volume in minutes. Teams size capacity (TPM) for those peaks, give interactive customer chat priority over back-office jobs, and push bulk work such as overnight complaint summaries or month-end statement analysis into queues or batch APIs. Some banks also reserve dedicated capacity (provisioned throughput) for customer-facing features so a busy internal team can't starve them.</p>
+</div>
   <p>Provider limits are tiered: new accounts get small limits that grow with usage and spend, and capacity for popular models can be scarce at peak times. Production teams monitor TPM utilisation, keep separate deployments (or quotas) for interactive and batch traffic, and use a gateway to spread load across regions or deployments when one is saturated.</p>
 </div>
 
@@ -298,7 +303,7 @@ def call_with_backoff(messages, max_attempts=6, base=1.0, cap=30.0):
 <span class="c"># C) Spend the budget fast to trigger 429s</span>
 print()
 for i in range(12):
-    r = call_with_backoff([{"role": "user", "content": "Write 150 words about cloud certifications."}])
+    r = call_with_backoff([{"role": "user", "content": "Write 150 words about how credit scores work."}])
     print(f"request {i + 1:2} ok · {r.usage.total_tokens} tokens")</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab02_12_rate_limits.py</code></pre>
         <span class="out-label">Expected (abridged)</span>
@@ -451,7 +456,7 @@ def test_wait_is_capped():
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Limits.</p></div></div>
 <div class="quiz">
   <details><summary>1. Why add random jitter to backoff waits?</summary><div><p>So many clients that failed together <strong>don't retry together</strong> and cause the same overload again.</p></div></details>
-  <details><summary>2. A nightly job summarising 25,000 tickets keeps hitting 429s and slowing the chat. What do you change?</summary><div><p>Move it to a <strong>queue or batch API</strong> with a steady processing rate, ideally on separate capacity, instead of retrying harder.</p></div></details>
+  <details><summary>2. A nightly job summarising 40,000 complaint cases keeps hitting 429s and slowing the chat. What do you change?</summary><div><p>Move it to a <strong>queue or batch API</strong> with a steady processing rate, ideally on separate capacity, instead of retrying harder.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Back off politely, honour retry-after, and keep bulk work out of the interactive lane.</p></div>
 
@@ -462,7 +467,7 @@ def test_wait_is_capped():
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

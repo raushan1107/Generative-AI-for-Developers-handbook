@@ -10,7 +10,7 @@ url = os.environ["AZURE_OPENAI_BASE_URL"].rstrip("/") + "/chat/completions"
 headers = {"api-key": os.environ["AZURE_OPENAI_API_KEY"], "Content-Type": "application/json"}
 body = {
     "model": os.getenv("AZURE_OPENAI_DEPLOYMENT", "chat"),
-    "messages": [{"role": "user", "content": "Name three cloud providers, comma separated."}],
+    "messages": [{"role": "user", "content": "Name three types of bank account, comma separated."}],
     "stream": True,
 }
 

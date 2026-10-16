@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Build: Milestone 2</title>
-<meta name="description" content="Traincrest Assist milestone 2 (Module 02 hands-on exercise): a FastAPI service with user input, LLM integration, streaming over server-sent events, conversation memory, error handling, retries, structured logging and cost, plus a web chat UI built with an AI coding assistant.">
+<meta name="description" content="RR Finance Assist milestone 2 (Module 02 hands-on exercise): a FastAPI service with user input, LLM integration, streaming over server-sent events, conversation memory, error handling, retries, structured logging and cost, plus a web chat UI built with an AI coding assistant.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -132,7 +132,7 @@
 <div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From a terminal toy to a service.</p></div></div>
 
 <div class="case">
-  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 2</span></div>
+  <div class="case-head"><b>RR Finance Bank</b><span>· the brief for milestone 2</span></div>
   <div class="case-body">
     <p>The pilot team liked v0.1 but can't use it: it forgets context, freezes while thinking and dies on the first network blip. Build v0.2 as a web service with a chat page. Required: <strong>user input</strong>, <strong>LLM API integration</strong>, <strong>a streaming response</strong>, <strong>error handling</strong> and <strong>basic logging</strong>, plus conversation memory and a cost figure per turn so finance can plan.</p>
   </div>
@@ -141,7 +141,7 @@
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 300" role="img" aria-labelledby="b2-t b2-d">
-      <title id="b2-t">Traincrest Assist v0.2</title>
+      <title id="b2-t">RR Finance Assist v0.2</title>
       <desc id="b2-d">The browser chat page posts to /api/chat on the FastAPI backend and receives server-sent events. main.py hands the request to ChatService in chat.py, which keeps per-session history, builds the messages with the system prompt from prompts.py, streams from the model through llm.py with retries, maps errors to friendly messages, and writes JSON log lines with cost through logging_utils.py.</desc>
       <rect x="16" y="90" width="170" height="120" rx="12" class="s-surface"/><text x="101" y="122" class="t-b mid">web/index.html</text><text x="101" y="144" class="t-s mid">chat page</text><text x="101" y="162" class="t-s mid">reads SSE events</text><text x="101" y="180" class="t-s mid">delta · done · error</text>
       <rect x="236" y="20" width="520" height="260" rx="14" class="s-blue"/>
@@ -166,7 +166,7 @@
 </figure>
 
 <span class="out-label">Files after this milestone (new or changed)</span>
-<pre class="out"><code>traincrest-assist/
+<pre class="out"><code>rrfinance-assist/
 ├── requirements.txt          + fastapi, uvicorn
 ├── .env.example              + MAX_TURNS_KEPT, PRICE_IN_PER_M, PRICE_OUT_PER_M, LOG_FILE
 ├── app/
@@ -183,8 +183,8 @@
 
 <div class="callout note prereq">
   <div class="c-label">Before you run this code</div>
-  <p>Milestones are built in your <code>traincrest-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
-  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="../../code/traincrest-assist-m01.zip">traincrest-assist-m01.zip</a>, or the finished one, <a href="../../code/traincrest-assist-m02.zip">traincrest-assist-m02.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
+  <p>Milestones are built in your <code>rrfinance-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
+  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="../../code/rrfinance-assist-m01.zip">rrfinance-assist-m01.zip</a>, or the finished one, <a href="../../code/rrfinance-assist-m02.zip">rrfinance-assist-m02.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
   <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env"><code><span class="c"># Copy to .env in the project folder. Never commit .env.</span>
 <span class="c"># Default: a free local model with Ollama (no account, no key). Run once:  ollama pull llama3.2</span>
 LLM_PROVIDER=ollama
@@ -231,7 +231,7 @@ MAX_TURNS_KEPT=6
 PRICE_IN_PER_M=0.40
 PRICE_OUT_PER_M=1.60
 LOG_FILE=assist.log</code></pre>
-        <pre class="code" data-file="app/config.py"><code>"""Settings for Traincrest Assist, read from .env so nothing secret lives in code."""
+        <pre class="code" data-file="app/config.py"><code>"""Settings for RR Finance Assist, read from .env so nothing secret lives in code."""
 import os
 
 from dotenv import load_dotenv
@@ -252,7 +252,7 @@ MAX_TURNS_KEPT = int(os.getenv("MAX_TURNS_KEPT", "6"))           <span class="c"
 PRICE_IN_PER_M = float(os.getenv("PRICE_IN_PER_M", "0.40"))      <span class="c"># USD per 1M input tokens (check yours)</span>
 PRICE_OUT_PER_M = float(os.getenv("PRICE_OUT_PER_M", "1.60"))    <span class="c"># USD per 1M output tokens</span>
 LOG_FILE = os.getenv("LOG_FILE", "assist.log")</code></pre>
-        <pre class="code" data-file="app/llm.py"><code>"""The only place in Traincrest Assist that knows how to reach the model."""
+        <pre class="code" data-file="app/llm.py"><code>"""The only place in RR Finance Assist that knows how to reach the model."""
 import os
 
 from openai import OpenAI
@@ -276,9 +276,10 @@ def get_client() -&gt; OpenAI:
         <pre class="code" data-file="app/prompts.py"><code>"""Prompts live here, not scattered through the code. (Module 03 turns this into a versioned library.)"""
 
 SYSTEM_PROMPT = (
-    "You are Traincrest Assist, the learner-support assistant of TrainCrest, a global technical "
-    "training company. Be friendly, concise and practical. Reply in the learner's language. "
-    "If you don't know something about TrainCrest's policies or a learner's enrolment, say so honestly."
+    "You are RR Finance Assist, the customer-support assistant of RR Finance Bank, a retail bank. "
+    "Be friendly, concise and practical. Reply in the customer's language. Never ask for a PIN, a password "
+    "or a full card number. If you don't know something about RR Finance Bank's policies or a customer's "
+    "account, say so honestly."
 )</code></pre>
         <pre class="code" data-file="app/logging_utils.py"><code>"""Structured logging and cost: one JSON line per event, ready for any log platform."""
 import json
@@ -287,7 +288,7 @@ import time
 
 from app.config import LOG_FILE, PRICE_IN_PER_M, PRICE_OUT_PER_M
 
-_logger = logging.getLogger("traincrest_assist")
+_logger = logging.getLogger("rrfinance_assist")
 if not _logger.handlers:
     _handler = logging.FileHandler(LOG_FILE, encoding="utf-8")
     _handler.setFormatter(logging.Formatter("%(message)s"))
@@ -297,7 +298,7 @@ if not _logger.handlers:
 
 
 def log_event(**fields):
-    """Write one JSON object per line. Never log API keys or full learner messages."""
+    """Write one JSON object per line. Never log API keys or full customer messages."""
     _logger.info(json.dumps({"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), **fields}, ensure_ascii=False))
 
 
@@ -322,10 +323,10 @@ from app.logging_utils import cost_usd, log_event
 from app.prompts import SYSTEM_PROMPT
 
 FRIENDLY = {
-    "rate_limited": "Traincrest Assist is very busy right now. Please try again in a moment.",
+    "rate_limited": "RR Finance Assist is very busy right now. Please try again in a moment.",
     "unreachable": "I couldn't reach the AI service. Please try again.",
     "bad_request": "I couldn't process that message. Could you rephrase it?",
-    "config": "Traincrest Assist is temporarily unavailable. Our team has been notified.",
+    "config": "RR Finance Assist is temporarily unavailable. Our team has been notified.",
     "server": "Something went wrong on our side. Please try again shortly.",
 }
 
@@ -401,7 +402,7 @@ class ChatService:
         yield event</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The web API</h4>
-        <pre class="code" data-file="app/main.py"><code>"""Traincrest Assist API, milestone 2.
+        <pre class="code" data-file="app/main.py"><code>"""RR Finance Assist API, milestone 2.
 
 Run from the project folder:  uvicorn app.main:app --reload
 Then open http://127.0.0.1:8000 (chat UI) or http://127.0.0.1:8000/docs (API docs).
@@ -415,7 +416,7 @@ from pydantic import BaseModel, Field
 
 from app.chat import ChatService
 
-app = FastAPI(title="Traincrest Assist", version="0.2")
+app = FastAPI(title="RR Finance Assist", version="0.2")
 chat = ChatService()
 WEB = Path(__file__).resolve().parent.parent / "web"
 
@@ -456,7 +457,7 @@ def reset(req: ResetRequest):
       </li>
       <li class="dstep ask"><span class="st">Ask AI</span><h4>Have your assistant build the chat page to your contract</h4>
         <div class="prompt-box"><pre><code>Create web/index.html: a single-file chat page (HTML, CSS and vanilla JavaScript, no frameworks,
-no external files) for "Traincrest Assist". Contract with the backend in #app/main.py:
+no external files) for "RR Finance Assist". Contract with the backend in #app/main.py:
 - On load, create sessionId = crypto.randomUUID().
 - On submit, POST /api/chat with JSON {session_id, message}. The response is server-sent events:
   lines "data: {json}" separated by a blank line. Read it with fetch + response.body.getReader()
@@ -476,7 +477,7 @@ Dark, clean design; user bubbles on the right, assistant on the left.</code></pr
 &lt;head&gt;
 &lt;meta charset="utf-8"&gt;
 &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-&lt;title&gt;Traincrest Assist&lt;/title&gt;
+&lt;title&gt;RR Finance Assist&lt;/title&gt;
 &lt;style&gt;
   :root { --bg: #0d1220; --panel: #151b2e; --ink: #e8ebf5; --muted: #8b95ad; --accent: #8d7bff; --you: #2a3354; }
   * { box-sizing: border-box; }
@@ -500,10 +501,10 @@ Dark, clean design; user bubbles on the right, assistant on the left.</code></pr
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class="wrap"&gt;
-  &lt;header&gt;&lt;b&gt;Traincrest Assist&lt;/b&gt;&lt;span&gt;learner support · milestone 2&lt;/span&gt;&lt;button id="reset" type="button"&gt;New chat&lt;/button&gt;&lt;/header&gt;
+  &lt;header&gt;&lt;b&gt;RR Finance Assist&lt;/b&gt;&lt;span&gt;customer support · milestone 2&lt;/span&gt;&lt;button id="reset" type="button"&gt;New chat&lt;/button&gt;&lt;/header&gt;
   &lt;div id="log" aria-live="polite"&gt;&lt;/div&gt;
   &lt;form id="form"&gt;
-    &lt;input id="input" autocomplete="off" placeholder="Ask about your course, lab, voucher or certificate..." required&gt;
+    &lt;input id="input" autocomplete="off" placeholder="Ask about your card, account, payments or fees..." required&gt;
     &lt;button id="send"&gt;Send&lt;/button&gt;
   &lt;/form&gt;
 &lt;/div&gt;
@@ -563,7 +564,7 @@ Dark, clean design; user bubbles on the right, assistant on the left.</code></pr
         }
       }
     } catch (err) {
-      handle({ type: "error", message: "Couldn't reach Traincrest Assist (" + err.message + ")." }, bubble);
+      handle({ type: "error", message: "Couldn't reach RR Finance Assist (" + err.message + ")." }, bubble);
     } finally {
       send.disabled = false;
       input.focus();
@@ -582,7 +583,7 @@ Dark, clean design; user bubbles on the right, assistant on the left.</code></pr
         </div></details>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Upgrade the CLI to share the same service</h4>
-        <pre class="code" data-file="cli.py"><code>"""Traincrest Assist in the terminal, milestone 2: same ChatService as the web app, streamed.
+        <pre class="code" data-file="cli.py"><code>"""RR Finance Assist in the terminal, milestone 2: same ChatService as the web app, streamed.
 
 Run from the project folder:  python cli.py
 """
@@ -594,7 +595,7 @@ from app.config import MODEL, PROVIDER
 
 def main():
     chat, session = ChatService(), uuid.uuid4().hex
-    print(f"Traincrest Assist v0.2 [{PROVIDER} · {MODEL}]. Type 'exit' to quit, '/reset' for a new chat.\n")
+    print(f"RR Finance Assist v0.2 [{PROVIDER} · {MODEL}]. Type 'exit' to quit, '/reset' for a new chat.\n")
     while True:
         try:
             question = input("You: ").strip()
@@ -626,8 +627,8 @@ if __name__ == "__main__":
       <li class="dstep verify"><span class="st">Verify</span><h4>Run it and try to break it</h4>
         <pre class="term"><code><span class="ps">$ </span>uvicorn app.main:app --reload</code></pre>
         <ul class="verify-list">
-          <li><strong>Streaming:</strong> open <code>http://127.0.0.1:8000</code>, ask "How should I prepare for my first cloud certification?". Words appear within about a second.</li>
-          <li><strong>Memory:</strong> in the browser at <code>http://127.0.0.1:8000</code>, send "Hi, I'm Mei, enrolled in AZ-305." then "Which course am I in, and what's my name?". The answer mentions Mei and AZ-305. If it doesn't, check your <code>web/index.html</code>: it must create <code>sessionId</code> <em>once</em> when the page loads and send the same value with every message (compare with the reference code above). A page that makes a new ID per message has no memory.</li>
+          <li><strong>Streaming:</strong> open <code>http://127.0.0.1:8000</code>, ask "How do I build an emergency fund?". Words appear within about a second.</li>
+          <li><strong>Memory:</strong> in the browser at <code>http://127.0.0.1:8000</code>, send "Hi, I'm Mei, and I'm flying to Japan on Friday." then "Where am I flying, and what's my name?". The answer mentions Mei and Japan. If it doesn't, check your <code>web/index.html</code>: it must create <code>sessionId</code> <em>once</em> when the page loads and send the same value with every message (compare with the reference code above). A page that makes a new ID per message has no memory.</li>
           <li><strong>New chat:</strong> click it, ask "What's my name?": forgotten, as designed. It works because the button calls <code>/api/reset</code> and then creates a new <code>sessionId</code>.</li>
           <li><strong>Friendly errors:</strong> in <code>.env</code> set a model that doesn't exist (default local model: <code>OLLAMA_MODEL=nope</code>; Azure: <code>AZURE_OPENAI_DEPLOYMENT=nope</code>), restart uvicorn, send a message: a calm "temporarily unavailable" message, no stack trace. Restore the setting and restart.</li>
           <li><strong>Model unreachable:</strong> make the model server unreachable and send a message: "I couldn't reach the AI service". With the default local model, quit Ollama (Windows: right-click its tray icon › Quit; macOS: menu-bar icon › Quit; Linux: <code>sudo systemctl stop ollama</code>); turning off Wi-Fi changes nothing, because the model runs on your own computer. With Azure, disconnect Wi-Fi instead. Start Ollama or reconnect: the next message works.</li>
@@ -657,17 +658,17 @@ if __name__ == "__main__":
   <table>
     <thead><tr><th>Still wrong in v0.2</th><th>Fixed in</th></tr></thead>
     <tbody>
-      <tr><td>Still doesn't know TrainCrest's policies</td><td>M03 (policy in a structured prompt), M06 (RAG)</td></tr>
-      <tr><td>Can't triage tickets into data the team can route</td><td>M03 (JSON triage)</td></tr>
+      <tr><td>Still doesn't know RR Finance Bank's policies</td><td>M03 (policy in a structured prompt), M06 (RAG)</td></tr>
+      <tr><td>Can't triage messages into data the team can route (fraud first)</td><td>M03 (JSON triage)</td></tr>
       <tr><td>One vague prompt string, no versions, no tests</td><td>M03 (prompts as code)</td></tr>
-      <tr><td>Can't look up enrolments or vouchers</td><td>M04 (tools)</td></tr>
+      <tr><td>Can't look up products, transactions or card status</td><td>M04 (tools)</td></tr>
       <tr><td>History lives in memory; a restart loses it</td><td>M08 (architecture)</td></tr>
     </tbody>
   </table>
 </div>
 <div class="callout note">
   <div class="c-label">Fell behind? Catch up here</div>
-  <p>The complete reference code for this milestone is in <a href="../../code/traincrest-assist/m02/app/chat.py"><code>code/traincrest-assist/m02/</code></a>. Copy it over your project, keep your <code>.env</code>, install the requirements and carry on.</p>
+  <p>The complete reference code for this milestone is in <a href="../../code/rrfinance-assist/m02/app/chat.py"><code>code/rrfinance-assist/m02/</code></a>. Copy it over your project, keep your <code>.env</code>, install the requirements and carry on.</p>
 </div>
 
 </div>
@@ -677,7 +678,7 @@ if __name__ == "__main__":
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

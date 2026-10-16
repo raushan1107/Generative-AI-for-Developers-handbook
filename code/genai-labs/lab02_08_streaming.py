@@ -4,7 +4,7 @@ import time
 from llm import get_client, MODEL
 
 client = get_client()
-messages = [{"role": "user", "content": "Write a 150-word guide to preparing for a cloud certification exam."}]
+messages = [{"role": "user", "content": "Write a 150-word guide to building an emergency fund."}]
 
 # A) Wait for the whole answer
 start = time.perf_counter()

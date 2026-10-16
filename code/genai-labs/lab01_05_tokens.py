@@ -6,13 +6,13 @@ from llm import get_client, MODEL, PROVIDER
 enc = tiktoken.get_encoding("o200k_base")  # tokenizer used by recent OpenAI models
 
 samples = {
-    "English": "My exam voucher hasn't arrived yet. Can you check my enrolment?",
-    "Spanish": "Mi cupón de examen aún no ha llegado. ¿Pueden revisar mi inscripción?",
-    "Hindi": "मेरा परीक्षा वाउचर अभी तक नहीं आया है। क्या आप मेरा नामांकन देख सकते हैं?",
-    "Japanese": "試験バウチャーがまだ届いていません。登録を確認していただけますか？",
-    "Code": "def total(items): return sum(i.price * i.qty for i in items)",
-    "JSON": '{"enrolment_id": "TC-10293", "status": "confirmed", "seats": 2}',
-    "Number": "3.14159265358979",
+    "English": "I was charged an overdraft fee twice. Can you check my account?",
+    "Spanish": "Me cobraron dos veces la comisión por descubierto. ¿Pueden revisar mi cuenta?",
+    "Hindi": "मुझसे ओवरड्राफ्ट शुल्क दो बार लिया गया। क्या आप मेरा खाता देख सकते हैं?",
+    "Japanese": "当座貸越の手数料を2回請求されました。口座を確認していただけますか？",
+    "Code": "def interest(balance, apy): return round(balance * apy / 12, 2)",
+    "JSON": '{"customer_id": "RR-10293", "card_status": "frozen", "cards": 2}',
+    "Amount": "$12,450,309.75",
 }
 
 for label, text in samples.items():

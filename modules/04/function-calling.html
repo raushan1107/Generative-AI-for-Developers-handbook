@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -338,31 +338,32 @@ MODEL = {
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>The catalogue your app already has</h4>
         <p>A plain Python function over <code>data/courses.json</code>. No AI in here: this is "your existing business logic".</p>
-        <pre class="code" data-file="catalogue.py"><code>"""The TrainCrest course catalogue (fictional), used by Module 04 and 05 drills."""
+        <pre class="code" data-file="catalogue.py"><code>"""The RR Finance Bank product catalogue (fictional), used by Module 04 and 05 drills."""
 import json
 from pathlib import Path
 
-COURSES = json.loads((Path(__file__).parent / "data" / "courses.json").read_text(encoding="utf-8"))
+PRODUCTS = json.loads((Path(__file__).parent / "data" / "products.json").read_text(encoding="utf-8"))
+FIELDS = ("id", "name", "family", "audience", "annual_fee_usd", "rate_pct", "rate_type")
 
 
-def find_courses(level=None, max_price_usd=None, course_format=None, text=None):
+def find_products(family=None, audience=None, max_annual_fee_usd=None, text=None):
     """Plain keyword filter over the catalogue: the kind of function your app already has."""
     hits = []
-    for c in COURSES:
-        if level and c["level"] != level:
+    for p in PRODUCTS:
+        if family and p["family"] != family:
             continue
-        if max_price_usd is not None and c["price_usd"] &gt; max_price_usd:
+        if audience and p["audience"] != audience:
             continue
-        if course_format and c["format"] != course_format:
+        if max_annual_fee_usd is not None and p["annual_fee_usd"] &gt; max_annual_fee_usd:
             continue
-        if text and text.lower() not in (c["title"] + " " + c["description"]).lower():
+        if text and text.lower() not in (p["name"] + " " + p["description"]).lower():
             continue
-        hits.append({k: c[k] for k in ("id", "title", "level", "format", "price_usd")})
+        hits.append({k: p[k] for k in FIELDS})
     return hits
 
 
-def get_course(course_id):
-    return next((c for c in COURSES if c["id"] == course_id.upper()), None)</code></pre>
+def get_product(product_id):
+    return next((p for p in PRODUCTS if p["id"] == product_id.strip().upper()), None)</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Expose it as a tool and complete one round trip</h4>
         <pre class="code" data-file="lab04_05_first_tool.py"><code>"""Drill 04.5: your first function call, one step at a time.
@@ -373,26 +374,27 @@ from typing import Literal, Optional
 import openai
 from pydantic import BaseModel, Field
 
-from catalogue import find_courses
+from catalogue import find_products
 from llm import MODEL, get_client
 from llm_tools import TOOL_EXTRAS
 
 
-class FindCourses(BaseModel):
-    """Search the TrainCrest catalogue. Use it for any question about courses, levels or prices."""
-    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
-    max_price_usd: Optional[int] = Field(default=None, description="Highest price the learner will pay, in USD")
-    text: Optional[str] = Field(default=None, description="One keyword to look for in titles and descriptions, e.g. 'python'")
+class FindProducts(BaseModel):
+    """Search the RR Finance Bank product catalogue. Use it for any question about accounts, cards, loans, fees or rates."""
+    family: Optional[Literal["accounts", "cards", "loans"]] = None
+    audience: Optional[Literal["personal", "student", "business"]] = None
+    max_annual_fee_usd: Optional[int] = Field(default=None, description="Highest annual fee the customer will pay, in USD")
+    text: Optional[str] = Field(default=None, description="One keyword to look for in names and descriptions, e.g. 'travel'")
 
 
-TOOLS = [openai.pydantic_function_tool(FindCourses, name="find_courses")]
+TOOLS = [openai.pydantic_function_tool(FindProducts, name="find_products")]
 
 
 def main():
     client = get_client()
     messages = [
-        {"role": "system", "content": "You are Traincrest Assist. Use tools for catalogue facts; never guess prices."},
-        {"role": "user", "content": "Is there a beginner Python course under $300?"},
+        {"role": "system", "content": "You are RR Finance Assist. Use tools for product facts; never guess fees or rates."},
+        {"role": "user", "content": "Do you have a credit card with no annual fee for students?"},
     ]
 
     <span class="c"># Step 1: send the question AND the tool descriptions.</span>
@@ -409,8 +411,8 @@ def main():
         print(f"2) model asks: {call.function.name}({call.function.arguments})")
         <span class="c"># Validate before you call: strict mode guarantees the shape on Azure/OpenAI, but not every</span>
         <span class="c"># provider enforces it, and a model can still send values your function can't use.</span>
-        args = FindCourses.model_validate_json(call.function.arguments)
-        result = find_courses(**args.model_dump())
+        args = FindProducts.model_validate_json(call.function.arguments)
+        result = find_products(**args.model_dump())
         print(f"   we ran it:  {len(result)} result(s)")
         messages.append({"role": "tool", "tool_call_id": call.id, "content": json.dumps(result)})
 
@@ -478,7 +480,7 @@ print(text_of(msg))</code></pre>
 Run:  python lab04_06_tool_choice.py                 (tool_choice="auto")
       python lab04_06_tool_choice.py none            (never call a tool)
       python lab04_06_tool_choice.py required        (must call some tool)
-      python lab04_06_tool_choice.py get_course      (must call this one)
+      python lab04_06_tool_choice.py get_product     (must call this one)
       python lab04_06_tool_choice.py auto --parallel (allow several calls in one turn)"""
 import json
 import sys
@@ -491,35 +493,36 @@ from llm import MODEL, get_client
 from llm_tools import TOOL_EXTRAS
 
 
-class FindCourses(BaseModel):
-    """Search the catalogue by level, budget or keyword."""
-    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
-    max_price_usd: Optional[int] = None
+class FindProducts(BaseModel):
+    """Search the product catalogue by family, audience, annual fee or keyword."""
+    family: Optional[Literal["accounts", "cards", "loans"]] = None
+    audience: Optional[Literal["personal", "student", "business"]] = None
+    max_annual_fee_usd: Optional[int] = None
     text: Optional[str] = None
 
 
-class GetCourse(BaseModel):
-    """Full details of one course by its ID, like C104."""
-    course_id: str = Field(description="Course ID such as C104")
+class GetProduct(BaseModel):
+    """Full details of one product by its ID, like P110."""
+    product_id: str = Field(description="Product ID such as P110")
 
 
-class GetVoucherStatus(BaseModel):
-    """Exam voucher status for the signed-in learner's enrolment."""
-    enrolment_id: str = Field(description="Like TC-12345")
+class GetCardStatus(BaseModel):
+    """Status of one of the signed-in customer's cards: active, frozen, replacement sent."""
+    card_last4: str = Field(description="Last four digits of the card, like 4821")
 
 
 QUESTIONS = [
-    "What does C104 cover?",
-    "Has my voucher for TC-10293 been issued?",
-    "Compare C110 and C111 for me.",
+    "What does P111 offer?",
+    "Has the replacement for my card ending 4821 been sent?",
+    "Compare P104 and P106 for me.",
     "Thanks, that's all!",
 ]
 
 choice = sys.argv[1] if len(sys.argv) &gt; 1 and not sys.argv[1].startswith("--") else "auto"
 parallel = "--parallel" in sys.argv
-tools = [openai.pydantic_function_tool(FindCourses, name="find_courses"),
-         openai.pydantic_function_tool(GetCourse, name="get_course"),
-         openai.pydantic_function_tool(GetVoucherStatus, name="get_voucher_status")]
+tools = [openai.pydantic_function_tool(FindProducts, name="find_products"),
+         openai.pydantic_function_tool(GetProduct, name="get_product"),
+         openai.pydantic_function_tool(GetCardStatus, name="get_card_status")]
 if parallel:
     for t in tools:                    <span class="c"># strict tools can't be combined with parallel calls</span>
         t["function"]["strict"] = False
@@ -584,7 +587,7 @@ Compare C110 and C111 for me.              -> get_course({'course_id': 'C110'}),
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -336,17 +336,18 @@ MODEL = {
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>With your Drill 05.4 vector store</h4>
         <pre class="code" data-file="lab05_08_filters.py"><code>"""Drill 05.8: metadata filters. Filter BEFORE ranking (pre-filter) or AFTER (post-filter)?"""
-from catalogue import COURSES
+from catalogue import PRODUCTS
 from embed import embed
 from vector_store import VectorStore, matches
 
 store = VectorStore()
-texts = [f"{c['title']}. {c['description']}" for c in COURSES]
-store.add(ids=[c["id"] for c in COURSES], vectors=embed(texts), texts=[c["title"] for c in COURSES],
-          metadatas=[{"level": c["level"], "format": c["format"], "price_usd": c["price_usd"]} for c in COURSES])
+texts = [f"{p['name']}. {p['description']}" for p in PRODUCTS]
+store.add(ids=[p["id"] for p in PRODUCTS], vectors=embed(texts), texts=[p["name"] for p in PRODUCTS],
+          metadatas=[{"family": p["family"], "audience": p["audience"], "annual_fee_usd": p["annual_fee_usd"]}
+                     for p in PRODUCTS])
 
-query = "hands-on course about AI and language models"
-where = {"level": "beginner", "price_usd": {"$lte": 500}}
+query = "earn rewards when I travel and spend abroad"
+where = {"family": "cards", "annual_fee_usd": {"$lte": 0}}
 q = embed([query])[0]
 
 
@@ -354,7 +355,7 @@ def show(title, hits):
     print(title)
     for h in hits:
         m = h["metadata"]
-        print(f"  {h['score']:.2f}  {h['id']}  {h['text']:&lt;40} {m['level']:&lt;13} ${m['price_usd']}")
+        print(f"  {h['score']:.2f}  {h['id']}  {h['text']:&lt;28} {m['family']:&lt;9} ${m['annual_fee_usd']} a year")
     if not hits:
         print("  (nothing left)")
 
@@ -412,7 +413,7 @@ Pre-filter (filter first, then top 3):
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -339,7 +339,7 @@ MODEL = {
         <pre class="code" data-file="lab06_02_minimal_rag.py"><code>"""Drill 06.2: the smallest RAG that works, every stage in plain sight.
 Index (ahead of time): load the help articles, chunk them by heading, embed the chunks.
 Query (every question): embed the question, take the 3 nearest chunks, put them in the prompt, generate.
-Run:  python lab06_02_minimal_rag.py "Can I pay for a $1,490 course in parts?" """
+Run:  python lab06_02_minimal_rag.py "How much is the fee for an international wire?" """
 import re
 import sys
 import time
@@ -350,7 +350,7 @@ import numpy as np
 from embed import embed
 from llm import MODEL, get_client
 
-question = sys.argv[1] if len(sys.argv) &gt; 1 else "Can I pay for a $1,490 course in parts?"
+question = sys.argv[1] if len(sys.argv) &gt; 1 else "How much is the fee for an international wire?"
 clock = time.perf_counter()
 
 
@@ -440,7 +440,7 @@ Then explain in two sentences why printing retrieved chunks is the first debuggi
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

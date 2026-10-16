@@ -11,44 +11,51 @@
 <div class="two-col">
   <div>
     <h4>Unstructured</h4>
-<pre class="out"><code>you are a support bot for traincrest and you
-should be nice and here is the lab policy labs
-are available 30 days after the course ends and
-learners can get one free 7 day extension if
-they ask and after that it costs $49 for 14 more
-days and the learner wrote … reply in under 90
-words and dont offer refunds</code></pre>
+<pre class="out"><code>you are a support bot for rr finance bank and
+you should be nice and here is the card policy
+lost or stolen cards can be frozen in the app
+instantly and a replacement arrives in 5 to 7
+business days and express delivery costs $15 but
+its free for premier checking and the customer
+wrote … reply in under 90 words and never ask
+for the pin</code></pre>
   </div>
   <div>
     <h4>Structured</h4>
 <pre class="out"><code>## Role
-Traincrest Assist, learner support.
+RR Finance Assist, customer support.
 
 ## Policy
 &lt;policy&gt;
-- Labs: 30 days after the course ends.
-- One free 7-day extension on request.
-- Then 14 more days cost $49.
+- Freeze the card in the app instantly.
+- Replacement: 5 to 7 business days.
+- Express: 2 business days, $15
+  (free for Premier Checking).
 &lt;/policy&gt;
 
 ## Rules
-- Only the policy above. Never offer refunds.
+- Only the policy above. Never ask for a PIN.
 - Under 90 words, warm.
 
-&lt;learner_message&gt;…&lt;/learner_message&gt;</code></pre>
+&lt;customer_message&gt;…&lt;/customer_message&gt;</code></pre>
   </div>
 </div>
 
 <h3>Facts worth remembering</h3>
 <ul>
   <li>Markdown headings and XML-style tags both work well with current models; pick one convention as a team.</li>
-  <li><strong>Tags around data</strong> (<code>&lt;policy&gt;</code>, <code>&lt;learner_message&gt;</code>) are also your first defence against prompt injection (topic 10).</li>
+  <li><strong>Tags around data</strong> (<code>&lt;policy&gt;</code>, <code>&lt;customer_message&gt;</code>) are also your first defence against prompt injection (topic 10).</li>
   <li>For <strong>long documents</strong>, put the document first and the task last; models tend to follow the most recent instruction best.</li>
   <li>You can refer to sections by name: "Using only the facts in &lt;policy&gt;…".</li>
 </ul>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banks use structure to keep three kinds of text apart: the <strong>policy</strong> (approved wording that compliance owns), the <strong>customer's data</strong> (their message, their transactions) and the <strong>rules</strong> (what the assistant may and may not do). Keeping them in separate, tagged sections means compliance can review a change to the policy block without reading the whole prompt, and the customer's text is clearly marked as data. A typical rule set also names the regulated lines: never ask for security details, never promise a refund or a credit decision, and hand fraud and vulnerable customers to a person.</p>
+</div>
   <p>Provider prompting guides recommend this kind of structure, and production system prompts look like small specifications with headed sections and tagged context blocks. Structure also makes prompts <em>diffable</em>: a reviewer can see that only the Rules section changed in a pull request.</p>
 </div>
 
@@ -85,10 +92,10 @@ Traincrest Assist, learner support.
 ## Rules
 - …
 
-&lt;learner_message&gt;
+&lt;customer_message&gt;
 $message
-&lt;/learner_message&gt;</code></pre></div>
-        <p class="hint"><b>Hint:</b> keep every fact from the messy version, add what it left implicit (what to do with non-lab questions, no refunds), and remember <code>$$49</code> for a literal "$49".</p>
+&lt;/customer_message&gt;</code></pre></div>
+        <p class="hint"><b>Hint:</b> keep every fact from the messy version, add what it left implicit (what to do with non-card questions, never asking for a card number), and remember <code>$$15</code> for a literal "$15".</p>
         <details class="solution"><summary>Compare with my structured prompt</summary><div>
           <pre class="code" data-file="structured_prompt.txt" data-src="code/genai-labs/structured_prompt.txt"></pre>
         </div></details>
@@ -96,9 +103,27 @@ $message
       <li class="dstep run"><span class="st">Run</span><h4>Score both on the same three messages</h4>
         <pre class="code" data-file="lab03_10_structured.py" data-src="code/genai-labs/lab03_10_structured.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab03_10_structured.py</code></pre>
-      </li>
+        <span class="out-label">Real output on qwen2.5:7b (OLLAMA_MODEL=qwen2.5:7b), abridged</span>
+<pre class="out"><code>==================== messy_prompt.txt ====================
+&gt; Can you send my new card express? How much does that cost? I'm on Everyday Checking.
+Sure, your new card can be sent with express delivery for $15. Since you're on Everyday Checking,
+you can have it delivered within 2 business days at no extra cost. Enjoy your hassle-free banking!
+  [34 words] PASS: under 90 words  PASS: never asks for a PIN or card number  PASS: mentions the $15 fee  FAIL: doesn't waive it for Everyday Checking
+&gt; What is the interest rate on a personal loan?
+For personal loans at RR Finance Bank, the interest rate varies based on your credit score...
+  [38 words] ... FAIL: hands off non-card topics ...
+messy_prompt.txt: 8/10 checks passed
+
+==================== structured_prompt.txt ====================
+&gt; Can you send my new card express? How much does that cost? I'm on Everyday Checking.
+Sure, express delivery costs $15 for Everyday Checking customers. Your new card will arrive in 2 business days.
+  [18 words] PASS: under 90 words  PASS: never asks for a PIN or card number  PASS: mentions the $15 fee  PASS: doesn't waive it for Everyday Checking
+&gt; What is the interest rate on a personal loan?
+I'll pass your question to our support team.
+structured_prompt.txt: 10/10 checks passed</code></pre>
+        <p>On the default <code>llama3.2</code> (3B) the same run scored 7/10 for the messy prompt and 8/10 for the structured one. Both versions kept telling the Everyday Checking customer that express delivery was free, even after the structured prompt gained an explicit rule ("the $15 fee applies to every account except Premier Checking"). A small model reads "free for Premier Checking" next to the customer's question and over-applies the exception. That's a real finding: structure helps every model, but for rules with exceptions, either use a larger model or move the rule into code (the fee comes from a lookup, the model only phrases it).</p>
       <li class="dstep verify"><span class="st">Verify</span>
-        <ul class="verify-list"><li>The structured prompt passes at least as many checks as the messy one, usually more (often on "hands off non-lab topics" and "mentions the $49 option").</li><li>Read the replies too. Automatic checks catch obvious failures; your judgement catches tone.</li><li>Run twice. If a check flips between runs, the prompt still leaves room to guess: tighten that rule.</li></ul>
+        <ul class="verify-list"><li>The structured prompt passes at least as many checks as the messy one, usually more (often on "hands off non-card topics" and "doesn't waive it for Everyday Checking").</li><li>The first version of these checks only tested length, secrets, the hand-off and "mentions $15". Both prompts passed them all while giving the customer a wrong, free express delivery. A check that can't catch the failure you care about gives false confidence; write one for every rule that touches money.</li><li>Read the replies too. Automatic checks catch obvious failures; your judgement catches tone.</li><li>Run twice. If a check flips between runs, the prompt still leaves room to guess: tighten that rule.</li></ul>
       </li>
     </ol>
   </div>

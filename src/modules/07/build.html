@@ -37,7 +37,7 @@
 </figure>
 
 <span class="out-label">Files after this milestone (new or changed)</span>
-<pre class="out"><code>traincrest-assist/
+<pre class="out"><code>rrfinance-assist/
 ├── cli.py                    asks y/n for each proposed action
 ├── app/
 │   ├── backend.py            + LABS, SESSIONS, upcoming_sessions, extend_lab, reschedule (idempotent, logged)
@@ -60,11 +60,11 @@
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Backend: data that can change, and safe writes</h4>
         <p>Append to <code>app/backend.py</code>. The two write functions re-check the rules, take an idempotency key, and log every change:</p>
-        <pre class="code" data-file="app/backend.py (added)" data-src="code/traincrest-assist/m07/app/backend.py" data-lines="48-99"></pre>
+        <pre class="code" data-file="app/backend.py (added)" data-src="code/rrfinance-assist/m07/app/backend.py" data-lines="48-99"></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The action store</h4>
         <p>Proposals wait here. <code>decide()</code> enforces the approval rules from topic 7: right session and learner, one decision, expiry, re-check, execute once.</p>
-        <pre class="code" data-file="app/actions.py" data-src="code/traincrest-assist/m07/app/actions.py"></pre>
+        <pre class="code" data-file="app/actions.py" data-src="code/rrfinance-assist/m07/app/actions.py"></pre>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Tools that propose</h4>
         <p>Write the prompt that adds four tools to <code>app/tools.py</code>: two reads (<code>get_lab_access</code>, <code>list_course_dates</code>) and two "request" tools that check the rules and return a proposal instead of changing anything.</p>
@@ -78,11 +78,11 @@ Constraints: request tools must not change any data ...
 Done when: pytest -q passes, including tests/test_actions.py</code></pre></div>
         <p class="hint"><b>Hint:</b> start each request tool with <code>_own_enrolment()</code>, return <code>{"error": ...}</code> with a next step when a rule says no, and make the docstrings say "Does NOT … : the learner must approve it with a button", so the model tells the learner the truth. Store the fee in the proposal so execution can detect a change.</p>
         <details class="solution"><summary>Compare with my version</summary><div>
-          <pre class="code" data-file="app/tools.py (milestone 7)" data-src="code/traincrest-assist/m07/app/tools.py" data-lines="207-269"></pre>
+          <pre class="code" data-file="app/tools.py (milestone 7)" data-src="code/rrfinance-assist/m07/app/tools.py" data-lines="207-269"></pre>
         </div></details>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The prompt: actions need approval</h4>
-        <pre class="code" data-file="app/prompts.py (assist_system@v5, new section)" data-src="code/traincrest-assist/m07/app/prompts.py" data-lines="115-122"></pre>
+        <pre class="code" data-file="app/prompts.py (assist_system@v5, new section)" data-src="code/rrfinance-assist/m07/app/prompts.py" data-lines="115-122"></pre>
         <p>Make <code>assist_system@v5</code> active. The rest of v5 is v4 unchanged.</p>
       </li>
       <li class="dstep ask"><span class="st">Ask AI</span><h4>Proposals, decisions and guard rails in the chat service</h4>
@@ -105,16 +105,16 @@ Don't change anything else. Then add POST /api/actions/{action_id} to #file:app/
 {session_id, learner_id, decision: "approve" | "decline"}, returning 404 for "unknown".</code></pre></div>
         <div class="why"><b>Why this prompt works:</b> six numbered changes, each with exact names, data shapes and the order of operations, so the result is reviewable step by step; the outcome note in history is spelled out, because it's what keeps the model from later claiming an action that was declined. The session context came from testing: even with a prompt rule, qwen2.5:7b kept asking Mei for her enrolment ID instead of looking it up. Giving the model the signed-in learner's own enrolments (data the app already owns, nothing the learner can't see) removed a tool call and the problem.</div>
         <details class="solution"><summary>Reference solution</summary><div>
-          <pre class="code" data-file="app/chat.py (guard and session context)" data-src="code/traincrest-assist/m07/app/chat.py" data-lines="36-55"></pre>
-          <pre class="code" data-file="app/chat.py (decide)" data-src="code/traincrest-assist/m07/app/chat.py" data-lines="204-213"></pre>
-          <pre class="code" data-file="app/main.py (POST /api/actions)" data-src="code/traincrest-assist/m07/app/main.py" data-lines="112-119"></pre>
+          <pre class="code" data-file="app/chat.py (guard and session context)" data-src="code/rrfinance-assist/m07/app/chat.py" data-lines="36-55"></pre>
+          <pre class="code" data-file="app/chat.py (decide)" data-src="code/rrfinance-assist/m07/app/chat.py" data-lines="204-213"></pre>
+          <pre class="code" data-file="app/main.py (POST /api/actions)" data-src="code/rrfinance-assist/m07/app/main.py" data-lines="112-119"></pre>
         </div></details>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Approval in the UI and CLI</h4>
         <p>In <code>web/index.html</code>, when the <code>done</code> event has <code>approvals</code>, show a card per approval with the summary and Approve and Decline buttons; a click posts the decision and replaces the buttons with the returned message. In <code>cli.py</code>, ask <code>APPROVE? … [y/n]</code> for each. Both are in the reference code.</p>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Tests</h4>
-        <pre class="code" data-file="tests/test_actions.py" data-src="code/traincrest-assist/m07/tests/test_actions.py"></pre>
+        <pre class="code" data-file="tests/test_actions.py" data-src="code/rrfinance-assist/m07/tests/test_actions.py"></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Evidence</h4>
 <pre class="term"><code><span class="ps">$ </span>pytest -q
@@ -179,5 +179,5 @@ You: exit</code></pre>
 </div>
 <div class="callout note">
   <div class="c-label">Fell behind? Catch up here</div>
-  <p>The complete reference code is in <a href="../../code/traincrest-assist/m07/app/actions.py"><code>code/traincrest-assist/m07/</code></a>. Copy it over your project, keep your <code>.env</code>, run <code>python -m scripts.build_index</code> and <code>pytest -q</code>, and you're ready for Part IV.</p>
+  <p>The complete reference code is in <a href="../../code/rrfinance-assist/m07/app/actions.py"><code>code/rrfinance-assist/m07/</code></a>. Copy it over your project, keep your <code>.env</code>, run <code>python -m scripts.build_index</code> and <code>pytest -q</code>, and you're ready for Part IV.</p>
 </div>

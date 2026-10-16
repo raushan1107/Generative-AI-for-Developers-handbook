@@ -11,7 +11,7 @@ client = get_client()
 try:
     response = client.chat.completions.create(
         model=MODEL,
-        messages=[{"role": "user", "content": "Complete with one word only: The largest planet in our solar system is"}],
+        messages=[{"role": "user", "content": "Complete with one word only: The currency of Japan is the"}],
         logprobs=True,     # return the log-probability of each generated token
         top_logprobs=5,    # ...and the top 5 alternatives at each position
     )
@@ -31,6 +31,6 @@ print("\nThree samples of the same prompt:")
 for i in range(3):
     r = client.chat.completions.create(
         model=MODEL,
-        messages=[{"role": "user", "content": "Invent a 4-word slogan for an online tech training company. Slogan only."}],
+        messages=[{"role": "user", "content": "Invent a 4-word slogan for a digital savings account. Slogan only."}],
     )
     print(f"  {i + 1}. {r.choices[0].message.content.strip()}")

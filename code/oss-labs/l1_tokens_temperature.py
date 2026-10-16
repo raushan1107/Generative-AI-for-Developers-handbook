@@ -8,19 +8,19 @@ from client import CHAT_MODEL, get_client
 
 enc = tiktoken.get_encoding("o200k_base")
 TEXTS = {
-    "English": "Can I reschedule my course to next month?",
-    "Spanish": "¿Puedo cambiar mi curso al mes que viene?",
-    "Hindi": "क्या मैं अपना कोर्स अगले महीने कर सकता हूँ?",
+    "English": "Can I get my overdraft fee refunded?",
+    "Spanish": "¿Pueden devolverme la comisión por descubierto?",
+    "Hindi": "क्या मुझे मेरा ओवरड्राफ्ट शुल्क वापस मिल सकता है?",
     "Code": "def add(a, b):\n    return a + b",
-    "Error code": "LAB-503 TC-10477 AZ-104",
+    "IDs and amounts": "RR-10477 card 4821 $12,450.75",
 }
 print("A. TOKENS (estimate)")
 for name, text in TEXTS.items():
-    print(f"  {name:10} {len(text):3} characters -> {len(enc.encode(text)):3} tokens")
+    print(f"  {name:15} {len(text):3} characters -> {len(enc.encode(text)):3} tokens")
 
 print("\nB. TEMPERATURE")
 client = get_client()
-question = "Suggest a name for a coffee shop run by programmers. Reply with the name only."
+question = "Suggest a name for a savings account for first-time savers. Reply with the name only."
 for temperature in (0, 1.2):
     names = [client.chat.completions.create(model=CHAT_MODEL, temperature=temperature, messages=[
         {"role": "user", "content": question}]).choices[0].message.content.strip() for _ in range(3)]

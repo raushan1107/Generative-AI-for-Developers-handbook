@@ -3,13 +3,13 @@ from llm import get_client, MODEL
 
 client = get_client()
 
-BRIEF = ("TrainCrest is launching a 3-day online course, 'Generative AI for Developers', "
-         "starting on 20 March 2027, priced at $1,200, with hands-on labs on Azure.")
+BRIEF = ("RR Finance Bank is launching High-Yield Savings on 1 March 2027: a savings account "
+         "paying 4.10% APY, with no monthly fee and no minimum balance, opened in the mobile app.")
 
 TASKS = {
-    "Marketing text": "Write a 40-word announcement for LinkedIn.",
-    "Python code": "Write a Python function days_until_start(today: date) -> int for this course. Code only.",
-    "JSON record": 'Return only JSON with keys "title", "start_date" (YYYY-MM-DD), "price_usd", "format".',
+    "Marketing text": "Write a 40-word announcement for the bank's app home screen.",
+    "Python code": "Write a Python function monthly_interest(balance: float) -> float for this account. Code only.",
+    "JSON record": 'Return only JSON with keys "product", "launch_date" (YYYY-MM-DD), "apy_pct", "monthly_fee_usd".',
 }
 
 for label, task in TASKS.items():

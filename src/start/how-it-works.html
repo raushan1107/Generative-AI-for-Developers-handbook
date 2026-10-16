@@ -8,14 +8,14 @@
   <div class="card"><span class="num">2 · DO</span><h3>Drills, straight away</h3><p>One or two hands-on drills that make the idea visible: run code, prompt your AI assistant, write a prompt, verify the result.</p></div>
   <div class="card"><span class="num">3 · CHECK</span><h3>Prove you've got it</h3><p>Two or three quick questions with hidden answers, and a one-line takeaway to carry forward.</p></div>
 </div>
-<p>Each module also has an <strong>Overview</strong> page (mental map and page list), a <strong>Build</strong> page (the Traincrest Assist milestone) and a <strong>Recap</strong> page (checklist and self-check). Tick <em>Mark this page as done</em> at the bottom of a page and the sidebar shows a ✓, saved in your own browser.</p>
+<p>Each module also has an <strong>Overview</strong> page (mental map and page list), a <strong>Build</strong> page (the RR Finance Assist milestone) and a <strong>Recap</strong> page (checklist and self-check). Tick <em>Mark this page as done</em> at the bottom of a page and the sidebar shows a ✓, saved in your own browser.</p>
 
 <h2 id="tracks">Three practice tracks</h2>
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 900 270" role="img" aria-labelledby="tr-t tr-d">
       <title id="tr-t">How the three tracks fit together</title>
-      <desc id="tr-d">For every module, drills come first and teach individual skills in the genai-labs folder. Then the build milestone applies them to Traincrest Assist in its own folder. After Module 12, the capstone applies everything to a new problem with only a brief.</desc>
+      <desc id="tr-d">For every module, drills come first and teach individual skills in the genai-labs folder. Then the build milestone applies them to RR Finance Assist in its own folder. After Module 12, the capstone applies everything to a new problem with only a brief.</desc>
       <text x="20" y="28" class="t-m t-accent">FOR EVERY MODULE</text>
       <rect x="20" y="40" width="250" height="120" rx="12" class="s-teal"/>
       <text x="40" y="68" class="t-b">1 · Drills</text>
@@ -25,8 +25,8 @@
       <rect x="320" y="40" width="270" height="120" rx="12" class="s-violet"/>
       <text x="340" y="68" class="t-b">2 · Build milestone</text>
       <text x="340" y="90" class="t-s">the module's skills applied to</text>
-      <text x="340" y="110" class="t-s">Traincrest Assist</text>
-      <text x="340" y="130" class="t-s">folder: traincrest-assist/</text>
+      <text x="340" y="110" class="t-s">RR Finance Assist</text>
+      <text x="340" y="130" class="t-s">folder: rrfinance-assist/</text>
       <path d="M270 100 H314" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <path d="M590 100 Q620 100 620 130 V190 Q620 205 600 205 H60 Q40 205 40 190 V166" class="s-dash" marker-end="url(#ah)"/>
       <text x="330" y="226" class="t-s mid">next module: new drills, next milestone, the same project keeps growing</text>
@@ -84,18 +84,25 @@ Done when:   how you will verify it (tests pass, command output, behaviour)</cod
     <p>A flat scratch folder. One file per drill (<code>lab01_05_tokens.py</code>), plus the shared helpers <code>llm.py</code> and <code>claude_llm.py</code>. Created in <a href="../setup/helpers.html">Helpers and smoke test</a>.</p>
   </div>
   <div>
-    <h4><code>traincrest-assist/</code>: the build</h4>
+    <h4><code>rrfinance-assist/</code>: the build</h4>
     <p>A real project with an <code>app/</code> package, a web UI, tests and data. It grows with every milestone. Created in <a href="../modules/01/build.html">Build: Milestone 1</a>.</p>
   </div>
 </div>
 
-<h2 id="case">The case: TrainCrest and Traincrest Assist</h2>
+<h2 id="case">The case: RR Finance Bank and RR Finance Assist</h2>
 <div class="case">
-  <div class="case-head"><b>TrainCrest</b><span>· a technical training company (scenario, data and policies here are fictional)</span></div>
+  <div class="case-head"><b>RR Finance Bank</b><span>· a retail bank (the bank, its customers, data and policies here are fictional; nothing in this handbook is financial advice)</span></div>
   <div class="case-body">
-    <p>TrainCrest runs instructor-led and self-paced courses in cloud, AI, data and security for learners in many countries. Learner support handles about <strong>25,000 requests a month</strong> by email and chat, mostly in English but also in Spanish, Hindi, Arabic, Japanese and more. A 35-person team answers questions about schedules, payments, lab environments, exam vouchers and certificates. First responses take 11 hours on average.</p>
-    <p>Leadership wants <strong>Traincrest Assist</strong>: an AI assistant that answers policy questions correctly, checks enrolments and vouchers, finds the right course, raises tickets, and hands over to humans safely, at a predictable cost. Enrolment IDs look like <code>TC-10293</code>.</p>
+    <p>RR Finance Bank serves about two million personal and small-business customers with current accounts, savings, cards, loans and mortgages. Its contact centre handles about <strong>40,000 customer messages a month</strong> by chat, email and the app, mostly in English but also in Spanish, Arabic, Japanese and more: lost and stolen cards, disputed payments, fees, transfers, loans and fraud. Agents spend much of each conversation searching six policy handbooks, answers vary from agent to agent, and a wrong answer about a fee or a dispute deadline is a compliance problem, not just a bad experience.</p>
+    <p>Leadership wants <strong>RR Finance Assist</strong>: an AI assistant that answers policy questions correctly with citations, triages every message (fraud and lost cards first), looks up products and transactions, prepares safe actions such as freezing a card or opening a dispute for a human to approve, never asks for security details, and keeps an audit trail, at a predictable cost. Customer IDs look like <code>RR-10293</code>.</p>
   </div>
+</div>
+
+<h2 id="examples">Two examples for every idea</h2>
+<p>Most people taking this course work in banking, investment or other parts of finance, so every topic page has two kinds of example. The explanation, the analogy and the "In the real world" box use everyday products everyone knows. Right after them, an <strong>In finance</strong> box shows the same idea in a bank, an investment firm, an insurer or a payments company: where it's used, what goes wrong, and what regulators and risk teams expect. The drills and the build always use the RR Finance Bank case.</p>
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>This is what the box looks like. It's short, concrete and about a real job in finance: the same concept, applied where your own work happens.</p>
 </div>
 
 <h2 id="pacing">Suggested pacing</h2>

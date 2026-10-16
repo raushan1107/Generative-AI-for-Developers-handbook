@@ -13,8 +13,8 @@
       <tr><td>Document summarisation</td><td>Shortens long text for a specific reader</td><td>Transform</td><td>03</td></tr>
       <tr><td>Information extraction</td><td>Pulls names, amounts and dates into JSON</td><td>Extract</td><td>03, 04</td></tr>
       <tr><td>Semantic search</td><td>Finds by meaning, not keywords</td><td>Search (embeddings)</td><td>05</td></tr>
-      <tr><td>Recommendation</td><td>"Learners who asked this also took…" by meaning</td><td>Search + similarity</td><td>05</td></tr>
-      <tr><td>Content generation</td><td>Course descriptions, emails, marketing drafts</td><td>Generate + templates</td><td>03</td></tr>
+      <tr><td>Recommendation</td><td>"Customers with this goal often choose…" by meaning</td><td>Search + similarity</td><td>05</td></tr>
+      <tr><td>Content generation</td><td>Product descriptions, emails, marketing drafts</td><td>Generate + templates</td><td>03</td></tr>
       <tr><td>Customer-support automation</td><td>Answers from policies, checks records, raises tickets</td><td>Ground + act (RAG, tools, agents)</td><td>06, 07</td></tr>
     </tbody>
   </table>
@@ -27,6 +27,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>The same six patterns cover most of what banks and investment firms build. <strong>Generate:</strong> first drafts of client letters and market commentary. <strong>Transform:</strong> summarising a complaint file or a 10-K for a credit analyst. <strong>Extract:</strong> pulling amounts, dates and counterparties from trade confirmations, invoices and loan applications. <strong>Search:</strong> finding similar past fraud cases or research notes by meaning. <strong>Ground:</strong> answering staff questions from the policy manual with a citation. <strong>Act:</strong> freezing a card or opening a dispute through a bank API, with a human approval step. And the <strong>not-GenAI</strong> list is long in finance: interest, amortisation, fees, risk limits and anything that posts to a ledger stay in tested code.</p>
+</div>
   <ul>
     <li><strong>Coding assistants</strong> (GitHub Copilot, Claude Code, Codex): generate and transform code, with your files as context, and increasingly <em>act</em> by running commands and tests.</li>
     <li><strong>Office copilots</strong>: summarise meetings and email threads (transform), draft documents (generate), answer from your files (ground).</li>
@@ -54,21 +59,21 @@
     <p class="drill-goal"><b>Goal:</b> recognise patterns quickly, including the ones that shouldn't use an LLM at all.</p>
     <ol class="dsteps">
       <li class="dstep think"><span class="st">Think</span><h4>Your answers first</h4>
-        <p>For each TrainCrest request pick one: <strong>generate, transform, extract, search, ground, act, not-genai</strong>.</p>
+        <p>For each RR Finance Bank request pick one: <strong>generate, transform, extract, search, ground, act, not-genai</strong>.</p>
         <ol>
-          <li>Write a first draft of a course description from the trainer's bullet notes.</li>
-          <li>Turn a 40-message support thread into a 3-line summary for the next agent.</li>
-          <li>Pull learner name, enrolment ID and course from incoming emails into the CRM.</li>
-          <li>Let learners find courses by describing a goal: "I want to automate Excel reports".</li>
-          <li>Answer "Can I get a refund?" from the current policy document, with a citation.</li>
-          <li>When a learner asks, look up their real exam voucher status and resend it.</li>
-          <li>Calculate the refund amount from the cancellation date and course price.</li>
-          <li>Translate course announcements into Spanish and Japanese.</li>
+          <li>Write a first draft of the new savings account's web page from the product team's bullet notes.</li>
+          <li>Turn a 40-message complaint thread into a 3-line summary for the next agent.</li>
+          <li>Pull the customer name, customer ID and disputed amount from incoming emails into the case system.</li>
+          <li>Let customers find the right account by describing a goal: "I want to save for a house deposit".</li>
+          <li>Answer "Can I get my overdraft fee back?" from the current fee policy, with a citation.</li>
+          <li>When a customer asks, look up the real status of their card and freeze it.</li>
+          <li>Calculate the monthly payment on a $15,000 loan at 7.99% APR over 36 months.</li>
+          <li>Translate fraud warning messages into Spanish and Japanese.</li>
         </ol>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
             <li>Generate</li><li>Transform</li><li>Extract</li><li>Search (embeddings)</li><li>Ground (RAG)</li><li>Act (tool calling)</li>
-            <li><strong>Not GenAI.</strong> Exact arithmetic and business rules belong in code. (The model can <em>call</em> that code: Module 04.)</li>
+            <li><strong>Not GenAI.</strong> A loan payment is an exact formula (the answer is $469.98), and in a bank a wrong number on a loan quote is a regulatory problem. It belongs in code. (The model can <em>call</em> that code: Module 04.)</li>
             <li>Transform</li>
           </ol>
         </div></details>
@@ -76,9 +81,19 @@
       <li class="dstep run"><span class="st">Run</span><h4>Ask the model to classify the same requests</h4>
         <pre class="code" data-file="lab01_13_patterns.py" data-src="code/genai-labs/lab01_13_patterns.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab01_13_patterns.py</code></pre>
+        <span class="out-label">Real output (llama3.2 on Ollama; yours will differ)</span>
+<pre class="out"><code>1. generate, reason: Creating content from product team bullet notes structure.
+2. extract, reason: Extracting key information from a complaint thread summary.
+3. extract, reason: Extracting relevant customer data from incoming emails.
+4. search, reason: Enhancing search functionality with goal-based query suggestions.
+5. ground, reason: Grounding the answer in existing fee policy documentation.
+6. act, reason: Calling an external service to investigate card status.
+7. calculate, reason: Performing complex mathematical calculation for loan payments.
+8. not-genai, reason: Outsource translation task to humans due to nuance.</code></pre>
+        <p>Look at line 7: <code>calculate</code> isn't one of the allowed patterns. The small model invented a label, and got lines 2 and 8 wrong too. A program reading this output would break. Module 03 shows how to make output reliable, and Module 04 enforces it with a schema.</p>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
-        <ul class="verify-list"><li>Where did you, the model and my answers disagree? Usually on 5 (search vs ground) and 7 (not-genai).</li><li>Notice the model needed definitions of "ground", "act" and "not-genai" in the system prompt to answer consistently. Unclear categories confuse models just as they confuse people (Module 03).</li></ul>
+        <ul class="verify-list"><li>Where did you, the model and my answers disagree? Usually on 2 (extract vs transform), 5 (search vs ground) and 7 (not-genai).</li><li>Notice the model needed definitions of "ground", "act" and "not-genai" in the system prompt to answer consistently. Unclear categories confuse models just as they confuse people (Module 03).</li></ul>
       </li>
     </ol>
   </div>

@@ -36,11 +36,16 @@
   <li>On Azure you assign <strong>TPM per deployment</strong> within your quota, and an RPM limit is derived from it. Limits count the <em>maximum</em> output tokens you request, so a huge <code>max_completion_tokens</code> eats budget even if unused.</li>
   <li>Responses carry headers like <code>x-ratelimit-remaining-tokens</code>; 429s often include <code>retry-after</code>.</li>
   <li>The OpenAI and Anthropic Python SDKs <strong>already retry</strong> 408, 409, 429 and 5xx twice with backoff by default. Tune <code>max_retries</code>; don't wrap a second blind retry loop around it.</li>
-  <li>For bulk work (summarising 25,000 tickets), don't retry harder: <strong>queue</strong> it and process at a steady rate, or use a batch API (Modules 08, 11).</li>
+  <li>For bulk work (summarising 40,000 complaint cases), don't retry harder: <strong>queue</strong> it and process at a steady rate, or use a batch API (Modules 08, 11).</li>
 </ul>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banking traffic is spiky: salary day, the first of the month when bills go out, a card-network outage, or a fraud scare in the news can multiply chat volume in minutes. Teams size capacity (TPM) for those peaks, give interactive customer chat priority over back-office jobs, and push bulk work such as overnight complaint summaries or month-end statement analysis into queues or batch APIs. Some banks also reserve dedicated capacity (provisioned throughput) for customer-facing features so a busy internal team can't starve them.</p>
+</div>
   <p>Provider limits are tiered: new accounts get small limits that grow with usage and spend, and capacity for popular models can be scarce at peak times. Production teams monitor TPM utilisation, keep separate deployments (or quotas) for interactive and batch traffic, and use a gateway to spread load across regions or deployments when one is saturated.</p>
 </div>
 
@@ -129,6 +134,6 @@ does not retry other exception types; waits never exceed cap * 1.25. Run the tes
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Limits.</p></div></div>
 <div class="quiz">
   <details><summary>1. Why add random jitter to backoff waits?</summary><div><p>So many clients that failed together <strong>don't retry together</strong> and cause the same overload again.</p></div></details>
-  <details><summary>2. A nightly job summarising 25,000 tickets keeps hitting 429s and slowing the chat. What do you change?</summary><div><p>Move it to a <strong>queue or batch API</strong> with a steady processing rate, ideally on separate capacity, instead of retrying harder.</p></div></details>
+  <details><summary>2. A nightly job summarising 40,000 complaint cases keeps hitting 429s and slowing the chat. What do you change?</summary><div><p>Move it to a <strong>queue or batch API</strong> with a steady processing rate, ideally on separate capacity, instead of retrying harder.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Back off politely, honour retry-after, and keep bulk work out of the interactive lane.</p></div>

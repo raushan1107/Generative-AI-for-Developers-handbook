@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m01-fm", "short": "Foundation Models", "h1": "Foundation Models, and How to Choose One", "description": "Module 01, topic 7: what foundation models are, the model landscape (frontier, small, open-weight), the questions for choosing a model, and a drill that measures two models on the same task.", "lead": "The industry builds a few huge general models and everyone adapts them. Your real decision is which one to use for which job, and the honest answer comes from measuring, not from leaderboards. You'll race two models on a real TrainCrest task and let the numbers decide.", "chips": ["Frontier · small · open-weight", "Model selection", "Drill 01.11"], "time": "Learn 12 min · Do 20 min"}
+{"id": "m01-fm", "short": "Foundation Models", "h1": "Foundation Models, and How to Choose One", "description": "Module 01, topic 7: what foundation models are, the model landscape (frontier, small, open-weight), the questions for choosing a model, and a drill that measures two models on the same task.", "lead": "The industry builds a few huge general models and everyone adapts them. Your real decision is which one to use for which job, and the honest answer comes from measuring, not from leaderboards. You'll race two models on a real bank support task and let the numbers decide.", "chips": ["Frontier · small · open-weight", "Model selection", "Drill 01.11"], "time": "Learn 12 min · Do 20 min"}
 -->
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Build once, adapt many times.</p></div></div>
 
@@ -20,14 +20,14 @@
   <div class="frame">
     <svg viewBox="0 0 900 300" role="img" aria-labelledby="fm-t fm-d">
       <title id="fm-t">One foundation model, many tasks</title>
-      <desc id="fm-d">A foundation model in the centre connects to six tasks: summarise tickets, write code, translate, extract fields, answer policy questions and draft emails. Underneath, three ways to adapt it: prompting, grounding and fine-tuning.</desc>
+      <desc id="fm-d">A foundation model in the centre connects to six tasks: summarise complaints, write code, translate, extract statement fields, answer policy questions and draft customer emails. Underneath, three ways to adapt it: prompting, grounding and fine-tuning.</desc>
       <ellipse cx="450" cy="130" rx="130" ry="56" class="s-violet"/><text x="450" y="126" class="t-h mid">Foundation model</text><text x="450" y="148" class="t-s mid">broad, general, pre-trained</text>
-      <rect x="40" y="30" width="190" height="44" rx="10" class="s-surface"/><text x="135" y="57" class="t mid">Summarise tickets</text>
+      <rect x="40" y="30" width="190" height="44" rx="10" class="s-surface"/><text x="135" y="57" class="t mid">Summarise complaints</text>
       <rect x="40" y="108" width="190" height="44" rx="10" class="s-surface"/><text x="135" y="135" class="t mid">Write and explain code</text>
       <rect x="40" y="186" width="190" height="44" rx="10" class="s-surface"/><text x="135" y="213" class="t mid">Translate Spanish ↔ English</text>
-      <rect x="670" y="30" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="57" class="t mid">Extract invoice fields</text>
+      <rect x="670" y="30" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="57" class="t mid">Extract statement fields</text>
       <rect x="670" y="108" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="135" class="t mid">Answer policy questions</text>
-      <rect x="670" y="186" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="213" class="t mid">Draft learner emails</text>
+      <rect x="670" y="186" width="190" height="44" rx="10" class="s-surface"/><text x="765" y="213" class="t mid">Draft customer emails</text>
       <path d="M322 110 L234 56" class="s-line"/><path d="M320 130 H234" class="s-line"/><path d="M322 150 L234 206" class="s-line"/>
       <path d="M578 110 L666 56" class="s-line"/><path d="M580 130 H666" class="s-line"/><path d="M578 150 L666 206" class="s-line"/>
       <rect x="200" y="250" width="150" height="36" rx="9" class="s-blue"/><text x="275" y="273" class="t-b mid">Prompting</text>
@@ -72,6 +72,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Model choice in a bank has two extra questions: <strong>where the data goes</strong> and <strong>who signs off</strong>. Customer data often must stay in a region, so teams pick regional or data-zone deployments, or self-host an open-weight model for the most sensitive work. And under model risk management rules (for example SR 11-7 in the US, or similar guidance elsewhere), each model used for a business decision is inventoried, validated and monitored. In practice that pushes banks towards a short list of approved models, chosen per task from their own evaluation results, with the model name in configuration so a re-validated replacement can be swapped in.</p>
+</div>
   <p>Many products quietly use several models. GitHub Copilot, for example, lets you pick between models from different providers for chat. Production systems often <strong>route</strong>: a small, cheap model handles routine requests and a larger one handles the hard ones (Module 11). Teams pick models from their own evaluation results, because public benchmarks rarely match a company's actual tasks.</p>
 </div>
 
@@ -91,13 +96,16 @@
   <div class="drill-head"><span class="drill-id">Drill 01.11</span><h3>Same prompt, two models: measure, then extend the benchmark</h3>
     <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Ollama · Claude (optional)</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> compare latency, tokens and quality on a real support task, then have your assistant turn the script into a small, repeatable benchmark.</p>
+    <p class="drill-goal"><b>Goal:</b> compare latency, tokens and quality on a real bank support task (an angry customer and an overdraft fee), then have your assistant turn the script into a small, repeatable benchmark.</p>
     <p class="lab-note"><b>Before you start:</b> you need a second model. Deploy a larger model in the same Foundry resource (for example a "sol" tier or <code>gpt-5.4</code>) as <code>chat-big</code>, or have Ollama running. Add <code>COMPARE_DEPLOYMENT=chat-big</code> and/or <code>COMPARE_WITH_OLLAMA=1</code> to <code>.env</code>.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Race the models</h4>
         <pre class="code" data-file="lab01_11_compare.py" data-src="code/genai-labs/lab01_11_compare.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab01_11_compare.py</code></pre>
-        <p>Run it twice (latency varies). Score each answer 1–5: follows the policy (no refund, offers a reschedule), kind tone, under 80 words.</p>
+        <span class="out-label">Real output with only Ollama configured (llama3.2 on a laptop CPU)</span>
+<pre class="out"><code>=== main · llama3.2 · 17.7s · 119 in / 87 out
+"I apologize for the concern, and I'm happy to help. I've checked our policy, and a $29 overdraft fee is standard for being overdrawn by more than $50, even if it's just for one night. We can't waive this fee, but I can offer you a courtesy fee refund per account, as per our policy. I can process this refund for you today, if you'd like."</code></pre>
+        <p>Run it twice (latency varies). Score each answer 1–5: follows the policy (explains the fee, offers the one courtesy refund instead of promising every fee back), kind tone, under 80 words. The answer above scores about 3: it gets the policy right but says "we can't waive this fee" and then offers to refund it, which would confuse a customer.</p>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Turn it into a benchmark</h4>
         <p>One run proves little. Ask your assistant to extend the script: several runs per model, averages, and a table you could paste into a design document.</p>
@@ -141,7 +149,7 @@ print(text_of(msg))</code></pre>
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Model choice.</p></div></div>
 <div class="quiz">
-  <details><summary>1. Traincrest Assist must classify 25,000 tickets a month into 7 categories. Which tier first, and why?</summary><div><p>A <strong>small, cheap model</strong>: focused task, high volume, latency matters. Validate on labelled samples and move up a tier only if it fails your quality bar.</p></div></details>
+  <details><summary>1. RR Finance Assist must classify 40,000 customer messages a month into 8 categories. Which tier first, and why?</summary><div><p>A <strong>small, cheap model</strong>: focused task, high volume, latency matters. Validate on labelled samples and move up a tier only if it fails your quality bar.</p></div></details>
   <details><summary>2. Why keep the model name in configuration rather than in code?</summary><div><p>Models are retired and replaced every few months. Configuration lets you <strong>switch or A/B test</strong> without a code change (and Module 12 adds model fallbacks).</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>The best model is the smallest one that passes your evaluation. Measure it.</p></div>

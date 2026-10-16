@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -343,26 +343,27 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-ENROLMENT_ID = re.compile(r"TC-\d{5}")
+CUSTOMER_ID = re.compile(r"RR-\d{5}")
+MAX_AGE_DAYS = 90                        <span class="c"># older disputes go to a person, not an automatic case</span>
 
 
 def today() -&gt; date:                     <span class="c"># a function, so tests can pretend it's another day</span>
     return date.today()
 
 
-class TicketDraft(BaseModel):
-    """Arguments the model sends to create_support_ticket."""
-    category: Literal["scheduling", "billing", "exam_voucher", "certificate", "lab_access", "account", "other"]
+class CaseDraft(BaseModel):
+    """Arguments the model sends to open_support_case."""
+    category: Literal["card", "dispute", "fraud", "fees", "transfers", "loans", "account", "other"]
     summary: str = Field(description="One sentence for the support team")
-    enrolment_id: Optional[str] = Field(description="Like TC-12345, or null")
+    customer_id: Optional[str] = Field(description="Like RR-12345, or null")
     urgency: Literal["low", "medium", "high"]
-    preferred_date: Optional[str] = Field(description="New class date the learner wants, YYYY-MM-DD, or null")
+    transaction_date: Optional[str] = Field(description="Date of the payment in question, YYYY-MM-DD, or null")
 
-    @field_validator("enrolment_id")
+    @field_validator("customer_id")
     @classmethod
-    def enrolment_id_format(cls, v):
-        if v is not None and not ENROLMENT_ID.fullmatch(v):
-            raise ValueError("enrolment_id must look like TC-12345")
+    def customer_id_format(cls, v):
+        if v is not None and not CUSTOMER_ID.fullmatch(v):
+            raise ValueError("customer_id must look like RR-12345")
         return v
 
     @field_validator("summary")
@@ -373,23 +374,25 @@ class TicketDraft(BaseModel):
             raise ValueError("summary must be 10 to 200 characters")
         return v
 
-    @field_validator("preferred_date")
+    @field_validator("transaction_date")
     @classmethod
-    def date_in_next_year(cls, v):
+    def date_in_the_last_90_days(cls, v):
         if v is None:
             return v
         try:
             d = date.fromisoformat(v)
         except ValueError:
-            raise ValueError("preferred_date must be YYYY-MM-DD") from None
-        if not today() &lt; d &lt;= today() + timedelta(days=365):
-            raise ValueError("preferred_date must be in the future and within 365 days")
+            raise ValueError("transaction_date must be YYYY-MM-DD") from None
+        if d &gt; today():
+            raise ValueError("transaction_date can't be in the future")
+        if d &lt; today() - timedelta(days=MAX_AGE_DAYS):
+            raise ValueError(f"transaction_date is more than {MAX_AGE_DAYS} days ago; route to a person")
         return v
 
     @model_validator(mode="after")
-    def scheduling_needs_an_enrolment(self):
-        if self.category == "scheduling" and self.enrolment_id is None:
-            raise ValueError("a scheduling ticket needs the enrolment_id; ask the learner for it")
+    def disputes_need_a_customer(self):
+        if self.category in ("dispute", "fraud") and self.customer_id is None:
+            raise ValueError(f"a {self.category} case needs the customer_id; ask the customer for it")
         return self
 
 
@@ -407,10 +410,10 @@ import pytest
 from pydantic import ValidationError
 
 import validators
-from validators import TicketDraft, unsupported_amounts
+from validators import CaseDraft, unsupported_amounts
 
-GOOD = {"category": "scheduling", "summary": "Learner wants to move AZ-104 to a later date.",
-        "enrolment_id": "TC-20877", "urgency": "medium", "preferred_date": "2026-11-16"}
+GOOD = {"category": "dispute", "summary": "Customer was charged twice for the same $412 flight.",
+        "customer_id": "RR-10293", "urgency": "medium", "transaction_date": "2026-09-09"}
 
 
 @pytest.fixture(autouse=True)
@@ -418,28 +421,32 @@ def fixed_today(monkeypatch):
     monkeypatch.setattr(validators, "today", lambda: date(2026, 10, 11))
 
 
-def test_good_ticket_passes():
-    assert TicketDraft.model_validate(GOOD).preferred_date == "2026-11-16"
+def test_good_case_passes():
+    assert CaseDraft.model_validate(GOOD).transaction_date == "2026-09-09"
 
 
 @pytest.mark.parametrize("change, message", [
-    ({"enrolment_id": "20877"}, "TC-12345"),
+    ({"customer_id": "10293"}, "RR-12345"),
     ({"summary": "help"}, "10 to 200"),
-    ({"preferred_date": "16/11/2026"}, "YYYY-MM-DD"),
-    ({"preferred_date": "2026-10-01"}, "future"),
-    ({"preferred_date": "2028-01-01"}, "365 days"),
-    ({"enrolment_id": None}, "needs the enrolment_id"),
+    ({"transaction_date": "09/09/2026"}, "YYYY-MM-DD"),
+    ({"transaction_date": "2026-10-20"}, "future"),
+    ({"transaction_date": "2026-06-01"}, "90 days"),
+    ({"customer_id": None}, "needs the customer_id"),
 ])
 def test_business_rules(change, message):
     with pytest.raises(ValidationError) as info:
-        TicketDraft.model_validate({**GOOD, **change})
+        CaseDraft.model_validate({**GOOD, **change})
     assert message in str(info.value)
 
 
+def test_other_categories_may_omit_the_customer():
+    assert CaseDraft.model_validate({**GOOD, "category": "other", "customer_id": None}).customer_id is None
+
+
 def test_facts_layer_catches_invented_amounts():
-    answer = "You'll get a 50% refund of $745.00, and a $50 fee applies if you reschedule."
-    assert unsupported_amounts(answer, {745.0, 50.0}) == []
-    assert unsupported_amounts("Good news: a full refund of $1,490!", {745.0}) == [1490.0]</code></pre>
+    answer = "We'll refund one $29 overdraft fee, and express delivery of the new card costs $15."
+    assert unsupported_amounts(answer, {29.0, 15.0}) == []
+    assert unsupported_amounts("Good news: we'll refund all $145 of fees!", {29.0}) == [145.0]</code></pre>
         <pre class="term"><code><span class="ps">$ </span>pytest -q test_validators.py</code></pre>
         <span class="out-label">Output (exact)</span>
 <pre class="out"><code>........                                                                 [100%]
@@ -504,7 +511,7 @@ Done when: pytest -q test_validators.py passes, including a new test for the rul
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

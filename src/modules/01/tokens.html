@@ -12,44 +12,46 @@
   <p>A tokenizer chops your text into pieces the model knows (common words stay whole, rare words get split) and turns each piece into a number. The context window is how many pieces fit on the model's desk at once. Your instructions, the chat history, documents and the answer all have to fit on that desk.</p>
 </div>
 
-<p>Real output from the tokenizer used by recent OpenAI models, for the same learner question in four languages:</p>
+<p>Real output from the tokenizer used by recent OpenAI models, for the same customer question in four languages:</p>
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 900 260" role="img" aria-labelledby="tk-t tk-d">
       <title id="tk-t">The same sentence tokenized in four languages</title>
-      <desc id="tk-d">"My exam voucher hasn't arrived yet. Can you check my enrolment?" is 14 tokens in English, 17 in Spanish, 21 in Hindi and 22 in Japanese even though the Japanese text has only 33 characters. The word "enrolment" splits into "enrol" and "ment". The number 3.14159265358979 becomes 7 tokens in chunks of three digits.</desc>
-      <text x="20" y="26" class="t-m t-accent">ENGLISH · 63 CHARACTERS → 14 TOKENS</text>
-      <rect x="20" y="36" width="36" height="28" rx="6" class="s-blue"/><text x="38" y="55" class="t mid">My</text>
-      <rect x="60" y="36" width="54" height="28" rx="6" class="s-teal"/><text x="87" y="55" class="t mid">␣exam</text>
-      <rect x="118" y="36" width="76" height="28" rx="6" class="s-violet"/><text x="156" y="55" class="t mid">␣voucher</text>
-      <rect x="198" y="36" width="68" height="28" rx="6" class="s-amber"/><text x="232" y="55" class="t mid">␣hasn't</text>
-      <rect x="270" y="36" width="72" height="28" rx="6" class="s-rose"/><text x="306" y="55" class="t mid">␣arrived</text>
-      <rect x="346" y="36" width="42" height="28" rx="6" class="s-green"/><text x="367" y="55" class="t mid">␣yet</text>
-      <rect x="392" y="36" width="20" height="28" rx="6" class="s-blue"/><text x="402" y="55" class="t mid">.</text>
-      <rect x="416" y="36" width="48" height="28" rx="6" class="s-teal"/><text x="440" y="55" class="t mid">␣Can</text>
-      <rect x="468" y="36" width="46" height="28" rx="6" class="s-violet"/><text x="491" y="55" class="t mid">␣you</text>
-      <rect x="518" y="36" width="60" height="28" rx="6" class="s-amber"/><text x="548" y="55" class="t mid">␣check</text>
-      <rect x="582" y="36" width="40" height="28" rx="6" class="s-rose"/><text x="602" y="55" class="t mid">␣my</text>
-      <rect x="626" y="36" width="62" height="28" rx="6" class="s-green"/><text x="657" y="55" class="t mid">␣enrol</text>
-      <rect x="692" y="36" width="52" height="28" rx="6" class="s-green"/><text x="718" y="55" class="t mid">ment</text>
-      <rect x="748" y="36" width="20" height="28" rx="6" class="s-blue"/><text x="758" y="55" class="t mid">?</text>
-      <text x="776" y="55" class="t-s">"enrolment" = 2</text>
+      <desc id="tk-d">"I was charged an overdraft fee twice. Can you check my account?" is 15 tokens in English, 17 in Spanish, 24 in Hindi and 26 in Japanese even though the Japanese text has only 34 characters. The word "overdraft" splits into "overd" and "raft". The amount $12,450,309.75 becomes 8 tokens, split at the commas and the decimal point.</desc>
+      <text x="20" y="26" class="t-m t-accent">ENGLISH · 63 CHARACTERS → 15 TOKENS</text>
+      <rect x="20" y="36" width="20" height="28" rx="6" class="s-blue"/><text x="30" y="55" class="t mid">I</text>
+      <rect x="44" y="36" width="42" height="28" rx="6" class="s-teal"/><text x="65" y="55" class="t mid">␣was</text>
+      <rect x="90" y="36" width="70" height="28" rx="6" class="s-violet"/><text x="125" y="55" class="t mid">␣charged</text>
+      <rect x="164" y="36" width="35" height="28" rx="6" class="s-amber"/><text x="181.5" y="55" class="t mid">␣an</text>
+      <rect x="203" y="36" width="56" height="28" rx="6" class="s-green"/><text x="231" y="55" class="t mid">␣overd</text>
+      <rect x="263" y="36" width="42" height="28" rx="6" class="s-green"/><text x="284" y="55" class="t mid">raft</text>
+      <rect x="309" y="36" width="42" height="28" rx="6" class="s-blue"/><text x="330" y="55" class="t mid">␣fee</text>
+      <rect x="355" y="36" width="56" height="28" rx="6" class="s-teal"/><text x="383" y="55" class="t mid">␣twice</text>
+      <rect x="415" y="36" width="20" height="28" rx="6" class="s-violet"/><text x="425" y="55" class="t mid">.</text>
+      <rect x="439" y="36" width="42" height="28" rx="6" class="s-amber"/><text x="460" y="55" class="t mid">␣Can</text>
+      <rect x="485" y="36" width="42" height="28" rx="6" class="s-rose"/><text x="506" y="55" class="t mid">␣you</text>
+      <rect x="531" y="36" width="56" height="28" rx="6" class="s-green"/><text x="559" y="55" class="t mid">␣check</text>
+      <rect x="591" y="36" width="35" height="28" rx="6" class="s-blue"/><text x="608.5" y="55" class="t mid">␣my</text>
+      <rect x="630" y="36" width="70" height="28" rx="6" class="s-teal"/><text x="665" y="55" class="t mid">␣account</text>
+      <rect x="704" y="36" width="20" height="28" rx="6" class="s-violet"/><text x="714" y="55" class="t mid">?</text>
+      <text x="734" y="55" class="t-s">"overdraft" = 2</text>
 
       <text x="20" y="96" class="t-m t-accent">SAME MEANING, OTHER LANGUAGES</text>
-      <rect x="20" y="106" width="260" height="40" rx="8" class="s-surface"/><text x="34" y="131" class="t">Spanish · 69 chars → <tspan class="t-b">17 tokens</tspan></text>
-      <rect x="296" y="106" width="260" height="40" rx="8" class="s-surface"/><text x="310" y="131" class="t">Hindi · 73 chars → <tspan class="t-b">21 tokens</tspan></text>
-      <rect x="572" y="106" width="300" height="40" rx="8" class="s-surface"/><text x="586" y="131" class="t">Japanese · 33 chars → <tspan class="t-b">22 tokens</tspan></text>
-      <text x="20" y="168" class="t-s">same question, up to ~1.6× the tokens: multilingual support costs more and fills the window faster</text>
+      <rect x="20" y="106" width="260" height="40" rx="8" class="s-surface"/><text x="34" y="131" class="t">Spanish · 77 chars → <tspan class="t-b">17 tokens</tspan></text>
+      <rect x="296" y="106" width="260" height="40" rx="8" class="s-surface"/><text x="310" y="131" class="t">Hindi · 71 chars → <tspan class="t-b">24 tokens</tspan></text>
+      <rect x="572" y="106" width="300" height="40" rx="8" class="s-surface"/><text x="586" y="131" class="t">Japanese · 34 chars → <tspan class="t-b">26 tokens</tspan></text>
+      <text x="20" y="168" class="t-s">same question, up to ~1.7× the tokens: multilingual support costs more and fills the window faster</text>
 
-      <text x="20" y="206" class="t-m t-accent">NUMBER · 3.14159265358979 → 7 TOKENS</text>
-      <rect x="20" y="216" width="22" height="28" rx="6" class="s-surface"/><text x="31" y="235" class="t mid">3</text>
-      <rect x="46" y="216" width="22" height="28" rx="6" class="s-surface"/><text x="57" y="235" class="t mid">.</text>
-      <rect x="72" y="216" width="42" height="28" rx="6" class="s-surface"/><text x="93" y="235" class="t mid">141</text>
-      <rect x="118" y="216" width="42" height="28" rx="6" class="s-surface"/><text x="139" y="235" class="t mid">592</text>
-      <rect x="164" y="216" width="42" height="28" rx="6" class="s-surface"/><text x="185" y="235" class="t mid">653</text>
-      <rect x="210" y="216" width="42" height="28" rx="6" class="s-surface"/><text x="231" y="235" class="t mid">589</text>
-      <rect x="256" y="216" width="32" height="28" rx="6" class="s-surface"/><text x="272" y="235" class="t mid">79</text>
-      <text x="306" y="235" class="t-s">numbers are chopped into chunks: one reason LLMs are shaky at arithmetic</text>
+      <text x="20" y="206" class="t-m t-accent">AMOUNT · $12,450,309.75 → 8 TOKENS</text>
+      <rect x="20" y="216" width="22" height="28" rx="6" class="s-surface"/><text x="31" y="235" class="t mid">$</text>
+      <rect x="46" y="216" width="32" height="28" rx="6" class="s-surface"/><text x="62" y="235" class="t mid">12</text>
+      <rect x="82" y="216" width="22" height="28" rx="6" class="s-surface"/><text x="93" y="235" class="t mid">,</text>
+      <rect x="108" y="216" width="42" height="28" rx="6" class="s-surface"/><text x="129" y="235" class="t mid">450</text>
+      <rect x="154" y="216" width="22" height="28" rx="6" class="s-surface"/><text x="165" y="235" class="t mid">,</text>
+      <rect x="180" y="216" width="42" height="28" rx="6" class="s-surface"/><text x="201" y="235" class="t mid">309</text>
+      <rect x="226" y="216" width="22" height="28" rx="6" class="s-surface"/><text x="237" y="235" class="t mid">.</text>
+      <rect x="252" y="216" width="32" height="28" rx="6" class="s-surface"/><text x="268" y="235" class="t mid">75</text>
+      <text x="302" y="235" class="t-s">amounts are chopped into chunks: one reason LLMs are shaky at arithmetic</text>
     </svg>
   </div>
   <figcaption><b>Real tokenizer output</b> (OpenAI's <code>o200k_base</code> encoding; ␣ marks a leading space). You'll reproduce every number here in Drill 01.5.</figcaption>
@@ -103,6 +105,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Financial documents are long. A listed company's annual report is often 100 to 300 pages, roughly 60,000 to 200,000 tokens, and a year of card transactions for one customer can be several thousand lines. An analyst copilot can't send everything on every question, so it counts tokens first, then sends only the sections that matter (the risk factors, the segment table). Token counts are also how the bank budgets the feature: 40,000 customer chats a month at 2,000 tokens each is 80 million tokens, a number finance will ask you for before launch.</p>
+</div>
   <p>Coding assistants can't send your whole repository to the model, so they work hard on <strong>context assembly</strong>: which open files, which related functions, how much of the current file. Support bots do the same with knowledge articles. When an AI product feels "smart about your stuff", it's usually because someone engineered what goes into the window.</p>
 </div>
 
@@ -129,33 +136,33 @@
         <pre class="term"><code><span class="ps">$ </span>python lab01_05_tokens.py</code></pre>
         <p class="small muted">If Hindi or Japanese print as boxes, run it in the VS Code terminal, or run <code>chcp 65001</code> first in a Windows console.</p>
         <span class="out-label">Real output (the tokenizer part is exact; the API number varies by model)</span>
-<pre class="out"><code>English: 63 characters -&gt; 14 tokens
-My |  exam |  voucher |  hasn't |  arrived |  yet | . |  Can |  you |  check |  my |  enrol | ment | ?
+<pre class="out"><code>English: 63 characters -&gt; 15 tokens
+I |  was |  charged |  an |  overd | raft |  fee |  twice | . |  Can |  you |  check |  my |  account | ?
 
-Spanish: 69 characters -&gt; 17 tokens
-Mi |  cup | ón |  de |  examen |  aún |  no |  ha |  llegado | . |  ¿ | P | ueden |  revisar |  mi |  inscripción | ?
+Spanish: 77 characters -&gt; 17 tokens
+Me |  cobr | aron |  dos |  veces |  la |  comisión |  por |  descubierto | . |  ¿ | P | ueden |  revisar |  mi |  cuenta | ?
 
-Hindi: 73 characters -&gt; 21 tokens
-म | ेरा |  परीक्षा |  व | ाउ | चर |  अभी |  तक |  नहीं |  आया |  है | । |  क्या |  आप |  मेरा |  नाम | ांकन |  देख |  सकते |  हैं | ?
+Hindi: 71 characters -&gt; 24 tokens
+म | ुझ | से |  ओ | वर | ड | ्र | ाफ | ्ट |  शुल्क |  दो |  बार |  लिया |  गया | । |  क्या |  आप |  मेरा |  ख | ाता |  देख |  सकते |  हैं | ?
 
-Japanese: 33 characters -&gt; 22 tokens
-試 | 験 | バ | ウ | チャ | ー | が | まだ | 届 | いて | い | ません | 。 | 登録 | を | 確認 | して | いただ | け | ます | か | ？
+Japanese: 34 characters -&gt; 26 tokens
+当 | 座 | 貸 | 越 | の | 手 | 数 | 料 | を | 2 | 回 | 請 | 求 | され | ました | 。 | 口 | 座 | を | 確認 | して | いただ | け | ます | か | ？
 
-Code: 60 characters -&gt; 16 tokens
-def |  total | (items | ): |  return |  sum | (i | .price |  * |  i | .qty |  for |  i |  in |  items | )
+Code: 63 characters -&gt; 20 tokens
+def |  interest | (balance | , |  ap | y | ): |  return |  round | (balance |  * |  ap | y |  / |   | 12 | , |   | 2 | )
 
-JSON: 63 characters -&gt; 25 tokens
-{" | en | rol | ment | _id | ": |  " | TC | - | 102 | 93 | ", |  " | status | ": |  " | confirmed | ", |  " | se | ats | ": |   | 2 | }
+JSON: 64 characters -&gt; 24 tokens
+{" | customer | _id | ": |  " | RR | - | 102 | 93 | ", |  " | card | _status | ": |  " | f | rozen | ", |  " | cards | ": |   | 2 | }
 
-Number: 16 characters -&gt; 7 tokens
-3 | . | 141 | 592 | 653 | 589 | 79
+Amount: 14 characters -&gt; 8 tokens
+$ | 12 | , | 450 | , | 309 | . | 75
 
-API on azure billed 21 input tokens for the English sentence</code></pre>
+API on ollama billed 40 input tokens for the English sentence</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Explain three things</h4>
         <ul class="verify-list">
-          <li>Why the API billed a few more tokens than tiktoken counted (hint: chat formatting adds role markers, and your model may use a different tokenizer).</li>
-          <li>Why the JSON line cost 25 tokens: every quote and brace is a token, and <code>TC-10293</code> alone is four.</li>
+          <li>Why the API billed more tokens than tiktoken counted (hint: chat formatting adds role markers, some local models add a hidden default system message, and your model may use a different tokenizer). On Azure the gap is a few tokens; on llama3.2 it was 40 against 15.</li>
+          <li>Why the JSON line cost 24 tokens: every quote and brace is a token, and <code>RR-10293</code> alone is four.</li>
           <li>Why Japanese had the fewest characters but the most tokens.</li>
         </ul>
       </li>
@@ -166,8 +173,8 @@ API on azure billed 21 input tokens for the English sentence</code></pre>
         <p>Every model family has its own tokenizer. Claude's API counts tokens for free:</p>
 <pre class="code" data-file="claude_tokens.py"><code>from claude_llm import client, CLAUDE_MODEL
 
-for text in ["My exam voucher hasn't arrived yet. Can you check my enrolment?",
-             "試験バウチャーがまだ届いていません。登録を確認していただけますか？"]:
+for text in ["I was charged an overdraft fee twice. Can you check my account?",
+             "当座貸越の手数料を2回請求されました。口座を確認していただけますか？"]:
     count = client.messages.count_tokens(model=CLAUDE_MODEL, messages=[{"role": "user", "content": text}])
     print(count.input_tokens, "tokens:", text)</code></pre>
         <p>The numbers won't match tiktoken's. Never estimate one provider's tokens with another provider's tokenizer.</p>
@@ -213,6 +220,6 @@ Exit with code 0 if it fits and 1 if it doesn't. Read the file as UTF-8. No othe
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Token sense.</p></div></div>
 <div class="quiz">
   <details><summary>1. A request has 3,000 tokens of instructions, 20,000 of documents, 4,000 of history and a 50-token question. What else must fit?</summary><div><p>The <strong>output</strong>, including hidden reasoning tokens on reasoning models. If input nearly fills the window, the answer is cut off or the request fails.</p></div></details>
-  <details><summary>2. TrainCrest adds Japanese support. What happens to cost per conversation, and why?</summary><div><p>It <strong>rises</strong>: the same meaning takes more tokens in Japanese with this tokenizer, so both input and output token counts go up.</p></div></details>
+  <details><summary>2. RR Finance Bank adds Japanese support to its chat. What happens to cost per conversation, and why?</summary><div><p>It <strong>rises</strong>: the same meaning takes more tokens in Japanese with this tokenizer, so both input and output token counts go up.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Think in tokens: they are the model's memory limit, your bill and your latency, all at once.</p></div>

@@ -30,6 +30,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Error messages in banking must never leak internal details (endpoint names, account numbers, stack traces), and they must never leave a customer guessing about their money. "Something went wrong" after a customer asked "did my transfer go through?" is a bad outcome; a good assistant says it couldn't check, that no action was taken, and how to reach a person. Every error is also logged with a correlation ID, so operations can tie a customer complaint to the exact failed call.</p>
+</div>
   <p>Mature AI products never show raw errors. They map failures to a calm message ("I'm having trouble right now, here's how to reach a human"), log the details with a request ID, alert on configuration errors, and fall back to a second model or region when the primary one is down. Status pages of the big providers show that outages and degradations do happen, so this isn't theoretical.</p>
 </div>
 
@@ -85,7 +90,7 @@ exceptions from the openai Python SDK:
 - AuthenticationError, PermissionDeniedError, NotFoundError -> "config", not retryable
 - any other APIStatusError -> "server", retryable only if status_code >= 500
 - anything else -> "unknown", not retryable
-User messages must be friendly, mention "Traincrest Assist" where it fits, and never contain
+User messages must be friendly, mention "RR Finance Assist" where it fits, and never contain
 technical details. Then write test_friendly_errors.py with pytest that constructs real SDK
 exceptions using httpx.Request/httpx.Response (no network calls) and checks every mapping.
 Run the tests.</code></pre></div>

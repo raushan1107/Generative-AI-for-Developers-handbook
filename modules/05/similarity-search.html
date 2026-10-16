@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -320,22 +320,22 @@ MODEL = {
     <p class="drill-goal"><b>Goal:</b> run five realistic learner requests through a basic keyword search and a semantic search, and see where each one wins.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span>
-        <pre class="code" data-file="lab05_06_course_search.py"><code>"""Drill 05.6: keyword search vs semantic search over the course catalogue.
-The learner's words rarely match the words on your course pages."""
+        <pre class="code" data-file="lab05_06_product_search.py"><code>"""Drill 05.6: keyword search vs semantic search over the product catalogue.
+The customer's words rarely match the words on your product pages."""
 import re
 
 import numpy as np
 
-from catalogue import COURSES
+from catalogue import PRODUCTS
 from embed import embed
 
 STOP = set("a an and the to for of in on my me i i'm im want is it with how do can at be what".split())
 QUERIES = [
-    "I want my app to recognise objects in photos",
-    "cheap intro to containers",
-    "not a coder, want to use chat assistants better at work",
-    "get certified as a cloud admin",
-    "make answers come from our own documents",
+    "I want to stop paying so much interest on my credit card debt",
+    "a card I can use on holiday without extra charges",
+    "somewhere safe for my rainy-day money that grows",
+    "first bank account for my 19-year-old at university",
+    "buy my first flat",
 ]
 
 
@@ -344,14 +344,14 @@ def words(text):
 
 
 def keyword_top(query):
-    """Count shared words between the query and each course: what a basic search box does."""
+    """Count shared words between the query and each product: what a basic search box does."""
     q = words(query)
-    scores = [len(q &amp; words(c["title"] + " " + c["description"])) for c in COURSES]
+    scores = [len(q &amp; words(p["name"] + " " + p["description"])) for p in PRODUCTS]
     best = int(np.argmax(scores))
-    return (COURSES[best]["title"], scores[best]) if scores[best] else ("(no match)", 0)
+    return (PRODUCTS[best]["name"], scores[best]) if scores[best] else ("(no match)", 0)
 
 
-texts = [f"{c['title']}. {c['description']}" for c in COURSES]
+texts = [f"{p['name']}. {p['description']}" for p in PRODUCTS]
 docs = embed(texts)
 docs /= np.linalg.norm(docs, axis=1, keepdims=True)
 qs = embed(QUERIES)
@@ -362,8 +362,8 @@ for query, row in zip(QUERIES, qs @ docs.T):
     best = int(np.argmax(row))
     print(f"\n{query}")
     print(f"  keyword : {title}  ({overlap} shared words)")
-    print(f"  semantic: {COURSES[best]['title']}  (cosine {row[best]:.2f})")</code></pre>
-        <pre class="term"><code><span class="ps">$ </span>python lab05_06_course_search.py</code></pre>
+    print(f"  semantic: {PRODUCTS[best]['name']}  (cosine {row[best]:.2f})")</code></pre>
+        <pre class="term"><code><span class="ps">$ </span>python lab05_06_product_search.py</code></pre>
         <span class="out-label">Real output with nomic-embed-text (Ollama)</span>
 <pre class="out"><code>I want my app to recognise objects in photos
   keyword : Docker Quick Start  (1 shared words)
@@ -418,7 +418,7 @@ make answers come from our own documents
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

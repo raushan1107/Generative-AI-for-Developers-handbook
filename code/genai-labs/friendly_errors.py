@@ -2,10 +2,10 @@
 import openai
 
 MESSAGES = {
-    "rate_limited": "Traincrest Assist is very busy right now. Please try again in a moment.",
+    "rate_limited": "RR Finance Assist is very busy right now. Please try again in a moment.",
     "unreachable": "I couldn't reach the AI service. Please check your connection and try again.",
     "bad_request": "I couldn't process that message. Could you rephrase it?",
-    "config": "Traincrest Assist is temporarily unavailable. Our team has been notified.",
+    "config": "RR Finance Assist is temporarily unavailable. Our team has been notified.",
     "server": "Something went wrong on our side. Please try again shortly.",
     "unknown": "Something unexpected happened. Please try again.",
 }

@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -144,8 +144,8 @@
   <table>
     <thead><tr><th>Vague</th><th>Clear</th><th>What was added</th></tr></thead>
     <tbody>
-      <tr><td>"Summarise this ticket."</td><td>"Summarise this ticket for the agent who picks it up next: 3 bullets, under 15 words each, include the enrolment ID and what the learner needs by when."</td><td>Audience, length, format, must-include items</td></tr>
-      <tr><td>"Write a course description."</td><td>"Write a 60-word description of 'Generative AI for Developers' for working developers new to AI. Plain English, no hype, mention the hands-on Azure labs."</td><td>Length, audience, tone, focus</td></tr>
+      <tr><td>"Summarise this ticket."</td><td>"Summarise this ticket for the agent who picks it up next: 3 bullets, under 15 words each, include the customer ID and what the customer needs by when."</td><td>Audience, length, format, must-include items</td></tr>
+      <tr><td>"Write a product description."</td><td>"Write a 60-word description of the High-Yield Savings account for customers saving for the first time. Plain English, no hype, mention the 4.10% variable APY."</td><td>Length, audience, tone, focus</td></tr>
       <tr><td>"Don't be rude."</td><td>"Be warm and patient. Acknowledge the frustration in the first sentence, then give the next step."</td><td>What <em>to</em> do, not only what not to do</td></tr>
       <tr><td>"Answer the question."</td><td>"Answer only from the policy below. If it isn't covered, say 'I'll check with the team' and don't guess."</td><td>Source of truth and an escape hatch</td></tr>
     </tbody>
@@ -154,15 +154,20 @@
 
 <h3>Five habits of clear prompts</h3>
 <ol class="steps">
-  <li><strong>State the goal and the audience.</strong> "For a learner" and "for an agent" produce very different answers.</li>
+  <li><strong>State the goal and the audience.</strong> "For a customer" and "for an agent" produce very different answers.</li>
   <li><strong>Explain why.</strong> "Under 60 words <em>because it's shown in a mobile notification</em>" lets the model make smart trade-offs you didn't list.</li>
   <li><strong>Be positive and specific.</strong> "Use plain English" beats "don't use complicated words".</li>
   <li><strong>Separate instructions from data.</strong> Put tickets, documents and emails inside clear delimiters (topic 8).</li>
-  <li><strong>Give an escape hatch.</strong> "If the enrolment ID is missing, use null" stops the model inventing one.</li>
+  <li><strong>Give an escape hatch.</strong> "If the customer ID is missing, use null" stops the model inventing one.</li>
 </ol>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Clear instructions are a compliance requirement in banking, not a style preference. "Explain the fee" is risky; "Explain the $29 overdraft fee using only the fee schedule below, in plain English at a reading age of about 12, without promising a refund, and end with how to request the courtesy refund" is reviewable. Many regulators expect customer communications to be clear, fair and not misleading, so banks write prompts with the same care as a customer letter, and compliance signs off both.</p>
+</div>
   <p>Most prompt "bugs" in production turn out to be missing context: the model didn't know who the reader was, what length fitted the UI, or what to do when information was missing. Teams that write prompts like tickets for a new colleague (background, goal, acceptance criteria) spend far less time firefighting odd answers.</p>
 </div>
 
@@ -249,23 +254,23 @@ MODEL = {
     <ol class="dsteps">
       <li class="dstep nocode"><span class="st">No-code</span><p>In a chat window, paste the thread from the script with just "Summarise this." Then, in a new chat, use the CLEAR prompt. Regenerate each twice and compare by eye.</p></li>
       <li class="dstep run"><span class="st">Run</span>
-        <pre class="code" data-file="lab03_02_vague_vs_clear.py"><code>"""Drill 03.2: a vague and a clear prompt, three runs each, on the same support thread."""
+        <pre class="code" data-file="lab03_02_vague_vs_clear.py"><code>"""Drill 03.2: a vague and a clear prompt, three runs each, on the same bank support thread."""
 from llm import get_client, MODEL
 
 client = get_client()
 
-THREAD = """Learner (Mei, 2 Mar): Hi, I'm enrolled in Generative AI for Developers, enrolment TC-10293. The lab VM won't start, it says "quota exceeded".
-Agent (3 Mar): Sorry Mei! Could you send a screenshot of the error?
-Learner (3 Mar): Sent. Also my exam voucher hasn't arrived, and my course ended on 28 Feb.
-Agent (4 Mar): Thanks, escalated the lab issue to the platform team.
-Learner (6 Mar): No update for 2 days?? My exam is booked for 12 Mar. I need the lab and the voucher before then."""
+THREAD = """Customer (Mei, 2 Mar): Hi, customer RR-10293. I was charged twice for a $412 SkyHigh Airlines ticket on my Cashback Card.
+Agent (3 Mar): Sorry Mei! Could you confirm the dates of both payments?
+Customer (3 Mar): Both on 9 Feb. Also my replacement card hasn't arrived, and the old one expired on 28 Feb.
+Agent (4 Mar): Thanks, I've raised a dispute for the duplicate payment.
+Customer (6 Mar): No update for 2 days?? I fly abroad on 12 Mar. I need the new card and the $412 back before then."""
 
 VAGUE = f"Summarise this.\n\n{THREAD}"
 
 CLEAR = f"""Summarise this support thread for the agent who will handle it next.
 - Exactly 3 bullet points, each under 15 words.
-- Bullet 1: the problems and the enrolment ID. Bullet 2: what has been done so far.
-  Bullet 3: what the learner needs, and by when.
+- Bullet 1: the problems and the customer ID. Bullet 2: what has been done so far.
+  Bullet 3: what the customer needs, and by when.
 - Use only facts from the thread.
 
 &lt;thread&gt;
@@ -279,14 +284,30 @@ for label, prompt in (("VAGUE", VAGUE), ("CLEAR", CLEAR)):
         text = r.choices[0].message.content.strip()
         print(f"\n--- run {i + 1} · {len(text.split())} words ---\n{text}")</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab03_02_vague_vs_clear.py</code></pre>
+        <span class="out-label">Real output (llama3.2 on Ollama, one run of each, abridged)</span>
+<pre class="out"><code>===== VAGUE =====
+--- run 1 · 77 words ---
+Here's a summary of the conversation:
+
+A customer, Mei (RR-10293), contacted the airline about a duplicate charge on her cashback card
+for a $412 SkyHigh Airlines ticket. The airline's agent confirmed the issue and initiated a dispute...
+
+===== CLEAR =====
+--- run 2 · 60 words ---
+Here are three bullet points summarizing the support thread:
+
+• Customer RR-10293, Mei, was charged twice for a $412 SkyHigh Airlines ticket on a Cashback Card.
+• The agent has raised a dispute for the duplicate payment, but hasn't provided an update.
+• Mei needs her replacement card and the refund by 12 Mar, as she plans to travel abroad.</code></pre>
+        <p>The vague run got a basic fact wrong: Mei contacted her <em>bank</em>, not the airline. Nobody told the model whose thread this was. The clear prompt names the reader and the must-include items, and all three clear runs kept the ID, both problems and the deadline (one run called the refund a "rebate", which an agent would correct).</p>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Fill the scorecard for each prompt</h4>
         <div class="table-wrap"><table>
           <thead><tr><th>Check</th><th>Vague (3 runs)</th><th>Clear (3 runs)</th></tr></thead>
           <tbody>
             <tr><td>Word count range</td><td>…</td><td>…</td></tr>
-            <tr><td>Enrolment ID TC-10293 in every run?</td><td>…</td><td>…</td></tr>
-            <tr><td>Both problems (lab and voucher) in every run?</td><td>…</td><td>…</td></tr>
+            <tr><td>Customer ID RR-10293 in every run?</td><td>…</td><td>…</td></tr>
+            <tr><td>Both problems (duplicate charge and missing card) in every run?</td><td>…</td><td>…</td></tr>
             <tr><td>Deadline (12 Mar) in every run?</td><td>…</td><td>…</td></tr>
           </tbody>
         </table></div>
@@ -312,7 +333,7 @@ for label, prompt in (("VAGUE", VAGUE), ("CLEAR", CLEAR)):
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

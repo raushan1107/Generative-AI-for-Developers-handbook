@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -215,7 +215,7 @@
 </figure>
 
 <span class="out-label">Files after this milestone (new or changed)</span>
-<pre class="out"><code>traincrest-assist/
+<pre class="out"><code>rrfinance-assist/
 ├── requirements.txt          + pydantic
 ├── .env.example              + MAX_TOOL_ROUNDS, TICKETS_FILE, TOOLS_REASONING_EFFORT
 ├── cli.py                    + --as L-MEI demo sign-in, shows tool status
@@ -241,8 +241,8 @@
 
 <div class="callout note prereq">
   <div class="c-label">Before you run this code</div>
-  <p>Milestones are built in your <code>traincrest-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
-  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="../../code/traincrest-assist-m03.zip">traincrest-assist-m03.zip</a>, or the finished one, <a href="../../code/traincrest-assist-m04.zip">traincrest-assist-m04.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
+  <p>Milestones are built in your <code>rrfinance-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
+  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="../../code/rrfinance-assist-m03.zip">rrfinance-assist-m03.zip</a>, or the finished one, <a href="../../code/rrfinance-assist-m04.zip">rrfinance-assist-m04.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
   <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env"><code><span class="c"># Copy to .env in the project folder. Never commit .env.</span>
 <span class="c"># Default: a free local model with Ollama (no account, no key). Run once:  ollama pull llama3.2</span>
 LLM_PROVIDER=ollama
@@ -352,7 +352,7 @@ def reschedule_fee(start_date: date, today: date) -&gt; dict:
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The registry and the tools</h4>
         <p><code>app/toolkit.py</code> is your Drill 04.7 <code>toolkit.py</code>, copied into the app package unchanged. The tools use it:</p>
-        <pre class="code" data-file="app/tools.py"><code>"""Traincrest Assist tools (milestone 4).
+        <pre class="code" data-file="app/tools.py"><code>"""RR Finance Assist tools (milestone 4).
 The model can ask for these; our code decides whether and how they run.
 Identity rule: the signed-in learner comes from `context`, set by the app, never from the model."""
 import json
@@ -518,7 +518,7 @@ TOOLS = kit.schemas()</code></pre>
         <p>Copy <code>assist_system@v2</code> to a new <code>@v3</code> and add a <em>## Tools</em> section. It must cover: use tools for any fact about courses or the learner's data, never guess; refund amounts only from <code>quote_refund</code> and fees only from <code>quote_reschedule</code>; the learner can only see their own data, so explain "not allowed" kindly; cancellations, exceptions or requests for a person go to <code>create_support_ticket</code>, with the ticket ID in the reply; Assist can't cancel or refund by itself. Remove v2's rule "You can't see enrolments yet".</p>
         <p class="hint"><b>Hint:</b> also update the injection rule: tool results are data too. A course description or a ticket note could contain instructions.</p>
         <details class="solution"><summary>Compare with my prompt library</summary><div>
-          <pre class="code" data-file="app/prompts.py"><code>"""Traincrest Assist prompt library (milestones 3 and 4).
+          <pre class="code" data-file="app/prompts.py"><code>"""RR Finance Assist prompt library (milestones 3 and 4).
 Prompts are versioned, reviewed in pull requests and checked before release, like code.
 Note: string.Template uses $name placeholders, so a literal dollar sign is written as $$."""
 from string import Template
@@ -526,13 +526,13 @@ from string import Template
 PROMPTS = {
     <span class="c"># Milestone 2's one-paragraph prompt, kept so we can compare and roll back.</span>
     "assist_system@v1": Template(
-        "You are Traincrest Assist, the learner-support assistant of TrainCrest, a global technical "
+        "You are RR Finance Assist, the learner-support assistant of TrainCrest, a global technical "
         "training company. Be friendly, concise and practical. Reply in the learner's language. "
         "If you don't know something about TrainCrest's policies or a learner's enrolment, say so honestly."
     ),
 
     "assist_system@v2": Template("""## Role
-You are Traincrest Assist, the learner-support assistant of TrainCrest, a global technical training company.
+You are RR Finance Assist, the learner-support assistant of TrainCrest, a global technical training company.
 
 ## Goal
 Help learners with courses, schedules, labs, exam vouchers, certificates and accounts, quickly and kindly.
@@ -556,7 +556,7 @@ Help learners with courses, schedules, labs, exam vouchers, certificates and acc
 
     <span class="c"># Milestone 4: the assistant can now look things up and act through tools.</span>
     "assist_system@v3": Template("""## Role
-You are Traincrest Assist, the learner-support assistant of TrainCrest, a global technical training company.
+You are RR Finance Assist, the learner-support assistant of TrainCrest, a global technical training company.
 
 ## Goal
 Help learners with courses, schedules, labs, exam vouchers, certificates and accounts, quickly and kindly.
@@ -655,10 +655,10 @@ from app.prompts import render
 from app.tools import LABELS, TOOLS, kit
 
 FRIENDLY = {
-    "rate_limited": "Traincrest Assist is very busy right now. Please try again in a moment.",
+    "rate_limited": "RR Finance Assist is very busy right now. Please try again in a moment.",
     "unreachable": "I couldn't reach the AI service. Please try again.",
     "bad_request": "I couldn't process that message. Could you rephrase it?",
-    "config": "Traincrest Assist is temporarily unavailable. Our team has been notified.",
+    "config": "RR Finance Assist is temporarily unavailable. Our team has been notified.",
     "server": "Something went wrong on our side. Please try again shortly.",
 }
 SAFE_REPLY = ("Sorry, I can't share that. Could you rephrase your question, "
@@ -889,7 +889,7 @@ def _triage_json_repair(client, message: str, max_attempts: int = 2):
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>API, UI and CLI</h4>
         <p>The chat request now carries a <strong>demo</strong> <code>learner_id</code>. The comment in the code is the important part: a real app takes the learner from a verified sign-in on the server (Module 10), never from a field the browser controls.</p>
-        <pre class="code" data-file="app/main.py"><code>"""Traincrest Assist API, milestone 4.
+        <pre class="code" data-file="app/main.py"><code>"""RR Finance Assist API, milestone 4.
 
 Run from the project folder:  uvicorn app.main:app --reload
 Then open http://127.0.0.1:8000 (chat UI) or http://127.0.0.1:8000/docs (try /api/triage there).
@@ -908,7 +908,7 @@ from app.chat import ChatService
 from app.logging_utils import log_event
 from app.triage import TriageError, triage
 
-app = FastAPI(title="Traincrest Assist", version="0.4")
+app = FastAPI(title="RR Finance Assist", version="0.4")
 chat = ChatService()
 WEB = Path(__file__).resolve().parent.parent / "web"
 
@@ -1247,7 +1247,7 @@ DONE ['quote_refund'] 2406</code></pre>
 </div>
 <div class="callout note">
   <div class="c-label">Fell behind? Catch up here</div>
-  <p>The complete reference code is in <a href="../../code/traincrest-assist/m04/app/tools.py"><code>code/traincrest-assist/m04/</code></a>, including tests and data. Copy it over your project, keep your <code>.env</code>, run <code>pytest -q</code>, and you're ready for Module 05.</p>
+  <p>The complete reference code is in <a href="../../code/rrfinance-assist/m04/app/tools.py"><code>code/rrfinance-assist/m04/</code></a>, including tests and data. Copy it over your project, keep your <code>.env</code>, run <code>pytest -q</code>, and you're ready for Module 05.</p>
 </div>
 
 </div>
@@ -1257,7 +1257,7 @@ DONE ['quote_refund'] 2406</code></pre>
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

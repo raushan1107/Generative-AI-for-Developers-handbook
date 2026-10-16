@@ -215,7 +215,7 @@ def module_pages_html(num, drills, here):
             f'<li><span class="mono">{drill_label(d["id"], short=True)}</span> {html.escape(d["title"])} '
             f'<span class="muted">· {d["time"]}</span></li>' for d in page_drills)
         kind = page["kind"]
-        tag = {"topic": "Learn · Do · Check", "build": "Traincrest Assist", "recap": "Check"}.get(kind, kind)
+        tag = {"topic": "Learn · Do · Check", "build": "RR Finance Assist", "recap": "Check"}.get(kind, kind)
         cards.append(
             f'<a class="page-card k-{kind}" href="{rel(here, page["path"])}"><span class="pc-tag">{tag}</span>'
             f'<b>{html.escape(page["title"])}</b>' + (f'<ul>{drill_list}</ul>' if drill_list else "") + "</a>")
@@ -394,7 +394,7 @@ def page_html(page, meta, content):
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="{AUTHOR_URL}" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>
@@ -430,16 +430,16 @@ def prereq_box(page, content):
     here = page["path"]
     if page["kind"] == "build" and page.get("module"):
         num = page["module"]["num"]
-        if 'data-src="code/traincrest-assist/' not in content:
+        if 'data-src="code/rrfinance-assist/' not in content:
             return content
         box = f"""<div class="callout note prereq">
   <div class="c-label">Before you run this code</div>
-  <p>Milestones are built in your <code>traincrest-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
-  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="{rel(here, f"code/traincrest-assist-m{int(num) - 1:02d}.zip")}">traincrest-assist-m{int(num) - 1:02d}.zip</a>{"" if num == "01" else ""}, or the finished one, <a href="{rel(here, f"code/traincrest-assist-m{num}.zip")}">traincrest-assist-m{num}.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
-  <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env" data-src="code/traincrest-assist/m{num}/.env.example"></pre></div></details>
+  <p>Milestones are built in your <code>rrfinance-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
+  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="{rel(here, f"code/rrfinance-assist-m{int(num) - 1:02d}.zip")}">rrfinance-assist-m{int(num) - 1:02d}.zip</a>{"" if num == "01" else ""}, or the finished one, <a href="{rel(here, f"code/rrfinance-assist-m{num}.zip")}">rrfinance-assist-m{num}.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
+  <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env" data-src="code/rrfinance-assist/m{num}/.env.example"></pre></div></details>
 </div>"""
         if num == "01":
-            box = box.replace(f'Download the complete project as it should be at the <em>start</em> of this milestone, <a href="{rel(here, "code/traincrest-assist-m00.zip")}">traincrest-assist-m00.zip</a>, or the finished one,', "Download the finished project,")
+            box = box.replace(f'Download the complete project as it should be at the <em>start</em> of this milestone, <a href="{rel(here, "code/rrfinance-assist-m00.zip")}">rrfinance-assist-m00.zip</a>, or the finished one,', "Download the finished project,")
     else:
         srcs = [LABS_DIR.parent.parent / s for s in re.findall(r'data-src="(code/genai-labs/[^"]+\.py)"', content)]
         if '<div class="phase do"' not in content or (not srcs and "python lab" not in content):

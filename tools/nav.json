@@ -192,7 +192,7 @@
     {
       "title": "Practice",
       "items": [
-        {"id": "project", "title": "Traincrest Assist: the build", "path": "project/index.html", "kind": "project"},
+        {"id": "project", "title": "RR Finance Assist: the build", "path": "project/index.html", "kind": "project"},
         {"id": "labs", "title": "All drills", "path": "labs/index.html", "kind": "labs"},
         {"id": "capstone", "title": "Capstone project", "path": "capstone/index.html", "kind": "capstone"}
       ]

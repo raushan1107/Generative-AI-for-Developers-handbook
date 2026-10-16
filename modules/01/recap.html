@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Module 01 Recap</title>
-<meta name="description" content="Module 01 recap: checklist, the TrainCrest GenAI opportunity map, and a six-question self-check on generative AI, tokens, generation, training vs inference and model choice.">
+<meta name="description" content="Module 01 recap: checklist, the RR Finance Bank GenAI opportunity map, and a six-question self-check on generative AI, tokens, generation, training vs inference and model choice.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -126,7 +126,7 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 01 · Recap</span><h1>Module 01 Recap and Self-Check</h1><p class="lead">Check what stuck, see Module 01 applied to TrainCrest as a whole, and carry one idea into Module 02.</p><div class="chips"><span class="chip">Checklist</span><span class="chip">Opportunity map</span><span class="chip">6 questions</span></div></header>
+<header class="page-hero"><span class="eyebrow">Module 01 · Recap</span><h1>Module 01 Recap and Self-Check</h1><p class="lead">Check what stuck, see Module 01 applied to RR Finance Bank as a whole, and carry one idea into Module 02.</p><div class="chips"><span class="chip">Checklist</span><span class="chip">Opportunity map</span><span class="chip">6 questions</span></div></header>
 <div class="content">
 
 <h2 id="checklist">What you should now be able to explain, and show</h2>
@@ -139,36 +139,37 @@
   <li>Which pattern fits a feature request, including "not GenAI" (Drill 01.13).</li>
 </ul>
 
-<h2 id="map">TrainCrest: the GenAI opportunity map</h2>
-<p>Module 01's job for our case is to look at TrainCrest's wish list through the patterns you now know, and be honest about what GenAI should and shouldn't do.</p>
+<h2 id="map">RR Finance Bank: the GenAI opportunity map</h2>
+<p>Module 01's job for our case is to look at RR Finance Bank's wish list through the patterns you now know, and be honest about what GenAI should and shouldn't do.</p>
 <div class="table-wrap min">
   <table>
-    <thead><tr><th>TrainCrest needs</th><th>Pattern</th><th>Why GenAI (or why not)</th><th>Module</th></tr></thead>
+    <thead><tr><th>RR Finance Bank needs</th><th>Pattern</th><th>Why GenAI (or why not)</th><th>Module</th></tr></thead>
     <tbody>
-      <tr><td>Answer "what's the refund policy?" correctly</td><td>Ground (RAG)</td><td>Free-text questions in many phrasings; facts must come from the policy, not the model's memory</td><td>06</td></tr>
-      <tr><td>"Where is my exam voucher?"</td><td>Act (tool calling)</td><td>The model understands the question; code looks up the voucher. Never let the model guess a status.</td><td>04</td></tr>
-      <tr><td>Summarise long ticket threads for agents</td><td>Transform</td><td>A classic LLM strength; saves minutes per ticket</td><td>03</td></tr>
-      <tr><td>Route 25,000 tickets a month</td><td>Extract / classify</td><td>Small model with few-shot examples; consider classic ML at very high volume</td><td>03, 11</td></tr>
-      <tr><td>"Which course should I take to automate Excel reports?"</td><td>Search (embeddings)</td><td>Meaning-based search beats keywords</td><td>05</td></tr>
-      <tr><td>Screenshots of lab errors</td><td>Multimodal</td><td>One model reads the image and the complaint together</td><td>01, 04</td></tr>
-      <tr><td>Calculate refund amounts</td><td><strong>Not GenAI</strong></td><td>Exact business rules belong in code (the model can call it)</td><td>04</td></tr>
+      <tr><td>Answer "can I get my overdraft fee back?" correctly</td><td>Ground (RAG)</td><td>Free-text questions in many phrasings; facts must come from the fee policy, not the model's memory</td><td>06</td></tr>
+      <tr><td>"Where is my replacement card?"</td><td>Act (tool calling)</td><td>The model understands the question; code looks up the card. Never let the model guess a status or a balance.</td><td>04</td></tr>
+      <tr><td>Summarise long complaint threads for agents</td><td>Transform</td><td>A classic LLM strength; saves minutes per case</td><td>03</td></tr>
+      <tr><td>Route 40,000 messages a month (fraud first)</td><td>Extract / classify</td><td>Small model with few-shot examples; consider classic ML at very high volume</td><td>03, 11</td></tr>
+      <tr><td>"Which account should I open to save for a house?"</td><td>Search (embeddings)</td><td>Meaning-based search beats keywords; the assistant explains products, it doesn't give advice</td><td>05</td></tr>
+      <tr><td>Photos of statements and receipts</td><td>Multimodal</td><td>One model reads the image and the complaint together</td><td>01, 04</td></tr>
+      <tr><td>Calculate interest, fees and loan payments</td><td><strong>Not GenAI</strong></td><td>Exact rules and money belong in tested code (the model can call it)</td><td>04</td></tr>
+      <tr><td>Approve a loan or a fee refund</td><td><strong>Not GenAI</strong></td><td>Decisions follow credit policy and are explainable and auditable; the model can draft the letter</td><td>07, 10</td></tr>
     </tbody>
   </table>
 </div>
 
 <h2 id="quiz">Self-check</h2>
 <div class="quiz">
-  <details><summary>1. Traincrest Assist told a learner vouchers are valid for 24 months; TrainCrest's are valid for 12. The code has no bugs. What happened, and what's the fix?</summary><div><p>A <strong>hallucination</strong>: the model produced plausible text without the fact. Fix it by <strong>grounding</strong> the answer in the real policy (in the prompt now, RAG in Module 06) and telling the model to say when information isn't provided.</p></div></details>
+  <details><summary>1. RR Finance Assist told a customer the overdraft fee is $35; RR Finance Bank's is $29. The code has no bugs. What happened, and what's the fix?</summary><div><p>A <strong>hallucination</strong>: the model produced plausible text without the fact. Fix it by <strong>grounding</strong> the answer in the real fee schedule (in the prompt now, RAG in Module 06) and telling the model to say when information isn't provided.</p></div></details>
   <details><summary>2. Why did the Japanese sentence in Drill 01.5 have the fewest characters but the most tokens?</summary><div><p>The tokenizer's vocabulary covers Japanese less efficiently, so characters are split into more, smaller tokens. <strong>Cost and context use depend on tokens, not characters.</strong></p></div></details>
   <details><summary>3. Your bigram model (Drill 01.4) and a real LLM do the same core job. What is it, and what makes the LLM so much better?</summary><div><p>Both <strong>predict a probability for each next token and sample</strong>. The LLM uses thousands of tokens of context with attention, learned meaning instead of exact counts, and vast scale.</p></div></details>
   <details><summary>4. A teammate wants temperature 0 "so the bot stops making things up". Will it?</summary><div><p>No. Temperature changes <strong>variety</strong>, not knowledge. A hallucination at temperature 0 is just a consistent hallucination. Grounding and constraints fix it.</p></div></details>
-  <details><summary>5. Classic ML scored 10/12 in Drill 01.3 and missed the Spanish ticket. Name two ways to fix that.</summary><div><p>Add <strong>multilingual training examples</strong> (an LLM can help generate them), or <strong>route</strong> non-English or low-confidence tickets to the LLM.</p></div></details>
+  <details><summary>5. Classic ML scored 9/12 in Drill 01.3 and missed the Spanish ticket. Name two ways to fix that.</summary><div><p>Add <strong>multilingual training examples</strong> (an LLM can help generate them), or <strong>route</strong> non-English or low-confidence tickets to the LLM.</p></div></details>
   <details><summary>6. What's the difference between what ChatGPT the app does and what the model behind it does?</summary><div><p>The model only predicts tokens from its context. The app adds a hidden system prompt, <strong>conversation history</strong>, often <strong>web search</strong> and tools, and safety layers. With the API, adding those is your job, starting in Module 02.</p></div></details>
 </div>
 
 <div class="callout takeaway">
   <div class="c-label">Carry this into Module 02</div>
-  <p>Traincrest Assist v0.1 forgets names, freezes while thinking and would crash on the first network blip. Next you'll treat the LLM as what it really is (a slow, metered, rate-limited HTTPS API that sometimes fails) and call it like a professional: roles and memory, parameters, streaming, errors, retries and cost.</p>
+  <p>RR Finance Assist v0.1 forgets names, freezes while thinking and would crash on the first network blip. Next you'll treat the LLM as what it really is (a slow, metered, rate-limited HTTPS API that sometimes fails) and call it like a professional: roles and memory, parameters, streaming, errors, retries and cost.</p>
 </div>
 
 </div>
@@ -178,7 +179,7 @@
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

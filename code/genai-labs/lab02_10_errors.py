@@ -29,5 +29,5 @@ attempt("5. Impossible timeout", lambda: good.with_options(timeout=0.001, max_re
 
 # 6) Not an exception, but still a failure
 r = good.chat.completions.create(model=MODEL, max_completion_tokens=30,
-                                 messages=[{"role": "user", "content": "Write a long essay about cloud computing."}])
+                                 messages=[{"role": "user", "content": "Write a long essay about the history of banking."}])
 print(f"{'6. Truncated answer':30} HTTP 200, finish_reason={r.choices[0].finish_reason!r}")

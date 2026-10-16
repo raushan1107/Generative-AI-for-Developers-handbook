@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m02", "short": "Working with LLM APIs", "h1": "Working with LLM APIs: Calling the Model Like a Professional", "description": "Module 02 overview: API-based architecture, authentication, the request lifecycle, message roles, parameters, streaming, error handling, rate limits, retries and cost, with 15 drills and Traincrest Assist milestone 2.", "lead": "Traincrest Assist v0.1 worked until it didn't: it forgot names, froze while thinking and would crash on the first network blip. The fix isn't a better model. It's treating the LLM as what it really is: a slow, metered, rate-limited HTTPS API that sometimes fails. By the end of this module, v0.2 streams in a browser and survives failures.", "chips": ["9 topics", "15 drills", "Milestone 2", "≈ 5 hours hands-on"]}
+{"id": "m02", "short": "Working with LLM APIs", "h1": "Working with LLM APIs: Calling the Model Like a Professional", "description": "Module 02 overview: API-based architecture, authentication, the request lifecycle, message roles, parameters, streaming, error handling, rate limits, retries and cost, with 15 drills and RR Finance Assist milestone 2.", "lead": "RR Finance Assist v0.1 worked until it didn't: it forgot names, froze while thinking and would crash on the first network blip. The fix isn't a better model. It's treating the LLM as what it really is: a slow, metered, rate-limited HTTPS API that sometimes fails. By the end of this module, v0.2 streams in a browser and survives failures.", "chips": ["9 topics", "15 drills", "Milestone 2", "≈ 5 hours hands-on"]}
 -->
 <h2 id="map">The mental map</h2>
 <p>Every LLM call in every app you'll ever build goes through four stages. In class I draw them as four circles and refuse to move on until everyone can say what goes wrong at each one.</p>
@@ -62,5 +62,5 @@
   <li><strong>You'll need:</strong> the <code>genai-labs</code> folder and your <code>chat</code> deployment; for Drill 02.12, permission to lower the deployment's tokens-per-minute limit temporarily; for Drill 02.3, the Azure CLI.</li>
   <li><strong>New packages:</strong> <code>fastapi</code>, <code>uvicorn</code> and <code>pytest</code> (already in <code>requirements.txt</code>).</li>
   <li><strong>Unit tests without an API:</strong> Drills 02.6, 02.11 and 02.13 have you build tested utilities (history trimming, error mapping, retries) that the milestone reuses.</li>
-  <li><strong>Build:</strong> Milestone 2 turns Traincrest Assist into a FastAPI service with a streaming web chat.</li>
+  <li><strong>Build:</strong> Milestone 2 turns RR Finance Assist into a FastAPI service with a streaming web chat.</li>
 </ul>

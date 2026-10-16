@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -345,7 +345,7 @@ from rag_prompt import NOT_FOUND, build_messages
 <span class="c"># Relevance floor on cosine similarity. Model-specific: calibrate it for yours with Drill 06.6.</span>
 FLOORS = {"nomic-embed-text": 0.55, "text-embedding-3-small": 0.30, "text-embedding-3-large": 0.30}
 MIN_SCORE = float(os.getenv("RAG_MIN_SCORE") or FLOORS.get(EMBED_MODEL, 0.30))
-NO_ANSWER = "I couldn't find that in TrainCrest's documents. Shall I raise a ticket for the support team?"
+NO_ANSWER = "I couldn't find that in RR Finance Bank's documents. Shall I raise a case for the support team?"
 
 
 def generate(client, messages):
@@ -371,17 +371,17 @@ def answer(question: str, audience=("public",), index=None, client=None, k: int 
       <li class="dstep run"><span class="st">Run</span><h4>Six questions, six behaviours</h4>
         <pre class="code" data-file="lab06_09_answers.py"><code>"""Drill 06.9: the whole pipeline (rag.py) on questions that test each behaviour:
 a simple answer, an answer from two sections, another language, a question the documents
-don't cover, and a staff-only question asked by a learner and then by a staff member."""
+don't cover, and a staff-only question asked by a customer and then by a staff member."""
 from citations import render
 from rag import answer
 
 CASES = [
-    ("public", "How long until my refund shows up on my card?"),
-    ("public", "My lab stopped while I was at lunch and now shows LAB-440. Is my work lost, and how long are labs open?"),
-    ("public", "¿Cuánto cuesta cambiar la fecha de mi curso tres días antes?"),
-    ("public", "Can I bring my dog to a classroom course?"),
-    ("public", "Who can approve a refund exception of $300?"),
-    ("staff", "Who can approve a refund exception of $300?"),
+    ("public", "How long do I have to dispute a card payment?"),
+    ("public", "My card was stolen and there are payments I didn't make. Will I get the money back, and how fast is a new card?"),
+    ("public", "¿Cuánto cuesta una transferencia internacional?"),
+    ("public", "Can I bring my dog into the branch?"),
+    ("public", "Who can approve a fee refund exception of $300?"),
+    ("staff", "Who can approve a fee refund exception of $300?"),
 ]
 
 for audience, question in CASES:
@@ -445,9 +445,9 @@ checks: {'uncited': ['According to the public refund policy, a team lead can app
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The Company Knowledge Assistant</h4>
         <p>The module's hands-on project: an interactive assistant over TrainCrest's documents. Run it in the staff view and the learner view:</p>
-        <pre class="code" data-file="kb.py"><code>"""Drill 06.9: the Company Knowledge Assistant. Ask questions about TrainCrest's documents in the
+        <pre class="code" data-file="kb.py"><code>"""Drill 06.9: the Company Knowledge Assistant. Ask questions about RR Finance Bank's documents in the
 terminal; answers come only from the documents, with checked citations.
-Run:  python kb.py            (as a learner: public help centre only)
+Run:  python kb.py            (as a customer: public help centre only)
       python kb.py --staff    (as support staff: help centre + internal documents)"""
 import sys
 
@@ -458,7 +458,7 @@ from rag import answer
 staff = "--staff" in sys.argv
 audience = ("public", "staff") if staff else ("public",)
 index = load_or_build()
-print(f"TrainCrest knowledge assistant ({'staff' if staff else 'learner'} view, "
+print(f"RR Finance Bank knowledge assistant ({'staff' if staff else 'customer'} view, "
       f"{sum(c['audience'] in audience for c in index.chunks)} chunks). Empty line to quit.\n")
 while question := input("Question: ").strip():
     result = answer(question, audience=audience, index=index)
@@ -513,7 +513,7 @@ There is no information on the maximum number of learners that can join a classr
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

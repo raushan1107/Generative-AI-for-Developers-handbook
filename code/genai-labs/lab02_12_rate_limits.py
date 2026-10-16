@@ -36,5 +36,5 @@ def call_with_backoff(messages, max_attempts=6, base=1.0, cap=30.0):
 # C) Spend the budget fast to trigger 429s
 print()
 for i in range(12):
-    r = call_with_backoff([{"role": "user", "content": "Write 150 words about cloud certifications."}])
+    r = call_with_backoff([{"role": "user", "content": "Write 150 words about how credit scores work."}])
     print(f"request {i + 1:2} ok · {r.usage.total_tokens} tokens")

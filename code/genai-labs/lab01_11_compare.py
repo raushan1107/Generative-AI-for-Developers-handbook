@@ -13,9 +13,10 @@ if os.getenv("COMPARE_WITH_OLLAMA") == "1":
     local = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
     targets.append(("local", local, os.getenv("OLLAMA_MODEL", "llama3.2")))
 
-PROMPT = ("A learner writes: 'My course starts in 5 days but I have a family emergency. "
-          "I want my full $1,200 back!!' TrainCrest's policy: no refund within 7 days of the start "
-          "date, but one free reschedule. Reply as a kind support agent in under 80 words.")
+PROMPT = ("A customer writes: 'You charged me a $29 overdraft fee! I was only $80 short for one night "
+          "because my salary was late. Give it back now!!' RR Finance Bank's policy: $29 fee when overdrawn by "
+          "more than $50 at the end of the day; one courtesy fee refund per account every 12 months, and this "
+          "customer hasn't used it. Reply as a kind contact-centre agent in under 80 words.")
 
 for label, client, model in targets:
     start = time.perf_counter()

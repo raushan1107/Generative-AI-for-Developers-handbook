@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -126,14 +126,14 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 03 · Topic 3 of 10</span><h1>Role Prompting</h1><p class="lead">Telling the model who it is changes how it talks. It doesn't change what it knows. 'You are TrainCrest's senior certification expert' doesn't give it TrainCrest's policies. You'll prove both halves of that sentence in one drill.</p><div class="chips"><span class="chip">Persona</span><span class="chip">Tone and audience</span><span class="chip">Not knowledge</span><span class="chip">Drill 03.3</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 8 min · Do 12 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 03 · Topic 3 of 10</span><h1>Role Prompting</h1><p class="lead">Telling the model who it is changes how it talks. It doesn't change what it knows. 'You are RR Finance Bank's senior certification expert' doesn't give it RR Finance Bank's policies. You'll prove both halves of that sentence in one drill.</p><div class="chips"><span class="chip">Persona</span><span class="chip">Tone and audience</span><span class="chip">Not knowledge</span><span class="chip">Drill 03.3</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 8 min · Do 12 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The costume, not the script.</p></div></div>
 
 <div class="callout definition">
   <div class="c-label">Definition</div>
-  <p>Role prompting assigns the model a persona or perspective (for example "You are a senior support agent at TrainCrest") to shape its tone, vocabulary, level of detail and focus for the task.</p>
+  <p>Role prompting assigns the model a persona or perspective (for example "You are a senior support agent at RR Finance Bank") to shape its tone, vocabulary, level of detail and focus for the task.</p>
 </div>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
@@ -141,12 +141,17 @@
 </div>
 
 <div class="two-col">
-  <div><h4>Roles help with</h4><ul><li>Tone and register (warm, formal, playful)</li><li>Audience level (learner vs engineer)</li><li>Perspective (reviewer, critic, tester)</li><li>A consistent persona across a conversation</li></ul></div>
+  <div><h4>Roles help with</h4><ul><li>Tone and register (warm, formal, playful)</li><li>Audience level (customer vs analyst)</li><li>Perspective (reviewer, critic, tester)</li><li>A consistent persona across a conversation</li></ul></div>
   <div><h4>Roles don't help with</h4><ul><li>Facts the model doesn't have</li><li>Accuracy on hard reasoning ("world-class mathematician" adds little)</li><li>A format you never specified</li><li>Security: a role is not a boundary</li></ul></div>
 </div>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Roles in finance are about audience and duty, not glamour. The same facts about a credit card are written very differently for a first-time customer, for a branch colleague, or for a credit risk analyst, and a role line sets that register. What a role must never do is grant authority: "You are a senior financial adviser" does not make the model qualified to give advice, and in many countries only licensed people may recommend investments or credit. Banks therefore pair a modest role ("you explain RR Finance Bank products") with an explicit rule ("you don't recommend products or give financial advice").</p>
+</div>
   <p>Product assistants nearly always have a short persona ("You are Contoso's helpful billing assistant…"), but the bulk of their system prompt is rules, context and format. Roles are also used deliberately for <em>perspective</em>: teams ask one model to act as a strict code reviewer or a sceptical evaluator of another model's answer, which you'll see again in evaluation (Module 09).</p>
 </div>
 
@@ -242,18 +247,18 @@ from llm import get_client, MODEL
 
 client = get_client()
 
-QUESTION = "What is the Retake Pass and should I buy it?"
-FACTS = ("&lt;policy&gt;Retake Pass (fictional TrainCrest add-on): one free exam retake voucher. "
-         "Costs 15% of the course price. Must be bought before the course ends. "
-         "Refunded in full if the course is cancelled.&lt;/policy&gt;")
+QUESTION = "What is the Balance Transfer Card and should I get it?"
+FACTS = ("&lt;policy&gt;Balance Transfer Card (fictional RR Finance Bank product): 0% APR for 18 months on balances "
+         "transferred in the first 60 days, then 21.99% APR. A 3% fee on each transfer. No annual fee. "
+         "Approval depends on a credit check. Staff explain products; they don't tell customers what to buy.&lt;/policy&gt;")
 
 ROLES = {
     "no role": None,
-    "certification expert, no facts": "You are TrainCrest's most senior certification expert.",
-    "friendly agent + facts": "You are a friendly TrainCrest support agent writing to a learner taking "
-                              f"their first certification. Use simple words, under 80 words. {FACTS}",
-    "trainer + facts": "You are training a new TrainCrest support agent on their first day. "
-                       f"Be precise and list what the agent must check before selling it. {FACTS}",
+    "credit card expert, no facts": "You are RR Finance Bank's most senior credit card expert.",
+    "friendly agent + facts": "You are a friendly RR Finance Bank support agent writing to a customer who has "
+                              f"never had a credit card. Use simple words, under 80 words. {FACTS}",
+    "trainer + facts": "You are training a new RR Finance Bank support agent on their first day. "
+                       f"Be precise and list what the agent must check before discussing it with a customer. {FACTS}",
 }
 
 for label, system in ROLES.items():
@@ -264,9 +269,10 @@ for label, system in ROLES.items():
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Mark each answer for tone and facts</h4>
         <ul class="verify-list">
-          <li>"Certification expert, no facts" sounds confident and is generic or wrong about the Retake Pass: the costume without the script.</li>
-          <li>The two roles <em>with</em> facts give the same facts (one free retake, 15% of course price, buy before the course ends, refunded if cancelled) in completely different styles.</li>
-          <li>"No role" is fine but generic. The role earned its place only once facts were present.</li>
+          <li>"Credit card expert, no facts" sounds confident and is generic or wrong about this card: in the real run it described "0% for 6 to 24 months" and invented three "types" of balance transfer card. RR Finance Bank's card is 0% for 18 months. The costume without the script.</li>
+          <li>The two roles <em>with</em> facts give the same facts (0% for 18 months on transfers in the first 60 days, then 21.99%, a 3% fee, a credit check) in completely different styles: questions for the customer from the friendly agent, a checklist for the new colleague from the trainer.</li>
+          <li>"No role" gave a long, generic essay ending with "consult a financial advisor". The role earned its place only once facts were present.</li>
+          <li>The customer asked "should I get it?". Look at whether any answer recommends the card outright. A bank assistant explains products and the questions to consider; it doesn't tell a customer what to buy. That rule belongs in the context, not in the role.</li>
         </ul>
       </li>
     </ol>
@@ -276,7 +282,7 @@ for label, system in ROLES.items():
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>One question.</p></div></div>
 <div class="quiz">
-  <details><summary>1. A colleague adds "You are a world-renowned warranty lawyer" to fix wrong policy answers. Will it work?</summary><div><p>No. A role changes <strong>style</strong>, not <strong>knowledge</strong>. Put the actual policy in the context (and later retrieve it with RAG).</p></div></details>
+  <details><summary>1. A colleague adds "You are a world-renowned banking regulator" to fix wrong fee answers. Will it work?</summary><div><p>No. A role changes <strong>style</strong>, not <strong>knowledge</strong>. Put the actual fee schedule in the context (and later retrieve it with RAG).</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>One line of role, many lines of context. The role sets the voice; the context sets the facts.</p></div>
 
@@ -287,7 +293,7 @@ for label, system in ROLES.items():
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

@@ -43,6 +43,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banks almost always put a gateway between their apps and any model, and the reasons are regulatory as much as technical. Customer data may only go to approved endpoints in approved regions; every prompt and response is logged for audit, often for years; personal data such as account numbers is masked before it leaves the bank's network; and each business line gets its own quota and cost centre. The proxy you build in Drill 02.1 is the seed of that gateway: one place where those rules are enforced, instead of every team calling the model directly.</p>
+</div>
   <p>Every serious AI product puts a service layer between users and the model. Larger organisations go further with an <strong>AI gateway</strong> in front of all model traffic (Azure API Management offers AI gateway features), giving one place for keys, quotas per team, caching, logging and failover between models. Your little FastAPI proxy in this drill is the same idea in 30 lines.</p>
 </div>
 
@@ -69,7 +74,7 @@
 - Reuse get_client() and MODEL from #llm.py. Never read or expose the API key in any other way.
 - GET / serves lab02_01_index.html.
 - POST /api/ask accepts JSON {"question": str} (1 to 2000 characters, validated with Pydantic),
-  calls the chat model with a short system prompt ("You help TrainCrest learners. Be brief."),
+  calls the chat model with a short system prompt ("You help RR Finance Bank customers. Be brief."),
   and returns {"answer": str}.
 - The HTML page has a textarea, an Ask button and an answer area, and uses fetch() to call
   /api/ask. Plain HTML and JavaScript, no frameworks, no keys.
@@ -82,7 +87,7 @@ Tell me the uvicorn command to run it.</code></pre></div>
       </li>
       <li class="dstep run"><span class="st">Run</span>
         <pre class="term"><code><span class="ps">$ </span>uvicorn lab02_01_proxy:app --reload</code></pre>
-        <p>Open <code>http://127.0.0.1:8000</code> and ask "What is an exam voucher?". Also open <code>http://127.0.0.1:8000/docs</code>: FastAPI generated interactive API documentation for you.</p>
+        <p>Open <code>http://127.0.0.1:8000</code> and ask "What is a pending payment?". Also open <code>http://127.0.0.1:8000/docs</code>: FastAPI generated interactive API documentation for you.</p>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Try to steal the key from the browser</h4>
         <ul class="verify-list">

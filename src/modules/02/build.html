@@ -1,10 +1,10 @@
 <!--meta
-{"id": "m02-build", "short": "Build: Milestone 2", "h1": "Build · Milestone 2: A Streaming Chat Service", "description": "Traincrest Assist milestone 2 (Module 02 hands-on exercise): a FastAPI service with user input, LLM integration, streaming over server-sent events, conversation memory, error handling, retries, structured logging and cost, plus a web chat UI built with an AI coding assistant.", "lead": "Version 0.2 turns the CLI into a real service: a FastAPI backend that streams answers to a browser chat, remembers the conversation, survives failures with friendly messages, retries what's transient, and logs latency, tokens and cost for every turn. You write the backend; your AI assistant builds the UI to your contract.", "chips": ["Module 02 exercise", "FastAPI + SSE", "Memory · errors · retries", "JSON logs + cost", "≈ 60 min"], "time": "Plan 10 min · Build 40 min · Verify 15 min"}
+{"id": "m02-build", "short": "Build: Milestone 2", "h1": "Build · Milestone 2: A Streaming Chat Service", "description": "RR Finance Assist milestone 2 (Module 02 hands-on exercise): a FastAPI service with user input, LLM integration, streaming over server-sent events, conversation memory, error handling, retries, structured logging and cost, plus a web chat UI built with an AI coding assistant.", "lead": "Version 0.2 turns the CLI into a real service: a FastAPI backend that streams answers to a browser chat, remembers the conversation, survives failures with friendly messages, retries what's transient, and logs latency, tokens and cost for every turn. You write the backend; your AI assistant builds the UI to your contract.", "chips": ["Module 02 exercise", "FastAPI + SSE", "Memory · errors · retries", "JSON logs + cost", "≈ 60 min"], "time": "Plan 10 min · Build 40 min · Verify 15 min"}
 -->
 <div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From a terminal toy to a service.</p></div></div>
 
 <div class="case">
-  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 2</span></div>
+  <div class="case-head"><b>RR Finance Bank</b><span>· the brief for milestone 2</span></div>
   <div class="case-body">
     <p>The pilot team liked v0.1 but can't use it: it forgets context, freezes while thinking and dies on the first network blip. Build v0.2 as a web service with a chat page. Required: <strong>user input</strong>, <strong>LLM API integration</strong>, <strong>a streaming response</strong>, <strong>error handling</strong> and <strong>basic logging</strong>, plus conversation memory and a cost figure per turn so finance can plan.</p>
   </div>
@@ -13,7 +13,7 @@
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 300" role="img" aria-labelledby="b2-t b2-d">
-      <title id="b2-t">Traincrest Assist v0.2</title>
+      <title id="b2-t">RR Finance Assist v0.2</title>
       <desc id="b2-d">The browser chat page posts to /api/chat on the FastAPI backend and receives server-sent events. main.py hands the request to ChatService in chat.py, which keeps per-session history, builds the messages with the system prompt from prompts.py, streams from the model through llm.py with retries, maps errors to friendly messages, and writes JSON log lines with cost through logging_utils.py.</desc>
       <rect x="16" y="90" width="170" height="120" rx="12" class="s-surface"/><text x="101" y="122" class="t-b mid">web/index.html</text><text x="101" y="144" class="t-s mid">chat page</text><text x="101" y="162" class="t-s mid">reads SSE events</text><text x="101" y="180" class="t-s mid">delta · done · error</text>
       <rect x="236" y="20" width="520" height="260" rx="14" class="s-blue"/>
@@ -38,7 +38,7 @@
 </figure>
 
 <span class="out-label">Files after this milestone (new or changed)</span>
-<pre class="out"><code>traincrest-assist/
+<pre class="out"><code>rrfinance-assist/
 ├── requirements.txt          + fastapi, uvicorn
 ├── .env.example              + MAX_TURNS_KEPT, PRICE_IN_PER_M, PRICE_OUT_PER_M, LOG_FILE
 ├── app/
@@ -61,24 +61,24 @@
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Settings and model access</h4>
         <p>Add <code>fastapi</code> and <code>uvicorn</code> to <code>requirements.txt</code> and install them. Add the new keys to <code>.env</code> (see <code>.env.example</code> below). Then update the two existing files:</p>
-        <pre class="code" data-file=".env.example" data-src="code/traincrest-assist/m02/.env.example"></pre>
-        <pre class="code" data-file="app/config.py" data-src="code/traincrest-assist/m02/app/config.py"></pre>
-        <pre class="code" data-file="app/llm.py" data-src="code/traincrest-assist/m02/app/llm.py"></pre>
+        <pre class="code" data-file=".env.example" data-src="code/rrfinance-assist/m02/.env.example"></pre>
+        <pre class="code" data-file="app/config.py" data-src="code/rrfinance-assist/m02/app/config.py"></pre>
+        <pre class="code" data-file="app/llm.py" data-src="code/rrfinance-assist/m02/app/llm.py"></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Prompts and logging get their own homes</h4>
-        <pre class="code" data-file="app/prompts.py" data-src="code/traincrest-assist/m02/app/prompts.py"></pre>
-        <pre class="code" data-file="app/logging_utils.py" data-src="code/traincrest-assist/m02/app/logging_utils.py"></pre>
+        <pre class="code" data-file="app/prompts.py" data-src="code/rrfinance-assist/m02/app/prompts.py"></pre>
+        <pre class="code" data-file="app/logging_utils.py" data-src="code/rrfinance-assist/m02/app/logging_utils.py"></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The heart: ChatService</h4>
         <p>Everything from this module meets here: history trimming (Drill 02.6), streaming with the empty-chunk guard (Drill 02.8), the error mapping (Drill 02.11), and usage and cost (Drill 02.14). Read it top to bottom before you run it.</p>
-        <pre class="code" data-file="app/chat.py" data-src="code/traincrest-assist/m02/app/chat.py"></pre>
+        <pre class="code" data-file="app/chat.py" data-src="code/rrfinance-assist/m02/app/chat.py"></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The web API</h4>
-        <pre class="code" data-file="app/main.py" data-src="code/traincrest-assist/m02/app/main.py"></pre>
+        <pre class="code" data-file="app/main.py" data-src="code/rrfinance-assist/m02/app/main.py"></pre>
       </li>
       <li class="dstep ask"><span class="st">Ask AI</span><h4>Have your assistant build the chat page to your contract</h4>
         <div class="prompt-box"><pre><code>Create web/index.html: a single-file chat page (HTML, CSS and vanilla JavaScript, no frameworks,
-no external files) for "Traincrest Assist". Contract with the backend in #app/main.py:
+no external files) for "RR Finance Assist". Contract with the backend in #app/main.py:
 - On load, create sessionId = crypto.randomUUID().
 - On submit, POST /api/chat with JSON {session_id, message}. The response is server-sent events:
   lines "data: {json}" separated by a blank line. Read it with fetch + response.body.getReader()
@@ -93,17 +93,17 @@ no external files) for "Traincrest Assist". Contract with the backend in #app/ma
 Dark, clean design; user bubbles on the right, assistant on the left.</code></pre></div>
         <div class="why"><b>Why this prompt works:</b> it's a contract, not a wish. It names the exact endpoint, payload, wire format and every event type (including <code>replace</code>, which Milestone 3 needs), says how to parse a streamed body, and includes a security rule: <code>textContent</code> instead of <code>innerHTML</code>, so model output can never inject HTML or scripts into the page.</div>
         <details class="solution"><summary>Reference solution (if your assistant gets stuck)</summary><div>
-          <pre class="code" data-file="web/index.html" data-src="code/traincrest-assist/m02/web/index.html"></pre>
+          <pre class="code" data-file="web/index.html" data-src="code/rrfinance-assist/m02/web/index.html"></pre>
         </div></details>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Upgrade the CLI to share the same service</h4>
-        <pre class="code" data-file="cli.py" data-src="code/traincrest-assist/m02/cli.py"></pre>
+        <pre class="code" data-file="cli.py" data-src="code/rrfinance-assist/m02/cli.py"></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Run it and try to break it</h4>
         <pre class="term"><code><span class="ps">$ </span>uvicorn app.main:app --reload</code></pre>
         <ul class="verify-list">
-          <li><strong>Streaming:</strong> open <code>http://127.0.0.1:8000</code>, ask "How should I prepare for my first cloud certification?". Words appear within about a second.</li>
-          <li><strong>Memory:</strong> in the browser at <code>http://127.0.0.1:8000</code>, send "Hi, I'm Mei, enrolled in AZ-305." then "Which course am I in, and what's my name?". The answer mentions Mei and AZ-305. If it doesn't, check your <code>web/index.html</code>: it must create <code>sessionId</code> <em>once</em> when the page loads and send the same value with every message (compare with the reference code above). A page that makes a new ID per message has no memory.</li>
+          <li><strong>Streaming:</strong> open <code>http://127.0.0.1:8000</code>, ask "How do I build an emergency fund?". Words appear within about a second.</li>
+          <li><strong>Memory:</strong> in the browser at <code>http://127.0.0.1:8000</code>, send "Hi, I'm Mei, and I'm flying to Japan on Friday." then "Where am I flying, and what's my name?". The answer mentions Mei and Japan. If it doesn't, check your <code>web/index.html</code>: it must create <code>sessionId</code> <em>once</em> when the page loads and send the same value with every message (compare with the reference code above). A page that makes a new ID per message has no memory.</li>
           <li><strong>New chat:</strong> click it, ask "What's my name?": forgotten, as designed. It works because the button calls <code>/api/reset</code> and then creates a new <code>sessionId</code>.</li>
           <li><strong>Friendly errors:</strong> in <code>.env</code> set a model that doesn't exist (default local model: <code>OLLAMA_MODEL=nope</code>; Azure: <code>AZURE_OPENAI_DEPLOYMENT=nope</code>), restart uvicorn, send a message: a calm "temporarily unavailable" message, no stack trace. Restore the setting and restart.</li>
           <li><strong>Model unreachable:</strong> make the model server unreachable and send a message: "I couldn't reach the AI service". With the default local model, quit Ollama (Windows: right-click its tray icon › Quit; macOS: menu-bar icon › Quit; Linux: <code>sudo systemctl stop ollama</code>); turning off Wi-Fi changes nothing, because the model runs on your own computer. With Azure, disconnect Wi-Fi instead. Start Ollama or reconnect: the next message works.</li>
@@ -133,15 +133,15 @@ Dark, clean design; user bubbles on the right, assistant on the left.</code></pr
   <table>
     <thead><tr><th>Still wrong in v0.2</th><th>Fixed in</th></tr></thead>
     <tbody>
-      <tr><td>Still doesn't know TrainCrest's policies</td><td>M03 (policy in a structured prompt), M06 (RAG)</td></tr>
-      <tr><td>Can't triage tickets into data the team can route</td><td>M03 (JSON triage)</td></tr>
+      <tr><td>Still doesn't know RR Finance Bank's policies</td><td>M03 (policy in a structured prompt), M06 (RAG)</td></tr>
+      <tr><td>Can't triage messages into data the team can route (fraud first)</td><td>M03 (JSON triage)</td></tr>
       <tr><td>One vague prompt string, no versions, no tests</td><td>M03 (prompts as code)</td></tr>
-      <tr><td>Can't look up enrolments or vouchers</td><td>M04 (tools)</td></tr>
+      <tr><td>Can't look up products, transactions or card status</td><td>M04 (tools)</td></tr>
       <tr><td>History lives in memory; a restart loses it</td><td>M08 (architecture)</td></tr>
     </tbody>
   </table>
 </div>
 <div class="callout note">
   <div class="c-label">Fell behind? Catch up here</div>
-  <p>The complete reference code for this milestone is in <a href="../../code/traincrest-assist/m02/app/chat.py"><code>code/traincrest-assist/m02/</code></a>. Copy it over your project, keep your <code>.env</code>, install the requirements and carry on.</p>
+  <p>The complete reference code for this milestone is in <a href="../../code/rrfinance-assist/m02/app/chat.py"><code>code/rrfinance-assist/m02/</code></a>. Copy it over your project, keep your <code>.env</code>, install the requirements and carry on.</p>
 </div>

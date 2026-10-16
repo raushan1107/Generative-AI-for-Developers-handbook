@@ -3,10 +3,10 @@ import random
 from collections import Counter, defaultdict
 
 CORPUS = """
-the course starts on monday . the course includes hands-on labs .
-the labs run on azure . the exam voucher arrives after the course .
-the voucher is valid for twelve months . the labs are available for thirty days .
-the course is online . the trainer explains the labs . the learner completes the labs .
+the card is frozen . the card is blocked after three wrong pins .
+the payment is pending . the payment arrives in three days . the transfer is instant .
+the customer freezes the card . the bank refunds the fee . the fee is waived this month .
+the customer disputes the payment . the bank reviews the payment . the card arrives in five days .
 """
 
 # "Training": count which word follows which.
@@ -36,7 +36,7 @@ def generate(start, length=12, seed=None):
 
 
 print("After 'the': ", {w: f"{p:.0%}" for w, p in predict("the").items()})
-print("After 'labs':", {w: f"{p:.0%}" for w, p in predict("labs").items()})
+print("After 'card':", {w: f"{p:.0%}" for w, p in predict("card").items()})
 print()
 for seed in range(3):
     print("Generated:", generate("the", seed=seed))

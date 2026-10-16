@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -383,11 +383,11 @@ from robust import structured_call
 
 
 class Reply(BaseModel):
-    category: Literal["billing", "scheduling", "other"]
+    category: Literal["fees", "dispute", "other"]
     urgent: bool
 
 
-GOOD = '{"category": "billing", "urgent": false}'
+GOOD = '{"category": "fees", "urgent": false}'
 
 
 def says(content=None, finish="stop", refusal=None):
@@ -406,8 +406,8 @@ SCENARIOS = {
     "fenced JSON": [says("```json\n" + GOOD + "\n```")],
     "sentence + JSON": [says("Sure! Here it is: " + GOOD + " Hope that helps.")],
     "wrong value, then fixed": [says('{"category": "refund", "urgent": false}'), says(GOOD)],
-    "garbage twice": [says("I think it's billing."), says("billing, not urgent")],
-    "cut off, then fixed": [says('{"category": "bil', finish="length"), says(GOOD)],
+    "garbage twice": [says("I think it's about fees."), says("fees, not urgent")],
+    "cut off, then fixed": [says('{"category": "fe', finish="length"), says(GOOD)],
     "cut off twice": [says('{"cat', finish="length"), says('{"category"', finish="length")],
     "refusal": [says(refusal="I can't help with that request.")],
     "content filter": [says(None, finish="content_filter")],
@@ -489,7 +489,7 @@ def test_extract_json():
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

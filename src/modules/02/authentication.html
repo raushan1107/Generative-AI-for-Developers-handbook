@@ -37,6 +37,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>In a bank, API keys are treated like any other credential that can move money or expose data: stored in a vault, rotated on a schedule, never shared between environments, and their use logged. Most banks go further and switch keys off entirely, using managed identities so each application gets exactly the model access it needs and nothing else. Security reviews ask a simple question before go-live: "if this key leaked tonight, what could someone do with it, and how fast would we know?"</p>
+</div>
   <p>Leaked AI keys are a constant problem: bots scrape public repositories for them within minutes, and platforms such as GitHub run secret scanning that detects many provider key formats and alerts the owner. Enterprises on Azure typically disable key authentication on their AI resources altogether and use managed identities, so there is nothing to leak.</p>
 </div>
 
@@ -75,8 +80,8 @@
   -H "anthropic-beta: server-side-fallback-2026-07-01" \
   -H "content-type: application/json" \
   -d '{"model": "claude-opus-5-5", "max_tokens": 1024, "fallbacks": "default",
-       "system": "You are Traincrest Assist. Be brief.",
-       "messages": [{"role": "user", "content": "What does batch confirmed mean?"}]}'</code></pre>
+       "system": "You are RR Finance Assist. Be brief.",
+       "messages": [{"role": "user", "content": "What does 'pending' mean on a card payment?"}]}'</code></pre>
         <p>Look for <code>content[0].text</code>, <code>stop_reason</code> (Claude's finish_reason) and <code>usage</code>.</p>
       </div>
     </div>

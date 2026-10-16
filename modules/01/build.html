@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Build: Milestone 1</title>
-<meta name="description" content="Traincrest Assist milestone 1 (Module 01 hands-on exercise): scaffold the project with an AI coding assistant and build a CLI application that sends a prompt to an LLM and displays the response, with timing and token usage.">
+<meta name="description" content="RR Finance Assist milestone 1 (Module 01 hands-on exercise): scaffold the project with an AI coding assistant and build a CLI application that sends a prompt to an LLM and displays the response, with timing and token usage.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -126,24 +126,24 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 01 · Build milestone</span><h1>Build · Milestone 1: Hello, Traincrest Assist</h1><p class="lead">The progressive project starts here. You'll scaffold a real project with your AI assistant and build version 0.1 of Traincrest Assist: a small application that sends a learner's question to the LLM and displays the answer, with response time and tokens. Then you'll use it to discover exactly what the next modules must fix.</p><div class="chips"><span class="chip">Module 01 exercise</span><span class="chip">Project scaffold</span><span class="chip">CLI app</span><span class="chip">≈ 30 min</span></div><div class="flow"><em>Plan 5 min · Build 20 min · Verify 10 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 01 · Build milestone</span><h1>Build · Milestone 1: Hello, RR Finance Assist</h1><p class="lead">The progressive project starts here. You'll scaffold a real project with your AI assistant and build version 0.1 of RR Finance Assist: a small application that sends a bank customer's question to the LLM and displays the answer, with response time and tokens. Then you'll use it to discover exactly what the next modules must fix.</p><div class="chips"><span class="chip">Module 01 exercise</span><span class="chip">Project scaffold</span><span class="chip">CLI app</span><span class="chip">≈ 30 min</span></div><div class="flow"><em>Plan 5 min · Build 20 min · Verify 10 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>What v0.1 does, and the shape of the project.</p></div></div>
 
 <div class="case">
-  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 1</span></div>
+  <div class="case-head"><b>RR Finance Bank</b><span>· the brief for milestone 1</span></div>
   <div class="case-body">
-    <p>Leadership wants to <em>see</em> an AI assistant answer learner questions before investing further. Build the smallest real thing: a command-line app where a support agent types a learner's question and sees the model's answer, the time it took and the tokens it used. It must be a proper project, ready to grow, not a throwaway script.</p>
+    <p>RR Finance Bank's contact centre answers about 40,000 customer messages a month: lost cards, disputed payments, fees, transfers and loans. Leadership wants to <em>see</em> an AI assistant answer customer questions before investing further, and compliance wants to see what goes wrong before any customer does. Build the smallest real thing: a command-line app where a support agent types a customer's question and sees the model's answer, the time it took and the tokens it used. It must be a proper project, ready to grow, not a throwaway script.</p>
   </div>
 </div>
 
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 900 200" role="img" aria-labelledby="b1-t b1-d">
-      <title id="b1-t">Traincrest Assist v0.1</title>
+      <title id="b1-t">RR Finance Assist v0.1</title>
       <desc id="b1-d">An agent types into cli.py, which builds a system prompt plus the question, calls the model through app/llm.py configured by app/config.py and .env, and prints the answer with time and tokens.</desc>
-      <rect x="20" y="60" width="150" height="80" rx="12" class="s-surface"/><text x="95" y="94" class="t-b mid">Agent types</text><text x="95" y="114" class="t-s mid">a learner question</text>
+      <rect x="20" y="60" width="150" height="80" rx="12" class="s-surface"/><text x="95" y="94" class="t-b mid">Agent types</text><text x="95" y="114" class="t-s mid">a customer question</text>
       <rect x="220" y="40" width="200" height="120" rx="12" class="s-blue"/><text x="320" y="68" class="t-b mid">cli.py</text><text x="320" y="92" class="t-s mid">system prompt + question</text><text x="320" y="110" class="t-s mid">time it · print answer</text><text x="320" y="128" class="t-s mid">and token usage</text>
       <rect x="470" y="40" width="190" height="54" rx="10" class="s-amber"/><text x="565" y="64" class="t-b mid">app/llm.py</text><text x="565" y="82" class="t-s mid">get_client()</text>
       <rect x="470" y="106" width="190" height="54" rx="10" class="s-surface2"/><text x="565" y="130" class="t-b mid">app/config.py + .env</text><text x="565" y="148" class="t-s mid">provider, model</text>
@@ -158,7 +158,7 @@
 </figure>
 
 <span class="out-label">Target structure after this milestone</span>
-<pre class="out"><code>traincrest-assist/
+<pre class="out"><code>rrfinance-assist/
 ├── .env                 your settings (never committed)
 ├── .env.example         the settings template (committed)
 ├── .gitignore
@@ -167,14 +167,14 @@
 │   ├── __init__.py
 │   ├── config.py        reads .env
 │   └── llm.py           the only place that knows how to reach the model
-└── cli.py               Traincrest Assist v0.1</code></pre>
+└── cli.py               RR Finance Assist v0.1</code></pre>
 
 <div class="phase do" id="build"><span class="ph-num">2</span><div><h2>Build</h2><p>Scaffold with your assistant, then write the core yourself.</p></div></div>
 
 <div class="callout note prereq">
   <div class="c-label">Before you run this code</div>
-  <p>Milestones are built in your <code>traincrest-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
-  <p><strong>Starting here, or behind?</strong> Download the finished project, <a href="../../code/traincrest-assist-m01.zip">traincrest-assist-m01.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
+  <p>Milestones are built in your <code>rrfinance-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
+  <p><strong>Starting here, or behind?</strong> Download the finished project, <a href="../../code/rrfinance-assist-m01.zip">rrfinance-assist-m01.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
   <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env"><code><span class="c"># Copy to .env in the project folder. Never commit .env.</span>
 <span class="c"># Default: a free local model with Ollama (no account, no key). Run once:  ollama pull llama3.2</span>
 LLM_PROVIDER=ollama
@@ -189,14 +189,14 @@ OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5.4-mini</code></pre></div></details>
 </div>
 
-<div class="drill exercise" id="b01-1" data-title="Milestone 1: scaffold and build Traincrest Assist v0.1" data-time="~30 min" data-steps="write,run,verify">
-  <div class="drill-head"><span class="drill-id">Milestone 1</span><h3>Scaffold and build Traincrest Assist v0.1</h3>
+<div class="drill exercise" id="b01-1" data-title="Milestone 1: scaffold and build RR Finance Assist v0.1" data-time="~30 min" data-steps="write,run,verify">
+  <div class="drill-head"><span class="drill-id">Milestone 1</span><h3>Scaffold and build RR Finance Assist v0.1</h3>
     <div class="drill-meta"><span class="time">~30 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · AI assistant</span></div></div>
   <div class="drill-body">
     <p class="drill-goal"><b>Goal:</b> the Module 01 hands-on exercise: an application that sends a prompt to an LLM and displays the generated response, built as the first version of a real project.</p>
     <ol class="dsteps">
       <li class="dstep write"><span class="st">Your prompt</span><h4>Scaffold the project with your AI assistant</h4>
-        <p>Create an empty folder <code>traincrest-assist</code> next to <code>genai-labs</code>, open it in VS Code, and ask your assistant to scaffold it. Write the prompt from the template:</p>
+        <p>Create an empty folder <code>rrfinance-assist</code> next to <code>genai-labs</code>, open it in VS Code, and ask your assistant to scaffold it. Write the prompt from the template:</p>
         <div class="template-box"><pre><code>Goal:        scaffold a Python project called …
 Context:     empty folder; Python 3.11+; I'll write the main code myself
 Constraints: create these files/folders …; requirements …; .gitignore must …;
@@ -204,8 +204,8 @@ Constraints: create these files/folders …; requirements …; .gitignore must �
 Done when:   I can create a venv and pip install -r requirements.txt without errors</code></pre></div>
         <p class="hint"><b>Hint:</b> list the exact tree from the Plan section, the two requirements (<code>openai</code>, <code>python-dotenv</code>), the <code>.env.example</code> keys from your drills' <code>.env</code> (with placeholder values only) and the commands to create and activate a venv.</p>
         <details class="solution"><summary>Compare with my prompt</summary><div>
-          <div class="prompt-box"><pre><code>Scaffold a Python 3.11+ project in this empty folder for "Traincrest Assist", an AI learner-support
-assistant. Create only:
+          <div class="prompt-box"><pre><code>Scaffold a Python 3.11+ project in this empty folder for "RR Finance Assist", an AI customer-support
+assistant for a retail bank. Create only:
 - requirements.txt with: openai, python-dotenv
 - .gitignore ignoring .env, .venv/, __pycache__/, *.log
 - .env.example with placeholder values (no real secrets) for: LLM_PROVIDER=azure,
@@ -223,7 +223,7 @@ the requirements.</code></pre></div>
 <span class="ps">$ </span>copy ..\genai-labs\.env .env          <span class="c"># macOS/Linux: cp ../genai-labs/.env .env</span></code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Write the configuration and the model access layer</h4>
-        <pre class="code" data-file="app/config.py"><code>"""Settings for Traincrest Assist, read from .env so nothing secret lives in code."""
+        <pre class="code" data-file="app/config.py"><code>"""Settings for RR Finance Assist, read from .env so nothing secret lives in code."""
 import os
 
 from dotenv import load_dotenv
@@ -238,7 +238,7 @@ MODEL = {
     "openai": os.getenv("OPENAI_MODEL", "gpt-5.4-mini"),
     "ollama": os.getenv("OLLAMA_MODEL", "llama3.2"),
 }.get(PROVIDER, "")</code></pre>
-        <pre class="code" data-file="app/llm.py"><code>"""The only place in Traincrest Assist that knows how to reach the model."""
+        <pre class="code" data-file="app/llm.py"><code>"""The only place in RR Finance Assist that knows how to reach the model."""
 import os
 
 from openai import OpenAI
@@ -256,7 +256,7 @@ def get_client() -&gt; OpenAI:
     raise ValueError(f"Unknown LLM_PROVIDER: {PROVIDER!r}")</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Write the CLI</h4>
-        <pre class="code" data-file="cli.py"><code>"""Traincrest Assist, milestone 1: a question goes in, an answer comes out.
+        <pre class="code" data-file="cli.py"><code>"""RR Finance Assist, milestone 1: a question goes in, an answer comes out.
 
 Run from the project folder:  python cli.py
 """
@@ -266,15 +266,15 @@ from app.config import MODEL, PROVIDER
 from app.llm import get_client
 
 SYSTEM_PROMPT = (
-    "You are Traincrest Assist, the learner-support assistant of TrainCrest, a global technical "
-    "training company. Be friendly, concise and practical. If you don't know something about "
-    "TrainCrest's policies or a learner's enrolment, say so honestly."
+    "You are RR Finance Assist, the customer-support assistant of RR Finance Bank, a retail bank. "
+    "Be friendly, concise and practical. Never ask for a PIN, a password or a full card number. "
+    "If you don't know something about RR Finance Bank's policies or a customer's account, say so honestly."
 )
 
 
 def main():
     client = get_client()
-    print(f"Traincrest Assist v0.1 [{PROVIDER} · {MODEL}]. Ask a question, or type 'exit'.\n")
+    print(f"RR Finance Assist v0.1 [{PROVIDER} · {MODEL}]. Ask a question, or type 'exit'.\n")
     while True:
         question = input("You: ").strip()
         if question.lower() in {"exit", "quit"}:
@@ -304,24 +304,36 @@ if __name__ == "__main__":
       <li class="dstep verify"><span class="st">Verify</span><h4>Have this exact conversation and record what happens</h4>
         <ol>
           <li>"Hi! What can you help me with?"</li>
-          <li>"What's your refund policy if I cancel 10 days before the course?"</li>
-          <li>"Where is the exam voucher for enrolment TC-10293?"</li>
+          <li>"What's your overdraft fee if I'm $80 overdrawn?"</li>
+          <li>"Has the replacement card for customer RR-10293 been sent?"</li>
           <li>"My name is Mei." then "What's my name?"</li>
-          <li>"Mi laboratorio no funciona, ¿qué hago?" (My lab isn't working, what do I do?)</li>
+          <li>"Perdí mi tarjeta, ¿qué hago?" (I lost my card, what do I do?)</li>
         </ol>
-        <span class="out-label">Expected (abridged)</span>
-<pre class="out"><code>Traincrest Assist v0.1 [azure · chat]. Ask a question, or type 'exit'.
+        <span class="out-label">Real output (llama3.2 on Ollama, abridged)</span>
+<pre class="out"><code>RR Finance Assist v0.1 [ollama · llama3.2]. Ask a question, or type 'exit'.
 
-You: What's your refund policy if I cancel 10 days before the course?
+You: What's your overdraft fee if I'm $80 overdrawn?
 
-Assist: I don't have TrainCrest's exact refund terms. Please check your enrolment confirmation
-or contact support...
-  (1.9s · 61 in / 48 out)
+Assist: I'd be happy to help you with your question! However, I should let you know that I'm not
+a substitute for the official policies of RR Finance Bank. ... The specifics of the fee ... can be
+found on our website or in your account agreement.
+  (23.9s · 102 in / 104 out)
 
 You: What's my name?
 
-Assist: I don't know your name yet. Could you tell me?
-  (1.2s · 52 in / 14 out)</code></pre>
+Assist: I don't have that information. I'm a customer support assistant, but I don't have access
+to any personal details about you or your account...
+  (11.1s · 92 in / 67 out)
+
+You: Perdí mi tarjeta, ¿qué hago?
+
+Assist: Lo siento mucho. ¿Podrías proporcionarme algunos detalles sobre tu tarjeta de débito / crédito
+perdida para que pueda ayudarte a reemplazarla? Por favor, dime:
+- Número de la parte inferior de tu tarjeta (los últimos 3 dígitos)
+- Fecha de nacimiento
+- Dirección
+  (12.9s · 98 in / 82 out)</code></pre>
+        <p>Read the last answer carefully. The system prompt says <em>never ask for a PIN, a password or a full card number</em>, yet in Spanish the model asked for the three digits on the back of the card (the security code), the date of birth and the address: exactly what a fraudster would ask for. Nothing crashed and no test failed. This is the most important finding of v0.1, and it's why a bank never relies on one sentence in a prompt for security.</p></code></pre>
       </li>
     </ol>
   </div>
@@ -338,11 +350,12 @@ Assist: I don't know your name yet. Could you tell me?
   <table>
     <thead><tr><th>What you observed</th><th>Why</th><th>Fixed in</th></tr></thead>
     <tbody>
-      <tr><td>Doesn't know TrainCrest's refund policy</td><td>The policy isn't in training data or the prompt</td><td>M03 (in the prompt), M06 (RAG)</td></tr>
-      <tr><td>Can't check enrolment TC-10293</td><td>No access to TrainCrest's systems</td><td>M04 (tools)</td></tr>
+      <tr><td>Doesn't know RR Finance Bank's overdraft fee (or invents one)</td><td>The fee schedule isn't in training data or the prompt</td><td>M03 (in the prompt), M06 (RAG)</td></tr>
+      <tr><td>Can't check the card for RR-10293</td><td>No access to the bank's systems</td><td>M04 (tools)</td></tr>
       <tr><td>Forgets Mei's name immediately</td><td>Each call is stateless; no history is sent</td><td>M02</td></tr>
       <tr><td>Blank screen while it thinks</td><td>We wait for the whole response</td><td>M02 (streaming)</td></tr>
       <tr><td>A network blip or wrong key crashes it</td><td>No error handling or retries</td><td>M02</td></tr>
+      <tr><td>Asked for the card security code and date of birth (in Spanish)</td><td>A prompt instruction is a request, not a control; rules are followed less reliably in other languages</td><td>M03 (clear rules), M10 (output guardrails)</td></tr>
       <tr><td>Answers in Spanish, but costs more tokens</td><td>Tokenization (topic 4)</td><td>M11 (cost)</td></tr>
       <tr><td>Only a terminal, only for agents</td><td>No web interface or API</td><td>M02</td></tr>
     </tbody>
@@ -351,7 +364,7 @@ Assist: I don't know your name yet. Could you tell me?
 
 <div class="callout note">
   <div class="c-label">Fell behind? Catch up here</div>
-  <p>The complete reference code for this milestone is in the handbook repository under <a href="../../code/traincrest-assist/m01/cli.py"><code>code/traincrest-assist/m01/</code></a>. Copy it into your <code>traincrest-assist</code> folder, add your <code>.env</code>, and carry on with Module 02.</p>
+  <p>The complete reference code for this milestone is in the handbook repository under <a href="../../code/rrfinance-assist/m01/cli.py"><code>code/rrfinance-assist/m01/</code></a>. Copy it into your <code>rrfinance-assist</code> folder, add your <code>.env</code>, and carry on with Module 02.</p>
 </div>
 <p class="lab-say"><b>Remember:</b> “v0.1 works, and v0.1 is not a product. Every row in that table is a module in this course.”</p>
 
@@ -362,7 +375,7 @@ Assist: I don't know your name yet. Could you tell me?
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

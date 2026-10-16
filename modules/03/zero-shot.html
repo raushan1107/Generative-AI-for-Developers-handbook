@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -140,10 +140,10 @@
   <p>Describe the task and let the model do it, with no demonstrations. Try this first; add examples only when it isn't consistent enough.</p>
 </div>
 
-<pre class="code" data-file="zero-shot prompt"><code>Classify the TrainCrest learner-support ticket into exactly one category: scheduling, billing,
-exam_voucher, certificate, lab_access, account, other. Reply with the category only, in lowercase.
+<pre class="code" data-file="zero-shot prompt"><code>Classify the RR Finance Bank customer message into exactly one category: card, dispute, fraud,
+fees, transfers, loans, account, other. Reply with the category only, in lowercase.
 
-Ticket: "I was charged twice for the AZ-305 course."</code></pre>
+Message: "I was charged twice for the same hotel night."</code></pre>
 
 <div class="www">
   <div><b>What</b>Instructions only, no examples.</div>
@@ -153,11 +153,16 @@ Ticket: "I was charged twice for the AZ-305 course."</code></pre>
 
 <div class="callout note">
   <div class="c-label">Where zero-shot struggles</div>
-  <p>Company-specific conventions ("is a refund request <em>billing</em> or <em>scheduling</em>?"), unusual formats, slang and mixed languages, and borderline cases. In all of these the model has to guess <em>your</em> convention. Examples fix that (next topic).</p>
+  <p>Company-specific conventions ("is a payment the customer doesn't recognise a <em>dispute</em> or <em>fraud</em>?"), unusual formats, slang and mixed languages, and borderline cases. In all of these the model has to guess <em>your</em> convention. Examples fix that (next topic).</p>
 </div>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banks rarely start with real customer messages: privacy rules make them hard to use for development. Teams build a synthetic, labelled test set first (exactly like Drill 03.4), get the labels reviewed by experienced agents, and only later add carefully anonymised real cases. They also weight the score by risk: a missed fraud report counts far more than a branch-hours question labelled wrong, so "accuracy 83%" is reported alongside "fraud recall", the share of real fraud messages that were caught.</p>
+</div>
   <p>Before any prompt work, good teams assemble a <strong>test set</strong>: real (anonymised) or synthetic inputs with the expected answers. They measure the simple zero-shot prompt first to get a <strong>baseline</strong>, then every change is a measured improvement or it's reverted. Generating synthetic test data with an LLM is now standard practice, with human review of the labels.</p>
 </div>
 
@@ -240,23 +245,24 @@ MODEL = {
   <div class="drill-head"><span class="drill-id">Drill 03.4</span><h3>Generate a labelled test set with AI, then verify it</h3>
     <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · no API cost</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> 28 realistic, labelled, multilingual tickets in <code>data/eval_tickets.json</code>, checked by code before you trust them.</p>
+    <p class="drill-goal"><b>Goal:</b> 32 realistic, labelled, multilingual customer messages in <code>data/eval_tickets.json</code>, checked by code before you trust them.</p>
     <ol class="dsteps">
       <li class="dstep write"><span class="st">Your prompt</span>
-        <div class="template-box"><pre><code>Goal:        data/eval_tickets.json with … labelled learner-support tickets
+        <div class="template-box"><pre><code>Goal:        data/eval_tickets.json with … labelled customer messages
 Context:     labels and house rules are in #tickets.py; company is …
 Constraints: exact JSON shape …; … per label; languages …; include tricky cases for the
              house rules; must NOT copy or paraphrase TEST_TICKETS
 Done when:   python check_dataset.py prints OK</code></pre></div>
-        <p class="hint"><b>Hint:</b> ask for 4 per label (28 total), a few in Spanish, French or German, and at least two tickets that test each house rule (refunds that mention dates; requests for more lab time). Mention that a checker script will validate it.</p>
+        <p class="hint"><b>Hint:</b> ask for 4 per label (32 total), a few in Spanish, French, Japanese or Arabic, and at least two messages that test each house rule (a recognised but wrong payment versus one the customer doesn't recognise; asking for a fee back). Ask for fictional details only: no real names, card numbers or account numbers. Mention that a checker script will validate it.</p>
         <details class="solution"><summary>Compare with my prompt</summary><div>
-          <div class="prompt-box"><pre><code>Create data/eval_tickets.json: a JSON array of exactly 28 synthetic learner-support tickets for
-TrainCrest, a global technical training company. Each item is {"text": ..., "label": ...} with
-exactly those keys. Use the 7 labels in CATEGORIES from #tickets.py, exactly 4 per label.
-Make them realistic and varied (5-25 words), with 2-3 tickets in Spanish, French or German.
-Include tricky cases for the house rules in tickets.py: refund requests that mention dates
-(label: billing) and requests for more lab time (label: lab_access). Do not copy or paraphrase
-anything in TEST_TICKETS. A checker script will validate the file.</code></pre></div>
+          <div class="prompt-box"><pre><code>Create data/eval_tickets.json: a JSON array of exactly 32 synthetic customer-support messages
+for RR Finance Bank, a retail bank. Each item is {"text": ..., "label": ...} with exactly those
+keys. Use the 8 labels in CATEGORIES from #tickets.py, exactly 4 per label. Make them realistic
+and varied (5-25 words), with 3-4 messages in Spanish, French, Japanese or Arabic. Include
+tricky cases for the house rules in tickets.py: payments the customer recognises but that are
+wrong (label: dispute) next to payments they don't recognise (label: fraud), and requests to
+refund a fee (label: fees). Fictional details only. Do not copy or paraphrase anything in
+TEST_TICKETS. A checker script will validate the file.</code></pre></div>
           <p>Reference file if needed: <a href="../../code/genai-labs/data/eval_tickets.json">data/eval_tickets.json</a>.</p>
         </div></details>
       </li>
@@ -302,8 +308,8 @@ print("\n".join(problems) if problems else "OK: the dataset passes all checks")
 sys.exit(1 if problems else 0)</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python check_dataset.py</code></pre>
         <span class="out-label">Real output with the reference file</span>
-<pre class="out"><code>28 rows · labels: scheduling=4, billing=4, exam_voucher=4, certificate=4, lab_access=4, account=4, other=4
-rows with non-ASCII text (other languages, accents): 2
+<pre class="out"><code>32 rows · labels: card=4, dispute=4, fraud=4, fees=4, transfers=4, loans=4, account=4, other=4
+rows with non-ASCII text (other languages, accents): 4
 OK: the dataset passes all checks</code></pre>
         <ul class="verify-list"><li>The checker prints OK (fix and regenerate until it does: paste its complaints back to your assistant).</li><li>Read every label yourself. Code checks the shape; only a human can check the meaning.</li></ul>
       </li>
@@ -316,10 +322,10 @@ OK: the dataset passes all checks</code></pre>
   <div class="drill-head"><span class="drill-id">Drill 03.5</span><h3>Measure the zero-shot baseline</h3>
     <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> a number to beat: zero-shot accuracy on the 12 fixed tickets and on your 28-ticket set.</p>
+    <p class="drill-goal"><b>Goal:</b> a number to beat: zero-shot accuracy on the 12 fixed tickets and on your 32-message set.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span>
-        <pre class="code" data-file="lab03_05_triage.py"><code>"""Drills 03.5 and 03.6: zero-shot vs few-shot ticket triage, scored against labels.
+        <pre class="code" data-file="lab03_05_triage.py"><code>"""Drills 03.5 and 03.6: zero-shot vs few-shot triage of bank tickets, scored against labels.
 
   python lab03_05_triage.py --mode zero              # 03.5: zero-shot baseline
   python lab03_05_triage.py --mode few               # 03.6: with examples
@@ -333,7 +339,7 @@ from pathlib import Path
 from llm import get_client, MODEL
 from tickets import CATEGORIES, FEW_SHOT_EXAMPLES, TEST_TICKETS
 
-INSTRUCTIONS = (f"Classify the TrainCrest learner-support ticket into exactly one category: "
+INSTRUCTIONS = (f"Classify the RR Finance Bank customer message into exactly one category: "
                 f"{', '.join(CATEGORIES)}. Reply with the category only, in lowercase.")
 
 client = get_client()
@@ -382,17 +388,26 @@ if args.mode in ("few", "both"):
     evaluate(data, few_shot=True)</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab03_05_triage.py --mode zero
 <span class="ps">$ </span>python lab03_05_triage.py --mode zero --data data/eval_tickets.json</code></pre>
-        <span class="out-label">Typical result (yours will vary)</span>
+        <span class="out-label">Real output (llama3.2 on Ollama; yours will vary)</span>
 <pre class="out"><code>===== ZERO-SHOT =====
- ✓ billing       (expected billing     ) I paid for the AZ-305 batch but my card was ch
- …
- ✗ scheduling    (expected lab_access  ) My lab ran out yesterday, can I get one more w
- ✗ scheduling    (expected billing     ) I want a refund, the course starts in 3 days a
-Accuracy 10/12 (83%) · off-list labels: 0 · avg input tokens: 71
-Most common mistakes: lab_access -&gt; scheduling x1, billing -&gt; scheduling x1</code></pre>
+ ✓ dispute       (expected dispute     ) I was charged twice for the same flight on my cr
+ ✗ dispute       (expected card        ) My debit card is missing, I think I left it in a
+ ✗ other         (expected fraud       ) There's a $640 payment to a shop in another coun
+ ✓ fees          (expected fees        ) Why did you charge me $29? I was only overdrawn
+ ✓ transfers     (expected transfers   ) My transfer to my sister has been pending since
+ ✗ other         (expected loans       ) Can I take a payment holiday on my personal loan
+ ✗ other         (expected account     ) I can't log in, the one-time code never arrives.
+ ✓ other         (expected other       ) Do you have a branch open on Sundays?
+ ✗ other         (expected fees        ) Please refund the $45 fee you took for my intern
+ ✗ dispute       (expected card        ) Quiero bloquear mi tarjeta, me la robaron ayer.
+ ✓ dispute       (expected dispute     ) The online shop charged me $89 but the order was
+ ✗ dispute       (expected fraud       ) Someone texted me a link and now money is missin
+Accuracy 5/12 (42%) · off-list labels: 0 · avg input tokens: 76
+Most common mistakes: card -&gt; dispute x2, fraud -&gt; other x1, loans -&gt; other x1</code></pre>
+        <p>A small local model is a harsh baseline: 5 out of 12. Hosted models usually score 8 to 10 here. Either way, the misses are the interesting part: a missing card labelled <em>dispute</em>, fraud labelled <em>dispute</em> or <em>other</em>, and an unhelpful habit of answering <em>other</em> when unsure. In a bank, fraud labelled <em>other</em> is the worst possible miss: it lands in a slow queue while money keeps leaving the account.</p></code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
-        <ul class="verify-list"><li>Write down both accuracies: they're your baseline.</li><li>Look at the mistakes: are they random, or exactly the house rules? (Usually the rules.)</li></ul>
+        <ul class="verify-list"><li>Write down both accuracies: they're your baseline.</li><li>Look at the mistakes: are they random, or exactly the house rules? (Usually the rules, plus a fallback to <em>other</em>.) Which mistakes would cost the bank most?</li></ul>
       </li>
     </ol>
   </div>
@@ -413,7 +428,7 @@ Most common mistakes: lab_access -&gt; scheduling x1, billing -&gt; scheduling x
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

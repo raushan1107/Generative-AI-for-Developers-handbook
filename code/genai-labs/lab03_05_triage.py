@@ -1,4 +1,4 @@
-"""Drills 03.5 and 03.6: zero-shot vs few-shot ticket triage, scored against labels.
+"""Drills 03.5 and 03.6: zero-shot vs few-shot triage of bank tickets, scored against labels.
 
   python lab03_05_triage.py --mode zero              # 03.5: zero-shot baseline
   python lab03_05_triage.py --mode few               # 03.6: with examples
@@ -12,7 +12,7 @@ from pathlib import Path
 from llm import get_client, MODEL
 from tickets import CATEGORIES, FEW_SHOT_EXAMPLES, TEST_TICKETS
 
-INSTRUCTIONS = (f"Classify the TrainCrest learner-support ticket into exactly one category: "
+INSTRUCTIONS = (f"Classify the RR Finance Bank customer message into exactly one category: "
                 f"{', '.join(CATEGORIES)}. Reply with the category only, in lowercase.")
 
 client = get_client()

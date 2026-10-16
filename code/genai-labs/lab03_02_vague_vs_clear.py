@@ -1,20 +1,20 @@
-"""Drill 03.2: a vague and a clear prompt, three runs each, on the same support thread."""
+"""Drill 03.2: a vague and a clear prompt, three runs each, on the same bank support thread."""
 from llm import get_client, MODEL
 
 client = get_client()
 
-THREAD = """Learner (Mei, 2 Mar): Hi, I'm enrolled in Generative AI for Developers, enrolment TC-10293. The lab VM won't start, it says "quota exceeded".
-Agent (3 Mar): Sorry Mei! Could you send a screenshot of the error?
-Learner (3 Mar): Sent. Also my exam voucher hasn't arrived, and my course ended on 28 Feb.
-Agent (4 Mar): Thanks, escalated the lab issue to the platform team.
-Learner (6 Mar): No update for 2 days?? My exam is booked for 12 Mar. I need the lab and the voucher before then."""
+THREAD = """Customer (Mei, 2 Mar): Hi, customer RR-10293. I was charged twice for a $412 SkyHigh Airlines ticket on my Cashback Card.
+Agent (3 Mar): Sorry Mei! Could you confirm the dates of both payments?
+Customer (3 Mar): Both on 9 Feb. Also my replacement card hasn't arrived, and the old one expired on 28 Feb.
+Agent (4 Mar): Thanks, I've raised a dispute for the duplicate payment.
+Customer (6 Mar): No update for 2 days?? I fly abroad on 12 Mar. I need the new card and the $412 back before then."""
 
 VAGUE = f"Summarise this.\n\n{THREAD}"
 
 CLEAR = f"""Summarise this support thread for the agent who will handle it next.
 - Exactly 3 bullet points, each under 15 words.
-- Bullet 1: the problems and the enrolment ID. Bullet 2: what has been done so far.
-  Bullet 3: what the learner needs, and by when.
+- Bullet 1: the problems and the customer ID. Bullet 2: what has been done so far.
+  Bullet 3: what the customer needs, and by when.
 - Use only facts from the thread.
 
 <thread>

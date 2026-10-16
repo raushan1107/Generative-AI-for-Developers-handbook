@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -151,6 +151,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banks already use prompt engineering at two levels. Staff tools wrap the model in carefully reviewed prompts, for example "summarise this complaint for the complaints officer, list the products involved, the amount in dispute and every date mentioned", so that every analyst gets the same structure. And developers in bank IT use precise prompts with coding assistants, as in this drill, because generated code that handles money must meet the same review and testing standards as hand-written code.</p>
+</div>
   <p>The system prompts behind well-known AI products are long, carefully structured documents: role, capabilities, rules, formatting, safety behaviour, often thousands of words, maintained by teams and changed through review. Some companies have published theirs. Nobody gets there by tweaking a sentence until a demo works; they get there by specifying and testing.</p>
 </div>
 
@@ -247,7 +252,7 @@ MODEL = {
       </li>
       <li class="dstep ask"><span class="st">Ask AI</span><h4>Prompt B: the specified version</h4>
         <p>In a new folder <code>prompt-test-b</code>, send:</p>
-        <div class="prompt-box" data-title="Prompt B · specified"><pre><code>Context: TrainCrest's sign-up form needs a simple, explainable email check (not full RFC 5322).
+        <div class="prompt-box" data-title="Prompt B · specified"><pre><code>Context: RR Finance Bank's sign-up form needs a simple, explainable email check (not full RFC 5322).
 Task: write validate_email(address: str) -> tuple[bool, str] in validate_email.py, returning
 (is_valid, reason).
 Rules, in this order: strip surrounding whitespace; empty -> "empty"; longer than 254 chars ->
@@ -293,9 +298,9 @@ from validate_email import validate_email
 
 
 @pytest.mark.parametrize("address", [
-    "asha@traincrest.example",
+    "asha@rrfinance.example",
     "  diego.r@mail.example.org ",
-    "mei+courses@learn.example",
+    "mei+savings@bank.example",
 ])
 def test_valid(address):
     assert validate_email(address) == (True, "ok")
@@ -305,11 +310,11 @@ def test_valid(address):
     ("", "empty"),
     ("no-at-sign.example", "must contain exactly one @"),
     ("two@@signs.example", "must contain exactly one @"),
-    ("@traincrest.example", "missing name before @"),
+    ("@rrfinance.example", "missing name before @"),
     ("asha@localhost", "invalid domain"),
     ("asha@.example", "invalid domain"),
-    ("asha@traincrest..example", "invalid domain"),
-    ("asha kumar@traincrest.example", "contains spaces"),
+    ("asha@rrfinance..example", "invalid domain"),
+    ("asha nair@rrfinance.example", "contains spaces"),
     ("a" * 250 + "@x.example", "too long"),
 ])
 def test_invalid(address, reason):
@@ -344,7 +349,7 @@ def test_invalid(address, reason):
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

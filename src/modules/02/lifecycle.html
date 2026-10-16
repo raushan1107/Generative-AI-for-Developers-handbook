@@ -12,8 +12,8 @@ Content-Type: application/json
 {
   "model": "chat",                              <span class="c"># deployment name on Azure</span>
   "messages": [
-    { "role": "system", "content": "You are Traincrest Assist, TrainCrest's support assistant." },
-    { "role": "user",   "content": "What does 'batch confirmed' mean?" }
+    { "role": "system", "content": "You are RR Finance Assist, RR Finance Bank's customer-support assistant." },
+    { "role": "user",   "content": "What does 'pending' mean on a card payment?" }
   ],
   "max_completion_tokens": 400                  <span class="c"># optional parameters</span>
 }</code></pre>
@@ -23,7 +23,7 @@ Content-Type: application/json
   "model": "gpt-5.4-mini-2026-03-17",           <span class="c"># the model version that answered</span>
   "choices": [{
     "index": 0,
-    "message": { "role": "assistant", "content": "It means your seat is reserved…" },
+    "message": { "role": "assistant", "content": "It means the payment is authorised but not yet settled…" },
     "finish_reason": "stop"                     <span class="c"># why generation ended</span>
   }],
   "usage": {
@@ -74,6 +74,11 @@ Content-Type: application/json
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>When a customer complains "your chatbot told me there was no fee", the bank must be able to reconstruct that conversation exactly: which model version answered, with which prompt version, what it was given and what it said. That's why regulated firms log the request ID, model version, prompt version and finish_reason for every call and keep them under the same retention rules as call recordings. It also explains why a 200 response with <code>finish_reason="length"</code> matters: a reply cut off mid-sentence ("the fee is $") is a misleading statement, not just an ugly one.</p>
+</div>
   <p>Production teams log at least the request ID, model version, finish_reason, token usage and latency for every call. When a customer says "the bot gave me a weird answer yesterday", those five fields are how you find out what happened: which model version, whether it was truncated, how long it took.</p>
 </div>
 
@@ -110,7 +115,7 @@ Standard library only.</code></pre></div>
         <span class="out-label">Expected</span>
 <pre class="out"><code>model            gpt-5.4-mini-2026-03-17
 finish_reason    stop
-answer           "Batch confirmed" means your seat in the scheduled course batch is reserved...
+answer           A "pending" card payment has been authorised by the merchant but has not settled yet...
 tokens in / out  41 / 63
 reasoning tokens 0
 content filter   nothing filtered

@@ -16,9 +16,9 @@
   <div class="frame">
     <svg viewBox="0 0 900 320" role="img" aria-labelledby="gen-t gen-d">
       <title id="gen-t">Next-token prediction, step by step</title>
-      <desc id="gen-d">Step 1: given "Your exam voucher will arrive", candidates are soon 58 percent, tomorrow 26 percent, today 13 percent, never under 1 percent. "soon" is sampled. Step 2: the extended text is fed back and the next token is predicted. Step 3: an end token stops generation.</desc>
+      <desc id="gen-d">Step 1: given "Your replacement card will arrive", candidates are soon 58 percent, tomorrow 26 percent, today 13 percent, never under 1 percent. "soon" is sampled. Step 2: the extended text is fed back and the next token is predicted. Step 3: an end token stops generation.</desc>
       <text x="20" y="30" class="t-m t-accent">STEP 1</text>
-      <rect x="20" y="40" width="300" height="44" rx="10" class="s-surface"/><text x="36" y="67" class="t">Your exam voucher will arrive</text>
+      <rect x="20" y="40" width="300" height="44" rx="10" class="s-surface"/><text x="36" y="67" class="t">Your replacement card will arrive</text>
       <path d="M320 62 H356" class="s-arrow" marker-end="url(#ah)"/>
       <rect x="362" y="40" width="110" height="44" rx="10" class="s-violet"/><text x="417" y="67" class="t-b mid">Model</text>
       <path d="M472 62 H508" class="s-arrow" marker-end="url(#ah)"/>
@@ -35,7 +35,7 @@
       <text x="514" y="197" class="t-s">"," · "." · "after" · …</text>
 
       <text x="20" y="254" class="t-m t-accent">STEP N</text>
-      <rect x="20" y="264" width="300" height="44" rx="10" class="s-surface"/><text x="36" y="291" class="t">… soon, within 3 business days.</text>
+      <rect x="20" y="264" width="300" height="44" rx="10" class="s-surface"/><text x="36" y="291" class="t">… soon, within 5 to 7 business days.</text>
       <path d="M320 286 H356" class="s-arrow" marker-end="url(#ah)"/>
       <rect x="362" y="264" width="110" height="44" rx="10" class="s-violet"/><text x="417" y="291" class="t-b mid">Model</text>
       <path d="M472 286 H508" class="s-arrow" marker-end="url(#ah)"/>
@@ -53,7 +53,7 @@
 </div>
 
 <h3>Why models hallucinate</h3>
-<p>The model is trained to produce <strong>likely</strong> text, not <strong>true</strong> text. Usually they overlap. When the model lacks the fact (TrainCrest's actual voucher policy, last week's price, a learner's enrolment), it still produces the most likely-sounding text, fluently and confidently.</p>
+<p>The model is trained to produce <strong>likely</strong> text, not <strong>true</strong> text. Usually they overlap. When the model lacks the fact (RR Finance Bank's actual overdraft fee, today's exchange rate, a customer's balance), it still produces the most likely-sounding text, fluently and confidently.</p>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
   <p>A student in an oral exam who didn't study chapter 7 doesn't stay silent. They give a confident, well-structured answer built from everything that <em>sounds</em> related. Sometimes it's even right. The cure is the same as for the student: <strong>hand them the textbook page</strong> (grounding, Module 06) and <strong>let them say "I don't know"</strong> (prompting, Module 03).</p>
@@ -61,6 +61,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Picture an assistant answering "What's the fee for an international wire?" Most of the time the most likely token after "The fee is $" is the right one, but sampling means that once in a few hundred answers it may write a different, perfectly fluent number. For a bank that is a misstatement of fees, which regulators treat as a conduct problem, not a typo. That's why banking assistants run factual answers at low temperature, take numbers from the fee schedule rather than from the model, and keep creative settings for things like marketing drafts that compliance reviews before anyone sees them.</p>
+</div>
   <p>Press "regenerate" in ChatGPT or Claude.ai and you get a different answer: that's sampling. Watch the answer appear word by word: that's the loop, streamed. Products that must be consistent (extracting invoice fields, routing tickets) constrain the output format and validate it, rather than hoping sampling behaves.</p>
 </div>
 
@@ -108,9 +113,9 @@ temperature = 3.0
   never         6.4%  ###                                      picked   55 / 1000</code></pre>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>Translate the numbers into product decisions</h4>
-        <p>At temperature 3.0, "never" was picked 55 times out of 1,000. Imagine that word in a message to a learner waiting for a voucher. Which TrainCrest features would you run at low temperature, and which could tolerate high?</p>
+        <p>At temperature 3.0, "never" was picked 55 times out of 1,000. Imagine that word in a message to a customer waiting for a replacement card. Which RR Finance Bank features would you run at low temperature, and which could tolerate high?</p>
         <details class="solution"><summary>Compare with my answer</summary><div>
-          <p><strong>Low:</strong> ticket triage, data extraction, policy answers, anything a program parses or a customer relies on. <strong>Higher:</strong> brainstorming course names, marketing drafts, quiz question ideas, where variety is the point and a human reviews. And remember: many reasoning models fix temperature for you (Module 02).</p>
+          <p><strong>Low:</strong> ticket triage, data extraction, policy answers, anything a program parses or a customer relies on. <strong>Higher:</strong> brainstorming names for a new savings product, marketing drafts, ideas for a financial-literacy quiz, where variety is the point and a human (and, in a bank, the compliance team) reviews. And remember: many reasoning models fix temperature for you (Module 02).</p>
         </div></details>
       </li>
     </ol>
@@ -129,18 +134,19 @@ temperature = 3.0
         <pre class="code" data-file="lab01_08_next_token.py" data-src="code/genai-labs/lab01_08_next_token.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab01_08_next_token.py</code></pre>
         <span class="out-label">Expected output (yours will differ)</span>
-<pre class="out"><code>Chosen first token: 'Jupiter'
+<pre class="out"><code>Chosen first token: 'Y'
 
-  'Jupiter'       97.70%  ########################
-  'J'              1.19%
-  '**'             0.62%
-  'jupiter'        0.31%
-  'The'            0.09%
+  'Y'             98.04%  #########################
+  'yen'            0.99%
+  ' Yen'           0.67%
+  ' yen'           0.08%
+  'Japanese'       0.04%
 
 Three samples of the same prompt:
-  1. Learn. Build. Certify. Grow.
-  2. Skills That Ship Code
-  3. Train Smart, Deploy Faster</code></pre>
+  1. "Save Smarter, Not Harder"
+  2. "Savings, Evolved. Digitally."
+  3. "Grow with every click"</code></pre>
+        <p class="small muted">Real output from llama3.2 on Ollama. Notice the chosen token is just <code>Y</code>: this model's tokenizer writes "Yen" as two tokens, so the "fact" is spread over several predictions. Hosted models usually pick <code>yen</code> or <code>Yen</code> as one token.</p>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><ul class="verify-list"><li>The top token carries almost all the probability for a well-known fact.</li><li>The three slogans differ: each token was sampled.</li><li>Your model either returned probabilities or the script told you clearly that it doesn't support them (no crash).</li></ul></li>
     </ol>
@@ -151,6 +157,6 @@ Three samples of the same prompt:
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Explain it in one sentence each.</p></div></div>
 <div class="quiz">
   <details><summary>1. Does setting temperature to 0 make the model correct?</summary><div><p>No. It makes the top choice win more consistently. If the top choice is a hallucination, you'll get the <strong>same wrong answer reliably</strong>.</p></div></details>
-  <details><summary>2. Why can a model state a wrong refund policy so confidently?</summary><div><p>Because it produces the most <strong>plausible</strong> continuation, and confidence is just fluent text. Without the real policy in its context, a common policy from training data looks most likely.</p></div></details>
+  <details><summary>2. Why can a model state a wrong overdraft fee so confidently?</summary><div><p>Because it produces the most <strong>plausible</strong> continuation, and confidence is just fluent text. Without the real fee schedule in its context, a common fee from training data (many banks charge around $35) looks most likely.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Generation is sampling from probabilities. Design so that the likely answer is also the right one: give facts, constrain, verify.</p></div>

@@ -4,14 +4,14 @@ from llm import get_client, MODEL
 PATTERNS = ["generate", "transform", "extract", "search", "ground", "act", "not-genai"]
 
 REQUESTS = [
-    "Write a first draft of the course description from the trainer's bullet notes.",
-    "Turn a 40-message support thread into a 3-line summary for the next agent.",
-    "Pull the learner name, enrolment ID and course from incoming emails into our CRM.",
-    "Let learners find courses by describing their goal, e.g. 'I want to automate Excel reports'.",
-    "Answer 'Can I get a refund?' using the current policy document, with a citation.",
-    "When a learner asks, look up their real exam voucher status and resend it.",
-    "Calculate the refund amount from the cancellation date and course price.",
-    "Translate course announcements into Spanish and Japanese.",
+    "Write a first draft of the new savings account's web page from the product team's bullet notes.",
+    "Turn a 40-message complaint thread into a 3-line summary for the next agent.",
+    "Pull the customer name, customer ID and disputed amount from incoming emails into the case system.",
+    "Let customers find the right account by describing their goal, e.g. 'I want to save for a house deposit'.",
+    "Answer 'Can I get my overdraft fee back?' using the current fee policy, with a citation.",
+    "When a customer asks, look up the real status of their card and freeze it.",
+    "Calculate the monthly payment on a $15,000 loan at 7.99% APR over 36 months.",
+    "Translate fraud warning messages into Spanish and Japanese.",
 ]
 
 client = get_client()

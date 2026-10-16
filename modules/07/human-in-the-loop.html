@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -327,7 +327,7 @@ MODEL = {
     <p class="drill-goal"><b>Goal:</b> run Mei's lab-extension request with a real approval step: see the preview code computes, decline it and confirm nothing changed, then approve it and confirm exactly one change.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>The approver</h4>
-        <pre class="code" data-file="lab07_07_approval.py"><code>"""Drill 07.7: human in the loop. Write tools pause the agent and show the learner exactly what
+        <pre class="code" data-file="lab07_07_approval.py"><code>"""Drill 07.7: human in the loop. Write tools pause the agent and show the customer exactly what
 will happen (computed by code), and nothing changes unless they say yes.
 Run:  python lab07_07_approval.py          (you answer y/n)
       python lab07_07_approval.py --no     (decline automatically, for a scripted demo)"""
@@ -339,21 +339,21 @@ from desk_tools import SYSTEM, WRITE_TOOLS, kit, preview
 from llm import MODEL, get_client
 
 
-def ask_learner(name, arguments, context):
+def ask_customer(name, arguments, context):
     print(f"\n  APPROVAL NEEDED: {preview(name, arguments, context)}")
     if "--no" in sys.argv or "--yes" in sys.argv:
         answer = "y" if "--yes" in sys.argv else "n"
         print(f"  Approve? [y/n] {answer}")
     else:
         answer = input("  Approve? [y/n] ").strip().lower()
-    return (answer == "y", "approved" if answer == "y" else "the learner said no")
+    return (answer == "y", "approved" if answer == "y" else "the customer said no")
 
 
-before = desk.lab_status("L-MEI", "TC-10293")["lab_until"]
-agent = Agent(get_client(), MODEL, kit, SYSTEM, write_tools=WRITE_TOOLS, approve=ask_learner, on_step=print_step)
-result = agent.run("Please extend my AI-102 lab.", {"learner": "L-MEI"})
+before = desk.card_status("RR-10293", "4821")["status"]
+agent = Agent(get_client(), MODEL, kit, SYSTEM, write_tools=WRITE_TOOLS, approve=ask_customer, on_step=print_step)
+result = agent.run("Please freeze my Cashback Card.", {"customer": "RR-10293"})
 print(f"\nANSWER: {result.answer}")
-print(f"lab open until: {before} -&gt; {desk.lab_status('L-MEI', 'TC-10293')['lab_until']}")
+print(f"card ending 4821: {before} -&gt; {desk.card_status('RR-10293', '4821')['status']}")
 print("audit log:", desk.ACTIONS or "no changes")</code></pre>
         <p>The preview comes from <code>preview()</code> in <code>desk_tools.py</code>: it reads the current lab date from the system, so the person sees facts, not the model's description. In <code>agent.py</code>, a declined write returns an error result to the model and never reaches <code>desk</code>.</p>
       </li>
@@ -423,7 +423,7 @@ audit log: [{'action': 'extend_lab', 'enrolment_id': 'TC-10293', 'lab_until': '2
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

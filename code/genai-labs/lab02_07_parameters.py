@@ -20,17 +20,17 @@ def try_call(label, prompt, **params):
 print("Temperature (3 samples each):")
 for t in (0.0, 1.0, 1.8):
     for _ in range(3):
-        try_call(f"temperature={t}", "Suggest a name for a new online cloud course. Name only.", temperature=t)
+        try_call(f"temperature={t}", "Suggest a name for a new savings account. Name only.", temperature=t)
 
 print("\nOutput cap:")
-try_call("max_completion_tokens=40", "Explain what an exam voucher is in three paragraphs.", max_completion_tokens=40)
+try_call("max_completion_tokens=40", "Explain what an overdraft is in three paragraphs.", max_completion_tokens=40)
 
 print("\nStop sequence:")
-try_call("stop=['4.']", "List 5 cloud certifications, numbered 1. to 5., one per line.", stop=["4."])
+try_call("stop=['4.']", "List 5 types of bank account, numbered 1. to 5., one per line.", stop=["4."])
 
 print("\nReasoning effort (reasoning models only):")
 for effort in ("low", "high"):
     try_call(f"reasoning_effort={effort}",
-             "A course costs $1,200. The learner cancels 10 days before the start and gets 50% back, "
-             "plus a $180 add-on refunded in full. Total refund? Number only.",
+             "A customer paid three $29 overdraft fees and a $15 express card fee. The bank refunds "
+             "one overdraft fee as a courtesy and the express fee in full. Total refund in USD? Number only.",
              reasoning_effort=effort)

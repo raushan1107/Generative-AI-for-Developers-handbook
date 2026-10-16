@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m01", "short": "Introduction to Generative AI", "h1": "Introduction to Generative AI: What's Really Happening Behind the Chat Box", "description": "Module 01 overview: what generative AI is, how LLMs turn tokens into answers, training vs inference, foundation and multimodal models, developer use cases, 13 drills and Traincrest Assist milestone 1.", "lead": "You've used ChatGPT or Copilot. It feels like talking to someone who has read everything. But as a developer you can't build on a feeling. This module opens the box: what the model actually does with your words, why it sometimes confidently makes things up, and how to choose the right model, and you'll prove each idea with your own hands.", "chips": ["9 topics", "13 drills", "Milestone 1", "≈ 4 hours hands-on"]}
+{"id": "m01", "short": "Introduction to Generative AI", "h1": "Introduction to Generative AI: What's Really Happening Behind the Chat Box", "description": "Module 01 overview: what generative AI is, how LLMs turn tokens into answers, training vs inference, foundation and multimodal models, developer use cases, 13 drills and RR Finance Assist milestone 1.", "lead": "You've used ChatGPT or Copilot. It feels like talking to someone who has read everything. But as a developer you can't build on a feeling. This module opens the box: what the model actually does with your words, why it sometimes confidently makes things up, and how to choose the right model, and you'll prove each idea with your own hands.", "chips": ["9 topics", "13 drills", "Milestone 1", "≈ 4 hours hands-on"]}
 -->
 <h2 id="map">The mental map</h2>
 <p>On the first morning of every batch someone asks me: <em>"Is it actually thinking?"</em> My honest answer is that it's doing something much simpler, and much stranger: <strong>it predicts the next small piece of text, again and again, very fast</strong>. Every page in this module zooms into one part of this picture.</p>
@@ -11,8 +11,8 @@
       <desc id="m1-d">Your text is split into tokens and placed in the context window. The model predicts a probability for every possible next token; one is picked, appended, and the loop repeats until the answer is complete. Tokens are turned back into text. The model's knowledge comes from training, which happened earlier and is frozen.</desc>
       <rect x="20" y="40" width="170" height="86" rx="12" class="s-surface"/>
       <text x="105" y="72" class="t-b mid">Your prompt</text>
-      <text x="105" y="94" class="t-s mid">"Where is my</text>
-      <text x="105" y="110" class="t-s mid">exam voucher?"</text>
+      <text x="105" y="94" class="t-s mid">"Where is my new</text>
+      <text x="105" y="110" class="t-s mid">debit card?"</text>
       <rect x="240" y="40" width="150" height="86" rx="12" class="s-teal"/>
       <text x="315" y="72" class="t-b mid">1 · Tokenize</text>
       <text x="315" y="94" class="t-s mid">text → token IDs</text>
@@ -38,7 +38,7 @@
       <text x="760" y="176" class="t-s">append &amp; repeat</text>
       <rect x="20" y="214" width="370" height="72" rx="12" class="s-green"/>
       <text x="205" y="242" class="t-b mid">5 · Detokenize → answer</text>
-      <text x="205" y="264" class="t-s mid">"Vouchers are issued within 3 business days…"</text>
+      <text x="205" y="264" class="t-s mid">"Replacement cards arrive in 5 to 7 days…"</text>
       <rect x="440" y="330" width="300" height="52" rx="12" class="s-surface2"/>
       <text x="590" y="352" class="t-b mid">Training happened earlier</text>
       <text x="590" y="370" class="t-s mid">knowledge is frozen at a cutoff · topic 6</text>
@@ -59,9 +59,9 @@
 </div>
 
 <h2 id="why">Why developers need to understand what's inside</h2>
-<p>A team wired an LLM into their support portal in one afternoon. The demo was magical. Two weeks after launch:</p>
-<blockquote class="voice">"The bot told a learner our refund window is 30 days. It's 14. Legal wants it switched off tonight."<cite>A very real Friday-evening escalation</cite></blockquote>
-<p>Nothing was broken. The code worked exactly as written. The model did what models do: it produced a <em>plausible</em> answer, because 30 days is a common refund window on the internet. Nobody on the team understood that, so nobody designed for it.</p>
+<p>A bank team wired an LLM into their customer-support chat in one afternoon. The demo was magical. Two weeks after launch:</p>
+<blockquote class="voice">"The bot told a customer they have 120 days to dispute a card payment. Our policy says 60. Compliance wants it switched off tonight."<cite>A very real Friday-evening escalation</cite></blockquote>
+<p>Nothing was broken. The code worked exactly as written. The model did what models do: it produced a <em>plausible</em> answer, because 120 days appears in plenty of card-network rules on the internet. Nobody on the team understood that, so nobody designed for it.</p>
 <div class="lens">
   <div><h5>Traditional developer view</h5><p>Software is <strong>deterministic</strong>. Same input, same output. A wrong output means a bug to find.</p></div>
   <div><h5>GenAI developer view</h5><p>The model is <strong>probabilistic</strong>. Same input can give different outputs, and a wrong answer can come from perfectly working code. You design <em>around</em> the model: give it facts, constrain its output, check its work.</p></div>
@@ -78,6 +78,6 @@
 <h2 id="kit">Lab kit for Module 01</h2>
 <ul>
   <li><strong>You'll need:</strong> the <code>genai-labs</code> folder from <a href="../../setup/index.html">Lab setup</a> with <code>lab00_hello.py</code> working, your AI coding assistant, and optionally a second deployment (for example <code>chat-big</code>) or Ollama for Drill 01.11.</li>
-  <li><strong>Files you'll create:</strong> <code>tickets.py</code> and <code>data/train_tickets.json</code> (reused in Module 03), plus one script per drill.</li>
-  <li><strong>Build:</strong> Milestone 1 creates the <code>traincrest-assist</code> project, which grows for the rest of the course.</li>
+  <li><strong>Files you'll create:</strong> <code>tickets.py</code> and <code>data/train_tickets.json</code> (reused in Module 03), plus one script per drill. Every drill uses the same fictional retail bank, RR Finance Bank.</li>
+  <li><strong>Build:</strong> Milestone 1 creates the <code>rrfinance-assist</code> project, which grows for the rest of the course.</li>
 </ul>

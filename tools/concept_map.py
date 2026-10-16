@@ -1,7 +1,7 @@
 """Generate concept-map pages from tools/maps/*.json into src/maps/*.html.
 
 Each map is one Part (and, at the end, the whole course): a short story, a one-picture overview,
-then an expandable tree Part > Module > Topic. Every topic has a definition, an example, a use case,
+then an expandable tree Part > Module > Topic. Every topic has a definition, an example, an optional finance example, a use case,
 the key point to keep in mind, and "connects to" links that open and highlight related topics.
 Run before tools/build.py whenever a map's JSON changes:  python tools/concept_map.py"""
 import html
@@ -57,7 +57,8 @@ def topic_html(t, titles, page_path):
   <summary><b>{esc(t["title"])}</b><span class="cm-short">{esc(t["definition"])}</span></summary>
   <dl class="cm-facts">
     <dt>Definition</dt><dd>{esc(t["definition"])}</dd>
-    <dt>Example</dt><dd>{esc(t["example"])}</dd>
+    <dt>Example</dt><dd>{esc(t["example"])}</dd>{f"""
+    <dt>In finance</dt><dd>{esc(t["finance"])}</dd>""" if t.get("finance") else ""}
     <dt>Where it's used</dt><dd>{esc(t["usecase"])}</dd>
     <dt>Keep in mind</dt><dd>{esc(t["keep"])}</dd>
   </dl>
@@ -104,7 +105,7 @@ def page_html(data):
 </figure>
 
 <h2 id="tree">Explore the map</h2>
-<p>Open a module, then a topic. Each topic shows a definition, an example, where it's used, the point to keep in mind, and the topics it <em>connects to</em>; click a connection to jump there.</p>
+<p>Open a module, then a topic. Each topic shows a definition, an example, an example from finance, where it's used, the point to keep in mind, and the topics it <em>connects to</em>; click a connection to jump there.</p>
 <div class="cm-tools">
   <button type="button" class="btn" data-cm="expand">Expand all</button>
   <button type="button" class="btn" data-cm="collapse">Collapse all</button>

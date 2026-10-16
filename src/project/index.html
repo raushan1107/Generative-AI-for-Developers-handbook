@@ -1,12 +1,12 @@
 <!--meta
-{"id": "project", "short": "Traincrest Assist: The Build", "h1": "Traincrest Assist: The Progressive Build", "description": "The progressive project of the Generative AI for Developers handbook: Traincrest Assist, an AI learner-support assistant for TrainCrest, built one milestone per module from a CLI to a deployed, evaluated, secured product.", "lead": "One real application, built one milestone per module. Each milestone applies that module's skills to the same codebase, so by the end of Part V you have a working, tested, deployed GenAI product, and the scars that come with building one.", "chips": ["12 milestones", "3 available", "Reference code per milestone", "FastAPI · Azure OpenAI"]}
+{"id": "project", "short": "RR Finance Assist: The Build", "h1": "RR Finance Assist: The Progressive Build", "description": "The progressive project of the Generative AI for Developers handbook: RR Finance Assist, an AI customer-support assistant for RR Finance Bank, a fictional retail bank, built one milestone per module from a CLI to a deployed, evaluated, secured product.", "lead": "One real application, built one milestone per module. Each milestone applies that module's skills to the same codebase, so by the end of Part V you have a working, tested, deployed GenAI product, and the scars that come with building one.", "chips": ["12 milestones", "3 available", "Reference code per milestone", "FastAPI · Azure OpenAI"]}
 -->
 <h2 id="problem">The business problem</h2>
 <div class="case">
-  <div class="case-head"><b>TrainCrest</b><span>· a technical training company (scenario, data and policies are fictional)</span></div>
+  <div class="case-head"><b>RR Finance Bank</b><span>· a retail bank (the bank, customers, data and policies are fictional; nothing here is financial advice)</span></div>
   <div class="case-body">
-    <p>TrainCrest runs instructor-led and self-paced courses in cloud, AI, data and security for learners in many countries. Learner support handles about <strong>25,000 requests a month</strong> by email and chat, in English, Spanish, Hindi, Arabic, Japanese and more. Common topics: rescheduling, refunds, lab environments, exam vouchers, certificates and accounts. A 35-person team takes 11 hours on average to reply.</p>
-    <p><strong>Traincrest Assist</strong> must answer policy questions correctly, check real enrolments and vouchers, recommend courses, raise and route tickets, hand over to humans safely, and do all that at a predictable cost, with evidence that it's accurate and secure.</p>
+    <p>RR Finance Bank's contact centre handles about <strong>40,000 customer messages a month</strong> by chat, email and the app, in English, Spanish, Arabic, Japanese and more. Common topics: lost and stolen cards, disputed payments, fraud, fees, transfers, loans and online-banking access. Agents search six policy handbooks for every answer, replies vary between agents, and a wrong answer about a fee or a dispute deadline is a compliance issue.</p>
+    <p><strong>RR Finance Assist</strong> must answer policy questions correctly with citations, triage every message so fraud and lost cards reach the right team first, look up products and the customer's own transactions, prepare actions such as freezing a card or opening a dispute for a human to approve, never ask for security details, keep an audit trail, and do all that at a predictable cost, with evidence that it's accurate and secure.</p>
   </div>
 </div>
 
@@ -14,21 +14,21 @@
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 330" role="img" aria-labelledby="pe-t pe-d">
-      <title id="pe-t">Traincrest Assist at the end of the course</title>
-      <desc id="pe-d">Learners and agents use a web chat. Requests pass an AI gateway to the Traincrest Assist service, which has a chat agent with tools, retrieval over policy documents with citations, triage, guardrails, evaluation and observability. It uses Azure OpenAI models, a vector index of documents, and TrainCrest systems such as enrolments and tickets. It runs in containers with CI/CD.</desc>
-      <rect x="16" y="120" width="150" height="90" rx="12" class="s-surface"/><text x="91" y="156" class="t-b mid">Web chat</text><text x="91" y="176" class="t-s mid">learners and agents</text>
+      <title id="pe-t">RR Finance Assist at the end of the course</title>
+      <desc id="pe-d">Customers and agents use a web chat. Requests pass an AI gateway to the RR Finance Assist service, which has a chat agent with tools, retrieval over policy documents with citations, triage, guardrails, evaluation and observability. It uses Azure OpenAI models, a vector index of documents, and the bank's systems of record such as accounts, transactions and cases. It runs in containers with CI/CD.</desc>
+      <rect x="16" y="120" width="150" height="90" rx="12" class="s-surface"/><text x="91" y="156" class="t-b mid">Web chat</text><text x="91" y="176" class="t-s mid">customers and agents</text>
       <rect x="200" y="120" width="120" height="90" rx="12" class="s-amber"/><text x="260" y="156" class="t-b mid">AI gateway</text><text x="260" y="176" class="t-s mid">M08</text>
-      <rect x="356" y="24" width="400" height="282" rx="14" class="s-blue"/><text x="372" y="50" class="t-b">Traincrest Assist service (containers · CI/CD · M12)</text>
+      <rect x="356" y="24" width="400" height="282" rx="14" class="s-blue"/><text x="372" y="50" class="t-b">RR Finance Assist service (containers · CI/CD · M12)</text>
       <rect x="372" y="64" width="180" height="56" rx="9" class="s-surface"/><text x="462" y="88" class="t-b mid">Chat + memory</text><text x="462" y="106" class="t-s mid">M01–M03 ✓</text>
       <rect x="562" y="64" width="180" height="56" rx="9" class="s-surface"/><text x="652" y="88" class="t-b mid">Triage (JSON)</text><text x="652" y="106" class="t-s mid">M03 ✓ · M04</text>
-      <rect x="372" y="130" width="180" height="56" rx="9" class="s-surface2"/><text x="462" y="154" class="t-b mid">Tools</text><text x="462" y="172" class="t-s mid">enrolments, refunds · M04</text>
+      <rect x="372" y="130" width="180" height="56" rx="9" class="s-surface2"/><text x="462" y="154" class="t-b mid">Tools</text><text x="462" y="172" class="t-s mid">products, transactions · M04</text>
       <rect x="562" y="130" width="180" height="56" rx="9" class="s-surface2"/><text x="652" y="154" class="t-b mid">RAG + citations</text><text x="652" y="172" class="t-s mid">policies · M05–M06</text>
       <rect x="372" y="196" width="180" height="56" rx="9" class="s-surface2"/><text x="462" y="220" class="t-b mid">Agent + approval</text><text x="462" y="238" class="t-s mid">M07</text>
       <rect x="562" y="196" width="180" height="56" rx="9" class="s-surface2"/><text x="652" y="220" class="t-b mid">Guardrails</text><text x="652" y="238" class="t-s mid">M03 ✓ · M10</text>
       <rect x="372" y="262" width="370" height="34" rx="9" class="s-surface2"/><text x="557" y="284" class="t-s mid">Evaluation (M09) · observability, cost, routing (M08, M11)</text>
       <rect x="796" y="34" width="150" height="70" rx="12" class="s-violet"/><text x="871" y="64" class="t-b mid">Azure OpenAI</text><text x="871" y="84" class="t-s mid">models</text>
       <rect x="796" y="130" width="150" height="70" rx="12" class="s-teal"/><text x="871" y="160" class="t-b mid">Vector index</text><text x="871" y="180" class="t-s mid">AI Search</text>
-      <rect x="796" y="226" width="150" height="70" rx="12" class="s-surface"/><text x="871" y="256" class="t-b mid">TrainCrest systems</text><text x="871" y="276" class="t-s mid">enrolments, tickets</text>
+      <rect x="796" y="226" width="150" height="70" rx="12" class="s-surface"/><text x="871" y="256" class="t-b mid">Bank systems</text><text x="871" y="276" class="t-s mid">accounts, cases</text>
       <path d="M166 165 H194" class="s-arrow-accent" marker-end="url(#ah-a)"/><path d="M320 165 H350" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <path d="M756 70 H790" class="s-arrow" marker-end="url(#ah)"/><path d="M756 165 H790" class="s-arrow" marker-end="url(#ah)"/><path d="M756 260 H790" class="s-arrow" marker-end="url(#ah)"/>
     </svg>
@@ -39,26 +39,26 @@
 <h2 id="roadmap">Milestone roadmap</h2>
 <div class="table-wrap min">
   <table>
-    <thead><tr><th>Milestone</th><th>Module</th><th>What Traincrest Assist gains</th><th>Status</th></tr></thead>
+    <thead><tr><th>Milestone</th><th>Module</th><th>What RR Finance Assist gains</th><th>Status</th></tr></thead>
     <tbody>
-      <tr><td><a href="../modules/01/build.html">M1 · Hello, Traincrest Assist</a></td><td>01</td><td>Project scaffold, config, model access layer, CLI with timing and tokens</td><td><span class="badge b-run">Available</span></td></tr>
+      <tr><td><a href="../modules/01/build.html">M1 · Hello, RR Finance Assist</a></td><td>01</td><td>Project scaffold, config, model access layer, CLI with timing and tokens</td><td><span class="badge b-run">Available</span></td></tr>
       <tr><td><a href="../modules/02/build.html">M2 · Streaming chat service</a></td><td>02</td><td>FastAPI + SSE web chat, memory, friendly errors, retries, JSON logs with cost</td><td><span class="badge b-run">Available</span></td></tr>
       <tr><td><a href="../modules/03/build.html">M3 · Prompts as code</a></td><td>03</td><td>Versioned prompt library, JSON triage with Pydantic and repair, output guard, tests and reliability check</td><td><span class="badge b-run">Available</span></td></tr>
-      <tr><td><a href="../modules/04/build.html">M4 · Tools and guaranteed JSON</a></td><td>04</td><td>Structured outputs; strict tools for enrolments, vouchers, refund quotes and tickets, with identity from the session</td><td><span class="badge b-run" data-module="04">Available</span></td></tr>
-      <tr><td><a href="../modules/05/build.html">M5 · Search by meaning</a></td><td>05</td><td>Hybrid search over courses and help-centre sections, locally or on Azure AI Search; a semantic course tool</td><td><span class="badge b-run" data-module="05">Available</span></td></tr>
+      <tr><td><a href="../modules/04/build.html">M4 · Tools and guaranteed JSON</a></td><td>04</td><td>Structured outputs; strict tools for products, the customer's transactions, fee refund quotes and cases, with identity from the session</td><td><span class="badge b-run" data-module="04">Available</span></td></tr>
+      <tr><td><a href="../modules/05/build.html">M5 · Search by meaning</a></td><td>05</td><td>Hybrid search over products and help-centre sections, locally or on Azure AI Search; a semantic product tool</td><td><span class="badge b-run" data-module="05">Available</span></td></tr>
       <tr><td><a href="../modules/06/build.html">M6 · Knowledge assistant</a></td><td>06</td><td>Answers from the help centre with citations checked in code; a help-centre search box (<code>/api/ask</code>)</td><td><span class="badge b-run" data-module="06">Available</span></td></tr>
-      <tr><td><a href="../modules/07/build.html">M7 · Support agent</a></td><td>07</td><td>Proposes lab extensions and date changes; the learner approves; code executes once and logs it</td><td><span class="badge b-run" data-module="07">Available</span></td></tr>
+      <tr><td><a href="../modules/07/build.html">M7 · Support agent</a></td><td>07</td><td>Proposes freezing a card or opening a dispute; a person approves; code executes once and logs it for audit</td><td><span class="badge b-run" data-module="07">Available</span></td></tr>
       <tr><td>M8 · Production architecture</td><td>08</td><td>AI gateway, persistent sessions, caching, queues, tracing</td><td><span class="badge b-tool">Coming soon</span></td></tr>
-      <tr><td>M9 · Evaluation</td><td>09</td><td>Groundedness, relevance and regression evaluation in a test pipeline</td><td><span class="badge b-tool">Coming soon</span></td></tr>
-      <tr><td>M10 · Security</td><td>10</td><td>Prompt Shields, least-privilege tools, data protection, red-team tests</td><td><span class="badge b-tool">Coming soon</span></td></tr>
+      <tr><td>M9 · Evaluation</td><td>09</td><td>Groundedness, relevance, triage accuracy and fraud recall in a regression pipeline</td><td><span class="badge b-tool">Coming soon</span></td></tr>
+      <tr><td>M10 · Security</td><td>10</td><td>Prompt Shields, PII masking (card and account numbers), least-privilege tools, no-advice rules, red-team tests</td><td><span class="badge b-tool">Coming soon</span></td></tr>
       <tr><td>M11 · Cost and speed</td><td>11</td><td>Model routing, prompt caching, batching, cost dashboards</td><td><span class="badge b-tool">Coming soon</span></td></tr>
-      <tr><td>M12 · Ship it</td><td>12</td><td>Containers, secrets, fallbacks, prompt and model versioning, CI/CD</td><td><span class="badge b-tool">Coming soon</span></td></tr>
+      <tr><td>M12 · Ship it</td><td>12</td><td>Containers, secrets, fallbacks, prompt and model versioning, CI/CD, model risk review</td><td><span class="badge b-tool">Coming soon</span></td></tr>
     </tbody>
   </table>
 </div>
 
 <h2 id="catchup">Reference code and catching up</h2>
-<p>Every milestone page shows all the code, and the complete project snapshot for each milestone is in the handbook repository under <code>code/traincrest-assist/m01</code>, <code>m02</code>, <code>m03</code>. If you miss a session, copy the latest snapshot, add your <code>.env</code>, and continue. Each snapshot has been tested against a fake model: streaming, memory, history trimming, friendly errors, triage validation and repair, and the output guard.</p>
+<p>Every milestone page shows all the code, and the complete project snapshot for each milestone is in the handbook repository under <code>code/rrfinance-assist/m01</code>, <code>m02</code>, <code>m03</code>. If you miss a session, copy the latest snapshot, add your <code>.env</code>, and continue. Each snapshot has been tested against a fake model: streaming, memory, history trimming, friendly errors, triage validation and repair, and the output guard.</p>
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
   <p>This is how GenAI products actually get built: a thin end-to-end slice first (Milestone 1), then hardening (2), then making behaviour deliberate and measurable (3), then capabilities (tools, retrieval, agents), then the production disciplines. Teams that start with an impressive agent demo usually end up rebuilding exactly these foundations later.</p>

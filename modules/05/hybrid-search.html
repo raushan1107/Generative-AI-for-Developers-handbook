@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -411,14 +411,14 @@ from embed import embed
 from hybrid import bm25_ranking, rrf, vector_ranking
 
 TESTS = {                                   <span class="c"># query -&gt; heading of the section that answers it</span>
-    "LAB-503": "Common problems",
-    "what costs $49?": "How long labs stay open",
-    "breakout rooms": "Live online",
-    "one billing cycle": "When the money arrives",
-    "Is there a discount for a team of 12?": "Group discounts",
-    "can I use a screen reader?": "Adjustments",
-    "money back if the trainer is ill": "If TrainCrest cancels",
-    "Docker": None,                         <span class="c"># nothing in the help centre answers this</span>
+    "safe account": "We will never ask",
+    "what costs $45?": "Limits and fees",
+    "4 pm cut-off": "Timing",
+    "provisional credit": "What happens next",
+    "Is there a fee if I'm only $30 overdrawn?": "Overdrafts",
+    "can I log in with my fingerprint?": "Signing in",
+    "I paid the wrong person, can you get it back?": "Sent money to the wrong person",
+    "cryptocurrency trading": None,         <span class="c"># nothing in the help centre answers this</span>
 }
 
 sections = [text for md in load_articles().values() for text in by_headings(md)]
@@ -528,7 +528,7 @@ Right section in top 3: keyword 7/8, vector 7/8, hybrid 7/8</code></pre>
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

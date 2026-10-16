@@ -1,7 +1,7 @@
 """Tests for history.trim_history. Run with:  pytest -q test_history.py"""
 from history import trim_history
 
-SYS = {"role": "system", "content": "You are Traincrest Assist."}
+SYS = {"role": "system", "content": "You are RR Finance Assist."}
 
 
 def turns(n):

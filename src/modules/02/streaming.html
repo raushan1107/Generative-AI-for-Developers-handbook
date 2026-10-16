@@ -55,6 +55,11 @@ data: [DONE]</code></pre>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Streaming makes a banking chat feel responsive, but it creates a compliance wrinkle: text reaches the customer <em>before</em> you have checked it. Banks handle this by streaming only low-risk answers, checking the text in small chunks as it arrives (and replacing the message if a check fails, as Milestone 3 does), or buffering anything that quotes a rate, a fee or a balance until the full answer has been validated. Analyst tools that summarise long reports stream freely, because a human reviews the output anyway.</p>
+</div>
   <p>Every major chat product streams, and teams track TTFT as a headline metric alongside total latency. Voice assistants go further: they start speaking the first sentence while the rest is still being generated. Back-end jobs (summarising 10,000 tickets overnight) don't stream at all: nobody is watching, so they use batch processing instead (Module 11).</p>
 </div>
 
@@ -77,7 +82,7 @@ data: [DONE]</code></pre>
         <span class="out-label">Expected (end of run)</span>
 <pre class="out"><code>Without streaming: blank screen for 5.8s, then everything at once.
 
-Preparing for a cloud certification starts with the official skills outline…
+An emergency fund is money you set aside for the unexpected: a car repair, a medical bill…
 
 With streaming: first words after 0.7s, done after 5.6s, 212 chunks.
 Usage: 24 in / 231 out</code></pre>
@@ -95,7 +100,7 @@ from claude_llm import client, CLAUDE_MODEL, FALLBACK
 start, ttft = time.perf_counter(), None
 with client.beta.messages.stream(
     model=CLAUDE_MODEL, max_tokens=4000,
-    messages=[{"role": "user", "content": "Write a 150-word guide to preparing for a cloud certification exam."}],
+    messages=[{"role": "user", "content": "Write a 150-word guide to building an emergency fund."}],
     **FALLBACK,
 ) as stream:
     for text in stream.text_stream:

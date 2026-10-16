@@ -1,0 +1,17 @@
+FRAUD ESCALATION RUNBOOK
+Owner: Fraud Operations. Last reviewed: March 2026.
+
+WHEN TO ESCALATE TO FRAUD OPERATIONS
+Escalate straight away when a customer reports a payment they don't recognise, says someone asked them for a code or a password, or says they were told to move money to a "safe account". Do not try to investigate it yourself.
+
+WHAT TO DO DURING THE CALL OR CHAT
+Freeze the customer's cards and block new payees while you are still talking to them. Tell the customer what is blocked and how to pay essential bills in the meantime. Do not promise a refund or a date.
+
+SCAM PAYMENTS THE CUSTOMER MADE
+If the customer sent the money themselves, raise a recall request to the receiving bank within 1 hour of the report. Recovery is more likely the faster we act.
+
+AFTER THE CASE
+Fraud Operations contacts the customer within 2 business days with the outcome or the next step.
+
+RULE FR-12 ALERTS
+An FR-12 alert means an unusual payment was paused automatically. These are not confirmed fraud. Ask the customer to confirm or decline the payment in the app.

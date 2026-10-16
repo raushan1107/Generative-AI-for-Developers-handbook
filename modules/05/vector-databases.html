@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -345,17 +345,17 @@ from vector_store import VectorStore, matches
 @pytest.fixture
 def store():
     s = VectorStore()
-    s.add(ids=["refunds", "labs", "vouchers"],
+    s.add(ids=["disputes", "cards", "fees"],
           vectors=[[1, 0, 0], [0, 1, 0], [0.7, 0, 0.7]],
-          texts=["Refund rules", "Lab extensions", "Exam vouchers"],
-          metadatas=[{"topic": "billing", "words": 180}, {"topic": "labs", "words": 120},
-                     {"topic": "exams", "words": 90}])
+          texts=["Dispute rules", "Lost cards", "Overdraft fees"],
+          metadatas=[{"topic": "disputes", "words": 180}, {"topic": "cards", "words": 120},
+                     {"topic": "fees", "words": 90}])
     return s
 
 
 def test_nearest_first(store):
     hits = store.search([0.9, 0.1, 0.1], k=2)
-    assert [h["id"] for h in hits] == ["refunds", "vouchers"]
+    assert [h["id"] for h in hits] == ["disputes", "fees"]
     assert hits[0]["score"] &gt; hits[1]["score"]
 
 
@@ -365,20 +365,20 @@ def test_length_does_not_matter(store):
 
 def test_filter_before_ranking(store):
     hits = store.search([1, 0, 0], k=3, where={"words": {"$lte": 120}})
-    assert [h["id"] for h in hits] == ["vouchers", "labs"]
+    assert [h["id"] for h in hits] == ["fees", "cards"]
 
 
 def test_matches_operators():
-    meta = {"level": "beginner", "price_usd": 290}
-    assert matches(meta, {"level": "beginner", "price_usd": {"$lte": 300}})
-    assert not matches(meta, {"level": {"$in": ["advanced", "intermediate"]}})
-    assert not matches(meta, {"format": "classroom"})          <span class="c"># missing field never matches</span>
+    meta = {"family": "cards", "annual_fee_usd": 0}
+    assert matches(meta, {"family": "cards", "annual_fee_usd": {"$lte": 100}})
+    assert not matches(meta, {"family": {"$in": ["accounts", "loans"]}})
+    assert not matches(meta, {"audience": "business"})         <span class="c"># missing field never matches</span>
 
 
 def test_save_and_load(store, tmp_path):
     store.save(tmp_path / "idx")
     again = VectorStore.load(tmp_path / "idx")
-    assert again.search([0, 1, 0], k=1)[0]["text"] == "Lab extensions"</code></pre>
+    assert again.search([0, 1, 0], k=1)[0]["text"] == "Lost cards"</code></pre>
         <div class="prompt-box"><pre><code>Create vector_store.py so that #file:test_vector_store.py passes. Don't edit the tests. Use numpy only.
 
 - VectorStore.add(ids, vectors, texts, metadatas=None): normalise each vector to length 1 and keep
@@ -484,12 +484,12 @@ class VectorStore:
         <p class="small muted">Admin keys can create and delete indexes. Keep them in <code>.env</code> only. Module 10 replaces keys with Microsoft Entra ID and query-only access for the app.</p>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Index, upload, query</h4>
-        <pre class="code" data-file="lab05_05_azure_search.py"><code>"""Drill 05.5 (and 05.9): the course catalogue in Azure AI Search.
+        <pre class="code" data-file="lab05_05_azure_search.py"><code>"""Drill 05.5 (and 05.9): the product catalogue in Azure AI Search.
 Run:  python lab05_05_azure_search.py create
       python lab05_05_azure_search.py upload
-      python lab05_05_azure_search.py query "make my app understand photos" --mode vector
-      python lab05_05_azure_search.py query "AZ-104" --mode keyword
-      python lab05_05_azure_search.py query "cloud admin certification" --mode hybrid --filter "price_usd le 1300"
+      python lab05_05_azure_search.py query "somewhere to save for a house deposit" --mode vector
+      python lab05_05_azure_search.py query "P111" --mode keyword
+      python lab05_05_azure_search.py query "card for spending abroad" --mode hybrid --filter "annual_fee_usd le 100"
 Needs AZURE_SEARCH_ENDPOINT, AZURE_SEARCH_API_KEY and an embedding deployment (AZURE_OPENAI_EMBED_DEPLOYMENT)."""
 import argparse
 import os
@@ -502,22 +502,22 @@ from azure.search.documents.indexes.models import (HnswAlgorithmConfiguration, S
                                                    VectorSearchProfile)
 from azure.search.documents.models import VectorizedQuery
 
-from catalogue import COURSES
+from catalogue import PRODUCTS
 from embed import embed
 
 ENDPOINT = os.getenv("AZURE_SEARCH_ENDPOINT", "")
-INDEX = os.getenv("AZURE_SEARCH_INDEX", "courses")
+INDEX = os.getenv("AZURE_SEARCH_INDEX", "products")
 credential = AzureKeyCredential(os.getenv("AZURE_SEARCH_API_KEY", ""))
 
 
 def build_index(dims: int) -&gt; SearchIndex:
     fields = [
         SimpleField(name="id", type=SearchFieldDataType.String, key=True),
-        SearchableField(name="title", type=SearchFieldDataType.String),
+        SearchableField(name="name", type=SearchFieldDataType.String),
         SearchableField(name="description", type=SearchFieldDataType.String),
-        SimpleField(name="level", type=SearchFieldDataType.String, filterable=True, facetable=True),
-        SimpleField(name="format", type=SearchFieldDataType.String, filterable=True, facetable=True),
-        SimpleField(name="price_usd", type=SearchFieldDataType.Int32, filterable=True, sortable=True),
+        SimpleField(name="family", type=SearchFieldDataType.String, filterable=True, facetable=True),
+        SimpleField(name="audience", type=SearchFieldDataType.String, filterable=True, facetable=True),
+        SimpleField(name="annual_fee_usd", type=SearchFieldDataType.Int32, filterable=True, sortable=True),
         SearchField(name="contentVector", type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
                     searchable=True, vector_search_dimensions=dims, vector_search_profile_name="vprofile"),
     ]
@@ -534,11 +534,11 @@ def create():
 
 
 def upload():
-    vectors = embed([f"{c['title']}. {c['description']}" for c in COURSES])
-    docs = [{**{k: c[k] for k in ("id", "title", "description", "level", "format", "price_usd")},
-             "contentVector": v.tolist()} for c, v in zip(COURSES, vectors)]
+    vectors = embed([f"{p['name']}. {p['description']}" for p in PRODUCTS])
+    docs = [{**{k: p[k] for k in ("id", "name", "description", "family", "audience", "annual_fee_usd")},
+             "contentVector": v.tolist()} for p, v in zip(PRODUCTS, vectors)]
     results = SearchClient(ENDPOINT, INDEX, credential).merge_or_upload_documents(documents=docs)
-    print(f"Uploaded {sum(r.succeeded for r in results)}/{len(docs)} courses.")
+    print(f"Uploaded {sum(r.succeeded for r in results)}/{len(docs)} products.")
 
 
 def query(text: str, mode: str, filter_: str | None, k: int = 3):
@@ -550,10 +550,10 @@ def query(text: str, mode: str, filter_: str | None, k: int = 3):
     results = search.search(
         search_text=text if mode in ("keyword", "hybrid") else None,   <span class="c"># hybrid = both, merged with RRF</span>
         vector_queries=vector_queries, filter=filter_, top=k,
-        select=["id", "title", "level", "price_usd"])
+        select=["id", "name", "family", "annual_fee_usd"])
     print(f"{mode} search: {text!r}" + (f"  filter: {filter_}" if filter_ else ""))
     for r in results:
-        print(f"  {r['@search.score']:.4f}  {r['id']}  {r['title']}  ({r['level']}, ${r['price_usd']})")
+        print(f"  {r['@search.score']:.4f}  {r['id']}  {r['name']}  ({r['family']}, ${r['annual_fee_usd']} a year)")
 
 
 if __name__ == "__main__":
@@ -561,7 +561,7 @@ if __name__ == "__main__":
     ap.add_argument("action", choices=["create", "upload", "query"])
     ap.add_argument("text", nargs="?", default="")
     ap.add_argument("--mode", choices=["keyword", "vector", "hybrid"], default="hybrid")
-    ap.add_argument("--filter", default=None, help="OData filter, e.g. \"level eq 'beginner' and price_usd le 500\"")
+    ap.add_argument("--filter", default=None, help="OData filter, e.g. \"family eq 'cards' and annual_fee_usd le 100\"")
     a = ap.parse_args()
     {"create": create, "upload": upload}.get(a.action, lambda: query(a.text, a.mode, a.filter))()</code></pre>
 <pre class="term"><code><span class="ps">$ </span>python lab05_05_azure_search.py create
@@ -592,33 +592,34 @@ keyword search: 'make my app understand photos'
       <div class="alt-body">
         <p>No Azure AI Search? Chroma runs in-process and stores the index in a folder. Together with Ollama's <code>nomic-embed-text</code>, the whole exercise is free and offline.</p>
         <pre class="code" data-file="lab05_05_chroma.py"><code>"""Drill 05.5, open alternative: the same catalogue in Chroma, a local vector database.
-Run:  python lab05_05_chroma.py "make my app understand photos"
-      python lab05_05_chroma.py "hands-on cloud course" --beginner-under 500"""
+Run:  python lab05_05_chroma.py "somewhere to save for a house deposit"
+      python lab05_05_chroma.py "card for spending abroad" --cards-under 100"""
 import sys
 
 import chromadb
 
-from catalogue import COURSES
+from catalogue import PRODUCTS
 from embed import embed
 
 client = chromadb.PersistentClient(path="chroma_db")          <span class="c"># a folder on disk</span>
-courses = client.get_or_create_collection(name="courses", configuration={"hnsw": {"space": "cosine"}})
+products = client.get_or_create_collection(name="products", configuration={"hnsw": {"space": "cosine"}})
 
-if courses.count() == 0:                                      <span class="c"># first run: load the catalogue</span>
-    texts = [f"{c['title']}. {c['description']}" for c in COURSES]
-    courses.add(ids=[c["id"] for c in COURSES], embeddings=embed(texts).tolist(), documents=texts,
-                metadatas=[{"level": c["level"], "format": c["format"], "price_usd": c["price_usd"]} for c in COURSES])
+if products.count() == 0:                                     <span class="c"># first run: load the catalogue</span>
+    texts = [f"{p['name']}. {p['description']}" for p in PRODUCTS]
+    products.add(ids=[p["id"] for p in PRODUCTS], embeddings=embed(texts).tolist(), documents=texts,
+                 metadatas=[{"family": p["family"], "audience": p["audience"], "annual_fee_usd": p["annual_fee_usd"]}
+                            for p in PRODUCTS])
 
-question = sys.argv[1] if len(sys.argv) &gt; 1 else "make my app understand photos"
+question = sys.argv[1] if len(sys.argv) &gt; 1 else "somewhere to save for a house deposit"
 where = None
-if "--beginner-under" in sys.argv:
-    limit = int(sys.argv[sys.argv.index("--beginner-under") + 1])
-    where = {"$and": [{"level": "beginner"}, {"price_usd": {"$lte": limit}}]}
+if "--cards-under" in sys.argv:
+    limit = int(sys.argv[sys.argv.index("--cards-under") + 1])
+    where = {"$and": [{"family": "cards"}, {"annual_fee_usd": {"$lte": limit}}]}
 
-res = courses.query(query_embeddings=embed([question]).tolist(), n_results=3, where=where)
+res = products.query(query_embeddings=embed([question]).tolist(), n_results=3, where=where)
 print(f"{question!r}" + (f"  where={where}" if where else ""))
-for cid, dist, meta, doc in zip(res["ids"][0], res["distances"][0], res["metadatas"][0], res["documents"][0]):
-    print(f"  distance {dist:.3f}  {cid}  {doc.split('.')[0]}  ({meta['level']}, ${meta['price_usd']})")</code></pre>
+for pid, dist, meta, doc in zip(res["ids"][0], res["distances"][0], res["metadatas"][0], res["documents"][0]):
+    print(f"  distance {dist:.3f}  {pid}  {doc.split('.')[0]}  ({meta['family']}, ${meta['annual_fee_usd']} a year)")</code></pre>
 <pre class="term"><code><span class="ps">$ </span>python lab05_05_chroma.py
 <span class="ps">$ </span>python lab05_05_chroma.py "hands-on cloud course" --beginner-under 500</code></pre>
         <span class="out-label">Real output (Chroma + nomic-embed-text)</span>
@@ -653,7 +654,7 @@ for cid, dist, meta, doc in zip(res["ids"][0], res["distances"][0], res["metadat
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

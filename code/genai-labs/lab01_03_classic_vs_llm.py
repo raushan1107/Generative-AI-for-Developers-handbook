@@ -1,4 +1,4 @@
-"""Drill 01.3: a classic ML classifier vs an LLM, on the same support tickets."""
+"""Drill 01.3: a classic ML classifier vs an LLM, on the same bank contact-centre tickets."""
 import json
 import time
 from pathlib import Path
@@ -26,7 +26,7 @@ ml_secs = time.perf_counter() - start
 
 # ---------- 2) LLM: no training, just an instruction ----------
 client = get_client()
-instruction = f"Classify the support ticket into one of: {', '.join(CATEGORIES)}. Reply with the category only."
+instruction = f"Classify the bank customer's message into one of: {', '.join(CATEGORIES)}. Reply with the category only."
 llm_preds, tokens = [], 0
 start = time.perf_counter()
 for text, _ in TEST_TICKETS:

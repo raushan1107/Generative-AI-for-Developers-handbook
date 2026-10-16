@@ -12,7 +12,7 @@ def _host(url_text):
     return re.split(r"[/?#:]", host, maxsplit=1)[0].rstrip(".,;)")
 
 
-def check_output(text, allowed_domains=("traincrest.example",)):
+def check_output(text, allowed_domains=("rrfinance.example",)):
     """Return a sorted list of problem names found in `text`; an empty list means it passed.
 
     URLs are allowed only if their host is one of `allowed_domains` or a subdomain of one.

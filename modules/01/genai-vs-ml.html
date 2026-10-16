@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -126,7 +126,7 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 01 · Topic 2 of 9</span><h1>Generative AI vs Traditional AI/ML</h1><p class="lead">GenAI didn't replace machine learning; it sits inside it. Knowing where it sits tells you when an LLM is the right tool, and when a classic model or a plain if-statement is faster, cheaper and more reliable. You'll prove it by racing the two on the same tickets.</p><div class="chips"><span class="chip">AI ⊃ ML ⊃ DL ⊃ GenAI</span><span class="chip">Choosing the tool</span><span class="chip">Drill 01.3</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 01 · Topic 2 of 9</span><h1>Generative AI vs Traditional AI/ML</h1><p class="lead">GenAI didn't replace machine learning; it sits inside it. Knowing where it sits tells you when an LLM is the right tool, and when a classic model or a plain if-statement is faster, cheaper and more reliable. You'll prove it by racing the two on the same bank customer messages.</p><div class="chips"><span class="chip">AI ⊃ ML ⊃ DL ⊃ GenAI</span><span class="chip">Choosing the tool</span><span class="chip">Drill 01.3</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Russian dolls, and how to pick the right doll.</p></div></div>
@@ -174,12 +174,17 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Card-fraud detection is the classic example of <strong>traditional ML</strong> in banking: a model scores every card payment in a few milliseconds from structured features (amount, merchant, country, time since the last payment), billions of times a year. Credit scoring is similar. Generative AI sits next to these systems, not in place of them: it reads the customer's free-text dispute, drafts the letter explaining a declined payment, or summarises an investigation for the fraud analyst. Regulators also expect lending and fraud decisions to be explainable, which a fixed, well-documented model makes much easier than a free-text answer.</p>
+</div>
   <p>Most production systems are <strong>hybrids</strong>. Card-fraud scoring and product recommendations are still classic ML because they need millisecond decisions on structured data at huge volume. LLMs sit on top for the language parts: explaining a decision to a customer, summarising a case for an analyst, understanding a free-text complaint. Search products work the same way: classic ranking finds results, a language model writes the summary.</p>
 </div>
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Using an LLM for everything. Calculating tax, validating an email address, checking whether an enrolment ID exists, sorting a list: these have <strong>exact answers</strong>. Plain code does them perfectly, instantly and for free. Use the LLM for the fuzzy part (understanding the learner's message) and code for the exact part (looking up the enrolment). Module 04 wires the two together.</p>
+  <p>Using an LLM for everything. Calculating interest, validating an IBAN or an email address, checking whether a customer ID exists, sorting transactions by date: these have <strong>exact answers</strong>. Plain code does them perfectly, instantly and for free. Use the LLM for the fuzzy part (understanding the customer's message) and code for the exact part (looking up the account). Module 04 wires the two together.</p>
 </div>
 
 <div class="lens">
@@ -266,55 +271,56 @@ MODEL = {
   <div class="drill-head"><span class="drill-id">Drill 01.3</span><h3>Train a classic classifier, then race it against an LLM</h3>
     <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">scikit-learn · AI assistant</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> feel the difference in data needs, speed, cost and robustness between classic ML and an LLM, on the same 12 support tickets.</p>
+    <p class="drill-goal"><b>Goal:</b> feel the difference in data needs, speed, cost and robustness between classic ML and an LLM, on the same 12 bank customer messages.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Create the shared ticket file</h4>
-        <p>This file holds 12 labelled test tickets and TrainCrest's house rules. Module 03 reuses it.</p>
-        <pre class="code" data-file="tickets.py"><code>"""Synthetic TrainCrest learner-support tickets (fictional, no real data).
+        <p>This file holds 12 labelled test tickets and RR Finance Bank's house rules. Module 03 reuses it.</p>
+        <pre class="code" data-file="tickets.py"><code>"""Synthetic RR Finance Bank contact-centre tickets (fictional bank, no real customer data).
 Shared by drills in Module 01 and Module 03."""
 
-CATEGORIES = ["scheduling", "billing", "exam_voucher", "certificate", "lab_access", "account", "other"]
+CATEGORIES = ["card", "dispute", "fraud", "fees", "transfers", "loans", "account", "other"]
 
-<span class="c"># TrainCrest house rules the model can't know unless you tell it:</span>
-<span class="c">#   - a refund request is "billing", even when it mentions dates or batches</span>
-<span class="c">#   - asking for more lab time is "lab_access", not "scheduling"</span>
+<span class="c"># RR Finance Bank house rules the model can't know unless you tell it:</span>
+<span class="c">#   - a charge the customer recognises but is wrong (twice, wrong amount, never delivered) is "dispute";</span>
+<span class="c">#     a charge they don't recognise at all is "fraud"</span>
+<span class="c">#   - asking for a fee to be refunded is "fees", even when it mentions a card or a transfer</span>
 TEST_TICKETS = [
-    ("I paid for the AZ-305 batch but my card was charged twice.", "billing"),
-    ("Can I move my Generative AI course from the March batch to April?", "scheduling"),
-    ("I finished the course two weeks ago and still have no exam voucher.", "exam_voucher"),
-    ("My certificate says 'Asha Kumari' but my name is 'Asha Kumar'.", "certificate"),
-    ("The lab VM says my subscription has expired, I can't start the exercise.", "lab_access"),
-    ("I can't log in, the password reset email never arrives.", "account"),
-    ("Do you offer corporate discounts for a team of 20 engineers?", "other"),
-    ("My lab ran out yesterday, can I get one more week to finish?", "lab_access"),
-    ("Quiero cambiar mi curso al grupo del próximo mes.", "scheduling"),
-    ("I want a refund, the course starts in 3 days and I can't attend.", "billing"),
-    ("The voucher code you sent shows as already used.", "exam_voucher"),
-    ("Please update the email on my account to my new work address.", "account"),
+    ("I was charged twice for the same flight on my credit card.", "dispute"),
+    ("My debit card is missing, I think I left it in a taxi.", "card"),
+    ("There's a $640 payment to a shop in another country I've never been to.", "fraud"),
+    ("Why did you charge me $29? I was only overdrawn for one night.", "fees"),
+    ("My transfer to my sister has been pending since Monday.", "transfers"),
+    ("Can I take a payment holiday on my personal loan?", "loans"),
+    ("I can't log in, the one-time code never arrives.", "account"),
+    ("Do you have a branch open on Sundays?", "other"),
+    ("Please refund the $45 fee you took for my international wire.", "fees"),
+    ("Quiero bloquear mi tarjeta, me la robaron ayer.", "card"),
+    ("The online shop charged me $89 but the order was cancelled.", "dispute"),
+    ("Someone texted me a link and now money is missing from my savings.", "fraud"),
 ]
 
 <span class="c"># Few-shot examples: different from the test tickets, covering the house rules.</span>
 FEW_SHOT_EXAMPLES = [
-    ("I can't attend next week, please refund my fee.", "billing"),
-    ("I need 5 more days of lab access to finish module 6.", "lab_access"),
-    ("I was charged in EUR instead of USD.", "billing"),
-    ("My voucher expired before I could book the exam.", "exam_voucher"),
-    ("Please shift me to the weekend batch.", "scheduling"),
+    ("The supermarket charged me twice for one shop.", "dispute"),
+    ("I don't recognise a payment to an online casino.", "fraud"),
+    ("Can you give me back the overdraft fee on my card account?", "fees"),
+    ("My card was stolen at the gym.", "card"),
+    ("How long does a wire to Canada take?", "transfers"),
 ]</code></pre>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Ask your assistant to generate training data</h4>
         <p>Classic ML needs labelled examples. Instead of writing 40 by hand, have your AI assistant generate them. Write the prompt yourself:</p>
-        <div class="template-box"><pre><code>Goal:        create data/train_tickets.json with … labelled support tickets
+        <div class="template-box"><pre><code>Goal:        create data/train_tickets.json with … labelled customer messages
 Context:     the categories are in #tickets.py; the company is …
 Constraints: format …; how many per category …; style …;
              must NOT copy or paraphrase the tickets in TEST_TICKETS
 Done when:   …</code></pre></div>
-        <p class="hint"><b>Hint:</b> ask for a JSON array of objects with exactly <code>text</code> and <code>label</code>, 6 per category (42 total), short realistic messages, varied wording, English only (that's deliberate: you'll see why later), and a quick check you can run.</p>
+        <p class="hint"><b>Hint:</b> ask for a JSON array of objects with exactly <code>text</code> and <code>label</code>, 6 per category (48 total), short realistic messages, varied wording, English only (that's deliberate: you'll see why later), and a quick check you can run.</p>
         <details class="solution"><summary>Compare with my prompt</summary><div>
-          <div class="prompt-box"><pre><code>Create data/train_tickets.json: a JSON array of 42 synthetic learner-support tickets for
-TrainCrest, an online technical training company. Each item is {"text": ..., "label": ...}
-with exactly those two keys. Use the 7 labels in CATEGORIES from #tickets.py, exactly
-6 tickets per label. Messages should be short (5-20 words), realistic and varied in wording.
+          <div class="prompt-box"><pre><code>Create data/train_tickets.json: a JSON array of 48 synthetic customer-support messages for
+RR Finance Bank, a retail bank. Each item is {"text": ..., "label": ...} with exactly those
+two keys. Use the 8 labels in CATEGORIES from #tickets.py, exactly 6 messages per label.
+Follow the house rules in the comments of #tickets.py. No real names, card or account numbers. Messages should be short (5-20 words), realistic and varied in wording.
 English only. Do not copy or paraphrase anything in TEST_TICKETS. Afterwards, give me a
 one-line Python command that prints the count per label.</code></pre></div>
           <p>If your assistant struggles, use the reference file: <a href="../../code/genai-labs/data/train_tickets.json">data/train_tickets.json</a>.</p>
@@ -322,10 +328,10 @@ one-line Python command that prints the count per label.</code></pre></div>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Check the generated data before training on it</h4>
         <pre class="term"><code><span class="ps">$ </span>python -c "import json,collections; d=json.load(open('data/train_tickets.json',encoding='utf-8')); print(len(d), collections.Counter(x['label'] for x in d))"</code></pre>
-        <ul class="verify-list"><li>42 rows, 6 per label, only the 7 known labels.</li><li>Skim 10 rows: are the labels actually right? Generated data can be wrong too.</li></ul>
+        <ul class="verify-list"><li>48 rows, 6 per label, only the 8 known labels.</li><li>Skim 10 rows: are the labels actually right? Generated data can be wrong too.</li></ul>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Race the two approaches</h4>
-        <pre class="code" data-file="lab01_03_classic_vs_llm.py"><code>"""Drill 01.3: a classic ML classifier vs an LLM, on the same support tickets."""
+        <pre class="code" data-file="lab01_03_classic_vs_llm.py"><code>"""Drill 01.3: a classic ML classifier vs an LLM, on the same bank contact-centre tickets."""
 import json
 import time
 from pathlib import Path
@@ -353,7 +359,7 @@ ml_secs = time.perf_counter() - start
 
 <span class="c"># ---------- 2) LLM: no training, just an instruction ----------</span>
 client = get_client()
-instruction = f"Classify the support ticket into one of: {', '.join(CATEGORIES)}. Reply with the category only."
+instruction = f"Classify the bank customer's message into one of: {', '.join(CATEGORIES)}. Reply with the category only."
 llm_preds, tokens = [], 0
 start = time.perf_counter()
 for text, _ in TEST_TICKETS:
@@ -377,23 +383,31 @@ print(f"\nClassic ML: {ml_ok}/{n} correct · trained in {train_secs:.2f}s on {le
       f"all predictions in {ml_secs * 1000:.1f} ms · $0 per call")
 print(f"LLM:        {llm_ok}/{n} correct · no training · {llm_secs:.1f}s for all · {tokens} tokens")</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab01_03_classic_vs_llm.py</code></pre>
-        <span class="out-label">Expected output (classic ML column is real output with the reference data; the LLM column varies)</span>
+        <span class="out-label">Real output with the reference data (llama3.2 on Ollama; the LLM column varies by model and run)</span>
 <pre class="out"><code>ticket                                         expected      classic ML    LLM
-I paid for the AZ-305 batch but my card was    billing       billing       billing
-…
-Quiero cambiar mi curso al grupo del próximo   scheduling    account       scheduling
-I want a refund, the course starts in 3 days   billing       account       scheduling
-…
-Classic ML: 10/12 correct · trained in 0.02s on 42 examples · all predictions in 1.0 ms · $0 per call
-LLM:        11/12 correct · no training · 6.3s for all · 812 tokens</code></pre>
+I was charged twice for the same flight on m   dispute       dispute       dispute
+My debit card is missing, I think I left it    card          card          card
+There's a $640 payment to a shop in another    fraud         fraud         other
+Why did you charge me $29? I was only overdr   fees          dispute       fees
+My transfer to my sister has been pending si   transfers     transfers     transfers
+Can I take a payment holiday on my personal    loans         loans         fees
+I can't log in, the one-time code never arri   account       account       card
+Do you have a branch open on Sundays?          other         other         other
+Please refund the $45 fee you took for my in   fees          transfers     fees
+Quiero bloquear mi tarjeta, me la robaron ay   card          dispute       card
+The online shop charged me $89 but the order   dispute       dispute       card
+Someone texted me a link and now money is mi   fraud         fraud         dispute
+
+Classic ML: 9/12 correct · trained in 0.05s on 48 examples · all predictions in 3.1 ms · $0 per call
+LLM:        7/12 correct · no training · 28.9s for all · 891 tokens</code></pre>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>Read the results like an engineer</h4>
-        <p>Answer before opening: (1) Why did classic ML miss the Spanish ticket? (2) Why might the LLM miss the refund ticket? (3) TrainCrest gets 25,000 tickets a month. Which approach would you put in production, and why?</p>
+        <p>Answer before opening: (1) Why did classic ML miss the Spanish ticket and the "$45 fee for my international wire" ticket? (2) Why did the LLM mix up dispute and fraud? (3) RR Finance Bank gets 40,000 messages a month. Which approach would you put in production, and why?</p>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
-            <li>Classic ML only knows the words it was trained on, and the training data was English only. The LLM understood Spanish for free.</li>
-            <li>"Refund… course starts in 3 days" mentions dates, so it <em>sounds</em> like scheduling. TrainCrest's house rule says refunds are billing. The LLM can't know a house rule you didn't tell it; Module 03 fixes this with few-shot examples.</li>
-            <li>It depends, and that's the real answer. The LLM is more robust to wording and language with zero training; classic ML is thousands of times faster and free per call. A common production pattern: an LLM to label historical tickets, then a small classic model for high-volume routing, with the LLM as a fallback for low-confidence cases.</li>
+            <li>Classic ML only knows the words it was trained on. The training data was English only, so the Spanish message was a guess; and "wire" appears in many transfers examples, so word statistics beat the meaning ("refund the fee"). The LLM understood Spanish and the fee request for free.</li>
+            <li>"Money is missing after a text with a link" <em>sounds</em> like a payment problem, and "charged but the order was cancelled" mentions a card. RR Finance Bank's house rule (recognised but wrong = dispute; not recognised = fraud) decides which team handles it, and the bank's fraud team works to different deadlines. The LLM can't know a house rule you didn't tell it; Module 03 fixes this with clear instructions and few-shot examples. A small local model also makes more mistakes than a large hosted one: compare yours.</li>
+            <li>It depends, and that's the real answer. The LLM is more robust to wording and language with zero training; classic ML is thousands of times faster and free per call. Banks have run classic models for card-fraud scoring for decades for exactly that reason. A common production pattern: an LLM to label historical tickets, then a small classic model for high-volume routing, with the LLM as a fallback for low-confidence cases.</li>
           </ol>
         </div></details>
       </li>
@@ -404,8 +418,8 @@ LLM:        11/12 correct · no training · 6.3s for all · 812 tokens</code></p
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Pick the right tool.</p></div></div>
 <div class="quiz">
-  <details><summary>1. TrainCrest wants to block sign-ups with an invalid email address. LLM or code?</summary><div><p><strong>Code.</strong> It's an exact rule with a known answer. An LLM would be slower, cost money and occasionally be wrong.</p></div></details>
-  <details><summary>2. Learners write free-text complaints in 12 languages and you have no labelled data. Classic ML or an LLM to start?</summary><div><p>An <strong>LLM</strong>: no training data needed and it handles many languages. Revisit with classic ML later if volume and cost justify it.</p></div></details>
+  <details><summary>1. RR Finance Bank wants to reject payment forms with an invalid IBAN (the checksum fails). LLM or code?</summary><div><p><strong>Code.</strong> It's an exact rule with a known answer. An LLM would be slower, cost money and occasionally be wrong.</p></div></details>
+  <details><summary>2. Customers write free-text complaints in 12 languages and you have no labelled data. Classic ML or an LLM to start?</summary><div><p>An <strong>LLM</strong>: no training data needed and it handles many languages. Revisit with classic ML later if volume and cost justify it.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>The best GenAI developers are the ones who know when not to use GenAI.</p></div>
 
@@ -416,7 +430,7 @@ LLM:        11/12 correct · no training · 6.3s for all · 812 tokens</code></p
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

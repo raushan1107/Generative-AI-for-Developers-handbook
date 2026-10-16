@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -214,7 +214,7 @@
 </figure>
 
 <span class="out-label">Files after this milestone (new or changed)</span>
-<pre class="out"><code>traincrest-assist/
+<pre class="out"><code>rrfinance-assist/
 ├── cli.py                    asks y/n for each proposed action
 ├── app/
 │   ├── backend.py            + LABS, SESSIONS, upcoming_sessions, extend_lab, reschedule (idempotent, logged)
@@ -231,8 +231,8 @@
 
 <div class="callout note prereq">
   <div class="c-label">Before you run this code</div>
-  <p>Milestones are built in your <code>traincrest-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
-  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="../../code/traincrest-assist-m06.zip">traincrest-assist-m06.zip</a>, or the finished one, <a href="../../code/traincrest-assist-m07.zip">traincrest-assist-m07.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
+  <p>Milestones are built in your <code>rrfinance-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
+  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="../../code/rrfinance-assist-m06.zip">rrfinance-assist-m06.zip</a>, or the finished one, <a href="../../code/rrfinance-assist-m07.zip">rrfinance-assist-m07.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
   <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env"><code><span class="c"># Copy to .env in the project folder. Never commit .env.</span>
 <span class="c"># Default: a free local model with Ollama (no account, no key). Run once:  ollama pull llama3.2</span>
 LLM_PROVIDER=ollama
@@ -274,7 +274,7 @@ RAG_TOP_K=4
 <span class="c"># Relevance floor: leave empty for the default of your embedding model, or set the value from Drill 06.6</span>
 RAG_MIN_SCORE=
 RAG_MAX_CONTEXT_TOKENS=1500
-HELP_CENTRE_URL=https://help.traincrest.example/</code></pre></div></details>
+HELP_CENTRE_URL=https://help.rrfinance.example/</code></pre></div></details>
 </div>
 
 <div class="drill exercise" id="b07-1" data-title="Milestone 7: actions with the learner's approval" data-time="~75 min" data-steps="run,ask,write,verify">
@@ -729,7 +729,7 @@ You: exit</code></pre>
 </div>
 <div class="callout note">
   <div class="c-label">Fell behind? Catch up here</div>
-  <p>The complete reference code is in <a href="../../code/traincrest-assist/m07/app/actions.py"><code>code/traincrest-assist/m07/</code></a>. Copy it over your project, keep your <code>.env</code>, run <code>python -m scripts.build_index</code> and <code>pytest -q</code>, and you're ready for Part IV.</p>
+  <p>The complete reference code is in <a href="../../code/rrfinance-assist/m07/app/actions.py"><code>code/rrfinance-assist/m07/</code></a>. Copy it over your project, keep your <code>.env</code>, run <code>python -m scripts.build_index</code> and <code>pytest -q</code>, and you're ready for Part IV.</p>
 </div>
 
 </div>
@@ -739,7 +739,7 @@ You: exit</code></pre>
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

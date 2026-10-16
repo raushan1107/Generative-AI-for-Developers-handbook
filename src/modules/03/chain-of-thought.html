@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m03-cot", "short": "Chain-of-Thought", "h1": "Chain-of-Thought Considerations", "description": "Module 03, topic 6: step-by-step reasoning, how reasoning models changed it, keeping reasoning separate from answers, and a drill on a multi-step refund case.", "lead": "Because the model writes one token at a time, it 'thinks' by writing. Give it room to work step by step, or use a reasoning model that does it silently, and multi-step answers get better. You'll compare a direct and a step-by-step answer on a refund case, and keep the reasoning away from the learner.", "chips": ["Step-by-step", "Reasoning models", "Reasoning vs answer", "Drill 03.7"], "time": "Learn 10 min · Do 15 min"}
+{"id": "m03-cot", "short": "Chain-of-Thought", "h1": "Chain-of-Thought Considerations", "description": "Module 03, topic 6: step-by-step reasoning, how reasoning models changed it, keeping reasoning separate from answers, and a drill on a multi-step overdraft-fee case.", "lead": "Because the model writes one token at a time, it 'thinks' by writing. Give it room to work step by step, or use a reasoning model that does it silently, and multi-step answers get better. You'll compare a direct and a step-by-step answer on a refund case, and keep the reasoning away from the customer.", "chips": ["Step-by-step", "Reasoning models", "Reasoning vs answer", "Drill 03.7"], "time": "Learn 10 min · Do 15 min"}
 -->
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Show your working, but not to the customer.</p></div></div>
 
@@ -31,12 +31,17 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Fee and interest calculations, dispute deadlines and eligibility checks are multi-step problems, which is exactly where models make confident mistakes. Banks use model reasoning for <em>understanding</em> the case (which rule applies, what the customer is really asking) and keep the arithmetic in code that has been tested against the product terms. Stored reasoning is useful for the audit trail when a human reviewer approves a refund or a complaint outcome, but it is treated as internal working, never as the customer-facing explanation.</p>
+</div>
   <p>Reasoning models made explicit CoT prompting far less necessary: products now expose an "effort" or "thinking" setting instead. Where teams still ask for visible reasoning, it's usually for <strong>auditability</strong>, for example storing why an AI recommended a refund decision for a human reviewer, never shown to the customer.</p>
 </div>
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Showing raw reasoning to the customer: "Step 1: the learner seems annoyed. Step 2: policy says no refund…". Reasoning is a working note for your system, not customer text.</p>
+  <p>Showing raw reasoning to the customer: "Step 1: the customer seems annoyed. Step 2: policy says the fee stands…". Reasoning is a working note for your system, not customer text.</p>
 </div>
 
 <div class="callout exam">
@@ -44,10 +49,10 @@
   <p>"CoT helps on <strong>multi-step</strong> problems by giving the model room to reason. With reasoning models it's internal and controlled by <strong>reasoning effort</strong>. In apps I keep reasoning separate from the answer and verify critical results in code."</p>
 </div>
 
-<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>A refund case with two rules and an add-on.</p></div></div>
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>A fee case with two days, a daily cap and a courtesy rule.</p></div></div>
 
-<div class="drill" id="d03-7" data-title="Chain-of-thought on a multi-step refund case" data-time="~15 min" data-steps="run,verify,think">
-  <div class="drill-head"><span class="drill-id">Drill 03.7</span><h3>Chain-of-thought on a multi-step refund case</h3>
+<div class="drill" id="d03-7" data-title="Chain-of-thought on a multi-step overdraft-fee case" data-time="~15 min" data-steps="run,verify,think">
+  <div class="drill-head"><span class="drill-id">Drill 03.7</span><h3>Chain-of-thought on a multi-step overdraft-fee case</h3>
     <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Ollama shows the gap best</span></div></div>
   <div class="drill-body">
     <p class="drill-goal"><b>Goal:</b> compare direct and step-by-step answers, and extract only the customer-facing part.</p>
@@ -56,14 +61,34 @@
         <pre class="code" data-file="lab03_07_cot.py" data-src="code/genai-labs/lab03_07_cot.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab03_07_cot.py</code></pre>
         <p>Then run it again with <code>LLM_PROVIDER=ollama</code>.</p>
-      </li>
+        <span class="out-label">Real output (llama3.2 on Ollama, abridged)</span>
+<pre class="out"><code>===== DIRECT · 50 output tokens =====
+The bank should refund $145 to the customer, which is the total of five $29 overdraft fees minus a
+courtesy refund of one $29 overdraft fee...
+
+===== STEP BY STEP · 327 output tokens =====
+&lt;reasoning&gt;
+1. On 9 March, the account ended the day $212 overdrawn. According to the policy, no fee should be
+charged since the overdrawn amount is $50 or less. However, ... four fees charged on this day, which
+means that one of these fees was charged in error.
+2. On 10 March, the account ended the day $31 overdrawn. ... this amount is $50 or less, so no fee
+should be charged. ... one fee was charged in error.
+...
+5. ... This totals to $58 + $29 - $29 = $58.
+&lt;/reasoning&gt;
+
+&lt;answer&gt;
+The customer will receive a refund of $58 for the five overdraft fees, with no additional courtesy
+refund applied since it has been requested.
+
+Shown to the customer: (no &lt;answer&gt; tag: handle this case!)</code></pre>
       <li class="dstep verify"><span class="st">Verify</span><h4>Check against the correct answer</h4>
-        <p>Cancelled on 9 March for a 20 March start: <strong>11 days</strong> before, so the 7–13 day rule applies: <strong>50% of $1,200 = $600</strong>. The Retake Pass is refunded in full: <strong>$180</strong>. Total <strong>$780</strong>, not the $1,380 requested.</p>
-        <ul class="verify-list"><li>On a reasoning model both versions are usually right; compare output tokens (hidden reasoning is included).</li><li>On a small local model the direct answer is often fooled by the learner's request or miscounts days; step by step does better.</li><li>"Shown to the learner" contains only the answer, never the reasoning.</li></ul>
+        <p>9 March: the account ended the day more than $50 overdrawn, so fees apply, but at most <strong>3</strong>: the fourth $29 fee was charged in error. 10 March: $31 overdrawn is $50 or less, so that <strong>$29</strong> fee was charged in error too. Errors are always refunded: <strong>$58</strong>. The customer hasn't used the courtesy refund, so one more fee comes back: <strong>$29</strong>. Total <strong>$87</strong>, not the $145 requested; three fees of $29 on 9 March, minus the courtesy one, leave $58 that stands.</p>
+        <ul class="verify-list"><li>On a reasoning model both versions are usually right; compare output tokens (hidden reasoning is included).</li><li>On a small local model both can be wrong, as above. The direct answer simply repeated the customer's $145. Step by step found the two fees charged in error (with muddled reasoning about 9 March) and then mishandled the courtesy rule. It also forgot the closing <code>&lt;/answer&gt;</code> tag, so the extraction code correctly refused to show anything.</li><li>"Shown to the customer" contains only the answer, never the reasoning, and nothing at all when the format is broken. That fallback is the most important line of the script.</li></ul>
       </li>
       <li class="dstep think"><span class="st">Think</span>
         <p>Which part of this task should never be left to the model in production?</p>
-        <details class="solution"><summary>Compare with my answer</summary><div><p>The <strong>date arithmetic and the money</strong>. Code should compute "11 days, 50%, $780" exactly; the model should explain the result kindly. In Module 04 the model calls a <code>refund_quote()</code> function instead of doing maths.</p></div></details>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>The <strong>date arithmetic and the money</strong>. Code should apply the daily cap, the $50 threshold and the courtesy rule and compute "$87" exactly; the model should explain the result kindly. In Module 04 the model calls a <code>fee_refund_quote()</code> function instead of doing maths.</p></div></details>
       </li>
     </ol>
   </div>
@@ -72,7 +97,7 @@
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Reasoning.</p></div></div>
 <div class="quiz">
-  <details><summary>1. You ask a reasoning model to "think step by step" and print its reasoning to learners. What's wrong?</summary><div><p>It already reasons internally, so you add visible tokens and cost; and reasoning isn't customer text. Keep <strong>reasoning separate from the answer</strong>, and tune <code>reasoning_effort</code> instead.</p></div></details>
+  <details><summary>1. You ask a reasoning model to "think step by step" and print its reasoning to customers. What's wrong?</summary><div><p>It already reasons internally, so you add visible tokens and cost; and reasoning isn't customer text. Keep <strong>reasoning separate from the answer</strong>, and tune <code>reasoning_effort</code> instead.</p></div></details>
   <details><summary>2. When is visible reasoning still useful?</summary><div><p>For <strong>auditability</strong> and debugging: storing why a decision was suggested, for a human reviewer, not for the end user.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Let the model reason, keep the reasoning backstage, and let code do the exact maths.</p></div>

@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -158,6 +158,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Error messages in banking must never leak internal details (endpoint names, account numbers, stack traces), and they must never leave a customer guessing about their money. "Something went wrong" after a customer asked "did my transfer go through?" is a bad outcome; a good assistant says it couldn't check, that no action was taken, and how to reach a person. Every error is also logged with a correlation ID, so operations can tie a customer complaint to the exact failed call.</p>
+</div>
   <p>Mature AI products never show raw errors. They map failures to a calm message ("I'm having trouble right now, here's how to reach a human"), log the details with a request ID, alert on configuration errors, and fall back to a second model or region when the primary one is down. Status pages of the big providers show that outages and degradations do happen, so this isn't theoretical.</p>
 </div>
 
@@ -279,7 +284,7 @@ attempt("5. Impossible timeout", lambda: good.with_options(timeout=0.001, max_re
 
 <span class="c"># 6) Not an exception, but still a failure</span>
 r = good.chat.completions.create(model=MODEL, max_completion_tokens=30,
-                                 messages=[{"role": "user", "content": "Write a long essay about cloud computing."}])
+                                 messages=[{"role": "user", "content": "Write a long essay about the history of banking."}])
 print(f"{'6. Truncated answer':30} HTTP 200, finish_reason={r.choices[0].finish_reason!r}")</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab02_10_errors.py</code></pre>
         <span class="out-label">Expected (Azure; messages vary)</span>
@@ -313,7 +318,7 @@ exceptions from the openai Python SDK:
 - AuthenticationError, PermissionDeniedError, NotFoundError -> "config", not retryable
 - any other APIStatusError -> "server", retryable only if status_code >= 500
 - anything else -> "unknown", not retryable
-User messages must be friendly, mention "Traincrest Assist" where it fits, and never contain
+User messages must be friendly, mention "RR Finance Assist" where it fits, and never contain
 technical details. Then write test_friendly_errors.py with pytest that constructs real SDK
 exceptions using httpx.Request/httpx.Response (no network calls) and checks every mapping.
 Run the tests.</code></pre></div>
@@ -323,10 +328,10 @@ Run the tests.</code></pre></div>
 import openai
 
 MESSAGES = {
-    "rate_limited": "Traincrest Assist is very busy right now. Please try again in a moment.",
+    "rate_limited": "RR Finance Assist is very busy right now. Please try again in a moment.",
     "unreachable": "I couldn't reach the AI service. Please check your connection and try again.",
     "bad_request": "I couldn't process that message. Could you rephrase it?",
-    "config": "Traincrest Assist is temporarily unavailable. Our team has been notified.",
+    "config": "RR Finance Assist is temporarily unavailable. Our team has been notified.",
     "server": "Something went wrong on our side. Please try again shortly.",
     "unknown": "Something unexpected happened. Please try again.",
 }
@@ -407,7 +412,7 @@ def test_unknown_errors_are_not_retried():
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

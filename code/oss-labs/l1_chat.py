@@ -8,8 +8,9 @@ import openai
 
 from client import CHAT_MODEL, get_client
 
-SYSTEM = ("You are Traincrest Assist, the friendly learner-support assistant of TrainCrest, a technical "
-          "training company. Answer in at most 80 words. If you don't know a TrainCrest policy, say so.")
+SYSTEM = ("You are RR Finance Assist, the friendly customer-support assistant of RR Finance Bank, a retail "
+          "bank. Answer in at most 80 words. Never ask for a PIN, a password or a full card number. "
+          "If you don't know an RR Finance Bank policy, say so.")
 MAX_PAIRS = 6                          # remember the last 6 questions and answers
 client = get_client()
 history = []
@@ -38,7 +39,7 @@ def reply(question):
     return "".join(parts), stats
 
 
-print(f"Traincrest Assist (open-source edition, {CHAT_MODEL}). Type 'exit' to quit, '/reset' for a new chat.\n")
+print(f"RR Finance Assist (open-source edition, {CHAT_MODEL}). Type 'exit' to quit, '/reset' for a new chat.\n")
 while True:
     question = input("You: ").strip()
     if question.lower() in {"exit", "quit"}:

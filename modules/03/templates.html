@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -126,14 +126,14 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 03 · Topic 7 of 10</span><h1>Prompt Templates</h1><p class="lead">Write the instructions once, leave blanks for what changes, and fill them in code. Then treat the templates like code: versioned, reviewed and tested. You'll build Traincrest Assist's first prompt library and have your assistant write the tests that guard it.</p><div class="chips"><span class="chip">Placeholders</span><span class="chip">Versioning</span><span class="chip">Prompt tests</span><span class="chip">Drills 03.8 · 03.9</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 8 min · Do 25 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 03 · Topic 7 of 10</span><h1>Prompt Templates</h1><p class="lead">Write the instructions once, leave blanks for what changes, and fill them in code. Then treat the templates like code: versioned, reviewed and tested. You'll build RR Finance Assist's first prompt library and have your assistant write the tests that guard it.</p><div class="chips"><span class="chip">Placeholders</span><span class="chip">Versioning</span><span class="chip">Prompt tests</span><span class="chip">Drills 03.8 · 03.9</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 8 min · Do 25 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Mail-merge for prompts.</p></div></div>
 
 <div class="callout definition">
   <div class="c-label">Definition</div>
-  <p>A prompt template is a reusable prompt with named placeholders (for example <code>$ticket</code> or <code>{learner_name}</code>) that application code fills in at runtime, keeping the fixed instructions separate from the variable data.</p>
+  <p>A prompt template is a reusable prompt with named placeholders (for example <code>$ticket</code> or <code>{customer_name}</code>) that application code fills in at runtime, keeping the fixed instructions separate from the variable data.</p>
 </div>
 <div class="callout plain">
   <div class="c-label">In plain words</div>
@@ -150,6 +150,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>In a bank, a customer-facing prompt template is reviewed much like a template letter: product, legal and compliance check the wording, the approved version is recorded, and changes go through the same change-management process as code. Mandatory text (a fraud warning, a "this isn't financial advice" line, a complaints-process sentence) is often kept <em>outside</em> the model, added by code after generation, so it can never be paraphrased away. Logging the template version with every answer is what lets the bank show a regulator exactly which approved wording a customer received.</p>
+</div>
   <p>Mature teams manage prompts as assets: stored in the repository or a prompt registry, versioned, reviewed, A/B tested and rolled back like any release. Observability tools record which prompt version produced each response, which is how teams answer "why did the bot say that last Tuesday?".</p>
 </div>
 
@@ -242,28 +247,29 @@ PROMPTS = {
     "summarise_ticket@v1": Template("Summarise this support ticket:\n$ticket"),
 
     "summarise_ticket@v2": Template("""## Role
-You summarise learner-support tickets for TrainCrest agents.
+You summarise customer-support tickets for RR Finance Bank agents.
 
 ## Rules
 - Exactly 3 bullet points, each under 15 words.
-- Include the enrolment ID if one is present.
+- Include the customer ID if one is present.
 - Use only facts from the ticket. Do not invent details.
 
 &lt;ticket&gt;
 $ticket
 &lt;/ticket&gt;"""),
 
-    "reply_to_learner@v1": Template("""## Role
-You are Traincrest Assist, TrainCrest's learner-support assistant. Warm, concise, practical.
+    "reply_to_customer@v1": Template("""## Role
+You are RR Finance Assist, RR Finance Bank's customer-support assistant. Warm, concise, practical.
 
 ## Rules
-- Address the learner as $learner_name.
+- Address the customer as $customer_name.
 - Reply in $language.
 - Under $max_words words.
+- Never ask for a PIN, a password or a full card number.
 
-&lt;learner_message&gt;
+&lt;customer_message&gt;
 $message
-&lt;/learner_message&gt;"""),
+&lt;/customer_message&gt;"""),
 }
 
 
@@ -277,8 +283,8 @@ from llm import get_client, MODEL
 from prompts import render
 
 client = get_client()
-ticket = ("Enrolment TC-10293: lab VM shows 'quota exceeded'. Exam voucher not received, course ended 28 Feb. "
-          "Exam booked for 12 Mar.")
+ticket = ("Customer RR-10293: charged twice for a $412 SkyHigh Airlines ticket on 9 Feb, dispute raised 4 Mar. "
+          "Replacement card not received, old card expired 28 Feb. Flying abroad on 12 Mar.")
 
 for version in ("summarise_ticket@v1", "summarise_ticket@v2"):
     prompt, used = render(version, ticket=ticket)
@@ -286,20 +292,39 @@ for version in ("summarise_ticket@v1", "summarise_ticket@v2"):
     print(f"\n[{used}] {r.usage.prompt_tokens} in / {r.usage.completion_tokens} out\n"
           f"{r.choices[0].message.content.strip()}")
 
-prompt, used = render("reply_to_learner@v1", learner_name="Diego", language="Spanish", max_words=60,
-                      message="My voucher still hasn't arrived and my exam is next week.")
+prompt, used = render("reply_to_customer@v1", customer_name="Diego", language="Spanish", max_words=60,
+                      message="My replacement card still hasn't arrived and I travel abroad next week.")
 r = client.chat.completions.create(model=MODEL, messages=[{"role": "user", "content": prompt}])
 print(f"\n[{used}]\n{r.choices[0].message.content.strip()}")
 
 <span class="c"># A forgotten placeholder fails in code, before you pay for a confused model call.</span>
 try:
-    render("reply_to_learner@v1", learner_name="Diego", message="Hi")
+    render("reply_to_customer@v1", customer_name="Diego", message="Hi")
 except KeyError as missing:
     print(f"\nCaught before calling the model: missing placeholder {missing}")</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab03_08_templates.py</code></pre>
-      </li>
+        <span class="out-label">Real output (llama3.2 on Ollama, abridged)</span>
+<pre class="out"><code>[summarise_ticket@v1] 78 in / 82 out
+Here is a summary of the support ticket:
+Support Ticket RR-10293:
+* The customer's $412 SkyHigh Airlines ticket was accidentally charged twice on Feb 9.
+* A replacement card was not received, and the customer's old card expired.
+* The customer disputed the issue on Mar 4.
+* The customer plans to travel abroad on Mar 12 but may still need a replacement card.
+
+[summarise_ticket@v2] 131 in / 72 out
+• RR-10293: Charged twice for SkyHigh Airlines ticket on 9 Feb dispute raised on 4 Mar.
+• Replacement card not received yet, old card expired on 28 Feb.
+• Customer is flying abroad on 12 Mar and urgently needs a replacement card.
+
+[reply_to_customer@v1]
+"Hola Diego, lo siento mucho. Para evitar problemas con tu tarjeta fuera del país, te recomiendo que
+llames a nuestro servicio de atención al cliente antes de salir. ... ¿Qué número de teléfono tienes
+para tu tarjeta, para poder verificación y enviar tu nuevo certificado de recibo de tu tarjeta?"
+
+Caught before calling the model: missing placeholder 'language'</code></pre>
       <li class="dstep verify"><span class="st">Verify</span>
-        <ul class="verify-list"><li>v2 gives three focused bullets with the enrolment ID; v1 gives whatever it likes.</li><li>The Spanish reply addresses Diego, in Spanish, under 60 words.</li><li>The missing placeholder was caught <em>before</em> any API call (and any cost).</li><li>Copy v2 as <code>summarise_ticket@v3</code> with "4 bullet points" and compare. That's prompt versioning in miniature.</li></ul>
+        <ul class="verify-list"><li>v2 gives three focused bullets with the customer ID; v1 gives whatever it likes (four bullets, a heading, a different order).</li><li>The Spanish reply addresses Diego, in Spanish, under 60 words. Read it anyway: it ends by asking for a phone number "for verification" and promises a "receipt certificate" that doesn't exist. Templates make prompts consistent; they don't make answers correct. That's what Modules 06 and 09 are for.</li><li>The missing placeholder was caught <em>before</em> any API call (and any cost).</li><li>Copy v2 as <code>summarise_ticket@v3</code> with "4 bullet points" and compare. That's prompt versioning in miniature.</li></ul>
       </li>
     </ol>
   </div>
@@ -333,14 +358,14 @@ def test_every_template_has_a_version():
 
 
 def test_render_returns_text_and_version():
-    text, version = render("summarise_ticket@v2", ticket="Lab is broken. TC-10293")
+    text, version = render("summarise_ticket@v2", ticket="Card stolen. RR-10293")
     assert version == "summarise_ticket@v2"
-    assert "TC-10293" in text and "&lt;ticket&gt;" in text
+    assert "RR-10293" in text and "&lt;ticket&gt;" in text
 
 
 def test_missing_placeholder_fails_loudly():
     with pytest.raises(KeyError):
-        render("reply_to_learner@v1", learner_name="Diego", message="Hi")
+        render("reply_to_customer@v1", customer_name="Diego", message="Hi")
 
 
 def test_untrusted_text_stays_inside_its_tags():
@@ -363,7 +388,7 @@ def test_untrusted_text_stays_inside_its_tags():
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Templates.</p></div></div>
 <div class="quiz">
   <details><summary>1. Why does <code>Template.substitute</code> beat an f-string for prompts?</summary><div><p>It <strong>fails loudly</strong> on a missing value instead of quietly building a broken prompt, and the template lives in one reviewable place.</p></div></details>
-  <details><summary>2. A learner complains about an answer from last week. What lets you find the cause?</summary><div><p>Logging the <strong>prompt version</strong> (plus model version and inputs) with every response.</p></div></details>
+  <details><summary>2. A customer complains about an answer from last week. What lets you find the cause?</summary><div><p>Logging the <strong>prompt version</strong> (plus model version and inputs) with every response.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Prompts are code: one place, versioned, reviewed and tested.</p></div>
 
@@ -374,7 +399,7 @@ def test_untrusted_text_stays_inside_its_tags():
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

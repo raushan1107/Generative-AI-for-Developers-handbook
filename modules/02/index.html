@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Working with LLM APIs</title>
-<meta name="description" content="Module 02 overview: API-based architecture, authentication, the request lifecycle, message roles, parameters, streaming, error handling, rate limits, retries and cost, with 15 drills and Traincrest Assist milestone 2.">
+<meta name="description" content="Module 02 overview: API-based architecture, authentication, the request lifecycle, message roles, parameters, streaming, error handling, rate limits, retries and cost, with 15 drills and RR Finance Assist milestone 2.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,7 +104,7 @@
 <div class="sb-module soon"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-soon">soon</span></div>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -126,7 +126,7 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 02 · Overview</span><h1>Working with LLM APIs: Calling the Model Like a Professional</h1><p class="lead">Traincrest Assist v0.1 worked until it didn't: it forgot names, froze while thinking and would crash on the first network blip. The fix isn't a better model. It's treating the LLM as what it really is: a slow, metered, rate-limited HTTPS API that sometimes fails. By the end of this module, v0.2 streams in a browser and survives failures.</p><div class="chips"><span class="chip">9 topics</span><span class="chip">15 drills</span><span class="chip">Milestone 2</span><span class="chip">≈ 5 hours hands-on</span></div></header>
+<header class="page-hero"><span class="eyebrow">Module 02 · Overview</span><h1>Working with LLM APIs: Calling the Model Like a Professional</h1><p class="lead">RR Finance Assist v0.1 worked until it didn't: it forgot names, froze while thinking and would crash on the first network blip. The fix isn't a better model. It's treating the LLM as what it really is: a slow, metered, rate-limited HTTPS API that sometimes fails. By the end of this module, v0.2 streams in a browser and survives failures.</p><div class="chips"><span class="chip">9 topics</span><span class="chip">15 drills</span><span class="chip">Milestone 2</span><span class="chip">≈ 5 hours hands-on</span></div></header>
 <div class="content">
 
 <h2 id="map">The mental map</h2>
@@ -192,7 +192,7 @@
 <a class="page-card k-topic" href="../../modules/02/errors.html"><span class="pc-tag">Learn · Do · Check</span><b>Error handling</b><ul><li><span class="mono">02.10</span> Break it on purpose: read every kind of error <span class="muted">· ~10 min</span></li><li><span class="mono">02.11</span> Build a tested error-to-message mapper <span class="muted">· ~15 min</span></li></ul></a>
 <a class="page-card k-topic" href="../../modules/02/rate-limits.html"><span class="pc-tag">Learn · Do · Check</span><b>Rate limits and retries</b><ul><li><span class="mono">02.12</span> Hit a real 429 and recover with backoff <span class="muted">· ~15 min</span></li><li><span class="mono">02.13</span> Write a tested retry decorator with backoff and jitter <span class="muted">· ~15 min</span></li></ul></a>
 <a class="page-card k-topic" href="../../modules/02/cost.html"><span class="pc-tag">Learn · Do · Check</span><b>Managing API costs</b><ul><li><span class="mono">02.14</span> A cost meter: tokens to dollars to a monthly projection <span class="muted">· ~10 min</span></li><li><span class="mono">02.15</span> Build a usage report from your logs with your AI assistant <span class="muted">· ~15 min</span></li></ul></a>
-<a class="page-card k-build" href="../../modules/02/build.html"><span class="pc-tag">Traincrest Assist</span><b>Build: Milestone 2</b><ul><li><span class="mono">M2</span> Milestone 2: streaming chat service with memory, errors and logging <span class="muted">· ~60 min</span></li></ul></a>
+<a class="page-card k-build" href="../../modules/02/build.html"><span class="pc-tag">RR Finance Assist</span><b>Build: Milestone 2</b><ul><li><span class="mono">M2</span> Milestone 2: streaming chat service with memory, errors and logging <span class="muted">· ~60 min</span></li></ul></a>
 <a class="page-card k-recap" href="../../modules/02/recap.html"><span class="pc-tag">Check</span><b>Recap and self-check</b></a></div>
 
 <h2 id="kit">Lab kit for Module 02</h2>
@@ -200,7 +200,7 @@
   <li><strong>You'll need:</strong> the <code>genai-labs</code> folder and your <code>chat</code> deployment; for Drill 02.12, permission to lower the deployment's tokens-per-minute limit temporarily; for Drill 02.3, the Azure CLI.</li>
   <li><strong>New packages:</strong> <code>fastapi</code>, <code>uvicorn</code> and <code>pytest</code> (already in <code>requirements.txt</code>).</li>
   <li><strong>Unit tests without an API:</strong> Drills 02.6, 02.11 and 02.13 have you build tested utilities (history trimming, error mapping, retries) that the milestone reuses.</li>
-  <li><strong>Build:</strong> Milestone 2 turns Traincrest Assist into a FastAPI service with a streaming web chat.</li>
+  <li><strong>Build:</strong> Milestone 2 turns RR Finance Assist into a FastAPI service with a streaming web chat.</li>
 </ul>
 
 </div>
@@ -210,7 +210,7 @@
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

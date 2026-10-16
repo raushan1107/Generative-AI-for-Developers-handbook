@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -352,15 +352,15 @@ from lab04_02_json_mode import MESSAGES
 
 
 class Triage(BaseModel):
-    learner_name: Optional[str] = Field(description="First name if given, else null")
-    enrolment_id: Optional[str] = Field(description="Like TC-12345. Null if not given. Never invent one.")
-    category: Literal["scheduling", "billing", "exam_voucher", "certificate", "lab_access", "account", "other"]
-    urgent: bool = Field(description="True if a deadline is within 3 days or the learner is blocked")
+    customer_name: Optional[str] = Field(description="First name if given, else null")
+    customer_id: Optional[str] = Field(description="Like RR-12345. Null if not given. Never invent one.")
+    category: Literal["card", "dispute", "fraud", "fees", "transfers", "loans", "account", "other"]
+    urgent: bool = Field(description="True for fraud, a lost or stolen card, or a deadline within 3 days")
     summary: str = Field(description="One English sentence, at most 20 words")
 
 
-SYSTEM = ("You triage TrainCrest learner-support messages. A refund request is billing even if it mentions dates; "
-          "asking for more lab time is lab_access.")
+SYSTEM = ("You triage RR Finance Bank customer messages. A payment the customer recognises but that is wrong "
+          "is dispute; a payment they don't recognise is fraud; asking for a fee back is fees.")
 
 
 def show_schema():
@@ -383,7 +383,7 @@ def main():
             print("REFUSED:", message.refusal)
             continue
         t: Triage = message.parsed               <span class="c"># a real Triage object, already validated</span>
-        print(f"{t.category:&lt;13} urgent={t.urgent!s:&lt;5} id={t.enrolment_id}  {t.summary}")
+        print(f"{t.category:&lt;10} urgent={t.urgent!s:&lt;5} id={t.customer_id}  {t.summary}")
 
 
 if __name__ == "__main__":
@@ -453,8 +453,8 @@ for text in MESSAGES:
   <div class="drill-body">
     <p class="drill-goal"><b>Goal:</b> have your assistant design a nested schema for company course enquiries, and check it against strict-mode rules <em>before</em> any model sees it.</p>
     <ol class="dsteps">
-      <li class="dstep ask"><span class="st">Ask AI</span><h4>Design <code>course_enquiry.py</code></h4>
-        <div class="prompt-box"><pre><code>Create course_enquiry.py with Pydantic v2 models for extracting a company's training enquiry
+      <li class="dstep ask"><span class="st">Ask AI</span><h4>Design <code>business_enquiry.py</code></h4>
+        <div class="prompt-box"><pre><code>Create business_enquiry.py with Pydantic v2 models for extracting a company's training enquiry
 from an email, for use with OpenAI/Azure strict structured outputs.
 
 Models:
@@ -472,14 +472,14 @@ Rules:
 - Don't create or change any other file.</code></pre></div>
         <div class="why"><b>Why this prompt works:</b> it names every field and type, states the strict-mode rules (required fields, nullable via <code>Optional</code>), lists the keywords to avoid <em>and</em> where those rules should go instead, and fences the change to one file. Without the middle rule, assistants reach straight for <code>EmailStr</code> and <code>Field(ge=1)</code>.</div>
         <details class="solution"><summary>Reference solution</summary><div>
-          <pre class="code" data-file="course_enquiry.py"><code>"""Drill 04.4 reference solution: a schema for course enquiries from companies.
+          <pre class="code" data-file="business_enquiry.py"><code>"""Drill 04.4 reference solution: a schema for business-banking enquiries from companies.
 Shape rules live in the schema; business rules (formats, ranges) live in validators."""
 import re
 from typing import Literal, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
-Format = Literal["live-online", "classroom", "self-paced", "any"]
+ProductType = Literal["business_checking", "business_savings", "business_card", "business_loan", "other"]
 
 
 class Contact(BaseModel):
@@ -495,31 +495,38 @@ class Contact(BaseModel):
         return v
 
 
-class CourseRequest(BaseModel):
-    topic: str = Field(description="Course or topic requested, in a few words")
-    learners: Optional[int] = Field(description="Number of people, or null if not stated")
-    preferred_format: Format
+class ProductRequest(BaseModel):
+    product_type: ProductType
+    amount_usd: Optional[int] = Field(description="Loan amount, credit limit or deposit in US dollars, or null")
+    cards_needed: Optional[int] = Field(description="Number of employee cards, or null if not stated")
 
-    @field_validator("learners")
+    @field_validator("amount_usd")
     @classmethod
-    def learners_in_range(cls, v):
+    def amount_in_range(cls, v):
+        if v is not None and not 1 &lt;= v &lt;= 5_000_000:
+            raise ValueError("amount_usd must be between 1 and 5,000,000")
+        return v
+
+    @field_validator("cards_needed")
+    @classmethod
+    def cards_in_range(cls, v):
         if v is not None and not 1 &lt;= v &lt;= 500:
-            raise ValueError("learners must be between 1 and 500")
+            raise ValueError("cards_needed must be between 1 and 500")
         return v
 
 
-class CourseEnquiry(BaseModel):
+class BusinessEnquiry(BaseModel):
     contact: Contact
-    requests: list[CourseRequest] = Field(description="One entry per course or topic asked about")
-    budget_usd: Optional[int] = Field(description="Total budget in US dollars, or null")
-    wants_private_class: bool
-    deadline: Optional[str] = Field(description="Date training must finish by, as YYYY-MM-DD, or null")
+    requests: list[ProductRequest] = Field(description="One entry per product the company asks about")
+    annual_revenue_usd: Optional[int] = Field(description="Company's yearly revenue in US dollars, or null")
+    wants_relationship_manager: bool
+    decision_deadline: Optional[str] = Field(description="Date the company must decide by, as YYYY-MM-DD, or null")
 
-    @field_validator("deadline")
+    @field_validator("decision_deadline")
     @classmethod
     def deadline_is_iso_date(cls, v):
         if v is not None and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", v):
-            raise ValueError("deadline must be YYYY-MM-DD")
+            raise ValueError("decision_deadline must be YYYY-MM-DD")
         return v</code></pre>
         </div></details>
       </li>
@@ -527,7 +534,7 @@ class CourseEnquiry(BaseModel):
         <p><code>schema_lint.py</code> builds the exact schema the SDK would send and checks it against Azure's rules: unsupported keywords, required fields, extra properties, nesting depth and property count.</p>
         <pre class="code" data-file="schema_lint.py"><code>"""Drill 04.4: check a Pydantic model against the rules of strict structured outputs
 before you send it to the model.
-Run:  python schema_lint.py course_enquiry:CourseEnquiry"""
+Run:  python schema_lint.py business_enquiry:BusinessEnquiry"""
 import importlib
 import sys
 
@@ -596,7 +603,7 @@ def lint(schema):
 
 
 if __name__ == "__main__":
-    target = sys.argv[1] if len(sys.argv) &gt; 1 else "course_enquiry:CourseEnquiry"
+    target = sys.argv[1] if len(sys.argv) &gt; 1 else "business_enquiry:BusinessEnquiry"
     module_name, class_name = target.split(":")
     model = getattr(importlib.import_module(module_name), class_name)
     found = lint(strict_schema(model))
@@ -604,7 +611,7 @@ if __name__ == "__main__":
         print("PROBLEM", p)
     print(f"{class_name}: {'OK, ready for strict structured outputs' if not found else str(len(found)) + ' problem(s)'}")
     sys.exit(1 if found else 0)</code></pre>
-<pre class="term"><code><span class="ps">$ </span>python schema_lint.py course_enquiry:CourseEnquiry
+<pre class="term"><code><span class="ps">$ </span>python schema_lint.py business_enquiry:BusinessEnquiry
 <span class="ps">$ </span>python schema_lint.py test_schema_lint:TooClever</code></pre>
         <span class="out-label">Output (exact)</span>
 <pre class="out"><code>CourseEnquiry: OK, ready for strict structured outputs
@@ -615,20 +622,20 @@ PROBLEM root.learners: 'minimum' is not supported; enforce it in a validator ins
 TooClever: 4 problem(s)</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
-        <pre class="code" data-file="test_schema_lint.py"><code>"""Tests for schema_lint.py and the course enquiry schema. Run:  pytest -q test_schema_lint.py"""
+        <pre class="code" data-file="test_schema_lint.py"><code>"""Tests for schema_lint.py and the business enquiry schema. Run:  pytest -q test_schema_lint.py"""
 from typing import Optional
 
 import pytest
 from pydantic import BaseModel, Field, ValidationError
 
-from course_enquiry import CourseEnquiry
+from business_enquiry import BusinessEnquiry
 from schema_lint import lint, strict_schema
 
 
 class TooClever(BaseModel):
-    enrolment_id: str = Field(pattern=r"^TC-\d{5}$")       <span class="c"># pattern: not supported</span>
+    customer_id: str = Field(pattern=r"^RR-\d{5}$")        <span class="c"># pattern: not supported</span>
     summary: str = Field(max_length=200)                    <span class="c"># maxLength: not supported</span>
-    learners: int = Field(ge=1, le=500)                     <span class="c"># minimum/maximum: not supported</span>
+    cards: int = Field(ge=1, le=500)                        <span class="c"># minimum/maximum: not supported</span>
 
 
 class Level5(BaseModel):
@@ -657,7 +664,7 @@ class TooDeep(BaseModel):
 
 
 def test_reference_schema_is_clean():
-    assert lint(strict_schema(CourseEnquiry)) == []
+    assert lint(strict_schema(BusinessEnquiry)) == []
 
 
 def test_unsupported_keywords_are_reported():
@@ -671,13 +678,13 @@ def test_deep_nesting_is_reported():
 
 
 def test_business_rules_live_in_validators():
-    good = {"contact": {"name": "Priya", "company": "Northwind", "email": "priya@northwind.example"},
-            "requests": [{"topic": "AZ-104", "learners": 12, "preferred_format": "live-online"}],
-            "budget_usd": 15000, "wants_private_class": True, "deadline": "2026-12-15"}
-    assert CourseEnquiry.model_validate(good).requests[0].learners == 12
-    bad = {**good, "deadline": "15/12/2026"}
+    good = {"contact": {"name": "Priya", "company": "Northwind Bakery", "email": "priya@northwind.example"},
+            "requests": [{"product_type": "business_card", "amount_usd": 20000, "cards_needed": 12}],
+            "annual_revenue_usd": 1800000, "wants_relationship_manager": True, "decision_deadline": "2026-12-15"}
+    assert BusinessEnquiry.model_validate(good).requests[0].cards_needed == 12
+    bad = {**good, "decision_deadline": "15/12/2026"}
     with pytest.raises(ValidationError):
-        CourseEnquiry.model_validate(bad)</code></pre>
+        BusinessEnquiry.model_validate(bad)</code></pre>
         <pre class="term"><code><span class="ps">$ </span>pytest -q test_schema_lint.py</code></pre>
         <ul class="verify-list">
           <li><code>4 passed</code>. If your assistant's version fails the lint, paste the PROBLEM lines back to it: they say exactly what to change.</li>
@@ -706,7 +713,7 @@ def test_business_rules_live_in_validators():
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

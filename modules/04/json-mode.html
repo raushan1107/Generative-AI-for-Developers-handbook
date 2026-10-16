@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -320,18 +320,18 @@ from collections import Counter
 from llm import MODEL, get_client
 
 MESSAGES = [
-    "Hi, I'm Mei. My lab for TC-10293 says quota exceeded and my exam is on Friday!",
-    "Can I get a refund for TC-20877? I can't attend next week.",
-    "Where is my AZ-104 exam voucher? I finished the course 5 days ago. Diego",
-    "Hola, ¿puedo cambiar la fecha de mi curso? Soy Asha, inscripción TC-31002.",
-    "My certificate says Omar Farouk but my name is Omar Faruk.",
+    "Hi, I'm Mei, customer RR-10293. I was charged twice for a $412 flight and I fly on Friday!",
+    "Can you refund the $29 overdraft fee on RR-20877? It was a one-off.",
+    "My card was stolen at the station an hour ago. Diego",
+    "Hola, soy Asha, cliente RR-31002. Mi transferencia lleva cinco días pendiente.",
+    "There's a $640 payment to an online casino that I never made.",
 ]
 
-LOOSE = "Extract the useful details from this support message as JSON."
-TIGHT = """Extract details from this support message.
+LOOSE = "Extract the useful details from this bank customer's message as JSON."
+TIGHT = """Extract details from this bank customer's message.
 Return a JSON object with exactly these keys:
-"learner_name" (string or null), "enrolment_id" (string or null),
-"category" (one of scheduling, billing, exam_voucher, certificate, lab_access, account, other),
+"customer_name" (string or null), "customer_id" (string or null),
+"category" (one of card, dispute, fraud, fees, transfers, loans, account, other),
 "urgent" (true or false)."""
 
 
@@ -426,7 +426,7 @@ Different key sets seen: 1
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

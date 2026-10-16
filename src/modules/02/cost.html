@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m02-cost", "short": "Managing API Costs", "h1": "Managing API Costs", "description": "Module 02, topic 9: how LLM costs are calculated, a worked monthly projection for TrainCrest, the cost levers in order, and drills that build a cost meter and a usage report with your AI assistant.", "lead": "Every token in and out is metered. One call costs a fraction of a cent; 25,000 learners chatting four turns each, with a bloated prompt on an expensive model, is a real monthly bill. You'll do the maths once, build a cost meter, and have your assistant turn the logs into a usage report.", "chips": ["Cost formula", "Monthly projection", "Cost levers", "Drills 02.14 · 02.15"], "time": "Learn 12 min · Do 25 min"}
+{"id": "m02-cost", "short": "Managing API Costs", "h1": "Managing API Costs", "description": "Module 02, topic 9: how LLM costs are calculated, a worked monthly projection for RR Finance Bank, the cost levers in order, and drills that build a cost meter and a usage report with your AI assistant.", "lead": "Every token in and out is metered. One call costs a fraction of a cent; 40,000 bank customers chatting four turns each, with a bloated prompt on an expensive model, is a real monthly bill. You'll do the maths once, build a cost meter, and have your assistant turn the logs into a usage report.", "chips": ["Cost formula", "Monthly projection", "Cost levers", "Drills 02.14 · 02.15"], "time": "Learn 12 min · Do 25 min"}
 -->
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>A taxi meter that runs on words.</p></div></div>
 
@@ -13,14 +13,14 @@
 </div>
 
 <h3>Do the maths once (illustrative prices)</h3>
-<p>Say your model costs <strong>$0.40 per million input tokens</strong> and <strong>$1.60 per million output tokens</strong> (check your model's current price). TrainCrest has 25,000 conversations a month, averaging 4 turns: 100,000 turns.</p>
+<p>Say your model costs <strong>$0.40 per million input tokens</strong> and <strong>$1.60 per million output tokens</strong> (check your model's current price). RR Finance Bank's assistant has 40,000 conversations a month, averaging 4 turns: 160,000 turns.</p>
 <div class="table-wrap min">
   <table>
     <thead><tr><th>Scenario</th><th>Per turn</th><th>Monthly tokens</th><th>Monthly cost</th></tr></thead>
     <tbody>
-      <tr><td>Lean prompt, short answers</td><td>1,500 in · 250 out</td><td>150M in · 25M out</td><td>$60 + $40 = <strong>$100</strong></td></tr>
-      <tr><td>Bloated 6,000-token prompt</td><td>7,500 in · 250 out</td><td>750M in · 25M out</td><td>$300 + $40 = <strong>$340</strong></td></tr>
-      <tr><td>Bloated prompt, model 10× the price</td><td>same</td><td>same</td><td><strong>$3,400</strong></td></tr>
+      <tr><td>Lean prompt, short answers</td><td>1,500 in · 250 out</td><td>240M in · 40M out</td><td>$96 + $64 = <strong>$160</strong></td></tr>
+      <tr><td>Bloated 6,000-token prompt</td><td>7,500 in · 250 out</td><td>1,200M in · 40M out</td><td>$480 + $64 = <strong>$544</strong></td></tr>
+      <tr><td>Bloated prompt, model 10× the price</td><td>same</td><td>same</td><td><strong>$5,440</strong></td></tr>
     </tbody>
   </table>
 </div>
@@ -39,6 +39,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banks budget AI features the way they budget anything else: a business case with a cost per unit. A useful unit for a contact centre is <strong>cost per resolved conversation</strong>, compared with the fully loaded cost of a human-handled one (often several dollars). At 160,000 turns a month, the difference between $160 and $5,440 decides whether finance approves the project. Expect two more lines in the business case: the cost of the evaluation and monitoring runs you'll add in Modules 09 and 12, and a chargeback so each business line pays for its own usage.</p>
+</div>
   <p>Teams running AI features at scale track cost per feature and per user, set quotas so one heavy user can't run up the bill, and use provider discounts: prompt caching for repeated prompt prefixes, batch APIs for overnight work, and committed capacity for steady high volume. Many discover that a long, repeated system prompt is their single biggest cost line.</p>
 </div>
 
@@ -65,9 +70,10 @@
         <pre class="code" data-file="lab02_14_cost_meter.py" data-src="code/genai-labs/lab02_14_cost_meter.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab02_14_cost_meter.py</code></pre>
         <span class="out-label">Expected shape (numbers depend on model and price)</span>
-<pre class="out"><code>bloated prompt              1561 in ·  212 out (0 reasoning) · $0.00096/turn · ~$96/month
-lean prompt                   41 in ·  205 out (0 reasoning) · $0.00034/turn · ~$34/month
-lean + 'under 60 words'       47 in ·   78 out (0 reasoning) · $0.00014/turn · ~$14/month</code></pre>
+<pre class="out"><code>bloated prompt              1743 in ·  282 out (0 reasoning) · $0.00115/turn · ~$184/month
+lean prompt                   63 in ·  164 out (0 reasoning) · $0.00029/turn · ~$46/month
+lean + 'under 60 words'       70 in ·   82 out (0 reasoning) · $0.00016/turn · ~$25/month</code></pre>
+        <p class="small muted">Real token counts from llama3.2 on Ollama, priced at the illustrative $0.40 / $1.60 per million tokens. Locally you pay nothing; the point is the <em>ratio</em> you'll pay on a hosted model.</p>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
         <ul class="verify-list"><li>The bloated system prompt is paid on <em>every turn</em>: boilerplate is the most expensive text you'll write.</li><li>Brevity cut output tokens, the pricier ones.</li><li><code>usage.jsonl</code> exists with three JSON lines. Run the script two more times to give the next drill more data.</li></ul>
@@ -88,7 +94,7 @@ lean + 'under 60 words'       47 in ·   78 out (0 reasoning) · $0.00014/turn �
 cost_usd. Write usage_report.py (standard library only) that reads it (path argument, default
 usage.jsonl), groups by label, and prints a table with: label, number of calls, average tokens
 in, average tokens out, average $ per call, and projected $ per month for --turns-per-month
-(default 100000). Sort by average cost per call, most expensive first. Skip blank lines.</code></pre></div>
+(default 160000). Sort by average cost per call, most expensive first. Skip blank lines.</code></pre></div>
         <div class="why"><b>Why this prompt works:</b> the exact input schema, the exact output columns, the default volume and the sort order. A real example file for context means the assistant doesn't have to guess the data shape.</div>
         <details class="solution"><summary>Reference solution</summary><div>
           <pre class="code" data-file="usage_report.py" data-src="code/genai-labs/usage_report.py"></pre>
@@ -98,9 +104,9 @@ in, average tokens out, average $ per call, and projected $ per month for --turn
         <pre class="term"><code><span class="ps">$ </span>python usage_report.py</code></pre>
         <span class="out-label">Expected shape</span>
 <pre class="out"><code>label                      calls   avg in  avg out  avg $/call    $/month
-bloated prompt                 3     1561      209     0.00096         96
-lean prompt                    3       41      201     0.00034         34
-lean + 'under 60 words'        3       47       80     0.00014         14</code></pre>
+bloated prompt                 1     1743      282     0.00115        184
+lean prompt                    1       63      164     0.00029         46
+lean + 'under 60 words'        1       70       82     0.00016         25</code></pre>
         <ul class="verify-list"><li>Calls per label match the number of times you ran Drill 02.14.</li><li>The most expensive label is at the top.</li></ul>
       </li>
     </ol>

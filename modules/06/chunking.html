@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -374,7 +374,7 @@ def split_long(body: str, max_chars: int):
 
 
 def chunk(doc: Doc, max_chars: int = 900):
-    """Chunks as dicts: id like 'refunds-and-cancellations#2', the header, text, source and audience."""
+    """Chunks as dicts: id like 'card-disputes#2', the header, text, source and audience."""
     chunks = []
     for heading, body in sections(doc):
         for piece in split_long(body, max_chars):
@@ -403,16 +403,16 @@ from rag_prompt import count_tokens
 QUESTIONS = json.loads((DATA / "help_questions.json").read_text(encoding="utf-8"))
 <span class="c"># Five more whose answers sit in an article's introduction, before its first '## ' heading.</span>
 INTRO_QUESTIONS = [
-    {"question": "For a self-paced course, which day counts as the start date?",
-     "source": "refunds-and-cancellations", "must_contain": "the day your access begins"},
-    {"question": "Which certification courses come with an exam voucher?", "source": "exam-vouchers",
-     "must_contain": "AZ-900, AZ-104 and AI-102"},
-    {"question": "Is the content different in the self-paced version?", "source": "course-formats",
-     "must_contain": "The content is the same"},
-    {"question": "Do I need my own Azure subscription for the labs?", "source": "labs-and-sandboxes",
-     "must_contain": "without using your own subscription"},
-    {"question": "Can I share my certificate on LinkedIn?", "source": "certificates",
-     "must_contain": "share on professional networks"},
+    {"question": "I don't recognise a payment, should I dispute it?", "source": "card-disputes",
+     "must_contain": "that is fraud, not a dispute"},
+    {"question": "How long does it take to open an account in the app?", "source": "account-opening",
+     "must_contain": "about 10 minutes"},
+    {"question": "What decides the interest rate on my loan?", "source": "loans-and-mortgages",
+     "must_contain": "depends on your credit history"},
+    {"question": "Is the fraud team open at night?", "source": "fraud-and-scams",
+     "must_contain": "24 hours a day, 7 days a week"},
+    {"question": "Where can I see the full list of fees?", "source": "fees-and-charges",
+     "must_contain": "Your account terms list every fee"},
 ]
 docs, _ = load_folder(DATA / "help", "public")
 
@@ -495,7 +495,7 @@ sections + intros, max 200       53       20/20        5/5      123 avg</code></
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

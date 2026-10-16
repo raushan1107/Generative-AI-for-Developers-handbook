@@ -153,7 +153,7 @@
 <a class="sb-link " data-page-id="oss-3" href="../../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
-<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>Traincrest Assist: the build</a>
+<a class="sb-link " data-page-id="project" href="../../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
 <a class="sb-link " data-page-id="labs" href="../../labs/index.html"><span class="sb-ico">▤</span>All drills</a>
 <a class="sb-link " data-page-id="capstone" href="../../capstone/index.html"><span class="sb-ico">★</span>Capstone project</a>
 </div>
@@ -216,7 +216,7 @@
 </figure>
 
 <span class="out-label">Files after this milestone (new or changed)</span>
-<pre class="out"><code>traincrest-assist/
+<pre class="out"><code>rrfinance-assist/
 ├── .env.example              + RAG_TOP_K, RAG_MIN_SCORE, RAG_MAX_CONTEXT_TOKENS, HELP_CENTRE_URL
 ├── cli.py                    prints the cited sources
 ├── app/
@@ -237,8 +237,8 @@
 
 <div class="callout note prereq">
   <div class="c-label">Before you run this code</div>
-  <p>Milestones are built in your <code>traincrest-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
-  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="../../code/traincrest-assist-m05.zip">traincrest-assist-m05.zip</a>, or the finished one, <a href="../../code/traincrest-assist-m06.zip">traincrest-assist-m06.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
+  <p>Milestones are built in your <code>rrfinance-assist</code> folder, on top of the previous milestone, with its virtual environment active. Settings come from <code>.env</code> in that folder; by default it uses a <strong>free local model with Ollama</strong> (install Ollama, then <code>ollama pull llama3.2</code>), so no key is needed. Azure OpenAI and OpenAI are one-line switches in the same file.</p>
+  <p><strong>Starting here, or behind?</strong> Download the complete project as it should be at the <em>start</em> of this milestone, <a href="../../code/rrfinance-assist-m05.zip">rrfinance-assist-m05.zip</a>, or the finished one, <a href="../../code/rrfinance-assist-m06.zip">rrfinance-assist-m06.zip</a>. Unzip, copy <code>.env.example</code> to <code>.env</code>, then <code>pip install -r requirements.txt</code>.</p>
   <details class="solution"><summary>.env (default: local Ollama)</summary><div><pre class="code" data-file=".env"><code><span class="c"># Copy to .env in the project folder. Never commit .env.</span>
 <span class="c"># Default: a free local model with Ollama (no account, no key). Run once:  ollama pull llama3.2</span>
 LLM_PROVIDER=ollama
@@ -280,7 +280,7 @@ RAG_TOP_K=4
 <span class="c"># Relevance floor: leave empty for the default of your embedding model, or set the value from Drill 06.6</span>
 RAG_MIN_SCORE=
 RAG_MAX_CONTEXT_TOKENS=1500
-HELP_CENTRE_URL=https://help.traincrest.example/</code></pre></div></details>
+HELP_CENTRE_URL=https://help.rrfinance.example/</code></pre></div></details>
 </div>
 
 <div class="drill exercise" id="b06-1" data-title="Milestone 6: help-centre RAG with checked citations" data-time="~75 min" data-steps="run,write,ask,verify">
@@ -297,7 +297,7 @@ RAG_TOP_K = int(os.getenv("RAG_TOP_K", "4"))                         <span class
 _FLOORS = {"nomic-embed-text": 0.55, "text-embedding-3-small": 0.30, "text-embedding-3-large": 0.30}
 RAG_MIN_SCORE = float(os.getenv("RAG_MIN_SCORE") or _FLOORS.get(EMBED_MODEL, 0.30))
 RAG_MAX_CONTEXT_TOKENS = int(os.getenv("RAG_MAX_CONTEXT_TOKENS", "1500"))   <span class="c"># budget for sources in one prompt</span>
-HELP_CENTRE_URL = os.getenv("HELP_CENTRE_URL", "https://help.traincrest.example/")</code></pre>
+HELP_CENTRE_URL = os.getenv("HELP_CENTRE_URL", "https://help.rrfinance.example/")</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Keep the introductions, then rebuild the index</h4>
         <p>Drill 06.4 showed Milestone 5's chunker dropping every article's introduction. Replace <code>chunk_by_headings</code> in <code>app/search.py</code>, add <code>CHUNKER_VERSION = "headings-v2"</code> near the top, and record it in <code>LocalIndex.save()</code> and check it in <code>load()</code> (see the reference code), so an old index is refused instead of silently mismatched:</p>
@@ -414,7 +414,7 @@ def ask(client, search, question: str) -&gt; dict:
         <p>Add two prompts to <code>app/prompts.py</code> and make them active. <code>assist_system@v4</code> has no policy text and no dollar amounts at all; it tells the model to search, to write complete queries (query rewriting, done by the model), and to cite.</p>
         <pre class="code" data-file="app/prompts.py (added)"><code>    <span class="c"># Milestone 6: the policy leaves the prompt. Answers come from the help centre, with citations.</span>
     "assist_system@v4": Template("""## Role
-You are Traincrest Assist, the learner-support assistant of TrainCrest, a global technical training company.
+You are RR Finance Assist, the learner-support assistant of TrainCrest, a global technical training company.
 
 ## Goal
 Help learners with courses, schedules, labs, exam vouchers, certificates and accounts, quickly and kindly.
@@ -596,7 +596,7 @@ def test_ask_answers_with_public_sources(search):
     result = rag.ask(fake, search, REFUND_Q)
     assert result["found"] and result["prompt_version"] == "rag_answer@v1"
     assert result["sources"][0] == {"n": 1, "title": "Refunds and cancellations &gt; How much you get back",
-                                    "url": "https://help.traincrest.example/refunds-and-cancellations"}
+                                    "url": "https://help.rrfinance.example/refunds-and-cancellations"}
     sent = fake.chat.completions.calls[0]["messages"]
     assert "ONLY" in sent[0]["content"] and sent[1]["content"].endswith(f"Question: {REFUND_Q}")
     assert '&lt;source id="1"' in sent[1]["content"]
@@ -694,7 +694,7 @@ What is the capital of France?
 </div>
 <div class="callout note">
   <div class="c-label">Fell behind? Catch up here</div>
-  <p>The complete reference code is in <a href="../../code/traincrest-assist/m06/app/rag.py"><code>code/traincrest-assist/m06/</code></a>. Copy it over your project, keep your <code>.env</code>, run <code>python -m scripts.build_index</code> (the chunker changed, so the old index is refused) and <code>pytest -q</code>, and you're ready for Module 07.</p>
+  <p>The complete reference code is in <a href="../../code/rrfinance-assist/m06/app/rag.py"><code>code/rrfinance-assist/m06/</code></a>. Copy it over your project, keep your <code>.env</code>, run <code>python -m scripts.build_index</code> (the chunker changed, so the old index is refused) and <code>pytest -q</code>, and you're ready for Module 07.</p>
 </div>
 
 </div>
@@ -704,7 +704,7 @@ What is the capital of France?
 </div>
 <footer class="site-footer">
   <span>Generative AI for Developers · Written by <a class="author-link" href="https://raushan-ranjan.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Raushan Ranjan</a> (MCT) · RR Skillverse · © 2026</span>
-  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. TrainCrest scenario data and policies in this handbook are fictional. Model names, limits and prices change often; confirm them in the official documentation.</span>
+  <span>Not affiliated with Microsoft, OpenAI, Anthropic or GitHub. RR Finance Bank and all scenario data, customers and policies in this handbook are fictional; nothing here is financial advice. Model names, limits and prices change often; confirm them in the official documentation.</span>
 </footer>
 </div>
 </div>

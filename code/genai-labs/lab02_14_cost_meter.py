@@ -7,7 +7,7 @@ from llm import get_client, MODEL
 
 PRICE_IN = float(os.getenv("PRICE_IN_PER_M", "0.40"))     # USD per 1M input tokens
 PRICE_OUT = float(os.getenv("PRICE_OUT_PER_M", "1.60"))   # USD per 1M output tokens
-TURNS_PER_MONTH = 25_000 * 4                              # TrainCrest: conversations x average turns
+TURNS_PER_MONTH = 40_000 * 4                              # RR Finance Bank: conversations x average turns
 
 client = get_client()
 
@@ -16,9 +16,9 @@ def cost_usd(usage):
     return (usage.prompt_tokens * PRICE_IN + usage.completion_tokens * PRICE_OUT) / 1_000_000
 
 
-LEAN = "You are Traincrest Assist, TrainCrest's learner-support assistant. Be brief and friendly."
-BLOATED = LEAN + " Always follow the TrainCrest tone guide and be warm and professional." * 120
-question = "My lab environment expired before I finished the final exercise. What can I do?"
+LEAN = "You are RR Finance Assist, RR Finance Bank's customer-support assistant. Be brief and friendly."
+BLOATED = LEAN + " Always follow the RR Finance Bank tone guide and be warm and professional." * 120
+question = "My card was declined abroad even though I have money in my account. What can I do?"
 
 for label, system in [
     ("bloated prompt", BLOATED),

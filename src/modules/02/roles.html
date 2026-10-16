@@ -9,11 +9,11 @@
 </div>
 <div class="callout plain">
   <div class="c-label">In plain words</div>
-  <p>The system message is the job description, written by you. User messages are what the learner says. Assistant messages are what the model said earlier. The model remembers nothing between calls, so your app keeps the transcript and sends it back every time. That's the whole "memory" of a chatbot.</p>
+  <p>The system message is the job description, written by you. User messages are what the customer says. Assistant messages are what the model said earlier. The model remembers nothing between calls, so your app keeps the transcript and sends it back every time. That's the whole "memory" of a chatbot.</p>
 </div>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
-  <p>A call centre where every agent has total amnesia. Each time the customer speaks, a <em>new</em> agent picks up. To make it work, the supervisor hands each one a sheet: the <strong>role card</strong> on top ("You're a TrainCrest support agent; be kind; never promise refunds"), then the <strong>transcript so far</strong>, then the newest sentence. The agent reads it all, replies once, and is gone. The sheet gets longer every turn.</p>
+  <p>A call centre where every agent has total amnesia. Each time the customer speaks, a <em>new</em> agent picks up. To make it work, the supervisor hands each one a sheet: the <strong>role card</strong> on top ("You're a RR Finance Bank support agent; be kind; never promise refunds"), then the <strong>transcript so far</strong>, then the newest sentence. The agent reads it all, replies once, and is gone. The sheet gets longer every turn.</p>
 </div>
 
 <figure class="diagram">
@@ -22,17 +22,17 @@
       <title id="hi-t">The messages array grows every turn</title>
       <desc id="hi-d">Turn 1 sends the system message and the first user message. Turn 2 resends both plus the first assistant reply and a new user message. Turn 3 resends everything plus another pair. Input tokens grow from about 60 to 190 to 330.</desc>
       <text x="20" y="28" class="t-m t-accent">REQUEST · TURN 1</text>
-      <rect x="20" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="34" y="62" class="t">system: You are Traincrest Assist…</text>
+      <rect x="20" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="34" y="62" class="t">system: You are RR Finance Assist…</text>
       <rect x="20" y="80" width="280" height="34" rx="8" class="s-blue"/><text x="34" y="102" class="t">user: Hi, I'm Diego</text>
       <text x="20" y="300" class="t-m">≈ 60 TOKENS IN</text>
       <text x="340" y="28" class="t-m t-accent">REQUEST · TURN 2</text>
-      <rect x="340" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="354" y="62" class="t">system: You are Traincrest Assist…</text>
+      <rect x="340" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="354" y="62" class="t">system: You are RR Finance Assist…</text>
       <rect x="340" y="80" width="280" height="34" rx="8" class="s-blue"/><text x="354" y="102" class="t">user: Hi, I'm Diego</text>
       <rect x="340" y="120" width="280" height="34" rx="8" class="s-green"/><text x="354" y="142" class="t">assistant: Hello Diego! How…</text>
       <rect x="340" y="160" width="280" height="34" rx="8" class="s-blue"/><text x="354" y="182" class="t">user: My lab won't start</text>
       <text x="340" y="300" class="t-m">≈ 190 TOKENS IN</text>
       <text x="660" y="28" class="t-m t-accent">REQUEST · TURN 3</text>
-      <rect x="660" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="674" y="62" class="t">system: You are Traincrest Assist…</text>
+      <rect x="660" y="40" width="280" height="34" rx="8" class="s-violet"/><text x="674" y="62" class="t">system: You are RR Finance Assist…</text>
       <rect x="660" y="80" width="280" height="34" rx="8" class="s-blue"/><text x="674" y="102" class="t">user: Hi, I'm Diego</text>
       <rect x="660" y="120" width="280" height="34" rx="8" class="s-green"/><text x="674" y="142" class="t">assistant: Hello Diego! How…</text>
       <rect x="660" y="160" width="280" height="34" rx="8" class="s-blue"/><text x="674" y="182" class="t">user: My lab won't start</text>
@@ -56,6 +56,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>In a bank, what goes into the system message is a compliance artefact: the assistant's scope ("explain products, never give investment or credit advice"), mandatory wording (for example a reminder that the bank never asks for a PIN), and escalation rules (fraud and vulnerable customers go to a human). Conversation history matters too: if a customer said "I've lost my job" three turns ago, a well-built assistant keeps that in context and routes them to hardship support rather than offering a new loan. And because history is resent on every call, it's also personal data you must log, retain and delete under the bank's data rules.</p>
+</div>
   <p>When ChatGPT or Claude.ai "remember" a long conversation, the application is managing history for you: resending recent turns, and for very long chats summarising or dropping older ones. Some products also keep separate long-term "memories" (facts about you) that they insert into the system context. Under the hood it's always the same thing: deciding what goes into the next request.</p>
 </div>
 
@@ -80,30 +85,30 @@
       <li class="dstep run"><span class="st">Run</span>
         <pre class="code" data-file="lab02_05_memory.py" data-src="code/genai-labs/lab02_05_memory.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab02_05_memory.py</code></pre>
-        <span class="out-label">Expected output (abridged)</span>
+        <span class="out-label">Real output (llama3.2 on Ollama)</span>
 <pre class="out"><code>1) No memory
-    Hi Diego, welcome! How can I help with your AZ-305 course?
-    I don't have access to your enrolment details. Could you share your enrolment ID?
+    I'm RR Finance Assist, congratulations on your upcoming trip to Japan, is there anything specific you'd like assistance with, such as opening a foreign account or purchasing travel insurance?
+    I'm not aware of your travel plans, can you please recall the destination mentioned on your current or upcoming loan application?
 
 2) Memory = resending history
-   [  47 tokens in] Hi, I'm Diego. I'm enrolled in the AZ-305 course.
-                     -&gt; Hi Diego! How can I help with your AZ-305 course today?
-   [  78 tokens in] Which course am I enrolled in?
-                     -&gt; You're enrolled in the AZ-305 course.
-   [ 101 tokens in] And what's my name?
+   [  59 tokens in] Hi, I'm Diego. I'm travelling to Japan next week.
+                     -&gt; Welcome, Diego. Where can I assist you with during your trip to Japan?
+   [  90 tokens in] Where am I travelling?
+                     -&gt; You're planning to travel to Japan. Would you like to know something about Japan, or do you need help with travel arrangements or financial services?
+   [ 135 tokens in] And what's my name?
                      -&gt; Your name is Diego.
 
 3) Swap the system message
-    Arr, how should I know when yer course starts? Check yer enrolment, landlubber!
+    Arrgh, ye landlubber, I'm afraid I don't know nothin' about yer landyard's shipping schedule, but I'll give ye a map to find yer answer, savvy?
 
 4) Teach a format with example turns
-    STATUS: CONFIRMED | STARTS: 9 Mar</code></pre>
+    STATUS: REJECTSED  | DATE: 15 Dec Due to insufficient funds.</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
         <ul class="verify-list">
           <li>Part 1: zero memory. Part 2: memory appeared only because <em>you</em> resent history, and input tokens grew every turn.</li>
           <li>Part 3: one line of system message changed the whole persona.</li>
-          <li>Part 4 should worry you. The model invented a status and date for TC-10293 because the pattern made it plausible. That's why lookups must be <strong>tool calls</strong> (Module 04), never generated text.</li>
+          <li>Part 4 should worry you. The model invented a status, a date and even a reason ("insufficient funds") for payment PAY-10293 because the pattern made it plausible. Imagine that text reaching a customer whose salary payment is, in fact, fine. That's why lookups must be <strong>tool calls</strong> (Module 04), never generated text.</li>
         </ul>
       </li>
     </ol>
@@ -153,7 +158,7 @@ input list is not modified. Run pytest and show me the output.</code></pre></div
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Roles and state.</p></div></div>
 <div class="quiz">
-  <details><summary>1. A learner says "I told you my enrolment ID five messages ago!" and the bot doesn't know it. Likely cause?</summary><div><p>The history was <strong>trimmed</strong> (or never sent), so that message wasn't in the request. Fixes: keep more turns, summarise older turns, or pull key facts like the enrolment ID into the system context (Module 07).</p></div></details>
+  <details><summary>1. A customer says "I told you my customer ID five messages ago!" and the bot doesn't know it. Likely cause?</summary><div><p>The history was <strong>trimmed</strong> (or never sent), so that message wasn't in the request. Fixes: keep more turns, summarise older turns, or pull key facts like the customer ID into the system context (Module 07).</p></div></details>
   <details><summary>2. Where should "Never promise refunds" go: system or user message?</summary><div><p>The <strong>system</strong> message. Rules belong to you, not to the user's turn, and the system message has the strongest influence.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>The model is stateless; your app is the memory. Decide deliberately what you resend.</p></div>
