@@ -197,18 +197,18 @@
   <div class="frame">
     <svg viewBox="0 0 960 250" role="img" aria-labelledby="ws-t ws-d">
       <title id="ws-t">Free text versus structured output</title>
-      <desc id="ws-d">The same model answer goes two ways. As free text, "Python Foundations is a great start at 290 USD", a regex tries to find a dollar sign, finds none or the wrong one, and the program shows a wrong price or crashes. As structured output, an object with course_id C101, title Python Foundations and price_usd 290 goes straight into the program, which displays it and adds it to the basket.</desc>
+      <desc id="ws-d">The same model answer goes two ways. As free text, "The Cashback Card matches at 22.99% APR (the Starter card is 26.99%)", a regex tries to find a percentage, finds the wrong one, and the program shows a wrong rate. As structured output, an object with product_id P110, name Cashback Card and rate_pct 22.99 goes straight into the program, which displays it and compares it.</desc>
       <rect x="20" y="95" width="150" height="60" rx="12" class="s-violet"/><text x="95" y="122" class="t-b mid">Model</text><text x="95" y="140" class="t-s mid">same answer</text>
       <path d="M170 110 L240 60" class="s-arrow" marker-end="url(#ah)"/>
       <path d="M170 140 L240 190" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <rect x="246" y="22" width="340" height="76" rx="12" class="s-surface2"/>
-      <text x="262" y="46" class="t-m">FREE TEXT</text><text x="262" y="68" class="t-s">"Python Foundations is a great start</text><text x="262" y="86" class="t-s">at 290 USD (Docker is only $190)."</text>
+      <text x="262" y="46" class="t-m">FREE TEXT</text><text x="262" y="68" class="t-s">"The Starter card is 26.99%, so the</text><text x="262" y="86" class="t-s">Cashback Card at 22.99% matches."</text>
       <rect x="246" y="152" width="340" height="76" rx="12" class="s-blue"/>
-      <text x="262" y="176" class="t-m t-blue">STRUCTURED</text><text x="262" y="198" class="t-s">{"course_id": "C101", "title": "Python</text><text x="262" y="216" class="t-s">Foundations", "price_usd": 290}</text>
+      <text x="262" y="176" class="t-m t-blue">STRUCTURED</text><text x="262" y="198" class="t-s">{"product_id": "P110", "name": "Cashback</text><text x="262" y="216" class="t-s">Card", "rate_pct": 22.99}</text>
       <path d="M586 60 H640" class="s-arrow" marker-end="url(#ah)"/>
       <path d="M586 190 H640" class="s-arrow-accent" marker-end="url(#ah-a)"/>
-      <rect x="646" y="22" width="294" height="76" rx="12" class="s-rose"/><text x="662" y="48" class="t-b">regex finds "$190"</text><text x="662" y="70" class="t-s">wrong price shown, no error raised</text><text x="662" y="86" class="t-s">(silently wrong is the worst kind)</text>
-      <rect x="646" y="152" width="294" height="76" rx="12" class="s-green"/><text x="662" y="178" class="t-b">data["price_usd"] → 290</text><text x="662" y="200" class="t-s">shown, compared, added to basket</text><text x="662" y="216" class="t-s">same shape every time</text>
+      <rect x="646" y="22" width="294" height="76" rx="12" class="s-rose"/><text x="662" y="48" class="t-b">regex finds "26.99%"</text><text x="662" y="70" class="t-s">wrong APR shown, no error raised</text><text x="662" y="86" class="t-s">(silently wrong is the worst kind)</text>
+      <rect x="646" y="152" width="294" height="76" rx="12" class="s-green"/><text x="662" y="178" class="t-b">data["rate_pct"] → 22.99</text><text x="662" y="200" class="t-s">shown, compared, disclosed</text><text x="662" y="216" class="t-s">same shape every time</text>
     </svg>
   </div>
   <figcaption><b>One answer, two readers.</b> Free text is for people. When code is the reader, ask for structure.</figcaption>
@@ -219,8 +219,8 @@
   <table>
     <thead><tr><th>Task</th><th>What the code needs back</th></tr></thead>
     <tbody>
-      <tr><td>Ticket triage (Milestone 3)</td><td><code>category</code>, <code>urgency</code>, <code>enrolment_id</code> to route it</td></tr>
-      <tr><td>Extraction from emails, invoices, forms</td><td>Named fields to save in a database</td></tr>
+      <tr><td>Ticket triage (Milestone 3)</td><td><code>category</code>, <code>urgency</code>, <code>customer_id</code> to route it</td></tr>
+      <tr><td>Extraction from emails, statements, loan forms</td><td>Named fields to save in a database</td></tr>
       <tr><td>Classification and moderation</td><td>One label from a fixed list, maybe a score</td></tr>
       <tr><td>UI generation</td><td>Title, bullet points, button labels in known slots</td></tr>
       <tr><td>Calling your functions (topic 4)</td><td>A function name and arguments that match its parameters</td></tr>
@@ -230,6 +230,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Almost every GenAI output in a bank feeds another system: a case-management queue, a fraud engine, a general ledger, a regulatory report. A dispute amount extracted as "about four hundred dollars" or a category spelled three different ways breaks those systems quietly. Structured output is what lets a model's work be reconciled, audited and reported, and regulators expect that every automated decision can be traced to data, not to a paragraph.</p>
+</div>
   <p>Most production GenAI features are <strong>not chat</strong>. They're pipelines where a model reads something messy (an email, a contract, a call transcript) and returns a record that the rest of the system processes like any other data: stored, searched, routed, reported on. The chat window is the demo; the structured record is the product.</p>
 </div>
 
@@ -372,27 +377,28 @@ if __name__ == "__main__":
         print(f"  parsed APR -&gt; {apr}   {verdict}\n")</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab04_01_free_text.py --offline</code></pre>
         <span class="out-label">Output (exact, offline)</span>
-<pre class="out"><code>Reply 1: I recommend Python Foundations (C101). It costs $290 and is designed f...
-  parsed price -> 290   OK
+<pre class="out"><code>Reply 1: The Cashback Card (P110) matches: no annual fee and a 22.99% APR.
+  parsed APR -> 22.99   OK
 
-Reply 2: Python Foundations is the best fit. If budget is tight, Docker Quick S...
-  parsed price -> 190   WRONG
+Reply 2: Both the Starter Credit Card (26.99% APR) and the Cashback Card have n...
+  parsed APR -> 26.99   WRONG
 
-Reply 3: Go for **Python Foundations**: beginner level, 290 USD, five days.
-  parsed price -> None   FAILED</code></pre>
+Reply 3: Go for the **Cashback Card**: no annual fee, APR of 22.99 percent.
+  parsed APR -> None   FAILED</code></pre>
         <p>Now run it without <code>--offline</code> to ask your own deployment three times. Different wording, same problem.</p>
         <pre class="term"><code><span class="ps">$ </span>python lab04_01_free_text.py</code></pre>
         <span class="out-label">From a small local model (Ollama); yours will differ</span>
-<pre class="out"><code>Reply 1: Based on your criteria, a suitable Python course for a beginner is "C1...
-  parsed price -> 290   OK
-Reply 2: Based on your requirements, I would recommend the Python Foundations c...
-  parsed price -> 290   OK
-Reply 3: For a beginner Python course that costs under $300, I recommend the fo...
-  parsed price -> 300   WRONG</code></pre>
+<pre class="out"><code>Reply 1: Based on the customer's request for a credit card with no annual fee a...
+  parsed APR -> 22.99   OK
+Reply 2: Based on your request, the credit card that matches the customer's req...
+  parsed APR -> 22.99   OK
+Reply 3: Based on the customer's criteria, the credit card that matches is:
+  parsed APR -> 22.99   OK</code></pre>
+        <p>Three out of three this time, from llama3.2. That's the trap: a parser that passes today's run and fails on next week's wording. One reply that mentions the 26.99% card first, as in the offline case above, and the wrong APR reaches the customer.</p>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>Which failure is worse?</h4>
-        <p>Reply 2 parsed as <code>190</code>; reply 3 parsed as <code>None</code>. In production, which one hurts more, and why?</p>
-        <details class="solution"><summary>Compare with my answer</summary><div><p>The <strong>wrong</strong> one (190). <code>None</code> fails loudly: you can catch it, log it and retry. A wrong number flows silently into the UI or an invoice. Notice the live run: the model's "under $300" echoed the question, and the parser grabbed it. Fixing the regex just moves the problem; the fix is to stop parsing prose. The next three topics do exactly that.</p></div></details>
+        <p>Offline reply 2 parsed as <code>26.99</code>; reply 3 parsed as <code>None</code>. In production, which one hurts more, and why?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>The <strong>wrong</strong> one (26.99). <code>None</code> fails loudly: you can catch it, log it and retry. A wrong number flows silently into the UI, and in a bank a wrong APR shown to a customer is a misleading disclosure, not just a bug. The model only has to mention another card first, as offline reply 2 did. Fixing the regex just moves the problem; the fix is to stop parsing prose. The next three topics do exactly that.</p></div></details>
       </li>
     </ol>
     <p class="lab-say"><b>Remember:</b> “If code reads it, don't ask for prose and hope. Ask for a shape.”</p>
@@ -403,7 +409,7 @@ Reply 3: For a beginner Python course that costs under $300, I recommend the fo.
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Why structure.</p></div></div>
 <div class="quiz">
   <details><summary>1. A feature shows a model-written summary to a support agent. Does it need structured output?</summary><div><p>Not necessarily: a person reads it, so free text is fine (with length and tone constraints). If the same feature also needs a <strong>category to route on</strong>, that part should be structured.</p></div></details>
-  <details><summary>2. Why is a parser that "usually works" dangerous?</summary><div><p>Because failures can be <strong>silent</strong>: it returns a plausible but wrong value instead of an error, and at 25,000 messages a month, rare cases happen daily.</p></div></details>
+  <details><summary>2. Why is a parser that "usually works" dangerous?</summary><div><p>Because failures can be <strong>silent</strong>: it returns a plausible but wrong value instead of an error, and at 40,000 messages a month, rare cases happen daily.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Prose is for people. When a program is the reader, ask for a shape, not a sentence.</p></div>
 

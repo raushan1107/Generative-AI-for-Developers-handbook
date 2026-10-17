@@ -1,6 +1,6 @@
-"""Lab 3, Exercise 1: a Company Knowledge Assistant (RAG) that answers questions from TrainCrest's own
+"""Lab 3, Exercise 1: a Company Knowledge Assistant (RAG) that answers questions from RR Finance Bank's own
 documents, public help articles and internal staff documents, and cites its sources.
-Run:  python l3_knowledge.py            (learner view: help centre only)
+Run:  python l3_knowledge.py            (customer view: help centre only)
       python l3_knowledge.py --staff    (staff view: help centre + internal documents)"""
 import csv
 import json
@@ -72,7 +72,7 @@ def retrieve(question, items, vectors, audience, k=4):
 def answer(question, items, vectors, audience):
     sources = retrieve(question, items, vectors, audience)
     if not sources:
-        return "I couldn't find that in TrainCrest's documents.", []
+        return "I couldn't find that in RR Finance Bank's documents.", []
     blocks = "\n\n".join(f'<source id="{n}">\n{s["text"]}\n</source>' for n, s in enumerate(sources, 1))
     system = ("Answer using ONLY the numbered sources. After each fact, cite its source number like [1]. "
               f"If the sources don't answer the question, reply exactly {NOT_FOUND}. Answer in the question's language.")
@@ -80,7 +80,7 @@ def answer(question, items, vectors, audience):
         {"role": "system", "content": system},
         {"role": "user", "content": f"<sources>\n{blocks}\n</sources>\n\nQuestion: {question}"}]).choices[0].message.content
     if NOT_FOUND in reply:
-        return "I couldn't find that in TrainCrest's documents.", []
+        return "I couldn't find that in RR Finance Bank's documents.", []
     cited = sorted({int(n) for n in re.findall(r"\[(\d+)\]", reply) if 1 <= int(n) <= len(sources)})
     reply = re.sub(r"\[(\d+)\]", lambda m: m.group(0) if int(m.group(1)) in cited else "", reply)  # drop invented ones
     return reply.strip(), [(n, sources[n - 1]) for n in cited]
@@ -89,7 +89,7 @@ def answer(question, items, vectors, audience):
 if __name__ == "__main__":
     audience = ("public", "staff") if "--staff" in sys.argv else ("public",)
     items, vectors = load_index()
-    print(f"TrainCrest knowledge assistant ({'staff' if len(audience) == 2 else 'learner'} view). Empty line to quit.\n")
+    print(f"RR Finance Bank knowledge assistant ({'staff' if len(audience) == 2 else 'customer'} view). Empty line to quit.\n")
     while question := input("Question: ").strip():
         text, cited = answer(question, items, vectors, audience)
         print(text)

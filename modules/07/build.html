@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Build: Milestone 7</title>
-<meta name="description" content="Traincrest Assist milestone 7, the Module 07 hands-on exercise: an agent that understands a request, selects and calls tools, processes the results and answers, and can now act. New read tools for labs and course dates, request tools that propose a lab extension or a date change, an ActionStore for proposals, Approve and Decline in the UI and CLI, execution in code with re-checks and idempotency, repeated-call refusal, and a guard for tool calls written as text.">
+<meta name="description" content="RR Finance Assist milestone 7, the Module 07 hands-on exercise: an agent that understands a request, selects and calls tools, processes the results and answers, and can now act. New read tools for labs and course dates, request tools that propose a lab extension or a date change, an ActionStore for proposals, Approve and Decline in the UI and CLI, execution in code with re-checks and idempotency, repeated-call refusal, and a guard for tool calls written as text.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -175,23 +175,23 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 07 · Build milestone</span><h1>Build · Milestone 7: Actions with the Learner's Approval</h1><p class="lead">Version 0.7 doesn't just explain how to extend a lab or move a date; it prepares the change, shows the learner exactly what will happen, and does it when they press Approve. The model can only propose; code checks the rules, executes once and logs it. This is the Module 07 hands-on exercise: an agent that understands a request, selects and calls the right tools, processes the results and returns a final answer.</p><div class="chips"><span class="chip">Propose, don&#x27;t act</span><span class="chip">Approve / Decline</span><span class="chip">Idempotent writes</span><span class="chip">Agent guard rails</span><span class="chip">≈ 75 min</span></div><div class="flow"><em>Plan 10 min · Build 45 min · Verify 20 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 07 · Build milestone</span><h1>Build · Milestone 7: Actions with the Customer's Approval</h1><p class="lead">Version 0.7 doesn't just explain how to extend a lab or move a date; it prepares the change, shows the customer exactly what will happen, and does it when they press Approve. The model can only propose; code checks the rules, executes once and logs it. This is the Module 07 hands-on exercise: an agent that understands a request, selects and calls the right tools, processes the results and returns a final answer.</p><div class="chips"><span class="chip">Propose, don&#x27;t act</span><span class="chip">Approve / Decline</span><span class="chip">Idempotent writes</span><span class="chip">Agent guard rails</span><span class="chip">≈ 75 min</span></div><div class="flow"><em>Plan 10 min · Build 45 min · Verify 20 min</em></div></header>
 <div class="content">
 
-<div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From telling learners what to do, to doing it with their consent.</p></div></div>
+<div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From telling customers what to do, to doing it with their consent.</p></div></div>
 
 <div class="case">
-  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 7</span></div>
+  <div class="case-head"><b>RR Finance Bank</b><span>· the brief for milestone 7</span></div>
   <div class="case-body">
-    <p>Lab extensions and date changes are a large share of support tickets, and each one waits about a day for a person who follows the same rules every time. The brief: let Traincrest Assist do these two actions itself, within policy. Constraints from the support lead: <strong>nothing changes without the learner's explicit approval</strong>; the learner sees the exact effect and fee before approving; a double click or a retry can never change a booking twice; refunds and exceptions still go to people; and every change is logged with who approved it.</p>
+    <p>Lab extensions and date changes are a large share of support tickets, and each one waits about a day for a person who follows the same rules every time. The brief: let RR Finance Assist do these two actions itself, within policy. Constraints from the support lead: <strong>nothing changes without the customer's explicit approval</strong>; the customer sees the exact effect and fee before approving; a double click or a retry can never change a booking twice; refunds and exceptions still go to people; and every change is logged with who approved it.</p>
   </div>
 </div>
 
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 340" role="img" aria-labelledby="b7-t b7-d">
-      <title id="b7-t">Traincrest Assist v0.7</title>
-      <desc id="b7-d">Turn 1: the learner asks to extend a lab. The model calls get_lab_access, then request_lab_extension. That tool checks ownership and policy, writes no data, and returns a proposal with an action id and a summary computed by code. The chat service stores the proposal in the ActionStore and sends it in the done event; the UI shows an approval card. Turn 2 is a button: POST /api/actions/{id} with approve or decline. ChatService.decide checks the session and learner, removes the proposal (one decision), checks expiry, re-checks the rules and executes backend.extend_lab with the action id as idempotency key, logs it in data/actions.jsonl, and adds the outcome to the conversation. Guard rails in the loop: max tool rounds, repeated identical calls refused, tool calls written as text replaced.</desc>
+      <title id="b7-t">RR Finance Assist v0.7</title>
+      <desc id="b7-d">Turn 1: the customer asks to extend a lab. The model calls get_lab_access, then request_lab_extension. That tool checks ownership and policy, writes no data, and returns a proposal with an action id and a summary computed by code. The chat service stores the proposal in the ActionStore and sends it in the done event; the UI shows an approval card. Turn 2 is a button: POST /api/actions/{id} with approve or decline. ChatService.decide checks the session and customer, removes the proposal (one decision), checks expiry, re-checks the rules and executes backend.extend_lab with the action id as idempotency key, logs it in data/actions.jsonl, and adds the outcome to the conversation. Guard rails in the loop: max tool rounds, repeated identical calls refused, tool calls written as text replaced.</desc>
       <text x="20" y="28" class="t-m">TURN 1 · POST /api/chat</text>
       <rect x="20" y="40" width="170" height="70" rx="12" class="s-surface"/><text x="105" y="68" class="t-b mid">"extend my lab"</text><text x="105" y="88" class="t-s mid">assist_system@v5</text>
       <path d="M190 75 H224" class="s-arrow-accent" marker-end="url(#ah-a)"/>
@@ -201,7 +201,7 @@
       <path d="M700 75 H734" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <rect x="740" y="40" width="200" height="70" rx="12" class="s-amber"/><text x="840" y="66" class="t-b mid">approval card</text><text x="840" y="86" class="t-s mid">[Approve] [Decline]</text>
       <text x="20" y="152" class="t-m">TURN 2 · POST /api/actions/A-7F3C</text>
-      <rect x="20" y="164" width="170" height="80" rx="12" class="s-surface"/><text x="105" y="196" class="t-b mid">Approve</text><text x="105" y="218" class="t-s mid">session + learner</text>
+      <rect x="20" y="164" width="170" height="80" rx="12" class="s-surface"/><text x="105" y="196" class="t-b mid">Approve</text><text x="105" y="218" class="t-s mid">session + customer</text>
       <path d="M190 204 H224" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <rect x="230" y="164" width="290" height="80" rx="12" class="s-rose"/><text x="246" y="188" class="t-b">ChatService.decide → ActionStore</text><text x="246" y="210" class="t-s">right person? one decision? not expired?</text><text x="246" y="230" class="t-s">re-check rules and fee</text>
       <path d="M520 204 H554" class="s-arrow-accent" marker-end="url(#ah-a)"/>
@@ -210,7 +210,7 @@
       <rect x="20" y="268" width="920" height="56" rx="12" class="s-surface2"/><text x="36" y="292" class="t-b">guard rails in the loop</text><text x="36" y="312" class="t-s">max tool rounds (4) · repeated identical calls refused · tool calls written as text replaced · identity from the session · refunds still via tickets</text>
     </svg>
   </div>
-  <figcaption><b>The model never executes a change.</b> It proposes in one request; the learner's button triggers execution in another, handled entirely by code.</figcaption>
+  <figcaption><b>The model never executes a change.</b> It proposes in one request; the customer's button triggers execution in another, handled entirely by code.</figcaption>
 </figure>
 
 <span class="out-label">Files after this milestone (new or changed)</span>
@@ -277,33 +277,40 @@ RAG_MAX_CONTEXT_TOKENS=1500
 HELP_CENTRE_URL=https://help.rrfinance.example/</code></pre></div></details>
 </div>
 
-<div class="drill exercise" id="b07-1" data-title="Milestone 7: actions with the learner's approval" data-time="~75 min" data-steps="run,ask,write,verify">
-  <div class="drill-head"><span class="drill-id">Milestone 7</span><h3>Actions with the learner's approval</h3>
+<div class="drill exercise" id="b07-1" data-title="Milestone 7: actions with the customer's approval" data-time="~75 min" data-steps="run,ask,write,verify">
+  <div class="drill-head"><span class="drill-id">Milestone 7</span><h3>Actions with the customer's approval</h3>
     <div class="drill-meta"><span class="time">~75 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · Pydantic · pytest</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> the Module 07 hands-on exercise: an agent that understands a request, selects and calls tools, processes the results and returns a final answer, now able to change bookings, only with the learner's approval, exactly once.</p>
+    <p class="drill-goal"><b>Goal:</b> the Module 07 hands-on exercise: an agent that understands a request, selects and calls tools, processes the results and returns a final answer, now able to change bookings, only with the customer's approval, exactly once.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Backend: data that can change, and safe writes</h4>
         <p>Append to <code>app/backend.py</code>. The two write functions re-check the rules, take an idempotency key, and log every change:</p>
-        <pre class="code" data-file="app/backend.py (added)"><code><span class="c"># ---------------------------------------------------------------- milestone 7: things that can change</span>
-<span class="c"># Lab access per enrolment, and the dates each course runs. Writes go through the two functions</span>
-<span class="c"># below, which re-check the rules, are idempotent (same key, same result, done once) and are logged.</span>
-LABS = {
-    "TC-10293": {"lab_until": _day(4), "free_extension_used": False},
-    "TC-31002": {"lab_until": _day(27), "free_extension_used": True},
+        <pre class="code" data-file="app/backend.py (added)"><code>    "AC-5512": [{"date": _day(-12), "end_of_day_balance_usd": -212.00, "fees_charged": 4},
+                {"date": _day(-11), "end_of_day_balance_usd": -31.00, "fees_charged": 1}],
+    "AC-8801": [{"date": _day(-20), "end_of_day_balance_usd": -80.00, "fees_charged": 1}],
 }
-SESSIONS = {"C104": [_day(21), _day(35)], "C106": [_day(10), _day(24), _day(38)],
-            "C109": [_day(8), _day(22)], "C110": [_day(5), _day(17), _day(33)], "C112": [_day(12), _day(40)]}
+
+
+def accounts_of(customer_id: str) -&gt; list[dict]:
+    return [{"account_id": aid, "product": PRODUCTS[a["product_id"]]["name"], "balance_usd": a["balance_usd"]}
+            for aid, a in ACCOUNTS.items() if a["customer_id"] == customer_id]
+
+
+def cards_of(customer_id: str) -&gt; list[dict]:
+    return [{"card_last4": last4, "product": PRODUCTS[c["product_id"]]["name"], "status": c["status"]}
+            for last4, c in CARDS.items() if c["customer_id"] == customer_id]
+
+
+<span class="c"># ---------------------------------------------------------------- milestone 7: things that can change</span>
+<span class="c"># Card freezes and disputes. Writes go through the two functions below, which re-check the rules,</span>
+<span class="c"># are idempotent (same key, same result, done once) and are logged for audit.</span>
+DISPUTES: dict[str, dict] = {}          <span class="c"># txn_id -&gt; dispute</span>
 ACTIONS_FILE = DATA / "actions.jsonl"
 _DONE: dict[str, dict] = {}
 
 
 class ActionError(Exception):
-    """A rule says no. The message is safe to show to the learner."""
-
-
-def upcoming_sessions(course_id: str) -&gt; list[str]:
-    return [d for d in SESSIONS.get(course_id, []) if d &gt; date.today().isoformat()]
+    """A rule says no. The message is safe to show to the customer."""
 
 
 def _log(action: str, record: dict):
@@ -312,39 +319,32 @@ def _log(action: str, record: dict):
         f.write(json.dumps({"action": action, "at": date.today().isoformat(), **record}) + "\n")
 
 
-def extend_lab(enrolment_id: str, key: str) -&gt; dict:
+def freeze_card(card_last4: str, key: str) -&gt; dict:
     if key in _DONE:                                     <span class="c"># a retry of an action already done: same answer</span>
         return _DONE[key]
-    lab = LABS.get(enrolment_id)
-    if lab is None:
-        raise ActionError("This enrolment has no lab access to extend.")
-    if lab["free_extension_used"]:
-        raise ActionError("The free 7-day extension has already been used.")
-    lab["lab_until"] = (date.fromisoformat(lab["lab_until"]) + timedelta(days=7)).isoformat()
-    lab["free_extension_used"] = True
-    _DONE[key] = result = {"enrolment_id": enrolment_id, "lab_until": lab["lab_until"], "fee_usd": 0}
-    _log("extend_lab", {"key": key, **result})
+    card = CARDS.get(card_last4)
+    if card is None:
+        raise ActionError("This card doesn't exist.")
+    if card["status"] == "frozen":
+        raise ActionError("This card is already frozen.")
+    card["status"] = "frozen"
+    _DONE[key] = result = {"card_last4": card_last4, "status": "frozen"}
+    _log("freeze_card", {"key": key, **result})
     return result
 
 
-def reschedule(enrolment_id: str, new_start: str, fee_usd: int, key: str) -&gt; dict:
+def open_dispute(txn_id: str, reason: str, provisional_credit_by: str, key: str) -&gt; dict:
     if key in _DONE:
         return _DONE[key]
-    e = ENROLMENTS[enrolment_id]
-    if new_start not in upcoming_sessions(e["course_id"]) or new_start == e["start_date"]:
-        raise ActionError(f"{new_start} is no longer an available date for this course.")
-    old, e["start_date"] = e["start_date"], new_start
-    _DONE[key] = result = {"enrolment_id": enrolment_id, "old_start": old, "new_start": new_start, "fee_usd": fee_usd}
-    _log("reschedule", {"key": key, **result})
-    return result</code></pre>
+    if txn_id in DISPUTES:</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The action store</h4>
-        <p>Proposals wait here. <code>decide()</code> enforces the approval rules from topic 7: right session and learner, one decision, expiry, re-check, execute once.</p>
-        <pre class="code" data-file="app/actions.py"><code>"""Actions that need the learner's approval (milestone 7).
+        <p>Proposals wait here. <code>decide()</code> enforces the approval rules from topic 7: right session and customer, one decision, expiry, re-check, execute once.</p>
+        <pre class="code" data-file="app/actions.py"><code>"""Actions that need the customer's approval (milestone 7).
 
-The model can only PROPOSE a change (request_lab_extension, request_reschedule in tools.py).
+The model can only PROPOSE a change (request_card_freeze, request_dispute in tools.py).
 A proposal is stored here with frozen arguments and a summary written by code. Nothing happens
-until the learner presses Approve. Then code re-checks the rules and executes it once
+until the customer presses Approve. Then code re-checks the rules and executes it once
 (the action id is the idempotency key). The model never approves its own actions."""
 import time
 import uuid
@@ -369,10 +369,10 @@ class ActionStore:
     def for_session(self, session_id: str) -&gt; list[dict]:
         return [p for p in self.pending.values() if p["session_id"] == session_id]
 
-    def decide(self, session_id: str, action_id: str, learner_id: str | None, approve: bool) -&gt; dict:
-        """Returns {"status": done|declined|expired|failed|unknown, "message": text for the learner}."""
+    def decide(self, session_id: str, action_id: str, customer_id: str | None, approve: bool) -&gt; dict:
+        """Returns {"status": done|declined|expired|failed|unknown, "message": text for the customer}."""
         p = self.pending.get(action_id)
-        if p is None or p["session_id"] != session_id or p["learner_id"] != learner_id:
+        if p is None or p["session_id"] != session_id or p["customer_id"] != customer_id:
             return {"status": "unknown", "message": "That request isn't waiting for approval any more."}
         del self.pending[action_id]                <span class="c"># one decision per proposal, whatever happens next</span>
         if not approve:
@@ -385,109 +385,110 @@ class ActionStore:
             return {"status": "failed", "message": f"I couldn't do that: {e}"}
 
 
-def _extend(p, key):
-    r = backend.extend_lab(p["args"]["enrolment_id"], key=key)
-    return f"Done: your lab for {r['enrolment_id']} is now open until {r['lab_until']} (free)."
+def _freeze(p, key):
+    r = backend.freeze_card(p["args"]["card_last4"], key=key)
+    return (f"Done: your card ending {r['card_last4']} is frozen. New payments and cash withdrawals will be "
+            "declined until you unfreeze it in the app; direct debits keep working.")
 
 
-def _reschedule(p, key):
-    e = backend.ENROLMENTS[p["args"]["enrolment_id"]]
-    fee = policy.reschedule_fee(date.fromisoformat(e["start_date"]), date.today())   <span class="c"># re-check: time has passed</span>
-    if not fee["allowed"] or fee["fee_usd"] != p["fee_usd"]:
-        raise backend.ActionError("the fee or rules changed since you were asked; please ask me again")
-    r = backend.reschedule(p["args"]["enrolment_id"], p["args"]["new_start"], fee["fee_usd"], key=key)
-    cost = f"${r['fee_usd']} fee" if r["fee_usd"] else "no fee"
-    return f"Done: {r['enrolment_id']} now starts on {r['new_start']} (was {r['old_start']}; {cost})."
+def _dispute(p, key):
+    t = backend.TRANSACTIONS[p["args"]["txn_id"]]
+    quote = policy.dispute_quote(date.fromisoformat(t["date"]), date.today())     <span class="c"># re-check: time has passed</span>
+    if not quote["allowed"]:
+        raise backend.ActionError("the 60-day dispute window has closed since you were asked; please ask me again")
+    r = backend.open_dispute(p["args"]["txn_id"], p["args"]["reason"], quote["provisional_credit_by"], key=key)
+    return (f"Done: dispute {r['dispute_id']} is open for ${r['amount_usd']:.2f}. You'll get a provisional credit "
+            f"by {r['provisional_credit_by']} while we investigate.")
 
 
-EXECUTE = {"request_lab_extension": _extend, "request_reschedule": _reschedule}</code></pre>
+EXECUTE = {"request_card_freeze": _freeze, "request_dispute": _dispute}</code></pre>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Tools that propose</h4>
         <p>Write the prompt that adds four tools to <code>app/tools.py</code>: two reads (<code>get_lab_access</code>, <code>list_course_dates</code>) and two "request" tools that check the rules and return a proposal instead of changing anything.</p>
         <div class="template-box"><pre><code>Goal: add get_lab_access, list_course_dates, request_lab_extension, request_reschedule to #file:app/tools.py
 Context: #file:app/backend.py has LABS, upcoming_sessions; #file:app/actions.py has new_action_id;
-         policy.reschedule_fee gives fees; context has learner_id
+         policy.reschedule_fee gives fees; context has customer_id
 Constraints: request tools must not change any data ...
              they check ownership and policy first, and return ...
-             the summary the learner approves is written by code and includes ...
+             the summary the customer approves is written by code and includes ...
              proposals are collected in context["proposals"] ...
 Done when: pytest -q passes, including tests/test_actions.py</code></pre></div>
-        <p class="hint"><b>Hint:</b> start each request tool with <code>_own_enrolment()</code>, return <code>{"error": ...}</code> with a next step when a rule says no, and make the docstrings say "Does NOT … : the learner must approve it with a button", so the model tells the learner the truth. Store the fee in the proposal so execution can detect a change.</p>
+        <p class="hint"><b>Hint:</b> start each request tool with <code>_own_enrolment()</code>, return <code>{"error": ...}</code> with a next step when a rule says no, and make the docstrings say "Does NOT … : the customer must approve it with a button", so the model tells the customer the truth. Store the fee in the proposal so execution can detect a change.</p>
         <details class="solution"><summary>Compare with my version</summary><div>
-          <pre class="code" data-file="app/tools.py (milestone 7)"><code><span class="c"># ---------------------------------------------------------------- milestone 7: actions, with approval</span>
-class CourseDatesArgs(BaseModel):
-    course_id: str = Field(description="Course ID like C110, from list_my_enrolments or the catalogue")
+          <pre class="code" data-file="app/tools.py (milestone 7)"><code>        return v
 
 
-@kit.register(EnrolmentArg, needs_context=True)
-def get_lab_access(args, context):
-    """Lab access for one of the signed-in learner's enrolments: open until when, and whether the
-    free 7-day extension is still available."""
-    _own_enrolment(args.enrolment_id, context)
-    lab = backend.LABS.get(args.enrolment_id)
-    if lab is None:
-        return {"enrolment_id": args.enrolment_id, "lab": "not open yet: labs open when the course starts"}
-    return {"enrolment_id": args.enrolment_id, **lab}
+@kit.register(CaseArgs, needs_context=True)
+def create_support_case(args, context):
+    """Create a case for the human support team. Use it for fraud you can't settle, fee exceptions,
+    anything you can't resolve, or when the customer asks for a person. Tell the customer the case ID."""
+    customer_id = _signed_in(context)
+    ref = (args.reference or "").strip().upper()
+    if ACCOUNT_ID.fullmatch(ref):
+        _own_account(ref, context)
+    elif CARD.fullmatch(ref):
+        _own_card(ref, context)
+    elif TXN_ID.fullmatch(ref):
+        _own_transaction(ref, context)
+    case = {"case_id": "CS-" + uuid.uuid4().hex[:6].upper(), "created": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "customer_id": customer_id, **args.model_dump()}
+    path = Path(TICKETS_FILE)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as f:        <span class="c"># Module 07 adds human approval before actions like this</span>
+        f.write(json.dumps(case, ensure_ascii=False) + "\n")
+    return {"case_id": case["case_id"], "status": "created", "team": args.category}
 
 
-@kit.register(CourseDatesArgs)
-def list_course_dates(args):
-    """Upcoming start dates (YYYY-MM-DD) of a course."""
-    return {"course_id": args.course_id.upper(), "dates": backend.upcoming_sessions(args.course_id.strip().upper())}
+<span class="c"># ---------------------------------------------------------------- help centre (milestone 6)</span>
+class HelpArgs(BaseModel):
+    query: str = Field(description="A complete question to look up, e.g. 'How long do I have to dispute a card "
+                                   "payment?'")
 
 
+@kit.register(HelpArgs, needs_context=True)
+def search_help(args, context):
+    """Search the RR Finance Bank help centre: cards, disputes, fees and overdrafts, transfers, online banking,
+    opening accounts, fraud, savings, loans and complaints. Returns numbered sections. Answer from them and cite them like [1]."""
+    if _search is None:
+        return {"error": "the help centre is unavailable right now; offer to raise a case"}
+    sources = context.setdefault("sources", [])               <span class="c"># numbering continues across searches in one turn</span>
+    found = rag.number_sources(rag.retrieve(_search, args.query), start=len(sources) + 1)
+    sources.extend(found)
+    if not found:
+        return {"results": [], "note": "nothing relevant in the help centre"}
+    return {"results": [{"n": s["n"], "title": s["title"], "text": s["text"]} for s in found]}
+
+
+<span class="c"># ---------------------------------------------------------------- milestone 7: actions, with approval</span>
 def _propose(context, tool, args, summary, **extra):
-    """Record a proposal for the learner to approve. Nothing changes until they do."""
+    """Record a proposal for the customer to approve. Nothing changes until they do."""
     proposal = {"action_id": actions.new_action_id(), "tool": tool, "args": args, "summary": summary,
-                "learner_id": context["learner_id"], **extra}
+                "customer_id": context["customer_id"], **extra}
     context.setdefault("proposals", []).append(proposal)
-    return {"status": "awaiting_learner_approval", "action_id": proposal["action_id"], "summary": summary,
-            "note": "Not done yet. Tell the learner to approve or decline with the buttons below your message."}
+    return {"status": "awaiting_customer_approval", "action_id": proposal["action_id"], "summary": summary,
+            "note": "Not done yet. Tell the customer to approve or decline with the buttons below your message."}
 
 
-@kit.register(EnrolmentArg, needs_context=True)
-def request_lab_extension(args, context):
-    """Propose using the learner's one free 7-day lab extension. Does NOT extend anything: the learner
-    must approve it with a button. Check get_lab_access first."""
-    _own_enrolment(args.enrolment_id, context)
-    lab = backend.LABS.get(args.enrolment_id)
-    if lab is None or lab["free_extension_used"]:
-        return {"error": "no free extension available for this enrolment; offer a support ticket instead"}
-    return _propose(context, "request_lab_extension", {"enrolment_id": args.enrolment_id},
-                    f"Extend the lab for {args.enrolment_id} by 7 days, free (one-time).")
-
-
-class RescheduleArgs(BaseModel):
-    enrolment_id: str = Field(description="The learner's enrolment ID, like TC-12345")
-    new_start_date: str = Field(description="One of the dates from list_course_dates, YYYY-MM-DD")
-
-
-@kit.register(RescheduleArgs, needs_context=True)
-def request_reschedule(args, context):
-    """Propose moving an enrolment to another date of the same course. Does NOT move anything: the
-    learner must approve it with a button. Use list_course_dates for valid dates."""
-    e = _own_enrolment(args.enrolment_id.strip().upper(), context)
-    if args.new_start_date not in backend.upcoming_sessions(e["course_id"]) or args.new_start_date == e["start_date"]:
-        return {"error": f"{args.new_start_date} isn't an available date; call list_course_dates('{e['course_id']}')"}
-    fee = policy.reschedule_fee(date.fromisoformat(e["start_date"]), date.today())
-    if not fee["allowed"]:
-        return {"error": f"rescheduling isn't possible: {fee['note']}"}
-    cost = f"${fee['fee_usd']} fee" if fee["fee_usd"] else "free"
-    return _propose(context, "request_reschedule",
-                    {"enrolment_id": args.enrolment_id.strip().upper(), "new_start": args.new_start_date},
-                    f"Move {args.enrolment_id.strip().upper()} from {e['start_date']} to {args.new_start_date} ({cost}).",
-                    fee_usd=fee["fee_usd"])</code></pre>
+@kit.register(CardArg, needs_context=True)
+def request_card_freeze(args, context):
+    """Propose freezing one of the customer's cards (new payments are declined until it is unfrozen).
+    Does NOT freeze anything: the customer must approve it with a button. Check get_card_status first."""
+    card = _own_card(args.card_last4, context)
+    if card["status"] == "frozen":
+        return {"error": "this card is already frozen; tell the customer, nothing to do"}
+    product = backend.PRODUCTS[card["product_id"]]["name"]
+    return _propose(context, "request_card_freeze", {"card_last4": args.card_last4},</code></pre>
         </div></details>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The prompt: actions need approval</h4>
-        <pre class="code" data-file="app/prompts.py (assist_system@v5, new section)"><code><span class="c">## Actions (they need the learner's approval)</span>
-- You can propose two changes: request_lab_extension and request_reschedule. They do NOT change anything:
-  the learner approves or declines with buttons under your message.
-- Never ask the signed-in learner for an enrolment ID: call list_my_enrolments and pick the matching course.
-- Before proposing, check the facts: get_lab_access for labs; list_course_dates and quote_reschedule for dates.
-- After proposing, say what you've prepared, including any fee, and ask them to approve or decline.
-  Never say an action is done unless a message in the conversation says "[A-... done]".
-- One proposal per request. If the learner declines, don't propose it again unless they ask.</code></pre>
+        <pre class="code" data-file="app/prompts.py (assist_system@v5, new section)"><code>- Use tools for facts about products and about the signed-in customer's accounts, cards and payments.
+  Never guess a balance, status, date, fee, rate or ID.
+- For fee refund amounts call quote_fee_refund; to check a dispute call quote_dispute. Never calculate them yourself.
+- You can only see the signed-in customer's own data. If a tool says "not allowed", explain that kindly.
+- For fraud, fee exceptions, anything you can't settle, or when the customer asks for a person, call
+  create_support_case and give them the case ID. You cannot move money or refund fees yourself.
+
+<span class="c">## Actions (they need the customer's approval)</span></code></pre>
         <p>Make <code>assist_system@v5</code> active. The rest of v5 is v4 unchanged.</p>
       </li>
       <li class="dstep ask"><span class="st">Ask AI</span><h4>Proposals, decisions and guard rails in the chat service</h4>
@@ -501,53 +502,52 @@ def request_reschedule(args, context):
 4. Add looks_like_tool_call(text): true when the final reply is JSON with "name" and
    "arguments" or "parameters". If so, replace the reply with a friendly GARBLED message
    (yield a "replace" event) and log "tool_call_as_text".
-5. Add learner_context(learner_id): "## Signed-in learner" with the name and their own enrolments
-   from backend.enrolments_of; append it to the system prompt when a learner is signed in.
-6. Add decide(session_id, action_id, learner_id, approve): call self.actions.decide, append
+5. Add learner_context(customer_id): "## Signed-in customer" with the name and their own enrolments
+   from backend.enrolments_of; append it to the system prompt when a customer is signed in.
+6. Add decide(session_id, action_id, customer_id, approve): call self.actions.decide, append
    "[action_id status] message" to the session history as an assistant message (unless status is
    "unknown"), log it, and return the result.
 Don't change anything else. Then add POST /api/actions/{action_id} to #file:app/main.py with a body
-{session_id, learner_id, decision: "approve" | "decline"}, returning 404 for "unknown".</code></pre></div>
-        <div class="why"><b>Why this prompt works:</b> six numbered changes, each with exact names, data shapes and the order of operations, so the result is reviewable step by step; the outcome note in history is spelled out, because it's what keeps the model from later claiming an action that was declined. The session context came from testing: even with a prompt rule, qwen2.5:7b kept asking Mei for her enrolment ID instead of looking it up. Giving the model the signed-in learner's own enrolments (data the app already owns, nothing the learner can't see) removed a tool call and the problem.</div>
+{session_id, customer_id, decision: "approve" | "decline"}, returning 404 for "unknown".</code></pre></div>
+        <div class="why"><b>Why this prompt works:</b> six numbered changes, each with exact names, data shapes and the order of operations, so the result is reviewable step by step; the outcome note in history is spelled out, because it's what keeps the model from later claiming an action that was declined. The session context came from testing: even with a prompt rule, qwen2.5:7b kept asking Mei for her enrolment ID instead of looking it up. Giving the model the signed-in customer's own enrolments (data the app already owns, nothing the customer can't see) removed a tool call and the problem.</div>
         <details class="solution"><summary>Reference solution</summary><div>
           <pre class="code" data-file="app/chat.py (guard and session context)"><code>GARBLED = "Sorry, something went wrong while I was working on that. Could you ask me again?"
 
 
 def looks_like_tool_call(text: str) -&gt; bool:
-    """Small models sometimes write a tool call as text ('{"name": "quote_refund", ...}') instead of
-    calling it. Never show that to a learner (milestone 7)."""
+    """Small models sometimes write a tool call as text ('{"name": "quote_fee_refund", ...}') instead of
+    calling it. Never show that to a customer (milestone 7)."""
     t = text.strip().strip("`").removeprefix("json").strip()
     return t.startswith("{") and '"name"' in t and ('"arguments"' in t or '"parameters"' in t)
 
 
-def learner_context(learner_id: str) -&gt; str:
-    """Who is signed in and their own enrolments, from the app, not the model (milestone 7). Saves a tool
-    call on almost every request, and contains nothing the learner isn't allowed to see."""
-    rows = backend.enrolments_of(learner_id)
-    lines = [f"- {r['enrolment_id']}: {r['course_title']} (course {r['course_id']}), starts {r['start_date']}, {r['status']}"
-             for r in rows]
-    return (f"## Signed-in learner\n{backend.LEARNERS[learner_id]['name']} ({learner_id}). Their enrolments:\n"
-            + "\n".join(lines))
+def customer_context(customer_id: str) -&gt; str:
+    """Who is signed in, with their own accounts and cards, from the app, not the model (milestone 7). Saves a
+    tool call on almost every request, and contains nothing the customer isn't allowed to see."""
+    accounts = [f"- account {a['account_id']}: {a['product']}" for a in backend.accounts_of(customer_id)]
+    cards = [f"- card ending {c['card_last4']}: {c['product']}, {c['status']}" for c in backend.cards_of(customer_id)]
+    return (f"## Signed-in customer\n{backend.CUSTOMERS[customer_id]['name']} ({customer_id}). "
+            "Their accounts and cards:\n" + "\n".join(accounts + cards))
 
-</code></pre>
-          <pre class="code" data-file="app/chat.py (decide)"><code>    def decide(self, session_id: str, action_id: str, learner_id: str | None, approve: bool) -&gt; dict:
-        """The learner pressed Approve or Decline (milestone 7). Code executes; the model isn't involved.
+
+class Turn:</code></pre>
+          <pre class="code" data-file="app/chat.py (decide)"><code>        """The customer pressed Approve or Decline (milestone 7). Code executes; the model isn't involved.
         The outcome is added to the conversation, so the next turn knows what really happened."""
-        result = self.actions.decide(session_id, action_id, learner_id, approve)
+        result = self.actions.decide(session_id, action_id, customer_id, approve)
         if result["status"] != "unknown":
             self.sessions.setdefault(session_id, []).append(
                 {"role": "assistant", "content": f"[{action_id} {result['status']}] {result['message']}"})
         log_event(session=session_id[:8], level="info" if result["status"] in ("done", "declined") else "warning",
                   event="action_decision", action_id=action_id, approve=approve, status=result["status"])
         return result</code></pre>
-          <pre class="code" data-file="app/main.py (POST /api/actions)"><code>@app.post("/api/actions/{action_id}")
-def decide_action(action_id: str, req: DecisionRequest):
-    """New in milestone 7: the learner approves or declines an action the assistant proposed.
-    Code checks the rules again and executes it; the model is not involved."""
-    result = chat.decide(req.session_id, action_id, req.learner_id, req.decision == "approve")
-    if result["status"] == "unknown":
-        raise HTTPException(status_code=404, detail=result["message"])
-    return result</code></pre>
+          <pre class="code" data-file="app/main.py (POST /api/actions)"><code>@app.post("/api/ask")
+def ask_endpoint(req: AskRequest):
+    """New in milestone 6: one question, one answer from the help centre, with checked citations."""
+    if search is None:
+        raise HTTPException(status_code=503, detail="Search index not built. Run: python -m scripts.build_index")
+    try:
+        result = rag.ask(chat.client, search, req.question)
+    except openai.APIError as e:</code></pre>
         </div></details>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Approval in the UI and CLI</h4>
@@ -565,13 +565,13 @@ from app.chat import GARBLED, ChatService
 from app.tools import kit
 from tests.fakes import FakeClient, text, tool
 
-MEI, DIEGO, ASHA = {"learner_id": "L-MEI"}, {"learner_id": "L-DIEGO"}, {"learner_id": "L-ASHA"}
+MEI, DIEGO, ASHA = {"customer_id": "RR-10293"}, {"customer_id": "RR-20877"}, {"customer_id": "RR-31002"}
 
 
 @pytest.fixture(autouse=True)
 def fresh_backend(monkeypatch, tmp_path):
-    monkeypatch.setattr(backend, "LABS", copy.deepcopy(backend.LABS))
-    monkeypatch.setattr(backend, "ENROLMENTS", copy.deepcopy(backend.ENROLMENTS))
+    monkeypatch.setattr(backend, "CARDS", copy.deepcopy(backend.CARDS))
+    monkeypatch.setattr(backend, "DISPUTES", {})
     monkeypatch.setattr(backend, "_DONE", {})
     monkeypatch.setattr(backend, "ACTIONS_FILE", tmp_path / "actions.jsonl")
 
@@ -582,98 +582,98 @@ def call(name, args, context):
 
 
 def test_request_tools_propose_but_change_nothing():
-    before = dict(backend.LABS["TC-10293"])
-    result, proposals = call("request_lab_extension", {"enrolment_id": "TC-10293"}, MEI)
-    assert result["status"] == "awaiting_learner_approval" and result["action_id"].startswith("A-")
-    assert proposals[0]["summary"] == "Extend the lab for TC-10293 by 7 days, free (one-time)."
-    assert backend.LABS["TC-10293"] == before and not backend.ACTIONS_FILE.exists()
+    before = dict(backend.CARDS["4821"])
+    result, proposals = call("request_card_freeze", {"card_last4": "4821"}, MEI)
+    assert result["status"] == "awaiting_customer_approval" and result["action_id"].startswith("A-")
+    assert proposals[0]["summary"].startswith("Freeze your Cashback Card ending 4821.")
+    assert backend.CARDS["4821"] == before and not backend.ACTIONS_FILE.exists()
 
 
 def test_request_tools_check_rules_and_identity_first():
-    assert "no free extension" in call("request_lab_extension", {"enrolment_id": "TC-31002"}, ASHA)[0]["error"]
-    assert "not allowed" in call("request_lab_extension", {"enrolment_id": "TC-31002"}, MEI)[0]["error"]
-    bad, _ = call("request_reschedule", {"enrolment_id": "TC-20877", "new_start_date": "2030-01-01"}, DIEGO)
-    assert "isn't an available date" in bad["error"]
+    assert "already frozen" in call("request_card_freeze", {"card_last4": "5560"}, ASHA)[0]["error"]
+    assert "not allowed" in call("request_card_freeze", {"card_last4": "5560"}, MEI)[0]["error"]
+    old, _ = call("request_dispute", {"txn_id": "TX-1006", "reason": "wrong_amount"}, MEI)      <span class="c"># 75 days ago</span>
+    assert "can't be disputed" in old["error"]
 
 
-def test_reschedule_proposal_carries_the_fee_from_policy():
-    new = backend.upcoming_sessions("C110")[1]
-    result, proposals = call("request_reschedule", {"enrolment_id": "TC-20877", "new_start_date": new}, DIEGO)
-    assert proposals[0]["fee_usd"] == 50 and "$50 fee" in result["summary"]        <span class="c"># starts in 5 days</span>
+def test_dispute_proposal_carries_the_amount_and_date_from_code():
+    result, proposals = call("request_dispute", {"txn_id": "TX-1002", "reason": "charged_twice"}, MEI)
+    assert "$412.00 to SkyHigh Airlines" in result["summary"] and "provisional credit by" in result["summary"]
+    assert proposals[0]["args"] == {"txn_id": "TX-1002", "reason": "charged_twice"}
 
 
 def test_approve_executes_once_and_logs():
     store = actions.ActionStore()
-    _, proposals = call("request_lab_extension", {"enrolment_id": "TC-10293"}, MEI)
+    _, proposals = call("request_card_freeze", {"card_last4": "4821"}, MEI)
     store.add("s1", proposals[0])
-    first = store.decide("s1", proposals[0]["action_id"], "L-MEI", approve=True)
-    assert first["status"] == "done" and backend.LABS["TC-10293"]["free_extension_used"]
-    assert store.decide("s1", proposals[0]["action_id"], "L-MEI", approve=True)["status"] == "unknown"   <span class="c"># once only</span>
+    first = store.decide("s1", proposals[0]["action_id"], "RR-10293", approve=True)
+    assert first["status"] == "done" and backend.CARDS["4821"]["status"] == "frozen"
+    assert store.decide("s1", proposals[0]["action_id"], "RR-10293", approve=True)["status"] == "unknown"   <span class="c"># once only</span>
     assert len(backend.ACTIONS_FILE.read_text().splitlines()) == 1
 
 
-def test_decline_wrong_learner_and_expiry_change_nothing(monkeypatch):
+def test_decline_wrong_customer_and_expiry_change_nothing():
     store = actions.ActionStore()
     for _ in range(3):
-        _, proposals = call("request_lab_extension", {"enrolment_id": "TC-10293"}, MEI)
+        _, proposals = call("request_card_freeze", {"card_last4": "4821"}, MEI)
         store.add("s1", proposals[0])
     a, b, c = list(store.pending)
-    assert store.decide("s1", a, "L-MEI", approve=False)["status"] == "declined"
-    assert store.decide("s1", b, "L-DIEGO", approve=True)["status"] == "unknown"     <span class="c"># not Diego's to approve</span>
+    assert store.decide("s1", a, "RR-10293", approve=False)["status"] == "declined"
+    assert store.decide("s1", b, "RR-20877", approve=True)["status"] == "unknown"     <span class="c"># not Diego's to approve</span>
     store.pending[c]["created"] -= actions.EXPIRY_S + 1
-    assert store.decide("s1", c, "L-MEI", approve=True)["status"] == "expired"
-    assert backend.LABS["TC-10293"]["free_extension_used"] is False
+    assert store.decide("s1", c, "RR-10293", approve=True)["status"] == "expired"
+    assert backend.CARDS["4821"]["status"] == "active"
 
 
 def test_backend_writes_are_idempotent():
-    first = backend.extend_lab("TC-10293", key="A-1")
-    assert backend.extend_lab("TC-10293", key="A-1") == first                      <span class="c"># a retry: same result, no error</span>
+    first = backend.open_dispute("TX-1002", "charged_twice", "2026-10-25", key="A-000001")
+    assert backend.open_dispute("TX-1002", "charged_twice", "2026-10-25", key="A-000001") == first   <span class="c"># a retry</span>
     with pytest.raises(backend.ActionError):
-        backend.extend_lab("TC-10293", key="A-2")                                  <span class="c"># a second, different request</span>
+        backend.open_dispute("TX-1002", "charged_twice", "2026-10-25", key="A-000002")   <span class="c"># a second dispute: refused</span>
 
 
 def test_chat_returns_approvals_and_records_the_decision():
-    fake = FakeClient([tool("request_lab_extension", '{"enrolment_id": "TC-10293"}'),
-                       text("I've prepared a free 7-day extension. Please approve it below.")])
+    fake = FakeClient([tool("request_dispute", '{"txn_id": "TX-1002", "reason": "charged_twice"}'),
+                       text("I've prepared a dispute for the duplicate charge. Please approve it below.")])
     service = ChatService(client=fake)
-    done = list(service.stream("session-1234", "extend my lab please", learner_id="L-MEI"))[-1]
+    done = list(service.stream("session-1234", "I was charged twice", customer_id="RR-10293"))[-1]
     (approval,) = done["approvals"]
-    assert approval["summary"].startswith("Extend the lab for TC-10293")
-    result = service.decide("session-1234", approval["action_id"], "L-MEI", approve=True)
-    assert result["status"] == "done" and "is now open until" in result["message"]
+    assert approval["summary"].startswith("Dispute $412.00 to SkyHigh Airlines")
+    result = service.decide("session-1234", approval["action_id"], "RR-10293", approve=True)
+    assert result["status"] == "done" and "provisional credit" in result["message"]
     assert service.sessions["session-1234"][-1]["content"].startswith(f"[{approval['action_id']} done]")
 
 
 def test_repeated_identical_tool_calls_are_refused():
-    fake = FakeClient([tool("list_my_enrolments", "{}", f"c{i}") for i in range(3)] + [text("Done.")])
-    list(ChatService(client=fake).stream("session-1234", "loop", learner_id="L-MEI"))
+    fake = FakeClient([tool("list_my_accounts", "{}", f"c{i}") for i in range(3)] + [text("Done.")])
+    list(ChatService(client=fake).stream("session-1234", "loop", customer_id="RR-10293"))
     third = [m for m in fake.chat.completions.calls[-1]["messages"] if m["role"] == "tool"][2]
     assert "already made this exact call" in third["content"]
 
 
 def test_a_tool_call_written_as_text_is_never_shown():
-    fake = FakeClient([text('{"name": "quote_extLAB", "parameters": {"enrolment_id": "TC-12345"}}')])
-    events = list(ChatService(client=fake).stream("session-1234", "how much?", learner_id=None))
+    fake = FakeClient([text('{"name": "quote_feeREF", "parameters": {"account_id": "AC-1234"}}')])
+    events = list(ChatService(client=fake).stream("session-1234", "how much?", customer_id=None))
     assert {"type": "replace", "text": GARBLED} in events
 
 
-def test_session_context_has_only_the_signed_in_learners_enrolments():
+def test_session_context_has_only_the_signed_in_customers_accounts():
     fake = FakeClient([text("Hi Mei."), text("Hello.")])
     service = ChatService(client=fake)
-    list(service.stream("session-1234", "hi", learner_id="L-MEI"))
+    list(service.stream("session-1234", "hi", customer_id="RR-10293"))
     system = fake.chat.completions.calls[0]["messages"][0]["content"]
-    assert "TC-10293" in system and "TC-10477" in system and "TC-20877" not in system   <span class="c"># not Diego's</span>
-    list(service.stream("session-5678", "hi", learner_id=None))
-    assert "Signed-in learner" not in fake.chat.completions.calls[1]["messages"][0]["content"]</code></pre>
+    assert "AC-5512" in system and "4821" in system and "9034" not in system           <span class="c"># not Diego's card</span>
+    list(service.stream("session-5678", "hi", customer_id=None))
+    assert "Signed-in customer" not in fake.chat.completions.calls[1]["messages"][0]["content"]</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Evidence</h4>
 <pre class="term"><code><span class="ps">$ </span>pytest -q
-<span class="ps">$ </span>python cli.py --as L-MEI</code></pre>
+<span class="ps">$ </span>python cli.py --as RR-10293</code></pre>
         <span class="out-label">Expected (exact)</span>
 <pre class="out"><code>.......................................................                  [100%]
 55 passed in 3.53s</code></pre>
         <span class="out-label">A real CLI session with a small local model (qwen2.5:7b on Ollama): read it as a lesson, not a target</span>
-<pre class="out"><code>Traincrest Assist v0.7 [ollama · qwen2.5:7b] signed in as L-MEI. Type 'exit' to quit, '/reset' for a new chat.
+<pre class="out"><code>RR Finance Assist v0.7 [ollama · qwen2.5:7b] signed in as L-MEI. Type 'exit' to quit, '/reset' for a new chat.
 
 You: Please extend my AI-102 lab.
 Assist: Sure, Mei. I'll check if you're eligible for the free 7-day extension and propose it for your AI-102 course.
@@ -692,7 +692,7 @@ Assist: Mei, I've proposed extending your lab access for AI-102 by 7 days. You'l
   (10.56s to first word · 32.26s · 1975 in / 65 out · $0.000894)
 
 You: exit</code></pre>
-        <p>The model <em>wrote</em> "[A-1]", "[A-2]" and "click the button", but never called <code>request_lab_extension</code>, so no proposal was stored, the CLI never asked <code>APPROVE?</code>, and your "y" arrived as an ordinary chat message. Nothing changed in TrainCrest's systems. This is the design working: the approval card and the confirmation come only from code, so a model that describes an action instead of proposing it can't change anything. With a 12-tool assistant, a 7B model on a laptop CPU isn't reliable enough to drive it; your Azure <code>chat</code> deployment is. The tests above prove the plumbing regardless of the model.</p>
+        <p>The model <em>wrote</em> "[A-1]", "[A-2]" and "click the button", but never called <code>request_lab_extension</code>, so no proposal was stored, the CLI never asked <code>APPROVE?</code>, and your "y" arrived as an ordinary chat message. Nothing changed in RR Finance Bank's systems. This is the design working: the approval card and the confirmation come only from code, so a model that describes an action instead of proposing it can't change anything. With a 12-tool assistant, a 7B model on a laptop CPU isn't reliable enough to drive it; your Azure <code>chat</code> deployment is. The tests above prove the plumbing regardless of the model.</p>
         <ul class="verify-list">
           <li>Signed in as Mei, ask to extend your AI-102 lab. An approval card appears with the current and new end dates; <code>data/actions.jsonl</code> is still empty.</li>
           <li>Press Decline: the card says nothing changed. Ask "is my lab extended?": the assistant says no.</li>
@@ -706,10 +706,10 @@ You: exit</code></pre>
   <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="b07-1"> I've completed Milestone 7</label></div>
 </div>
 
-<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where Traincrest Assist stands after Part III.</p></div></div>
+<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where RR Finance Assist stands after Part III.</p></div></div>
 <ul class="checklist">
   <li>Assist answers policy questions from the help centre with checked citations (Milestone 6).</li>
-  <li>It can propose a lab extension or a date change; nothing changes until the learner approves.</li>
+  <li>It can propose a lab extension or a date change; nothing changes until the customer approves.</li>
   <li>Approvals show an effect computed by code, expire, accept one decision, re-check the rules and execute once.</li>
   <li>Every change is logged; the conversation records what was approved or declined.</li>
   <li>The loop refuses repeated identical calls and never shows a tool call written as text.</li>

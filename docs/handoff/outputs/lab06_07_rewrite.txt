@@ -1,0 +1,15 @@
+Follow-up : And if I need it faster, how much is that?
+  retrieves: Loans and mortgages > Mortgages (0.50), Opening an account > How long it takes (0.52)
+Rewritten : How much does it cost to expedite a replacement credit or debit card if mine was stolen?
+  retrieves: Lost or stolen cards > Report it and get a replacement (0.78), Lost or stolen cards > Overview (0.68)
+
+Follow-up : yes, three months early. what do i lose?
+  retrieves: Loans and mortgages > Personal loans (0.52), Savings accounts and CDs > Certificates of deposit (CDs) (0.51)
+Rewritten : Can I earn a penalty for withdrawing my 12-month CD three months early?
+  retrieves: Savings accounts and CDs > Certificates of deposit (CDs) (0.71), Savings accounts and CDs > When a CD matures (0.68)
+
+Follow-up : a wire, yesterday. can you still cancel it?
+  retrieves: Transfers and payments > Sent money to the wrong person (0.69), Transfers and payments > Limits and fees (0.59)
+Rewritten : Can a wire transfer sent by mistake to the wrong account still be cancelled?
+  retrieves: Transfers and payments > Sent money to the wrong person (0.81), Transfers and payments > Limits and fees (0.59)
+

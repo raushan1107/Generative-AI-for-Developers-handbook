@@ -1,0 +1,15 @@
+Failed to send telemetry event ClientStartEvent: capture() takes 1 positional argument but 3 were given
+Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given
+Failed to send telemetry event CollectionAddEvent: capture() takes 1 positional argument but 3 were given
+Failed to send telemetry event CollectionQueryEvent: capture() takes 1 positional argument but 3 were given
+'somewhere to save for a house deposit'
+  distance 0.322  P104  High-Yield Savings  (accounts, $0 a year)
+  distance 0.366  P118  30-Year Fixed Mortgage  (loans, $0 a year)
+  distance 0.369  P119  Home Equity Line of Credit  (loans, $75 a year)
+Failed to send telemetry event ClientStartEvent: capture() takes 1 positional argument but 3 were given
+Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given
+Failed to send telemetry event CollectionQueryEvent: capture() takes 1 positional argument but 3 were given
+'card for spending abroad'  where={'$and': [{'family': 'cards'}, {'annual_fee_usd': {'$lte': 100}}]}
+  distance 0.231  P111  Voyager Travel Card  (cards, $95 a year)
+  distance 0.397  P114  Business Card  (cards, $0 a year)
+  distance 0.406  P110  Cashback Card  (cards, $0 a year)

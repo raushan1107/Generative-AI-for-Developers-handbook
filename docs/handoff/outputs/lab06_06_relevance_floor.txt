@@ -1,0 +1,17 @@
+Lowest in-scope scores:
+  0.605  Do you charge a fee when I pay in euros on holiday?
+  0.630  How long does an international wire take?
+  0.647  Someone called from the bank and asked for my one-time code
+  0.653  What documents do I need to open an account?
+Highest off-topic scores:
+  0.644  Is RR Finance Bank hiring?
+  0.575  Do you sell gift cards?
+  0.489  Should I buy shares in an electric car company?
+  0.461  Write me a poem about the sea
+
+ floor  answerable kept  off-topic dropped
+  0.40           20/20              4/8
+  0.45           20/20              4/8
+  0.50           20/20              6/8
+  0.55           20/20              6/8
+  0.60           20/20              7/8

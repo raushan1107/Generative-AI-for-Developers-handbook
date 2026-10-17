@@ -6,10 +6,10 @@ from client import EMBED_MODEL, get_embed_client
 
 TEXTS = [
     "How do I get my money back?",
-    "Can I have a refund for my course?",
-    "¿Cómo pido un reembolso?",
-    "My lab says quota exceeded",
-    "The sandbox won't start",
+    "Can I dispute a double charge?",
+    "¿Cómo reclamo un cargo?",
+    "My card was stolen",
+    "Someone took my wallet",
     "What's the weather in Paris?",
 ]
 response = get_embed_client().embeddings.create(model=EMBED_MODEL, input=TEXTS)

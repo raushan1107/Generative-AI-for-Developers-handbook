@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Embedding Generation and Vector Storage</title>
-<meta name="description" content="Module 06, topic 5: generating embeddings for a RAG index in batches, re-embedding only new or changed chunks, storing vectors with text and metadata, recording how the index was built in a manifest, choosing a vector store, and a drill that builds and incrementally updates TrainCrest&#x27;s knowledge index.">
+<meta name="description" content="Module 06, topic 5: generating embeddings for a RAG index in batches, re-embedding only new or changed chunks, storing vectors with text and metadata, recording how the index was built in a manifest, choosing a vector store, and a drill that builds and incrementally updates RR Finance Bank&#x27;s knowledge index.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -175,7 +175,7 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 06 · Topic 5 of 9</span><h1>Embedding Generation and Vector Storage</h1><p class="lead">Embedding is the expensive, slow, easy-to-get-wrong step of indexing: one model change and every vector is useless. Done well, it's boring: batched, incremental, recorded in a manifest, and checked on load. You'll build TrainCrest's knowledge index, run it again to see it embed nothing, then edit one document and watch exactly one chunk being re-embedded.</p><div class="chips"><span class="chip">Batch and incremental</span><span class="chip">Manifest</span><span class="chip">Store text + metadata</span><span class="chip">Drill 06.5</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 06 · Topic 5 of 9</span><h1>Embedding Generation and Vector Storage</h1><p class="lead">Embedding is the expensive, slow, easy-to-get-wrong step of indexing: one model change and every vector is useless. Done well, it's boring: batched, incremental, recorded in a manifest, and checked on load. You'll build RR Finance Bank's knowledge index, run it again to see it embed nothing, then edit one document and watch exactly one chunk being re-embedded.</p><div class="chips"><span class="chip">Batch and incremental</span><span class="chip">Manifest</span><span class="chip">Store text + metadata</span><span class="chip">Drill 06.5</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Embed once, store everything you'll need, remember how.</p></div></div>
@@ -250,6 +250,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Index updates in a bank follow change control: when a policy changes, only the changed sections are re-embedded, the index records which document versions it holds, and the old index is kept until the new one passes its evaluation. That lets the bank show, for any past answer, which version of the policy it was based on.</p>
+</div>
   <p>A team switched embedding deployments from one model to another "for better quality" and re-embedded only new documents. For a week, answers about old policies got worse: old vectors and new query vectors lived in different spaces, and nothing raised an error. A manifest check on load, as in <code>kb_index.py</code>, turns that silent failure into an obvious one. Mature teams build a second index with the new model, compare hit rates on their question set, then switch traffic.</p>
 </div>
 
@@ -342,7 +347,7 @@ MODEL = {
   <div class="drill-head"><span class="drill-id">Drill 06.5</span><h3>Build and update the knowledge index</h3>
     <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI embeddings</span><span class="badge b-tool">Python · pytest</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> build TrainCrest's knowledge index (help centre + internal documents), prove that a second run embeds nothing, and that editing one document re-embeds exactly one chunk.</p>
+    <p class="drill-goal"><b>Goal:</b> build RR Finance Bank's knowledge index (help centre + internal documents), prove that a second run embeds nothing, and that editing one document re-embeds exactly one chunk.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>The index</h4>
         <pre class="code" data-file="kb_index.py"><code>"""Module 06 helper: the knowledge index (embedding generation + vector storage).
@@ -566,7 +571,7 @@ embedded this run: 0  ·  0.1s
         <p>The first run took 0.0s because <code>embed.py</code>'s disk cache already held these texts from earlier drills; without the cache, embedding 66 chunks takes a few seconds. The second line is the one that matters: <strong>unchanged 66, embedded 0</strong>.</p>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Edit one document, build again</h4>
-        <p>In <code>data/internal/staff-faq.csv</code>, change "at most 16 learners" to "at most 18 learners". Save and run the build again:</p>
+        <p>In <code>data/internal/staff-faq.csv</code>, change "at most 16 customers" to "at most 18 customers". Save and run the build again:</p>
 <pre class="out"><code>chunks: 66  ->  new 0, changed 1, unchanged 65, removed 0
 embedded this run: 1  ·  0.5s</code></pre>
         <p>Exactly one chunk, the FAQ section that changed, was embedded. Change the number back to 16 and build once more (one more chunk embedded, from the cache).</p>

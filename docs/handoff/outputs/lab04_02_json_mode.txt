@@ -1,0 +1,12 @@
+{"customerName": "Mei", "customerIdentifier": "RR-10293", "transactionDetails": "Charged twice for a $412 flight", "flightDate": "Friday", "flightAmount": 412}
+{}
+{"name": "Diego", "event": "card was stolen", "time": "an hour ago", "location": "the station"}
+{"nombre": "Asha", "numero_de_documento": "RR-31002", "mesaje": "Mi transferencia lleva cinco dias pendiente."}
+{"context": "Unpaid online casino bill", "details": "Payment amount: $640", "type": "Notification"}
+
+Different key sets seen: 5
+  1 x ['customerIdentifier', 'customerName', 'flightAmount', 'flightDate', 'transactionDetails']
+  1 x []
+  1 x ['event', 'location', 'name', 'time']
+  1 x ['mesaje', 'nombre', 'numero_de_documento']
+  1 x ['context', 'details', 'type']

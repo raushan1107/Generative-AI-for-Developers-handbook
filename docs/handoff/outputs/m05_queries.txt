@@ -1,0 +1,10 @@
+a card I can use on holiday without extra charges (product)
+  -> P114 Business Card ($0), P111 Voyager Travel Card ($95), P110 Cashback Card ($0)
+save for a house deposit (product)
+  -> P118 30-Year Fixed Mortgage ($0), P104 High-Yield Savings ($0), P106 12-Month CD ($0)
+someone is asking me to move money to a safe account (help)
+  -> fraud-and-scams-1 "We will never ask", transfers-and-payments-4 "Sent money to the wrong person", fraud-and-scams-3 "Scams where you sent the money"
+I paid the wrong person (help)
+  -> transfers-and-payments-4 "Sent money to the wrong person", transfers-and-payments-1 "Timing", online-banking-access-3 "Locked out"
+card for spending abroad, no annual fee (product, family=cards, max_annual_fee_usd=0)
+  -> P110 Cashback Card ($0), P114 Business Card ($0), P112 Starter Credit Card ($0)

@@ -205,7 +205,7 @@
       <tr><td>False claims</td><td>"I've extended your lab" with no tool call</td><td>Report outcomes from logs; check claims against the trace</td><td>Drills 07.1, 07.6</td></tr>
       <tr><td>Flaky services</td><td>The lab service times out</td><td>Retryable errors; limited retries</td><td>Drill 07.8</td></tr>
       <tr><td>Double execution</td><td>A retry extends the lab twice</td><td>Idempotency keys on every write</td><td>Drill 07.8</td></tr>
-      <tr><td>Tool call written as text</td><td><code>{"name": "quote_extLAB", ...}</code> shown to the learner</td><td>Detect and replace before display</td><td>Milestone 7</td></tr>
+      <tr><td>Tool call written as text</td><td><code>{"name": "quote_extLAB", ...}</code> shown to the customer</td><td>Detect and replace before display</td><td>Milestone 7</td></tr>
       <tr><td>Regressions</td><td>A prompt edit breaks the approval flow</td><td>Offline tests with a scripted model; evaluation sets (Module 09)</td><td><code>test_agent.py</code></td></tr>
     </tbody>
   </table>
@@ -233,6 +233,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>The worst agent failure in banking isn't a crash, it's doing something twice: two disputes for one payment means a double credit, and two payments means real money lost. Idempotency keys, retries that are safe, step budgets and an audit log are standard in payment systems, and an agent that acts on accounts needs all of them before it goes live.</p>
+</div>
   <p>Payment APIs pioneered idempotency keys for exactly this reason: networks drop replies, clients retry, and nobody wants to be charged twice. Agent platforms add the rest: per-run step and token limits, tool timeouts, traces of every model and tool call, and test suites where a scripted model replays known conversations so a code change can't silently break the approval flow. Teams then run evaluation sets of real requests against each new prompt or model before release (Module 09).</p>
 </div>
 

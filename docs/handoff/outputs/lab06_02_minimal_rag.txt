@@ -1,0 +1,8 @@
+[ 0.00s] ingest + chunk: 44 chunks
+[ 0.00s] embed + store: 44 vectors of 768 numbers
+[ 1.09s] retrieve: transfers-and-payments > Limits and fees (0.74), fees-and-charges > Card and cash fees (0.62), fees-and-charges > Other fees (0.53)
+[ 0.00s] prompt: question + 3 sources
+[ 6.29s] generate
+
+Q: How much is the fee for an international wire?
+A: [1]

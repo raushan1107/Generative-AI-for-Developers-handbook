@@ -175,7 +175,7 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 06 · Topic 9 of 9</span><h1>Citation and Source Attribution</h1><p class="lead">A citation turns 'trust me' into 'check me'. But a model can cite a source that doesn't exist, or cite a real one for a number it made up. Cheap checks in code catch the most damaging cases before the learner reads the answer. You'll build them and run them on four answers, one honest and three with typical mistakes.</p><div class="chips"><span class="chip">Inline citations</span><span class="chip">Show sources</span><span class="chip">Verify in code</span><span class="chip">Drill 06.10</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 06 · Topic 9 of 9</span><h1>Citation and Source Attribution</h1><p class="lead">A citation turns 'trust me' into 'check me'. But a model can cite a source that doesn't exist, or cite a real one for a number it made up. Cheap checks in code catch the most damaging cases before the customer reads the answer. You'll build them and run them on four answers, one honest and three with typical mistakes.</p><div class="chips"><span class="chip">Inline citations</span><span class="chip">Show sources</span><span class="chip">Verify in code</span><span class="chip">Drill 06.10</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Every fact points somewhere, and code checks the pointer.</p></div></div>
@@ -247,6 +247,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Citations are what make a banking assistant auditable. A complaints handler, an auditor or a regulator can follow the link from "you have 60 days to dispute" to the policy section and its version. Checking citations in code (does the cited section exist, does it contain the number?) turns that from a nice feature into a control.</p>
+</div>
   <p>Citations are now expected in enterprise assistants: answers show numbered references to files or pages, and users click them, especially for HR, legal and policy questions. Legal and medical tools go further and verify quoted spans against the source text. On Azure, Azure AI Content Safety offers groundedness detection, a model-based check of whether an answer is supported by given sources; Module 09 compares that kind of evaluator with the free rule-based checks you build here.</p>
 </div>
 
@@ -335,11 +340,11 @@ MODEL = {
 }.get(PROVIDER, "")</code></pre></div></details>
 </div>
 
-<div class="drill" id="d06-10" data-title="Check citations before the learner sees them" data-time="~20 min" data-steps="run,verify,write">
-  <div class="drill-head"><span class="drill-id">Drill 06.10</span><h3>Check citations before the learner sees them</h3>
+<div class="drill" id="d06-10" data-title="Check citations before the customer sees them" data-time="~20 min" data-steps="run,verify,write">
+  <div class="drill-head"><span class="drill-id">Drill 06.10</span><h3>Check citations before the customer sees them</h3>
     <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-tool">Python · pytest</span><span class="badge b-tool">offline</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> implement three rule-based citation checks, run them on four answers to the same question, and render the verified sources for the learner.</p>
+    <p class="drill-goal"><b>Goal:</b> implement three rule-based citation checks, run them on four answers to the same question, and render the verified sources for the customer.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>The checker</h4>
         <pre class="code" data-file="citations.py"><code>"""Module 06 helper: check citations before anyone reads the answer.
@@ -435,14 +440,14 @@ INVENTED CITATION: {'unknown': [4]}
 NUMBER WITHOUT A SOURCE: {'uncited': ['Your refund would arrive in 5 to 10 business days.']}
 NUMBER NOT IN ITS SOURCE: {'unsupported': [{'sentence': 'Moving the course costs $75 [1].', 'numbers': ['75']}]}
 
-Rendered for the learner (grounded answer):
+Rendered for the customer (grounded answer):
 
 Moving the course within 7 days of the start costs $50, once [1]. Cancelling now gives no refund, but you can move to a later date once, free [2].
 
 Sources:
 [1] Rescheduling a course &gt; Fees (rescheduling.md)
 [2] Refunds and cancellations &gt; How much you get back (refunds-and-cancellations.md)</code></pre>
-        <p>If an answer repeats "3 days" from the question, that number appears in no source, yet it's not a hallucination: the learner wrote it. That's why <code>check()</code> takes the question too and allows its numbers.</p>
+        <p>If an answer repeats "3 days" from the question, that number appears in no source, yet it's not a hallucination: the customer wrote it. That's why <code>check()</code> takes the question too and allows its numbers.</p>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>The tests</h4>
         <pre class="code" data-file="test_citations.py"><code>"""Drill 06.10: citation checks, offline.  Run:  pytest -q test_citations.py"""
@@ -498,7 +503,7 @@ def test_render_drops_invented_citations_and_lists_real_sources():
 7 passed in 0.15s</span></code></pre>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Defence in depth: no staff sources in public answers</h4>
-        <p>Retrieval already filters by audience. Add a second, independent check: an answer for a learner must never cite a source whose <code>audience</code> is <code>staff</code>. Write the prompt.</p>
+        <p>Retrieval already filters by audience. Add a second, independent check: an answer for a customer must never cite a source whose <code>audience</code> is <code>staff</code>. Write the prompt.</p>
         <div class="template-box"><pre><code>Goal: extend check() in #file:citations.py with an audience check
 Context: each source dict may have "audience": "public" or "staff" ...
 Constraints: new optional parameter ...; report key ...; ok must be False when ...
@@ -521,8 +526,8 @@ audience=("public",) gives restricted == [2] and ok False. All existing tests mu
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Citations.</p></div></div>
 <div class="quiz">
   <details><summary>1. The answer says "a reissue costs $25 [1]" and source 1 says "After 30 days, a reissue costs $25." Do the checks prove the answer is right?</summary><div><p>No. They prove the number appears in the cited source. The answer could still apply it to the wrong situation (for example, a correction requested within 30 days, which is free). That needs a model-based groundedness check or human review (Module 09).</p></div></details>
-  <details><summary>2. Why does <code>check()</code> ignore codes like TC-10477 and LAB-503 when comparing numbers?</summary><div><p>They're identifiers, often copied from the question or the learner's data, not amounts or durations claimed from a source. Treating them as numbers would flag correct answers.</p></div></details>
-  <details><summary>3. A model often answers correctly but cites nothing. What do you show the learner?</summary><div><p>The answer, without pretending it was sourced: list the top retrieved sections as "related articles", log the missing citations, and measure the citation rate per model. Small local models do this far more often than larger hosted ones.</p></div></details>
+  <details><summary>2. Why does <code>check()</code> ignore codes like TC-10477 and LAB-503 when comparing numbers?</summary><div><p>They're identifiers, often copied from the question or the customer's data, not amounts or durations claimed from a source. Treating them as numbers would flag correct answers.</p></div></details>
+  <details><summary>3. A model often answers correctly but cites nothing. What do you show the customer?</summary><div><p>The answer, without pretending it was sourced: list the top retrieved sections as "related articles", log the missing citations, and measure the citation rate per model. Small local models do this far more often than larger hosted ones.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Citations make answers checkable; code makes them trustworthy. Verify every marker against the sources you sent, show only what's cited, and log every failure.</p></div>
 

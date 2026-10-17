@@ -222,7 +222,7 @@
     <tbody>
       <tr><td>Speed at millions of vectors</td><td>Slow (compare with all)</td><td>ANN index (HNSW)</td></tr>
       <tr><td>Survive a restart</td><td>Save a file yourself</td><td>Persistent, replicated</td></tr>
-      <tr><td>Filter by level, price, language</td><td>Write it yourself</td><td>Filterable fields, applied efficiently</td></tr>
+      <tr><td>Filter by product type, fee, language</td><td>Write it yourself</td><td>Filterable fields, applied efficiently</td></tr>
       <tr><td>Exact words and codes</td><td>No</td><td>Full-text search and hybrid ranking</td></tr>
       <tr><td>Add, update, delete one document</td><td>Rebuild arrays</td><td>Upsert and delete by key</td></tr>
       <tr><td>Who can see what</td><td>No</td><td>Keys, roles, and per-document security filters</td></tr>
@@ -239,6 +239,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>A bank's vector store holds sensitive text: policy manuals, case notes, research. It needs the same controls as any other data store: encryption, access control per document, retention rules and audit logs. Managed services such as Azure AI Search are chosen partly because they fit the bank's existing security and compliance controls.</p>
+</div>
   <p>Most companies don't buy a "vector database" as a separate thing first. They add vector search to what they already run: a search service for the website, PostgreSQL for the product catalogue, Cosmos DB for user data. A dedicated vector database earns its place when the scale, latency or features demand it.</p>
 </div>
 
@@ -460,8 +465,8 @@ class VectorStore:
 <span class="o">.....                                                                    [100%]
 5 passed in 0.23s</span></code></pre>
         <ul class="verify-list">
-          <li>Read the solution's <code>search()</code>: one matrix multiply scores every item. That's exact search; fine for our 20 courses and 40 help sections.</li>
-          <li>Milestone 5 uses the same idea in <code>LocalIndex</code>, so Traincrest Assist works without any cloud search service.</li>
+          <li>Read the solution's <code>search()</code>: one matrix multiply scores every item. That's exact search; fine for our 20 products and 44 help sections.</li>
+          <li>Milestone 5 uses the same idea in <code>LocalIndex</code>, so RR Finance Assist works without any cloud search service.</li>
         </ul>
       </li>
     </ol>
@@ -473,7 +478,7 @@ class VectorStore:
   <div class="drill-head"><span class="drill-id">Drill 05.5</span><h3>Exercise: a semantic search system on Azure AI Search</h3>
     <div class="drill-meta"><span class="time">~35 min</span><span class="badge b-exercise">Module 05 exercise</span><span class="badge b-azure">Azure AI Search</span><span class="badge b-azure">Azure OpenAI</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> build a semantic search system using embeddings and a vector database: create an index with a vector field, load the TrainCrest catalogue with its embeddings, and query it by meaning.</p>
+    <p class="drill-goal"><b>Goal:</b> build a semantic search system using embeddings and a vector database: create an index with a vector field, load the RR Finance Bank catalogue with its embeddings, and query it by meaning.</p>
     <ol class="dsteps">
       <li class="dstep portal"><span class="st">Portal</span><h4>Create the search service</h4>
         <ol>
@@ -566,21 +571,21 @@ if __name__ == "__main__":
     {"create": create, "upload": upload}.get(a.action, lambda: query(a.text, a.mode, a.filter))()</code></pre>
 <pre class="term"><code><span class="ps">$ </span>python lab05_05_azure_search.py create
 <span class="ps">$ </span>python lab05_05_azure_search.py upload
-<span class="ps">$ </span>python lab05_05_azure_search.py query "make my app understand photos" --mode vector
-<span class="ps">$ </span>python lab05_05_azure_search.py query "make my app understand photos" --mode keyword</code></pre>
+<span class="ps">$ </span>python lab05_05_azure_search.py query "somewhere to save for a house deposit" --mode vector
+<span class="ps">$ </span>python lab05_05_azure_search.py query "somewhere to save for a house deposit" --mode keyword</code></pre>
         <span class="out-label">Typical output (illustrative; your scores will differ)</span>
-<pre class="out"><code>Index 'courses' ready (1536-dimension vectors).
-Uploaded 20/20 courses.
-vector search: 'make my app understand photos'
-  0.…   C108  Computer Vision with Deep Learning  (advanced, $1690)
-  …     (two more courses, lower scores)
-keyword search: 'make my app understand photos'
+<pre class="out"><code>Index 'products' ready (1536-dimension vectors).
+Uploaded 20/20 products.
+vector search: 'somewhere to save for a house deposit'
+  0.…   P104  High-Yield Savings  (accounts, $0 a year)
+  …     (two more products, lower scores)
+keyword search: 'somewhere to save for a house deposit'
   …     (BM25 scores: a different scale)</code></pre>
         <p>In the portal, open the index: you'll see the <code>contentVector</code> field with 1,536 dimensions and the HNSW profile. Try <strong>Search explorer</strong> with a keyword query too.</p>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
         <ul class="verify-list">
-          <li>The vector query should put Computer Vision first although no course says "photos". Keyword search may find it too, only because its description contains "understand"; try <code>"recognise objects in pictures"</code> in both modes and compare.</li>
+          <li>The vector query should put High-Yield Savings first: its description says "save for a home deposit", close in meaning to "a house deposit". Keyword search may rank the mortgage or the CDs first, because "deposit" appears there too; try <code>"rainy-day money that grows"</code> in both modes and compare.</li>
           <li>Vector scores are similarities (bigger is better). Write down the score of the best hit; you'll compare it with hybrid scores in Drill 05.9.</li>
           <li>Re-run <code>upload</code>: it's an upsert (<code>merge_or_upload_documents</code>), so you still have 20 documents, not 40.</li>
           <li>Keep the service for Drill 05.9 and Milestone 5 (optional). Delete it when you finish Part II if you used a paid tier.</li>
@@ -602,7 +607,7 @@ from catalogue import PRODUCTS
 from embed import embed
 
 client = chromadb.PersistentClient(path="chroma_db")          <span class="c"># a folder on disk</span>
-products = client.get_or_create_collection(name="products", configuration={"hnsw": {"space": "cosine"}})
+products = client.get_or_create_collection(name="products", metadata={"hnsw:space": "cosine"})   <span class="c"># cosine distance</span>
 
 if products.count() == 0:                                     <span class="c"># first run: load the catalogue</span>
     texts = [f"{p['name']}. {p['description']}" for p in PRODUCTS]
@@ -621,16 +626,16 @@ print(f"{question!r}" + (f"  where={where}" if where else ""))
 for pid, dist, meta, doc in zip(res["ids"][0], res["distances"][0], res["metadatas"][0], res["documents"][0]):
     print(f"  distance {dist:.3f}  {pid}  {doc.split('.')[0]}  ({meta['family']}, ${meta['annual_fee_usd']} a year)")</code></pre>
 <pre class="term"><code><span class="ps">$ </span>python lab05_05_chroma.py
-<span class="ps">$ </span>python lab05_05_chroma.py "hands-on cloud course" --beginner-under 500</code></pre>
+<span class="ps">$ </span>python lab05_05_chroma.py "card for spending abroad" --cards-under 100</code></pre>
         <span class="out-label">Real output (Chroma + nomic-embed-text)</span>
-<pre class="out"><code>'make my app understand photos'
-  distance 0.357  C108  Computer Vision with Deep Learning  (advanced, $1690)
-  distance 0.454  C114  Docker Quick Start  (beginner, $190)
-  distance 0.500  C102  Data Analysis with pandas  (beginner, $690)
-'hands-on cloud course'  where={'$and': [{'level': 'beginner'}, {'price_usd': {'$lte': 500}}]}
-  distance 0.407  C109  AZ-900: Azure Fundamentals  (beginner, $350)
-  distance 0.510  C114  Docker Quick Start  (beginner, $190)
-  distance 0.523  C105  Prompt Engineering for Business Teams  (beginner, $390)</code></pre>
+<pre class="out"><code>'somewhere to save for a house deposit'
+  distance 0.322  P104  High-Yield Savings  (accounts, $0 a year)
+  distance 0.366  P118  30-Year Fixed Mortgage  (loans, $0 a year)
+  distance 0.369  P119  Home Equity Line of Credit  (loans, $75 a year)
+'card for spending abroad'  where={'$and': [{'family': 'cards'}, {'annual_fee_usd': {'$lte': 100}}]}
+  distance 0.231  P111  Voyager Travel Card  (cards, $95 a year)
+  distance 0.397  P114  Business Card  (cards, $0 a year)
+  distance 0.406  P110  Cashback Card  (cards, $0 a year)</code></pre>
         <p>Chroma reports <strong>distance</strong> (1 − cosine in a cosine space), so smaller is better, the opposite of Azure's scores.</p>
       </div>
     </div>

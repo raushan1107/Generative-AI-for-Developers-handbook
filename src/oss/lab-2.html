@@ -1,5 +1,5 @@
 <!--meta
-{"id": "oss-2", "short": "Lab 2: Tools and Semantic Search", "h1": "Lab 2 · Tools and Semantic Search with Open Models", "description": "Open-source lab guide, Lab 2 (Part II, Modules 04–05): structured outputs from a Pydantic schema, an assistant that calls application functions (search the catalogue, retrieve learner information, check an enrolment, create a ticket), embeddings and similarity with nomic-embed-text, and a hybrid semantic search app over a help centre.", "lead": "In this lab your open model starts working with your code. First it returns data in a shape you define; then it calls your functions to search a catalogue, look up a learner and open a ticket; then you turn text into vectors and build a search engine that finds help articles by meaning. These are the hands-on exercises of Modules 04 and 05.", "chips": ["Modules 04–05", "Pydantic schemas", "Function calling", "Embeddings", "Hybrid search", "≈ 3 hours"], "time": "Estimated time: 3 hours"}
+{"id": "oss-2", "short": "Lab 2: Tools and Semantic Search", "h1": "Lab 2 · Tools and Semantic Search with Open Models", "description": "Open-source lab guide, Lab 2 (Part II, Modules 04–05): structured outputs from a Pydantic schema, an assistant that calls application functions (search the catalogue, retrieve customer information, check an enrolment, create a ticket), embeddings and similarity with nomic-embed-text, and a hybrid semantic search app over a help centre.", "lead": "In this lab your open model starts working with your code. First it returns data in a shape you define; then it calls your functions to search a catalogue, look up a customer and open a ticket; then you turn text into vectors and build a search engine that finds help articles by meaning. These are the hands-on exercises of Modules 04 and 05.", "chips": ["Modules 04–05", "Pydantic schemas", "Function calling", "Embeddings", "Hybrid search", "≈ 3 hours"], "time": "Estimated time: 3 hours"}
 -->
 <h2 id="overview">Lab overview</h2>
 <div class="table-wrap min">
@@ -54,7 +54,7 @@ Looking for an advanced course on building RAG apps, online with a trainer.
 
 Any self-paced Python course? Budget is about $300.
   -&gt; topic='Python' level='beginner' max_price_usd=300 format='self-paced'</code></pre></li>
-  <li>Check each result against the request. A schema guarantees the <em>shape</em> (only allowed values for <code>level</code> and <code>format</code>, an integer price) but not that every value is <em>right</em>. Where did the model fill a value the learner didn't state?</li>
+  <li>Check each result against the request. A schema guarantees the <em>shape</em> (only allowed values for <code>level</code> and <code>format</code>, an integer price) but not that every value is <em>right</em>. Where did the model fill a value the customer didn't state?</li>
 </ol>
 <div class="callout note"><div class="c-label">Checkpoint</div><p>You get <code>CourseRequest</code> objects, not text, and can say what a schema does and doesn't guarantee.</p></div>
 
@@ -66,7 +66,7 @@ Any self-paced Python course? Budget is about $300.
     <pre class="code" data-file="l2_tools.py" data-src="code/oss-labs/l2_tools.py"></pre></li>
   <li>Read the three parts: the <strong>functions</strong> are ordinary Python; <code>TOOLS</code> describes them to the model as JSON Schema; <code>ask()</code> is the <strong>tool loop</strong>: call the model, run any function it asks for, send the result back, repeat until it answers (at most 5 rounds).</li>
   <li>This exercise uses <code>AGENT_MODEL</code> from <code>.env</code>, the model for tool calling. Set it to <code>qwen2.5:7b</code> if you pulled it: <code>llama3.2</code> often writes a tool call as text, or tells you to call the functions yourself.</li>
-  <li>Notice <code>SIGNED_IN = "L-MEI"</code>: the app decides who the learner is. No tool takes a learner ID from the model, so a prompt can't make it read someone else's data.</li>
+  <li>Notice <code>SIGNED_IN = "RR-10293"</code>: the app decides who the customer is. No tool takes a customer ID from the model, so a prompt can't make it read someone else's data.</li>
 </ol>
 <h3>Task 2: Run it and watch the calls</h3>
 <ol>
@@ -82,7 +82,7 @@ A: Here are some beginner courses under $300:
 - SQL for Everyone (C117, $210)
 
 Q: What's the status of my RAG course?
-  -&gt; check_enrolment_status({'enrolment_id': 'TC-RAG'}) = {"error": "not one of the signed-in learner's enrolments; call get_my_profile to see them"
+  -&gt; check_enrolment_status({'enrolment_id': 'TC-RAG'}) = {"error": "not one of the signed-in customer's enrolments; call get_my_profile to see them"
 A: It seems there was an error. Let's get your profile to check your enrolments first.
 
 Q: My invoice is wrong, please open a ticket for me.
@@ -129,7 +129,7 @@ What's the weather in Paris?           closest: Can I have a refund for my cours
 <pre class="out"><code>(indexed 47 help sections with nomic-embed-text)
 
 money back if the trainer is ill
-  0.66  Refunds and cancellations &gt; If TrainCrest cancels
+  0.66  Refunds and cancellations &gt; If RR Finance Bank cancels
   0.56  Refunds and cancellations &gt; When the money arrives
   0.59  Refunds and cancellations &gt; How much you get back
 

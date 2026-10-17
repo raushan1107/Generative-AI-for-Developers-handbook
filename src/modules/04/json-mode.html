@@ -9,7 +9,7 @@
 </div>
 <div class="callout plain">
   <div class="c-label">In plain words</div>
-  <p>JSON mode promises brackets, quotes and commas in the right places. It promises nothing about what's inside. You asked for <code>enrolment_id</code>; you might get <code>enrollmentId</code>, <code>id</code> or a nested <code>details</code> object.</p>
+  <p>JSON mode promises brackets, quotes and commas in the right places. It promises nothing about what's inside. You asked for <code>customer_id</code>; you might get <code>customerIdentifier</code>, <code>id</code> or a nested <code>details</code> object.</p>
 </div>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
@@ -38,6 +38,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Valid JSON with the wrong keys is a classic integration bug in banking: one reply says <code>amount</code>, the next <code>txn_amount</code>, a third returns the amount as the string <code>"$412"</code>. Downstream reconciliation then silently drops records. JSON mode alone is acceptable for exploratory analyst tools; anything that feeds payments, disputes or reporting needs a schema and validation.</p>
+</div>
   <p>Teams that started with JSON mode in 2023 all built the same thing next: a validator that checks the keys and types, plus a retry loop. That pile of glue code is exactly what structured outputs replaced. You'll still meet JSON mode with local and older models, so it's worth knowing its limits.</p>
 </div>
 
@@ -48,7 +53,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p><code>json.loads()</code> succeeds and the code moves on, then fails three functions later with <code>KeyError: 'enrolment_id'</code> because this reply called it <code>enrollmentId</code>. Validate right where the JSON enters your system.</p>
+  <p><code>json.loads()</code> succeeds and the code moves on, then fails three functions later with <code>KeyError: 'customer_id'</code> because this reply called it <code>customerIdentifier</code>. Validate right where the JSON enters your system.</p>
 </div>
 
 <div class="callout exam">
@@ -67,45 +72,47 @@
       <li class="dstep run"><span class="st">Run</span><h4>Loose prompt, JSON mode on</h4>
         <pre class="code" data-file="lab04_02_json_mode.py" data-src="code/genai-labs/lab04_02_json_mode.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab04_02_json_mode.py</code></pre>
-        <span class="out-label">Real run on a small local model (Ollama, qwen2.5:1.5b); yours will differ</span>
-<pre class="out"><code>{"name": "Mei", "issue": "Quota exceeded", "event": "Exam on Friday"}
-{"issue": "Refund for product TC-20877", "issue status": "Outstanding", "reason": "unable to attend next week"}
-{"Issue": "The user is looking for the AZ-104 exam voucher", "Course Completion": "...", "Recipient": "Diego"}
-{"name": "Asha", "courseRegistrationID": "TC-31002"}
-{"details": {"first_name": "Omar", "middle_name": "Farouk", "last_name": "Faruk"}}
+        <span class="out-label">Real run on a small local model (llama3.2 on Ollama); yours will differ</span>
+<pre class="out"><code>{"customerName": "Mei", "customerIdentifier": "RR-10293", "transactionDetails": "Charged twice for a $412 flight", "flightDate": "Friday", "flightAmount": 412}
+{}
+{"name": "Diego", "event": "card was stolen", "time": "an hour ago", "location": "the station"}
+{"nombre": "Asha", "numero_de_documento": "RR-31002", "mesaje": "Mi transferencia lleva cinco dias pendiente."}
+{"context": "Unpaid online casino bill", "details": "Payment amount: $640", "type": "Notification"}
 
 Different key sets seen: 5
-  1 x ['event', 'issue', 'name']
+  1 x ['customerIdentifier', 'customerName', 'flightAmount', 'flightDate', 'transactionDetails']
+  1 x []
   ...</code></pre>
-        <p>Every line parsed. Five messages, five shapes. A bigger model gives tidier output, but you'll still usually see more than one key set.</p>
+        <p>Every line parsed. Five messages, five shapes: camelCase keys, Spanish keys for the Spanish message, and an empty object <code>{}</code> for the fee-refund request, which is valid JSON and contains nothing. The casino payment the customer never made became an "unpaid bill". A bigger model gives tidier output, but you'll still usually see more than one key set.</p>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Write a prompt that pins the shape</h4>
         <p>Before looking at <code>TIGHT</code> in the script, write your own system prompt that makes every reply use the same four keys.</p>
-        <div class="template-box"><pre><code>Goal: extract details from a TrainCrest support message as JSON
+        <div class="template-box"><pre><code>Goal: extract details from an RR Finance Bank customer message as JSON
 Context: the output is parsed by a program, not read by a person
 Constraints: exactly these keys and no others: ...
              allowed values for category: ...
              what to write when a value is missing: ...
 Done when: all five messages produce the same key set</code></pre></div>
-        <p class="hint"><b>Hint:</b> name each key, its type, and the missing-value rule (<code>null</code>, not <code>"null"</code> or <code>""</code>). List the seven categories from Module 03.</p>
+        <p class="hint"><b>Hint:</b> name each key, its type, and the missing-value rule (<code>null</code>, not <code>"null"</code> or <code>""</code>). List the eight categories from Module 03.</p>
         <details class="solution"><summary>Compare with my prompt</summary><div><p>Mine is the <code>TIGHT</code> string in the script. Run it:</p>
           <pre class="term"><code><span class="ps">$ </span>python lab04_02_json_mode.py --tight</code></pre>
           <span class="out-label">Same small model, tight prompt</span>
-<pre class="out"><code>{"learner_name": "Mei", "enrolment_id": "12345", "category": "lab_access", "urgent": true}
-{"learner_name": null, "enrolment_id": "TC-20877", "category": "billing", "urgent": false}
-{"learner_name": null, "enrolment_id": null, "category": "billing", "urgent": false}
-{"learner_name": "Asha", "enrolment_id": "TC-31002", "category": "billing", "urgent": false}
-{"learner_name": "Omar Faruk", "enrolment_id": "null", "category": "certificate", "urgent": false}
+<pre class="out"><code>{"customer_name": "Mei", "customer_id": "RR-10293", "category": " disput", "urgent": "false"}
+{}
+{"customer_name": "Diego", "customer_id": null, "category": "fraud", "urgent": true}
+{"customer_name": "Asha", "customer_id": "RR-31002", "category": "transfers", "urgent": false}
+{"customer_name": "null", "customer_id": "null", "category": "dispute", "urgent": "false"}
 
-Different key sets seen: 1
-  5 x ['category', 'enrolment_id', 'learner_name', 'urgent']</code></pre>
+Different key sets seen: 2
+  4 x ['category', 'customer_id', 'customer_name', 'urgent']
+  1 x []</code></pre>
         </div></details>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>One shape, and still wrong</h4>
         <ul class="verify-list">
-          <li>The key sets dropped to one: the prompt fixed the <strong>shape</strong>.</li>
-          <li>Now read the <strong>values</strong> in that last run: Mei's ID became <code>"12345"</code> (invented; hers is TC-10293), Omar's missing ID is the <em>string</em> <code>"null"</code>, and Diego's voucher and Asha's reschedule were both filed as billing. JSON mode can't catch any of that.</li>
-          <li>Keep this output. In Drill 04.3 you'll run the same messages with a schema, and in Drill 04.9 you'll add the rules that catch invented IDs.</li>
+          <li>The key sets dropped from five to two (four replies in the right shape, one empty object): the prompt mostly fixed the <strong>shape</strong>.</li>
+          <li>Now read the <strong>values</strong> in that last run: Mei's category is <code>" disput"</code> (a typo with a leading space), <code>"urgent": "false"</code> is a <em>string</em>, not a boolean, the casino message has the <em>string</em> <code>"null"</code> twice, and a stolen card, which should go first, has no ID and the fee-refund message vanished as <code>{}</code>. The unrecognised casino payment is labelled dispute instead of fraud. JSON mode can't catch any of that.</li>
+          <li>Keep this output. In Drill 04.3 you'll run the same messages with a schema, and in Drill 04.9 you'll add the rules that catch invented or malformed IDs.</li>
         </ul>
       </li>
     </ol>

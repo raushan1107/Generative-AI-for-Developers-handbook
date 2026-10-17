@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m06-ingest", "short": "Document Ingestion", "h1": "Document Ingestion", "description": "Module 06, topic 3: loading documents from many formats into one clean shape, removing page chrome, normalising text, metadata such as source and audience, duplicate detection with content hashes, and a drill that ingests TrainCrest's public help centre and internal staff documents in four formats.", "lead": "Real knowledge doesn't arrive as tidy markdown. It's wiki pages wrapped in navigation menus, text exports from old systems, spreadsheets of FAQs and three copies of the same playbook called FINAL. Ingestion turns that mess into clean text with the metadata RAG needs later. Whatever you skip here shows up as wrong answers later.", "chips": ["Loaders per format", "Clean text", "Metadata", "Duplicates", "Drill 06.3"], "time": "Learn 10 min · Do 25 min"}
+{"id": "m06-ingest", "short": "Document Ingestion", "h1": "Document Ingestion", "description": "Module 06, topic 3: loading documents from many formats into one clean shape, removing page chrome, normalising text, metadata such as source and audience, duplicate detection with content hashes, and a drill that ingests RR Finance Bank's public help centre and internal staff documents in four formats.", "lead": "Real knowledge doesn't arrive as tidy markdown. It's wiki pages wrapped in navigation menus, text exports from old systems, spreadsheets of FAQs and three copies of the same playbook called FINAL. Ingestion turns that mess into clean text with the metadata RAG needs later. Whatever you skip here shows up as wrong answers later.", "chips": ["Loaders per format", "Clean text", "Metadata", "Duplicates", "Drill 06.3"], "time": "Learn 10 min · Do 25 min"}
 -->
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Garbage in, confident garbage out.</p></div></div>
 
@@ -67,6 +67,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banks' knowledge lives in messy places: wikis, PDFs of policy manuals, spreadsheets of FAQs, email templates, scanned procedures. Ingestion must keep track of the version and effective date of every document, drop superseded copies (the "_FINAL_v2" problem in this drill), and mark which documents are internal. An assistant quoting last year's fee schedule is a misstatement, not a bug.</p>
+</div>
   <p>Enterprise RAG projects spend a surprising share of their time here: connectors to SharePoint, Confluence or Google Drive; PDF extraction that keeps tables; stripping templates that appear on every page; and syncing permissions from the source system so the index knows who may read each document. On Azure, Azure AI Search indexers pull from Blob Storage, SharePoint and databases on a schedule, and its skills can crack documents, run OCR and split text, so the pipeline you write here maps onto configuration there.</p>
 </div>
 
@@ -77,7 +82,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Ingesting internal and public documents into one index with no audience metadata. The first time a learner's question matches the internal approvals page, the model happily quotes "exceptions up to $100: any support agent". Decide who may see each document at ingestion, while you still know where it came from.</p>
+  <p>Ingesting internal and public documents into one index with no audience metadata. The first time a customer's question matches the internal approvals page, the model happily quotes "exceptions up to $100: any support agent". Decide who may see each document at ingestion, while you still know where it came from.</p>
 </div>
 
 <div class="callout exam">
@@ -91,7 +96,7 @@
   <div class="drill-head"><span class="drill-id">Drill 06.3</span><h3>Ingest a mixed knowledge base</h3>
     <div class="drill-meta"><span class="time">~25 min</span><span class="badge b-tool">Python · pytest</span><span class="badge b-tool">offline</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> load TrainCrest's public help centre and its internal staff documents into one clean shape, see what each loader keeps and drops, and catch the duplicate.</p>
+    <p class="drill-goal"><b>Goal:</b> load RR Finance Bank's public help centre and its internal staff documents into one clean shape, see what each loader keeps and drops, and catch the duplicate.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Look at the raw files first</h4>
         <p>Open <code>data/internal/exception-approvals.html</code> and <code>data/internal/lab-incident-runbook.txt</code> in VS Code. Note the navigation and footer in the HTML, and the upper-case headings in the text file. Then read the loaders:</p>

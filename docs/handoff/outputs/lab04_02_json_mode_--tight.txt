@@ -1,0 +1,9 @@
+{"customer_name": "Mei", "customer_id": "RR-10293", "category": " disput", "urgent": "false"}
+{}
+{"customer_name": "Diego", "customer_id": null, "category": "fraud", "urgent": true}
+{"customer_name": "Asha", "customer_id": "RR-31002", "category": "transfers", "urgent": false}
+{"customer_name": "null", "customer_id": "null", "category": "dispute", "urgent": "false"}
+
+Different key sets seen: 2
+  4 x ['category', 'customer_id', 'customer_name', 'urgent']
+  1 x []

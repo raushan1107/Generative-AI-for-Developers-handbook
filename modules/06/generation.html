@@ -234,6 +234,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Generation is where a grounded answer can still go wrong: the model may combine two sections into a rule that exists in neither, or round a number. Banks therefore run checks after generation: every number must appear in a cited source, every claim needs a citation, and answers about money that fail a check are replaced with a safe fallback or sent to a person.</p>
+</div>
   <p>Support teams typically roll out RAG answers in stages: first as suggested replies that an agent edits and sends, then as automatic answers for the topics where measured accuracy is high, with a visible "Was this helpful?" and a hand-off to a person. The NOT_FOUND path isn't a failure in that setup; it's the router that sends the hard questions to people.</p>
 </div>
 
@@ -326,7 +331,7 @@ MODEL = {
   <div class="drill-head"><span class="drill-id">Drill 06.9</span><h3>The Company Knowledge Assistant, end to end</h3>
     <div class="drill-meta"><span class="time">~30 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> put ingestion, chunking, the index, retrieval, the prompt and the checks together in one function, run it on six questions that each test a behaviour, then use it as an interactive assistant over TrainCrest's public and internal documents.</p>
+    <p class="drill-goal"><b>Goal:</b> put ingestion, chunking, the index, retrieval, the prompt and the checks together in one function, run it on six questions that each test a behaviour, then use it as an interactive assistant over RR Finance Bank's public and internal documents.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>The pipeline in one function</h4>
         <pre class="code" data-file="rag.py"><code>"""Module 06: the RAG pipeline in one function, built from this module's helpers.
@@ -411,14 +416,14 @@ Sources:
 checks: {'uncited': ['The lab session stopped due to inactivity after 4 hours, but your work is preserved.', 'Labs are available for 30 days after the course ends, and you can ask for a free 7-day extension.']}
 --------------------------------------------------------------------------------
 [public] ¿Cuánto cuesta cambiar la fecha de mi curso tres días antes?
-I couldn't find that in TrainCrest's documents. Shall I raise a ticket for the support team? (model calls: 0)
+I couldn't find that in RR Finance Bank's documents. Shall I raise a ticket for the support team? (model calls: 0)
 --------------------------------------------------------------------------------
 [public] Can I bring my dog to a classroom course?
 Unfortunately, the sources do not mention anything about bringing pets to classroom courses.
 checks: ok
 --------------------------------------------------------------------------------
 [public] Who can approve a refund exception of $300?
-I couldn't find that in TrainCrest's documents. Shall I raise a ticket for the support team? (model calls: 1)
+I couldn't find that in RR Finance Bank's documents. Shall I raise a ticket for the support team? (model calls: 1)
 --------------------------------------------------------------------------------
 [staff] Who can approve a refund exception of $300?
 According to the public refund policy, a team lead can approve refund exceptions from $101 to $500. Therefore, a team lead can approve a refund exception of $300. [2]
@@ -432,19 +437,19 @@ checks: {'uncited': ['According to the public refund policy, a team lead can app
           <li>The first answer cites the right section. What's wrong with it, and what caught it?</li>
           <li>The Spanish question has an answer in the help centre ($50, once). Why did it get "not found" with zero model calls, and what would fix it?</li>
           <li>The dog question passed the floor and the model said the sources don't mention it, but not with <code>NOT_FOUND</code>. Is that acceptable?</li>
-          <li>The same $300 question gave "not found" for a learner and an answer for staff. Which component made that happen?</li>
+          <li>The same $300 question gave "not found" for a customer and an answer for staff. Which component made that happen?</li>
         </ol>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
             <li>It invents "typically 1-2 billing cycles" and drops the actual "5 to 10 business days". The numbers check flagged 1 and 2 as unsupported by source [1]. Without it, this answer would look perfectly sourced.</li>
             <li>The English-centric embedding model scored the Spanish question below the 0.55 floor, so retrieval returned nothing and the model was never asked. Fix it at retrieval: rewrite the query into English first (Drill 06.7's stretch) or use a multilingual embedding model; the floor did its job.</li>
             <li>The content is right, but code can't tell it apart from a real answer, so it's shown as one, with no sources. A stronger model follows the sentinel more reliably; Module 09 measures how often each model does.</li>
-            <li>The audience pre-filter in retrieval. For the learner, the staff-only approvals page was never a candidate, so the model saw only public refund sections and correctly said NOT_FOUND.</li>
+            <li>The audience pre-filter in retrieval. For the customer, the staff-only approvals page was never a candidate, so the model saw only public refund sections and correctly said NOT_FOUND.</li>
           </ol>
         </div></details>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The Company Knowledge Assistant</h4>
-        <p>The module's hands-on project: an interactive assistant over TrainCrest's documents. Run it in the staff view and the learner view:</p>
+        <p>The module's hands-on project: an interactive assistant over RR Finance Bank's documents. Run it in the staff view and the customer view:</p>
         <pre class="code" data-file="kb.py"><code>"""Drill 06.9: the Company Knowledge Assistant. Ask questions about RR Finance Bank's documents in the
 terminal; answers come only from the documents, with checked citations.
 Run:  python kb.py            (as a customer: public help centre only)
@@ -472,25 +477,25 @@ while question := input("Question: ").strip():
 <pre class="term"><code><span class="ps">$ </span>python kb.py --staff
 <span class="ps">$ </span>python kb.py</code></pre>
         <span class="out-label">Real sessions with llama3.2 (Ollama); yours will differ</span>
-<pre class="out"><code>TrainCrest knowledge assistant (staff view, 66 chunks). Empty line to quit.
+<pre class="out"><code>RR Finance Bank knowledge assistant (staff view, 66 chunks). Empty line to quit.
 
-Question: How many learners can join a classroom course?
-Classroom courses have at most 16 learners. [1]
-
-Sources:
-[1] Staff FAQ &gt; How many learners can join a classroom course? (staff-faq.csv)
-
-Question: A learner lost 3 hours of lab time in an incident. What do they get?
-A learner who loses more than 2 hours of lab time due to an incident gets an automatic 7-day lab extension. [1]
+Question: How many customers can join a classroom course?
+Classroom courses have at most 16 customers. [1]
 
 Sources:
-[1] Lab incident runbook &gt; What to tell learners (lab-incident-runbook.txt)
+[1] Staff FAQ &gt; How many customers can join a classroom course? (staff-faq.csv)
 
-TrainCrest knowledge assistant (learner view, 47 chunks). Empty line to quit.
+Question: A customer lost 3 hours of lab time in an incident. What do they get?
+A customer who loses more than 2 hours of lab time due to an incident gets an automatic 7-day lab extension. [1]
 
-Question: How many learners can join a classroom course?
-There is no information on the maximum number of learners that can join a classroom course.</code></pre>
-        <p>Same question, two audiences: the staff view answers from the CSV FAQ and cites it; the learner view never sees that FAQ. Ask your own questions about refunds, labs, vouchers and approvals, in both views.</p>
+Sources:
+[1] Lab incident runbook &gt; What to tell customers (lab-incident-runbook.txt)
+
+RR Finance Bank knowledge assistant (customer view, 47 chunks). Empty line to quit.
+
+Question: How many customers can join a classroom course?
+There is no information on the maximum number of customers that can join a classroom course.</code></pre>
+        <p>Same question, two audiences: the staff view answers from the CSV FAQ and cites it; the customer view never sees that FAQ. Ask your own questions about refunds, labs, vouchers and approvals, in both views.</p>
       </li>
     </ol>
     <p class="lab-try"><b>Stretch:</b> add Drill 06.7's query rewriting to <code>rag.answer()</code> so the Spanish question finds "Rescheduling a course › Fees" and the answer comes back in Spanish.</p>

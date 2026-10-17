@@ -1,0 +1,5 @@
+strategy                     chunks  hit@3 (20)  intro (5)  tokens sent
+whole articles                   10       20/20        5/5      815 avg
+M5 sections (no intros)          44       20/20        0/5      178 avg
+sections + intros, max 900       54       20/20        5/5      171 avg
+sections + intros, max 200       64       18/20        5/5      154 avg

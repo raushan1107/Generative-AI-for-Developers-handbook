@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lab 2: Tools and Semantic Search</title>
-<meta name="description" content="Open-source lab guide, Lab 2 (Part II, Modules 04–05): structured outputs from a Pydantic schema, an assistant that calls application functions (search the catalogue, retrieve learner information, check an enrolment, create a ticket), embeddings and similarity with nomic-embed-text, and a hybrid semantic search app over a help centre.">
+<meta name="description" content="Open-source lab guide, Lab 2 (Part II, Modules 04–05): structured outputs from a Pydantic schema, an assistant that calls application functions (search the catalogue, retrieve customer information, check an enrolment, create a ticket), embeddings and similarity with nomic-embed-text, and a hybrid semantic search app over a help centre.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -175,7 +175,7 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Open-source lab</span><h1>Lab 2 · Tools and Semantic Search with Open Models</h1><p class="lead">In this lab your open model starts working with your code. First it returns data in a shape you define; then it calls your functions to search a catalogue, look up a learner and open a ticket; then you turn text into vectors and build a search engine that finds help articles by meaning. These are the hands-on exercises of Modules 04 and 05.</p><div class="chips"><span class="chip">Modules 04–05</span><span class="chip">Pydantic schemas</span><span class="chip">Function calling</span><span class="chip">Embeddings</span><span class="chip">Hybrid search</span><span class="chip">≈ 3 hours</span></div><div class="flow"><em>Estimated time: 3 hours</em></div></header>
+<header class="page-hero"><span class="eyebrow">Open-source lab</span><h1>Lab 2 · Tools and Semantic Search with Open Models</h1><p class="lead">In this lab your open model starts working with your code. First it returns data in a shape you define; then it calls your functions to search a catalogue, look up a customer and open a ticket; then you turn text into vectors and build a search engine that finds help articles by meaning. These are the hands-on exercises of Modules 04 and 05.</p><div class="chips"><span class="chip">Modules 04–05</span><span class="chip">Pydantic schemas</span><span class="chip">Function calling</span><span class="chip">Embeddings</span><span class="chip">Hybrid search</span><span class="chip">≈ 3 hours</span></div><div class="flow"><em>Estimated time: 3 hours</em></div></header>
 <div class="content">
 
 <h2 id="overview">Lab overview</h2>
@@ -280,23 +280,23 @@ from pydantic import BaseModel, Field
 from client import CHAT_MODEL, get_client
 
 
-class CourseRequest(BaseModel):
-    topic: str = Field(description="What the learner wants to learn, in a few words")
-    level: Optional[Literal["beginner", "intermediate", "advanced"]]
-    max_price_usd: Optional[int] = Field(description="Budget in US dollars, or null")
-    format: Optional[Literal["live-online", "classroom", "self-paced"]]
+class ProductRequest(BaseModel):
+    need: str = Field(description="What the customer wants the product for, in a few words")
+    family: Optional[Literal["accounts", "cards", "loans"]]
+    max_annual_fee_usd: Optional[int] = Field(description="Highest annual fee in US dollars, or null")
+    audience: Optional[Literal["personal", "student", "business"]]
 
 
 REQUESTS = [
-    "I'm new to the cloud and want something on Azure basics, under 400 dollars please.",
-    "Looking for an advanced course on building RAG apps, online with a trainer.",
-    "Any self-paced Python course? Budget is about $300.",
+    "I'm a student and need a credit card to build my credit, no annual fee please.",
+    "Looking for somewhere to keep my small company's tax money that earns some interest.",
+    "Any card for travelling abroad? I could pay up to $100 a year.",
 ]
 client = get_client()
 for text in REQUESTS:
     completion = client.chat.completions.parse(
-        model=CHAT_MODEL, temperature=0, response_format=CourseRequest,
-        messages=[{"role": "system", "content": "Extract the learner's course request. Use null for anything not stated."},
+        model=CHAT_MODEL, temperature=0, response_format=ProductRequest,
+        messages=[{"role": "system", "content": "Extract the customer's product request. Use null for anything not stated."},
                   {"role": "user", "content": text}])
     print(f"{text}\n  -&gt; {completion.choices[0].message.parsed}\n")</code></pre></li>
   <li>Note <code>client.chat.completions.parse(... response_format=CourseRequest)</code>: the OpenAI library turns the Pydantic class into a JSON Schema, Ollama constrains the model's output to it, and the library returns a <code>CourseRequest</code> object. If it says <code>parse</code> doesn't exist, run <code>pip install -U openai</code>.</li>
@@ -311,7 +311,7 @@ Looking for an advanced course on building RAG apps, online with a trainer.
 
 Any self-paced Python course? Budget is about $300.
   -&gt; topic='Python' level='beginner' max_price_usd=300 format='self-paced'</code></pre></li>
-  <li>Check each result against the request. A schema guarantees the <em>shape</em> (only allowed values for <code>level</code> and <code>format</code>, an integer price) but not that every value is <em>right</em>. Where did the model fill a value the learner didn't state?</li>
+  <li>Check each result against the request. A schema guarantees the <em>shape</em> (only allowed values for <code>level</code> and <code>format</code>, an integer price) but not that every value is <em>right</em>. Where did the model fill a value the customer didn't state?</li>
 </ol>
 <div class="callout note"><div class="c-label">Checkpoint</div><p>You get <code>CourseRequest</code> objects, not text, and can say what a schema does and doesn't guarantee.</p></div>
 
@@ -320,10 +320,10 @@ Any self-paced Python course? Budget is about $300.
 <h3>Task 1: Build the assistant</h3>
 <ol>
   <li>Create <code>l2_tools.py</code>:
-    <pre class="code" data-file="l2_tools.py"><code>"""Lab 2, Exercise 2: an AI assistant that calls application functions: search the catalogue,
-retrieve the learner's information, check an enrolment's status and create a support ticket.
+    <pre class="code" data-file="l2_tools.py"><code>"""Lab 2, Exercise 2: an AI assistant that calls application functions: search the product catalogue,
+retrieve the customer's information, check a card's status and create a support case.
 The model asks for a function; this code decides whether and how it runs.
-Run:  python l2_tools.py "Which beginner courses cost less than $300?" """
+Run:  python l2_tools.py "Which cards have no annual fee?" """
 import json
 import sys
 import uuid
@@ -331,70 +331,71 @@ from pathlib import Path
 
 from client import AGENT_MODEL, get_client
 
-COURSES = json.loads((Path(__file__).parent / "data" / "courses.json").read_text(encoding="utf-8"))
-LEARNERS = {"L-MEI": {"name": "Mei Chen", "country": "Singapore", "enrolments": ["TC-10293", "TC-10477"]}}
-ENROLMENTS = {"TC-10293": {"course": "AI-102: Azure AI Engineer", "status": "completed", "certificate": "issued"},
-              "TC-10477": {"course": "Building RAG Applications", "status": "confirmed", "starts_in_days": 10}}
-SIGNED_IN = "L-MEI"            <span class="c"># the app knows who is signed in; the model never chooses this</span>
+PRODUCTS = json.loads((Path(__file__).parent / "data" / "products.json").read_text(encoding="utf-8"))
+CUSTOMERS = {"RR-10293": {"name": "Mei Chen", "country": "Singapore", "cards": ["4821", "1177"]}}
+CARDS = {"4821": {"product": "Cashback Card", "status": "active"},
+         "1177": {"product": "Everyday Checking debit card", "status": "replacement sent", "arrives_in_days": 4}}
+SIGNED_IN = "RR-10293"         <span class="c"># the app knows who is signed in; the model never chooses this</span>
 
 
 <span class="c"># ---------------- the application functions (plain Python)</span>
-def search_courses(text: str = "", level: str | None = None, max_price_usd: int | None = None):
-    <span class="c"># Models sometimes send numbers as text ("300"): accept them, like any API that faces untrusted input.</span>
-    max_price_usd = int(float(max_price_usd)) if max_price_usd not in (None, "") else None
-    hits = [c for c in COURSES if (not level or c["level"] == level)
-            and (max_price_usd is None or c["price_usd"] &lt;= max_price_usd)
-            and (not text or text.lower() in (c["title"] + " " + c["description"]).lower())]
-    return [{k: c[k] for k in ("id", "title", "level", "price_usd")} for c in hits[:5]]
+def search_products(text: str = "", family: str | None = None, max_annual_fee_usd: int | None = None):
+    <span class="c"># Models sometimes send numbers as text ("100"): accept them, like any API that faces untrusted input.</span>
+    max_annual_fee_usd = int(float(max_annual_fee_usd)) if max_annual_fee_usd not in (None, "") else None
+    hits = [p for p in PRODUCTS if (not family or p["family"] == family)
+            and (max_annual_fee_usd is None or p["annual_fee_usd"] &lt;= max_annual_fee_usd)
+            and (not text or text.lower() in (p["name"] + " " + p["description"]).lower())]
+    return [{k: p[k] for k in ("id", "name", "family", "annual_fee_usd", "rate_pct", "rate_type")} for p in hits[:5]]
 
 
 def get_my_profile():
-    me = LEARNERS[SIGNED_IN]
-    return {**me, "enrolments": [{"enrolment_id": e, "course": ENROLMENTS[e]["course"]} for e in me["enrolments"]]}
+    me = CUSTOMERS[SIGNED_IN]
+    return {**me, "cards": [{"card_last4": c, "product": CARDS[c]["product"]} for c in me["cards"]]}
 
 
-def check_enrolment_status(enrolment_id: str):
-    if enrolment_id not in LEARNERS[SIGNED_IN]["enrolments"]:
-        return {"error": "not one of the signed-in learner's enrolments; call get_my_profile to see them"}
-    return ENROLMENTS[enrolment_id]
+def check_card_status(card_last4: str):
+    if card_last4 not in CUSTOMERS[SIGNED_IN]["cards"]:
+        return {"error": "not one of the signed-in customer's cards; call get_my_profile to see them"}
+    return CARDS[card_last4]
 
 
-def create_support_ticket(summary: str, category: str):
-    return {"ticket_id": "T-" + uuid.uuid4().hex[:6].upper(), "status": "created", "category": category}
+def create_support_case(summary: str, category: str):
+    return {"case_id": "CS-" + uuid.uuid4().hex[:6].upper(), "status": "created", "category": category}
 
 
-FUNCTIONS = {f.__name__: f for f in (search_courses, get_my_profile, check_enrolment_status, create_support_ticket)}
+FUNCTIONS = {f.__name__: f for f in (search_products, get_my_profile, check_card_status, create_support_case)}
 
 <span class="c"># ---------------- how the model sees them (JSON Schema)</span>
 TOOLS = [
     {"type": "function", "function": {
-        "name": "search_courses", "description": "Search the TrainCrest course catalogue by keyword, level and maximum price.",
+        "name": "search_products", "description": "Search the RR Finance Bank product catalogue by keyword, family and maximum annual fee.",
         "parameters": {"type": "object", "properties": {
-            "text": {"type": "string", "description": "One keyword, e.g. 'azure' or 'python'; empty for any"},
-            "level": {"type": "string", "enum": ["beginner", "intermediate", "advanced"]},
-            "max_price_usd": {"type": "integer", "description": "Highest price in US dollars"}}}}},
+            "text": {"type": "string", "description": "One keyword, e.g. 'travel' or 'savings'; empty for any"},
+            "family": {"type": "string", "enum": ["accounts", "cards", "loans"]},
+            "max_annual_fee_usd": {"type": "integer", "description": "Highest annual fee in US dollars"}}}}},
     {"type": "function", "function": {
-        "name": "get_my_profile", "description": "The signed-in learner's name, country, and enrolments with course names.",
+        "name": "get_my_profile", "description": "The signed-in customer's name, country, and cards (last four digits and product).",
         "parameters": {"type": "object", "properties": {}}}},
     {"type": "function", "function": {
-        "name": "check_enrolment_status", "description": "Status of one of the signed-in learner's enrolments.",
+        "name": "check_card_status", "description": "Status of one of the signed-in customer's cards.",
         "parameters": {"type": "object", "properties": {
-            "enrolment_id": {"type": "string", "description": "Like TC-12345, from get_my_profile"}},
-            "required": ["enrolment_id"]}}},
+            "card_last4": {"type": "string", "description": "Last four digits, like 4821, from get_my_profile"}},
+            "required": ["card_last4"]}}},
     {"type": "function", "function": {
-        "name": "create_support_ticket", "description": "Create a ticket for the human support team.",
+        "name": "create_support_case", "description": "Create a case for the human support team.",
         "parameters": {"type": "object", "properties": {
             "summary": {"type": "string"},
-            "category": {"type": "string", "enum": ["billing", "scheduling", "lab_access", "other"]}},
+            "category": {"type": "string", "enum": ["card", "dispute", "fraud", "fees", "other"]}},
             "required": ["summary", "category"]}}},
 ]
 
 
 def ask(question: str, max_rounds: int = 5) -&gt; str:
     client = get_client()
-    messages = [{"role": "system", "content": "You are Traincrest Assist. Use the tools for facts; never guess IDs. "
-                                              "The learner can't call functions: call them yourself, starting with "
-                                              "get_my_profile when you need an enrolment ID. Answer in at most 60 words."},
+    messages = [{"role": "system", "content": "You are RR Finance Assist. Use the tools for facts; never guess IDs, "
+                                              "fees or rates. The customer can't call functions: call them yourself, "
+                                              "starting with get_my_profile when you need a card. Never ask for a "
+                                              "full card number or PIN. Answer in at most 60 words."},
                 {"role": "user", "content": question}]
     for _ in range(max_rounds):
         msg = client.chat.completions.create(model=AGENT_MODEL, messages=messages, tools=TOOLS).choices[0].message
@@ -414,15 +415,15 @@ def ask(question: str, max_rounds: int = 5) -&gt; str:
 
 
 if __name__ == "__main__":
-    questions = sys.argv[1:] or ["Which beginner courses cost less than $300?",
-                                 "What's the status of my RAG course?",
-                                 "My invoice is wrong, please open a ticket for me."]
+    questions = sys.argv[1:] or ["Which cards have no annual fee?",
+                                 "Has the replacement for my debit card been sent?",
+                                 "I was charged a fee I don't understand, please open a case for me."]
     for q in questions:
         print(f"Q: {q}")
         print(f"A: {ask(q)}\n")</code></pre></li>
   <li>Read the three parts: the <strong>functions</strong> are ordinary Python; <code>TOOLS</code> describes them to the model as JSON Schema; <code>ask()</code> is the <strong>tool loop</strong>: call the model, run any function it asks for, send the result back, repeat until it answers (at most 5 rounds).</li>
   <li>This exercise uses <code>AGENT_MODEL</code> from <code>.env</code>, the model for tool calling. Set it to <code>qwen2.5:7b</code> if you pulled it: <code>llama3.2</code> often writes a tool call as text, or tells you to call the functions yourself.</li>
-  <li>Notice <code>SIGNED_IN = "L-MEI"</code>: the app decides who the learner is. No tool takes a learner ID from the model, so a prompt can't make it read someone else's data.</li>
+  <li>Notice <code>SIGNED_IN = "RR-10293"</code>: the app decides who the customer is. No tool takes a customer ID from the model, so a prompt can't make it read someone else's data.</li>
 </ol>
 <h3>Task 2: Run it and watch the calls</h3>
 <ol>
@@ -438,7 +439,7 @@ A: Here are some beginner courses under $300:
 - SQL for Everyone (C117, $210)
 
 Q: What's the status of my RAG course?
-  -&gt; check_enrolment_status({'enrolment_id': 'TC-RAG'}) = {"error": "not one of the signed-in learner's enrolments; call get_my_profile to see them"
+  -&gt; check_enrolment_status({'enrolment_id': 'TC-RAG'}) = {"error": "not one of the signed-in customer's enrolments; call get_my_profile to see them"
 A: It seems there was an error. Let's get your profile to check your enrolments first.
 
 Q: My invoice is wrong, please open a ticket for me.
@@ -461,10 +462,10 @@ from client import EMBED_MODEL, get_embed_client
 
 TEXTS = [
     "How do I get my money back?",
-    "Can I have a refund for my course?",
-    "¿Cómo pido un reembolso?",
-    "My lab says quota exceeded",
-    "The sandbox won't start",
+    "Can I dispute a double charge?",
+    "¿Cómo reclamo un cargo?",
+    "My card was stolen",
+    "Someone took my wallet",
     "What's the weather in Paris?",
 ]
 response = get_embed_client().embeddings.create(model=EMBED_MODEL, input=TEXTS)
@@ -497,10 +498,10 @@ What's the weather in Paris?           closest: Can I have a refund for my cours
 <h3>Task 1: Build the index and the search</h3>
 <ol>
   <li>Create <code>l2_search.py</code>:
-    <pre class="code" data-file="l2_search.py"><code>"""Lab 2, Exercise 4: a semantic search application over TrainCrest's help centre.
+    <pre class="code" data-file="l2_search.py"><code>"""Lab 2, Exercise 4: a semantic search application over RR Finance Bank's help centre.
 Index: split each article by heading (keeping its introduction), embed every section once and save it.
 Search: embed the question, rank by meaning (cosine) and by keywords (BM25), merge the two rankings (RRF).
-Run:  python l2_search.py "money back if the trainer is ill" """
+Run:  python l2_search.py "money back if I paid the wrong person" """
 import json
 import re
 import sys
@@ -546,7 +547,7 @@ def load_index():
 
 
 def words(text):
-    """A tiny analyzer: lower-case, keep codes like lab-503 whole, fold simple plurals (discounts -&gt; discount)."""
+    """A tiny analyzer: lower-case, keep codes like fr-12 whole, fold simple plurals (payments -&gt; payment)."""
     found = re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", text.lower())
     return [w[:-1] if len(w) &gt; 3 and w.endswith("s") and not w.endswith("ss") else w for w in found]
 
@@ -566,7 +567,7 @@ def search(query, docs, vectors, k=3):
 
 if __name__ == "__main__":
     docs, vectors = load_index()
-    queries = sys.argv[1:] or ["money back if the trainer is ill", "LAB-503", "pay in parts", "discount for my team"]
+    queries = sys.argv[1:] or ["money back if I paid the wrong person", "Instant Pay", "safe account", "fingerprint sign in"]
     for q in queries:
         print(f"\n{q}")
         for doc, score in search(q, docs, vectors):
@@ -581,7 +582,7 @@ if __name__ == "__main__":
 <pre class="out"><code>(indexed 47 help sections with nomic-embed-text)
 
 money back if the trainer is ill
-  0.66  Refunds and cancellations &gt; If TrainCrest cancels
+  0.66  Refunds and cancellations &gt; If RR Finance Bank cancels
   0.56  Refunds and cancellations &gt; When the money arrives
   0.59  Refunds and cancellations &gt; How much you get back
 

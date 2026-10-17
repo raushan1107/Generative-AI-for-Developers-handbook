@@ -71,6 +71,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Most banking processes are better as workflows than as free agents: card replacement, dispute intake and address changes follow fixed steps with regulatory checkpoints. A model routes the request and writes the reply; code runs the steps. Agents earn their place where the path really varies, and even then they work inside guardrails a workflow provides.</p>
+</div>
   <p>Many "AI agents" in production are workflows with one or two model decisions: a router that classifies tickets, fixed handlers per category, a model that drafts the reply, and an evaluator check before sending. Teams start there because it's testable and cheap, then add agentic loops only for the requests the router labels "complex". Microsoft's Agent Framework and similar libraries support both graph-style workflows and free-form agents for this reason.</p>
 </div>
 
@@ -81,7 +86,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Building an agent for a flowchart. "Check lab status and tell the learner" is two fixed steps; an agent may take four calls, wander, or skip the check. Use the simplest pattern that works, and measure.</p>
+  <p>Building an agent for a flowchart. "Check lab status and tell the customer" is two fixed steps; an agent may take four calls, wander, or skip the check. Use the simplest pattern that works, and measure.</p>
 </div>
 
 <div class="callout exam">
@@ -115,12 +120,12 @@ Please extend my AI-102 lab.
 
 Fees: No additional cost.
 
-Next steps: Confirm using the TrainCrest app or website.</code></pre>
+Next steps: Confirm using the RR Finance Bank app or website.</code></pre>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>Compare</h4>
         <ol>
           <li>How many model calls did each approach use per request? What would that mean at 25,000 requests a month?</li>
-          <li>Check the categories the router chose. Which requests were misrouted, and what did the workflow then tell the learner?</li>
+          <li>Check the categories the router chose. Which requests were misrouted, and what did the workflow then tell the customer?</li>
           <li>For "Please extend my AI-102 lab", compare both answers with what was actually done. Who told the truth?</li>
           <li>How would you make the router reliable?</li>
         </ol>

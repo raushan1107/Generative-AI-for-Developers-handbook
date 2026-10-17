@@ -9,7 +9,7 @@
 </div>
 <div class="callout plain">
   <div class="c-label">In plain words</div>
-  <p>Each text gets an address in a "meaning space". "Can I have my money back?" and "How do I get a refund?" get addresses on the same street. "My lab says quota exceeded" lives in another part of town.</p>
+  <p>Each text gets an address in a "meaning space". "My card was stolen" and "Someone took my wallet" get addresses on the same street. "What's the weather in Paris?" lives in another part of town.</p>
 </div>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
@@ -20,21 +20,21 @@
   <div class="frame">
     <svg viewBox="0 0 960 320" role="img" aria-labelledby="em-t em-d">
       <title id="em-t">Texts as points in a meaning space</title>
-      <desc id="em-d">On the left, three sentences go into an embedding model, which outputs a list of 1,536 numbers for each. On the right, a simplified two-dimensional map: refund-related sentences in English and Spanish cluster together, lab problems form a second cluster, and a sentence about the weather sits far away from both.</desc>
-      <rect x="16" y="40" width="250" height="44" rx="10" class="s-surface"/><text x="30" y="67" class="t-s">"Can I have my money back?"</text>
-      <rect x="16" y="96" width="250" height="44" rx="10" class="s-surface"/><text x="30" y="123" class="t-s">"How do I get a refund?"</text>
-      <rect x="16" y="152" width="250" height="44" rx="10" class="s-surface"/><text x="30" y="179" class="t-s">"My lab says quota exceeded."</text>
+      <desc id="em-d">On the left, three sentences go into an embedding model, which outputs a list of 1,536 numbers for each. On the right, a simplified two-dimensional map: card-theft sentences cluster together, payment problems form a second cluster, and a sentence about the weather sits far away from both.</desc>
+      <rect x="16" y="40" width="250" height="44" rx="10" class="s-surface"/><text x="30" y="67" class="t-s">"My card was stolen."</text>
+      <rect x="16" y="96" width="250" height="44" rx="10" class="s-surface"/><text x="30" y="123" class="t-s">"Someone took my wallet."</text>
+      <rect x="16" y="152" width="250" height="44" rx="10" class="s-surface"/><text x="30" y="179" class="t-s">"I was charged twice."</text>
       <path d="M266 118 H300" class="s-arrow" marker-end="url(#ah)"/>
       <rect x="306" y="84" width="150" height="70" rx="12" class="s-violet"/><text x="381" y="114" class="t-b mid">embedding</text><text x="381" y="134" class="t-b mid">model</text>
       <path d="M456 118 H490" class="s-arrow" marker-end="url(#ah)"/>
       <text x="16" y="232" class="t-m">each → [0.038, 0.012, -0.144, ...]</text><text x="16" y="252" class="t-s">1,536 numbers (text-embedding-3-small)</text>
       <rect x="496" y="20" width="448" height="280" rx="14" class="s-surface2"/>
       <text x="512" y="44" class="t-m">MEANING SPACE (squashed to 2-D)</text>
-      <circle cx="610" cy="110" r="7" class="s-green"/><text x="624" y="106" class="t-s">money back?</text>
-      <circle cx="640" cy="132" r="7" class="s-green"/><text x="654" y="136" class="t-s">get a refund?</text>
-      <circle cx="590" cy="150" r="7" class="s-green"/><text x="532" y="172" class="t-s">¿un reembolso?</text>
-      <circle cx="830" cy="220" r="7" class="s-amber"/><text x="740" y="246" class="t-s">quota exceeded</text>
-      <circle cx="860" cy="196" r="7" class="s-amber"/><text x="790" y="186" class="t-s">sandbox won't start</text>
+      <circle cx="610" cy="110" r="7" class="s-green"/><text x="624" y="106" class="t-s">card stolen</text>
+      <circle cx="640" cy="132" r="7" class="s-green"/><text x="654" y="136" class="t-s">wallet taken</text>
+      <circle cx="590" cy="150" r="7" class="s-green"/><text x="532" y="172" class="t-s">¿me robaron?</text>
+      <circle cx="830" cy="220" r="7" class="s-amber"/><text x="740" y="246" class="t-s">charged twice</text>
+      <circle cx="860" cy="196" r="7" class="s-amber"/><text x="790" y="186" class="t-s">wrong amount</text>
       <circle cx="800" cy="80" r="7" class="s-rose"/><text x="814" y="84" class="t-s">weather in Paris?</text>
       <path d="M610 110 L640 132" class="s-dash"/>
       <text x="560" y="276" class="t-s">close = similar meaning · far = unrelated</text>
@@ -48,7 +48,7 @@
   <li><strong>Fixed length:</strong> a word and a page both become the same number of dimensions (1,536 for <code>text-embedding-3-small</code>, 3,072 for <code>text-embedding-3-large</code>, 768 for the local <code>nomic-embed-text</code>).</li>
   <li><strong>Usually normalised</strong> to length 1, so similarity is a simple dot product (topic 2).</li>
   <li><strong>Input limit:</strong> text-embedding-3 models accept up to 8,191 tokens per input. Longer documents must be chunked (topic 6), and shorter chunks usually retrieve better anyway.</li>
-  <li><strong>Cheap and fast:</strong> one request can embed a batch of texts; embedding a 20-course catalogue costs a fraction of a cent.</li>
+  <li><strong>Cheap and fast:</strong> one request can embed a batch of texts; embedding a 20-product catalogue costs a fraction of a cent.</li>
   <li><strong>Not reversible text:</strong> you can't read an embedding, and you can't compare embeddings from two different models.</li>
   <li><strong>Embedding models are not chat models.</strong> You deploy them separately and call <code>client.embeddings.create()</code>, not chat completions.</li>
 </ul>
@@ -61,6 +61,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Embeddings let a bank compare texts by meaning: a complaint that says "they took my money twice" lands next to the dispute policy even though it shares no words with it. The same idea finds similar past fraud cases, groups customer complaints by theme for the conduct-risk team, and matches analyst questions to the right section of a research report.</p>
+</div>
   <p>Online shops embed product descriptions so "shoes for wet weather" finds waterproof boots. Help centres embed articles so "money back" finds the refunds page. Support teams embed tickets to spot duplicates and trending problems. And almost every "chat with your documents" product embeds document chunks so it can retrieve the right ones before the model answers (Module 06).</p>
 </div>
 
@@ -104,17 +109,17 @@
         <span class="out-label">Real output with nomic-embed-text (Ollama)</span>
 <pre class="out"><code>model: nomic-embed-text | tokens used: 30
 
-How do I get a refund for my course?
+How do I dispute a double charge?
   dimensions: 768   length (norm): 1.000
-  first 5 numbers: [0.0382, 0.0117, -0.1443, -0.0264, 0.0644]
+  first 5 numbers: [0.107, 0.0585, -0.1743, 0.0016, 0.0803]
 
-Can I have my money back?
+Can I have my money back for a wrong payment?
   dimensions: 768   length (norm): 1.000
-  first 5 numbers: [0.0618, 0.0347, -0.1616, 0.019, 0.028]
+  first 5 numbers: [0.1186, 0.0437, -0.1497, 0.0178, 0.02]
 
-My lab says quota exceeded.
+My card was stolen.
   dimensions: 768   length (norm): 1.000
-  first 5 numbers: [0.0334, 0.067, -0.1603, 0.0098, 0.0235]</code></pre>
+  first 5 numbers: [0.074, -0.0114, -0.1544, 0.0045, 0.0483]</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
         <ul class="verify-list">

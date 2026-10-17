@@ -9,7 +9,7 @@ from catalogue import PRODUCTS
 from embed import embed
 
 client = chromadb.PersistentClient(path="chroma_db")          # a folder on disk
-products = client.get_or_create_collection(name="products", configuration={"hnsw": {"space": "cosine"}})
+products = client.get_or_create_collection(name="products", metadata={"hnsw:space": "cosine"})   # cosine distance
 
 if products.count() == 0:                                     # first run: load the catalogue
     texts = [f"{p['name']}. {p['description']}" for p in PRODUCTS]

@@ -1,7 +1,7 @@
-"""Lab 2, Exercise 2: an AI assistant that calls application functions: search the catalogue,
-retrieve the learner's information, check an enrolment's status and create a support ticket.
+"""Lab 2, Exercise 2: an AI assistant that calls application functions: search the product catalogue,
+retrieve the customer's information, check a card's status and create a support case.
 The model asks for a function; this code decides whether and how it runs.
-Run:  python l2_tools.py "Which beginner courses cost less than $300?" """
+Run:  python l2_tools.py "Which cards have no annual fee?" """
 import json
 import sys
 import uuid
@@ -9,70 +9,71 @@ from pathlib import Path
 
 from client import AGENT_MODEL, get_client
 
-COURSES = json.loads((Path(__file__).parent / "data" / "courses.json").read_text(encoding="utf-8"))
-LEARNERS = {"L-MEI": {"name": "Mei Chen", "country": "Singapore", "enrolments": ["TC-10293", "TC-10477"]}}
-ENROLMENTS = {"TC-10293": {"course": "AI-102: Azure AI Engineer", "status": "completed", "certificate": "issued"},
-              "TC-10477": {"course": "Building RAG Applications", "status": "confirmed", "starts_in_days": 10}}
-SIGNED_IN = "L-MEI"            # the app knows who is signed in; the model never chooses this
+PRODUCTS = json.loads((Path(__file__).parent / "data" / "products.json").read_text(encoding="utf-8"))
+CUSTOMERS = {"RR-10293": {"name": "Mei Chen", "country": "Singapore", "cards": ["4821", "1177"]}}
+CARDS = {"4821": {"product": "Cashback Card", "status": "active"},
+         "1177": {"product": "Everyday Checking debit card", "status": "replacement sent", "arrives_in_days": 4}}
+SIGNED_IN = "RR-10293"         # the app knows who is signed in; the model never chooses this
 
 
 # ---------------- the application functions (plain Python)
-def search_courses(text: str = "", level: str | None = None, max_price_usd: int | None = None):
-    # Models sometimes send numbers as text ("300"): accept them, like any API that faces untrusted input.
-    max_price_usd = int(float(max_price_usd)) if max_price_usd not in (None, "") else None
-    hits = [c for c in COURSES if (not level or c["level"] == level)
-            and (max_price_usd is None or c["price_usd"] <= max_price_usd)
-            and (not text or text.lower() in (c["title"] + " " + c["description"]).lower())]
-    return [{k: c[k] for k in ("id", "title", "level", "price_usd")} for c in hits[:5]]
+def search_products(text: str = "", family: str | None = None, max_annual_fee_usd: int | None = None):
+    # Models sometimes send numbers as text ("100"): accept them, like any API that faces untrusted input.
+    max_annual_fee_usd = int(float(max_annual_fee_usd)) if max_annual_fee_usd not in (None, "") else None
+    hits = [p for p in PRODUCTS if (not family or p["family"] == family)
+            and (max_annual_fee_usd is None or p["annual_fee_usd"] <= max_annual_fee_usd)
+            and (not text or text.lower() in (p["name"] + " " + p["description"]).lower())]
+    return [{k: p[k] for k in ("id", "name", "family", "annual_fee_usd", "rate_pct", "rate_type")} for p in hits[:5]]
 
 
 def get_my_profile():
-    me = LEARNERS[SIGNED_IN]
-    return {**me, "enrolments": [{"enrolment_id": e, "course": ENROLMENTS[e]["course"]} for e in me["enrolments"]]}
+    me = CUSTOMERS[SIGNED_IN]
+    return {**me, "cards": [{"card_last4": c, "product": CARDS[c]["product"]} for c in me["cards"]]}
 
 
-def check_enrolment_status(enrolment_id: str):
-    if enrolment_id not in LEARNERS[SIGNED_IN]["enrolments"]:
-        return {"error": "not one of the signed-in learner's enrolments; call get_my_profile to see them"}
-    return ENROLMENTS[enrolment_id]
+def check_card_status(card_last4: str):
+    if card_last4 not in CUSTOMERS[SIGNED_IN]["cards"]:
+        return {"error": "not one of the signed-in customer's cards; call get_my_profile to see them"}
+    return CARDS[card_last4]
 
 
-def create_support_ticket(summary: str, category: str):
-    return {"ticket_id": "T-" + uuid.uuid4().hex[:6].upper(), "status": "created", "category": category}
+def create_support_case(summary: str, category: str):
+    return {"case_id": "CS-" + uuid.uuid4().hex[:6].upper(), "status": "created", "category": category}
 
 
-FUNCTIONS = {f.__name__: f for f in (search_courses, get_my_profile, check_enrolment_status, create_support_ticket)}
+FUNCTIONS = {f.__name__: f for f in (search_products, get_my_profile, check_card_status, create_support_case)}
 
 # ---------------- how the model sees them (JSON Schema)
 TOOLS = [
     {"type": "function", "function": {
-        "name": "search_courses", "description": "Search the TrainCrest course catalogue by keyword, level and maximum price.",
+        "name": "search_products", "description": "Search the RR Finance Bank product catalogue by keyword, family and maximum annual fee.",
         "parameters": {"type": "object", "properties": {
-            "text": {"type": "string", "description": "One keyword, e.g. 'azure' or 'python'; empty for any"},
-            "level": {"type": "string", "enum": ["beginner", "intermediate", "advanced"]},
-            "max_price_usd": {"type": "integer", "description": "Highest price in US dollars"}}}}},
+            "text": {"type": "string", "description": "One keyword, e.g. 'travel' or 'savings'; empty for any"},
+            "family": {"type": "string", "enum": ["accounts", "cards", "loans"]},
+            "max_annual_fee_usd": {"type": "integer", "description": "Highest annual fee in US dollars"}}}}},
     {"type": "function", "function": {
-        "name": "get_my_profile", "description": "The signed-in learner's name, country, and enrolments with course names.",
+        "name": "get_my_profile", "description": "The signed-in customer's name, country, and cards (last four digits and product).",
         "parameters": {"type": "object", "properties": {}}}},
     {"type": "function", "function": {
-        "name": "check_enrolment_status", "description": "Status of one of the signed-in learner's enrolments.",
+        "name": "check_card_status", "description": "Status of one of the signed-in customer's cards.",
         "parameters": {"type": "object", "properties": {
-            "enrolment_id": {"type": "string", "description": "Like TC-12345, from get_my_profile"}},
-            "required": ["enrolment_id"]}}},
+            "card_last4": {"type": "string", "description": "Last four digits, like 4821, from get_my_profile"}},
+            "required": ["card_last4"]}}},
     {"type": "function", "function": {
-        "name": "create_support_ticket", "description": "Create a ticket for the human support team.",
+        "name": "create_support_case", "description": "Create a case for the human support team.",
         "parameters": {"type": "object", "properties": {
             "summary": {"type": "string"},
-            "category": {"type": "string", "enum": ["billing", "scheduling", "lab_access", "other"]}},
+            "category": {"type": "string", "enum": ["card", "dispute", "fraud", "fees", "other"]}},
             "required": ["summary", "category"]}}},
 ]
 
 
 def ask(question: str, max_rounds: int = 5) -> str:
     client = get_client()
-    messages = [{"role": "system", "content": "You are Traincrest Assist. Use the tools for facts; never guess IDs. "
-                                              "The learner can't call functions: call them yourself, starting with "
-                                              "get_my_profile when you need an enrolment ID. Answer in at most 60 words."},
+    messages = [{"role": "system", "content": "You are RR Finance Assist. Use the tools for facts; never guess IDs, "
+                                              "fees or rates. The customer can't call functions: call them yourself, "
+                                              "starting with get_my_profile when you need a card. Never ask for a "
+                                              "full card number or PIN. Answer in at most 60 words."},
                 {"role": "user", "content": question}]
     for _ in range(max_rounds):
         msg = client.chat.completions.create(model=AGENT_MODEL, messages=messages, tools=TOOLS).choices[0].message
@@ -92,9 +93,9 @@ def ask(question: str, max_rounds: int = 5) -> str:
 
 
 if __name__ == "__main__":
-    questions = sys.argv[1:] or ["Which beginner courses cost less than $300?",
-                                 "What's the status of my RAG course?",
-                                 "My invoice is wrong, please open a ticket for me."]
+    questions = sys.argv[1:] or ["Which cards have no annual fee?",
+                                 "Has the replacement for my debit card been sent?",
+                                 "I was charged a fee I don't understand, please open a case for me."]
     for q in questions:
         print(f"Q: {q}")
         print(f"A: {ask(q)}\n")

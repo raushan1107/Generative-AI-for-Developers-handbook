@@ -1,0 +1,11 @@
+Reply 1: Based on the customer's request for a credit card with no annual fee a...
+  parsed APR -> 22.99   OK
+
+Reply 2: Based on your request, the credit card that matches the customer's req...
+  parsed APR -> 22.99   OK
+
+Reply 3: Based on the customer's criteria, the credit card that matches is:
+
+P1...
+  parsed APR -> 22.99   OK
+

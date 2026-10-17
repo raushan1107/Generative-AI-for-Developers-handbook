@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Embedding Models</title>
-<meta name="description" content="Module 05, topic 3: how to choose an embedding model (quality on your data, languages, dimensions, input limits, cost, hosting), shortened dimensions, task prefixes, the cost of switching, and a drill comparing settings on TrainCrest help questions.">
+<meta name="description" content="Module 05, topic 3: how to choose an embedding model (quality on your data, languages, dimensions, input limits, cost, hosting), shortened dimensions, task prefixes, the cost of switching, and a drill comparing settings on RR Finance Bank help questions.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -175,7 +175,7 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 05 · Topic 3 of 8</span><h1>Embedding Models: Choosing and Using One</h1><p class="lead">There are dozens of embedding models, and leaderboards rank them on other people's data. What matters is how well one finds the right answer in your data, in your users' languages, at a size and price you can live with. You'll compare settings on TrainCrest's own help questions and learn why switching models later means re-embedding everything.</p><div class="chips"><span class="chip">Selection criteria</span><span class="chip">Dimensions and storage</span><span class="chip">Task prefixes</span><span class="chip">Drill 05.3</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 15 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 05 · Topic 3 of 8</span><h1>Embedding Models: Choosing and Using One</h1><p class="lead">There are dozens of embedding models, and leaderboards rank them on other people's data. What matters is how well one finds the right answer in your data, in your users' languages, at a size and price you can live with. You'll compare settings on RR Finance Bank's own help questions and learn why switching models later means re-embedding everything.</p><div class="chips"><span class="chip">Selection criteria</span><span class="chip">Dimensions and storage</span><span class="chip">Task prefixes</span><span class="chip">Drill 05.3</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 15 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Pick on your data, not on a leaderboard.</p></div></div>
@@ -219,6 +219,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Choosing an embedding model in a bank adds two questions to quality and cost: languages (customers write in many) and data residency (texts sent for embedding are customer data). Some banks host an open embedding model internally for exactly that reason. Changing the model means re-embedding everything, so the model name is versioned with the index.</p>
+</div>
   <p>Teams usually start with a cheap general model, build a small labelled test set from real user questions, and only move to a bigger or specialised model when the test set shows a real gain. Large indexes often use shortened vectors to cut storage and latency, accepting a small quality loss measured on that same test set.</p>
 </div>
 
@@ -311,7 +316,7 @@ MODEL = {
   <div class="drill-head"><span class="drill-id">Drill 05.3</span><h3>Compare embedding settings on your own questions</h3>
     <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Ollama optional</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> match six learner questions (one in Spanish) to the right help article, and compare full-size vectors, shortened vectors and task prefixes.</p>
+    <p class="drill-goal"><b>Goal:</b> match six customer questions (one in Spanish) to the right help article, and compare full-size vectors, shortened vectors and task prefixes.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Six questions, ten articles</h4>
         <p>The ten fictional help-centre articles are in <code>data/help/</code>; Module 06 reuses them.</p>
@@ -367,36 +372,36 @@ if __name__ == "__main__":
 <pre class="term"><code><span class="ps">$ </span>python lab05_03_models.py
 <span class="ps">$ </span>python lab05_03_models.py --dims 256 1536      <span class="o"># Azure / OpenAI text-embedding-3 only</span></code></pre>
         <span class="out-label">Real output with nomic-embed-text (Ollama)</span>
-<pre class="out"><code>nomic-embed-text dims=768   (2.9s, cached calls are instant)
-  OK  0.70  Can I get my money back if I cancel next week? -> refunds-and-cancellations
-  OK  0.59  The sandbox won't start, what do I do?         -> labs-and-sandboxes
-  OK  0.60  My certificate has a typo in my surname        -> certificates
-  OK  0.61  Can my company pay in three parts?             -> payments-and-invoices
-  OK  0.66  Do you offer captions for deaf learners?       -> accessibility
-  OK  0.71  ¿Cuánto tiempo es válido mi voucher de examen? -> exam-vouchers
-  6/6 questions matched the right article</code></pre>
+<pre class="out"><code>nomic-embed-text dims=768   (6.1s, cached calls are instant)
+  OK  0.60  Can I get my money back for a double charge?   -> card-disputes
+  OK  0.66  Someone stole my wallet with my card in it     -> lost-stolen-cards
+  OK  0.50  Why was I charged $29 last night?              -> fees-and-charges
+  MISS 0.54  The money I sent my landlord hasn't arrived    -> complaints
+  MISS 0.53  I'm locked out of the app                      -> lost-stolen-cards
+  OK  0.52  ¿Qué pasa si saco el dinero de mi depósito a p -> savings-and-cds
+  4/6 questions matched the right article</code></pre>
         <p>With Ollama, also try the task prefixes the model was trained with:</p>
         <pre class="term"><code><span class="ps">$ </span>python lab05_03_models.py --prefix</code></pre>
-<pre class="out"><code>nomic-embed-text dims=768 +prefix   (4.6s, cached calls are instant)
-  OK  0.73  Can I get my money back if I cancel next week? -> refunds-and-cancellations
-  OK  0.67  The sandbox won't start, what do I do?         -> labs-and-sandboxes
-  OK  0.67  My certificate has a typo in my surname        -> certificates
-  OK  0.66  Can my company pay in three parts?             -> payments-and-invoices
-  OK  0.71  Do you offer captions for deaf learners?       -> accessibility
-  OK  0.69  ¿Cuánto tiempo es válido mi voucher de examen? -> exam-vouchers
-  6/6 questions matched the right article</code></pre>
+<pre class="out"><code>nomic-embed-text dims=768 +prefix   (6.3s, cached calls are instant)
+  OK  0.62  Can I get my money back for a double charge?   -> card-disputes
+  OK  0.72  Someone stole my wallet with my card in it     -> lost-stolen-cards
+  MISS 0.52  Why was I charged $29 last night?              -> card-disputes
+  MISS 0.60  The money I sent my landlord hasn't arrived    -> complaints
+  OK  0.56  I'm locked out of the app                      -> online-banking-access
+  OK  0.54  ¿Qué pasa si saco el dinero de mi depósito a p -> savings-and-cds
+  4/6 questions matched the right article</code></pre>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>What did you learn, and what didn't you?</h4>
         <ol>
-          <li>Prefixes raised most scores but didn't change any answer. Is that an improvement?</li>
-          <li>On Azure, did 256 dimensions get the same 6/6 as 1,536? What would you save at a million chunks?</li>
-          <li>Is 6/6 on six questions enough to choose a model?</li>
+          <li>Prefixes raised most scores and kept the total at 4/6, but changed <em>which</em> questions failed. Is that an improvement?</li>
+          <li>On Azure, did 256 dimensions get the same score as 1,536? What would you save at a million chunks?</li>
+          <li>Is a score on six questions enough to choose a model?</li>
         </ol>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
-            <li>Higher scores alone aren't the goal; correct <em>rankings</em> are. A wider gap between the right article and the rest does make retrieval more robust on harder questions, so it's worth keeping, but prove it on a bigger set.</li>
+            <li>Not clearly. Higher scores alone aren't the goal; correct <em>rankings</em> are. The prefix fixed "locked out of the app" and broke "charged $29", and both versions sent "the money I sent hasn't arrived" to complaints, because a frustrated customer sounds like a complaint. Whole articles mix topics; Drill 05.7 shows that smaller, section-sized chunks fix much of this.</li>
             <li>If shortened vectors keep the same hits, you store about a sixth of the data (roughly 1 KB instead of 6 KB per chunk, about 5 GB saved per million chunks) and search faster.</li>
-            <li>No. Six easy questions, each answered by a whole article, is a smoke test. Drill 05.7 uses 20 questions with a required phrase in the retrieved chunk; real projects use hundreds of real user questions.</li>
+            <li>No. Six questions, each answered by a whole article, is a smoke test. Drill 05.7 uses 20 questions with a required phrase in the retrieved chunk; real projects use hundreds of real user questions.</li>
           </ol>
         </div></details>
       </li>
@@ -407,7 +412,7 @@ if __name__ == "__main__":
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Choosing models.</p></div></div>
 <div class="quiz">
-  <details><summary>1. Two models score 92% and 94% on a public leaderboard. How do you choose for TrainCrest?</summary><div><p>Run both on <strong>TrainCrest's own labelled questions</strong>, in the languages learners use, and weigh the hit rate against cost, dimensions and hosting. Leaderboard gaps that small often vanish or reverse on your data.</p></div></details>
+  <details><summary>1. Two models score 92% and 94% on a public leaderboard. How do you choose for RR Finance Bank?</summary><div><p>Run both on <strong>RR Finance Bank's own labelled questions</strong>, in the languages customers use, and weigh the hit rate against cost, dimensions and hosting. Leaderboard gaps that small often vanish or reverse on your data.</p></div></details>
   <details><summary>2. You want to move from <code>text-embedding-3-small</code> to <code>-large</code>. What has to happen?</summary><div><p>Re-embed <strong>every</strong> document with the new model, build a new index (dimensions change from 1,536 to 3,072), switch queries over at the same moment, and compare hit rates before and after.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Choose the embedding model with your own test set, version it with your index, and budget a re-index for every change.</p></div>

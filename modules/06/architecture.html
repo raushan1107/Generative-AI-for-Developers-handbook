@@ -241,6 +241,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>In a bank, each stage of the RAG pipeline has an owner: content teams own the documents, IT owns ingestion and the index, compliance approves the answer prompt, and model risk validates the whole pipeline before launch. Drawing the architecture like this diagram is often the first artefact a model risk review asks for.</p>
+</div>
   <p>When a RAG bot gives a wrong answer, experienced teams open the trace and read the retrieved chunks first. Most of the time the answer was wrong because the right passage wasn't there: an outdated document, a table that chunked badly, a question in another language, or a filter that hid it. Teams that log retrieval fix these in hours; teams that only log the final answer end up rewriting prompts for weeks.</p>
 </div>
 
@@ -427,7 +432,7 @@ Then explain in two sentences why printing retrieved chunks is the first debuggi
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Architecture.</p></div></div>
 <div class="quiz">
-  <details><summary>1. A learner gets a wrong answer about voucher validity. What is the first thing you check?</summary><div><p>Which chunks were retrieved for that question. If the "How long it is valid" section wasn't among them, it's a retrieval problem (chunking, embedding, filters or the floor), not a prompt problem.</p></div></details>
+  <details><summary>1. A customer gets a wrong answer about voucher validity. What is the first thing you check?</summary><div><p>Which chunks were retrieved for that question. If the "How long it is valid" section wasn't among them, it's a retrieval problem (chunking, embedding, filters or the floor), not a prompt problem.</p></div></details>
   <details><summary>2. Which pipeline runs when the support team edits a help article?</summary><div><p>The offline indexing pipeline: re-ingest the article, re-chunk it, re-embed the changed chunks and update the store. The query pipeline doesn't change.</p></div></details>
   <details><summary>3. When would you choose tool-based RAG over a fixed pipeline?</summary><div><p>Inside a conversational assistant that also uses other tools, needs to decide when looking things up is useful, may search more than once, and must turn follow-ups into proper search queries.</p></div></details>
 </div>

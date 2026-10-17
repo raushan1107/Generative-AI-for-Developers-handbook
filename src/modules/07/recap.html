@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m07-recap", "short": "Module 07 Recap", "h1": "Module 07 Recap and Self-Check", "description": "Module 07 recap: an agent checklist, the Traincrest Assist agent design decisions, and a six-question self-check on agents, planning, tool design, workflows, state and memory, multi-step tasks, human-in-the-loop approval and reliability.", "lead": "Check what stuck, review the decisions behind Traincrest Assist's first actions, and see what Part IV adds: architecture, evaluation and security for everything you've built.", "chips": ["Checklist", "Design decisions", "6 questions", "End of Part III"]}
+{"id": "m07-recap", "short": "Module 07 Recap", "h1": "Module 07 Recap and Self-Check", "description": "Module 07 recap: an agent checklist, the RR Finance Assist agent design decisions, and a six-question self-check on agents, planning, tool design, workflows, state and memory, multi-step tasks, human-in-the-loop approval and reliability.", "lead": "Check what stuck, review the decisions behind RR Finance Assist's first actions, and see what Part IV adds: architecture, evaluation and security for everything you've built.", "chips": ["Checklist", "Design decisions", "6 questions", "End of Part III"]}
 -->
 <h2 id="checklist">Agent checklist</h2>
 <ul class="checklist">
@@ -13,15 +13,15 @@
   <li>Guard rails are tested offline with a scripted model, and writes are idempotent under failure (Drill 07.8).</li>
 </ul>
 
-<h2 id="decisions">Traincrest Assist: the agent design</h2>
+<h2 id="decisions">RR Finance Assist: the agent design</h2>
 <div class="table-wrap min">
   <table>
     <thead><tr><th>Requirement</th><th>Decision</th><th>Why this and not something else</th></tr></thead>
     <tbody>
-      <tr><td>Nothing changes without consent</td><td>The model only has <code>request_…</code> tools that create proposals; execution is a separate API call triggered by the learner</td><td>The model can't execute, however it's prompted or manipulated</td></tr>
-      <tr><td>The learner knows what they approve</td><td>Summary and fee computed by code at proposal time; re-checked at execution</td><td>The model can't misdescribe the effect; stale approvals can't run at a new price</td></tr>
+      <tr><td>Nothing changes without consent</td><td>The model only has <code>request_…</code> tools that create proposals; execution is a separate API call triggered by the customer</td><td>The model can't execute, however it's prompted or manipulated</td></tr>
+      <tr><td>The customer knows what they approve</td><td>Summary and fee computed by code at proposal time; re-checked at execution</td><td>The model can't misdescribe the effect; stale approvals can't run at a new price</td></tr>
       <tr><td>No double changes</td><td>One decision per proposal; the action id is the idempotency key</td><td>Double clicks, two tabs and retries all resolve to one change</td></tr>
-      <tr><td>Which actions</td><td>Lab extension and date change by the learner; refunds and exceptions via tickets to staff</td><td>Reversible self-service changes are low risk; money out follows the staff approval limits</td></tr>
+      <tr><td>Which actions</td><td>Lab extension and date change by the customer; refunds and exceptions via tickets to staff</td><td>Reversible self-service changes are low risk; money out follows the staff approval limits</td></tr>
       <tr><td>Honest conversation</td><td>The outcome of every decision is written into the history</td><td>The next turn knows what really happened, so the model doesn't claim a declined action</td></tr>
       <tr><td>Robust loop</td><td>Max tool rounds, repeated-call refusal, text-tool-call guard</td><td>Contains the failure modes seen with small models in the drills</td></tr>
     </tbody>
@@ -40,5 +40,5 @@
 
 <div class="callout takeaway">
   <div class="c-label">End of Part III · carry this into Part IV</div>
-  <p>Traincrest Assist now answers from TrainCrest's documents with checked citations and acts on learners' behalf with their approval. Part IV makes it production-shaped: an <strong>architecture</strong> with persistent state, queues and tracing (Module 08), <strong>evaluation</strong> of groundedness, tool choice and answers (Module 09), and <strong>security</strong> against prompt injection, data leakage and excessive agency (Module 10).</p>
+  <p>RR Finance Assist now answers from RR Finance Bank's documents with checked citations and acts on customers' behalf with their approval. Part IV makes it production-shaped: an <strong>architecture</strong> with persistent state, queues and tracing (Module 08), <strong>evaluation</strong> of groundedness, tool choice and answers (Module 09), and <strong>security</strong> against prompt injection, data leakage and excessive agency (Module 10).</p>
 </div>

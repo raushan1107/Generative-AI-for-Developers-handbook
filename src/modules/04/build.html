@@ -1,23 +1,23 @@
 <!--meta
-{"id": "m04-build", "short": "Build: Milestone 4", "h1": "Build · Milestone 4: Traincrest Assist Gets Tools", "description": "Traincrest Assist milestone 4: strict tools for the catalogue, the signed-in learner's enrolments and vouchers, policy-as-code refund and reschedule quotes and support tickets, a streaming tool loop with a round limit, identity from the session, and triage on structured outputs with a fallback.", "lead": "Version 0.4 stops reciting policy and starts answering with facts. Traincrest Assist can look up the signed-in learner's enrolments and vouchers, quote a refund or reschedule fee calculated by policy code, search the catalogue and raise a ticket for the human team, all through strict tools in a loop you control. Triage moves to structured outputs, so the repair loop becomes a fallback.", "chips": ["7 strict tools", "Streaming tool loop", "Identity from session", "Policy as code", "Structured-output triage", "≈ 75 min"], "time": "Plan 10 min · Build 50 min · Verify 15 min"}
+{"id": "m04-build", "short": "Build: Milestone 4", "h1": "Build · Milestone 4: RR Finance Assist Gets Tools", "description": "RR Finance Assist milestone 4: strict tools for the product catalogue, the signed-in customer's accounts, cards and payments, fee refund and dispute quotes decided by policy code, and support cases; a bounded streaming tool loop with identity from the session; triage on structured outputs.", "lead": "Version 0.4 stops reciting policy and starts answering with facts. RR Finance Assist can look up the signed-in customer's accounts, cards and payments, quote a fee refund or check a dispute with policy code, search the product catalogue and raise a case for the human team, all through strict tools in a loop you control. Triage moves to structured outputs, so the repair loop becomes a fallback.", "chips": ["7 strict tools", "Streaming tool loop", "Identity from session", "Policy as code", "Structured-output triage", "≈ 75 min"], "time": "Plan 10 min · Build 50 min · Verify 15 min"}
 -->
 <div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From "I can't see your booking" to "here's your number".</p></div></div>
 
 <div class="case">
-  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 4</span></div>
+  <div class="case-head"><b>RR Finance Bank</b><span>· the brief for milestone 4</span></div>
   <div class="case-body">
-    <p>Pilot feedback is blunt: learners don't want the cancellation policy read to them, they want <strong>their</strong> refund amount. The support lead wants Assist to answer status questions (enrolments, vouchers) by itself and to open a ticket, with a clear summary, for anything that needs a person. Finance insists refund figures come from the same rules as billing. Security insists that one learner can never see another learner's data, whatever they type.</p>
+    <p>Pilot feedback is blunt: customers don't want the overdraft policy read to them, they want to know which of <strong>their</strong> fees come back. The contact-centre lead wants Assist to answer status questions (cards, recent payments) by itself and to open a case, with a clear summary, for anything that needs a person. Compliance insists fee refunds and dispute deadlines come from the same rules the bank's systems use. Security insists that one customer can never see another customer's accounts, whatever they type.</p>
   </div>
 </div>
 
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 360" role="img" aria-labelledby="b4-t b4-d">
-      <title id="b4-t">Traincrest Assist v0.4</title>
-      <desc id="b4-d">The browser sends a message with a demo sign-in to POST /api/chat. ChatService renders assist_system@v3 and runs a streaming tool loop with the model, at most four rounds, one tool call at a time with strict tools. Tool calls go to the toolkit dispatcher, which validates arguments and passes the session's learner_id as context. The tools call the stand-in backend for catalogue, enrolments and vouchers, policy code for refund and reschedule quotes, and append tickets to tickets.jsonl. Tool status events stream to the browser. Separately, POST /api/triage calls parse with the Triage model for structured outputs, falling back to the milestone 3 JSON repair method if the provider doesn't support it.</desc>
+      <title id="b4-t">RR Finance Assist v0.4</title>
+      <desc id="b4-d">The browser sends a message with a demo sign-in to POST /api/chat. ChatService renders assist_system@v3 and runs a streaming tool loop with the model, at most four rounds, one tool call at a time with strict tools. Tool calls go to the toolkit dispatcher, which validates arguments and passes the session's customer_id as context. The tools call the stand-in backend for products, accounts, cards and payments, policy code for fee refund and dispute quotes, and append cases to tickets.jsonl. Tool status events stream to the browser. Separately, POST /api/triage calls parse with the Triage model for structured outputs, falling back to the milestone 3 JSON repair method if the provider doesn't support it.</desc>
       <rect x="16" y="40" width="160" height="80" rx="12" class="s-surface"/><text x="96" y="68" class="t-b mid">Browser</text><text x="96" y="88" class="t-s mid">demo sign-in</text><text x="96" y="104" class="t-s mid">tool status lines</text>
       <path d="M176 80 H214" class="s-arrow-accent" marker-end="url(#ah-a)"/>
-      <rect x="220" y="30" width="220" height="100" rx="12" class="s-blue"/><text x="330" y="56" class="t-b mid">ChatService.stream()</text><text x="330" y="76" class="t-s mid">assist_system@v3</text><text x="330" y="94" class="t-s mid">tool loop · max 4 rounds</text><text x="330" y="112" class="t-s mid">context = {learner_id}</text>
+      <rect x="220" y="30" width="220" height="100" rx="12" class="s-blue"/><text x="330" y="56" class="t-b mid">ChatService.stream()</text><text x="330" y="76" class="t-s mid">assist_system@v3</text><text x="330" y="94" class="t-s mid">tool loop · max 4 rounds</text><text x="330" y="112" class="t-s mid">context = {customer_id}</text>
       <path d="M440 60 H520" class="s-arrow-accent" marker-end="url(#ah-a)"/><path d="M520 100 H446" class="s-arrow" marker-end="url(#ah)"/>
       <rect x="526" y="30" width="170" height="100" rx="12" class="s-violet"/><text x="611" y="62" class="t-b mid">Model</text><text x="611" y="82" class="t-s mid">strict tools,</text><text x="611" y="98" class="t-s mid">one call at a time</text>
       <path d="M330 130 V170" class="s-arrow" marker-end="url(#ah)"/>
@@ -25,38 +25,38 @@
       <path d="M440 211 H500" class="s-arrow" marker-end="url(#ah)"/>
       <rect x="506" y="156" width="438" height="116" rx="12" class="s-surface"/>
       <text x="524" y="180" class="t-m">app/tools.py</text>
-      <text x="524" y="202" class="t-s">search_courses · get_course</text><text x="820" y="202" class="t-s">→ backend.py</text>
-      <text x="524" y="220" class="t-s">list_my_enrolments · get_voucher_status</text><text x="820" y="220" class="t-s">→ backend.py</text>
-      <text x="524" y="238" class="t-s">quote_refund · quote_reschedule</text><text x="820" y="238" class="t-s">→ policy.py</text>
-      <text x="524" y="256" class="t-s">create_support_ticket</text><text x="820" y="256" class="t-s">→ tickets.jsonl</text>
+      <text x="524" y="202" class="t-s">search_products · get_product</text><text x="820" y="202" class="t-s">→ backend.py</text>
+      <text x="524" y="220" class="t-s">list_my_accounts · list_my_transactions · get_card_status</text><text x="820" y="220" class="t-s">→ backend.py</text>
+      <text x="524" y="238" class="t-s">quote_fee_refund · quote_dispute</text><text x="820" y="238" class="t-s">→ policy.py</text>
+      <text x="524" y="256" class="t-s">create_support_case</text><text x="820" y="256" class="t-s">→ tickets.jsonl</text>
       <rect x="16" y="290" width="160" height="56" rx="12" class="s-surface"/><text x="96" y="322" class="t-b mid">POST /api/triage</text>
       <path d="M176 318 H214" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <rect x="220" y="284" width="420" height="68" rx="12" class="s-amber"/><text x="430" y="310" class="t-b mid">parse(response_format=Triage) · triage@v2</text><text x="430" y="332" class="t-s mid">validators for rules · fallback: triage@v1 JSON + repair</text>
     </svg>
   </div>
-  <figcaption><b>The model chooses tools; the dispatcher and the tools decide.</b> Identity enters from the session, money from policy code, and every write goes to a ticket for humans.</figcaption>
+  <figcaption><b>The model chooses tools; the dispatcher and the tools decide.</b> Identity enters from the session, money from policy code, and every write goes to a case for humans.</figcaption>
 </figure>
 
 <span class="out-label">Files after this milestone (new or changed)</span>
 <pre class="out"><code>rrfinance-assist/
 ├── requirements.txt          + pydantic
 ├── .env.example              + MAX_TOOL_ROUNDS, TICKETS_FILE, TOOLS_REASONING_EFFORT
-├── cli.py                    + --as L-MEI demo sign-in, shows tool status
+├── cli.py                    + --as RR-10293 demo sign-in, shows tool status
 ├── app/
 │   ├── config.py             + MAX_TOOL_ROUNDS, TICKETS_FILE, TOOL_EXTRAS
-│   ├── backend.py            NEW  stand-in for TrainCrest systems (fictional data)
-│   ├── policy.py             NEW  refund_quote(), reschedule_fee(): money decided by code
+│   ├── backend.py            NEW  stand-in for RR Finance Bank systems (fictional data)
+│   ├── policy.py             NEW  fee_refund_quote(), dispute_quote(): money decided by code
 │   ├── toolkit.py            NEW  registry + dispatcher (Drill 04.7)
-│   ├── tools.py              NEW  7 strict tools, identity from context
+│   ├── tools.py              NEW  8 strict tools, identity from context
 │   ├── prompts.py            + assist_system@v3 (tools), triage@v2 (schema does the format)
 │   ├── triage.py             structured outputs via parse(), validators, fallback to JSON + repair
 │   ├── chat.py               streaming tool loop, "tool" events, usage summed per turn
-│   └── main.py               + learner_id (demo sign-in), GET /api/demo-learners
+│   └── main.py               + customer_id (demo sign-in), GET /api/demo-customers
 ├── web/index.html            + demo sign-in menu, tool status lines
-├── data/courses.json         NEW  the catalogue (from genai-labs)
+├── data/products.json        NEW  the product catalogue (from genai-labs)
 └── tests/
     ├── fakes.py              NEW  scripted fake model: streamed text and tool calls
-    ├── test_tools.py         NEW  policy, schemas, identity, tickets
+    ├── test_tools.py         NEW  policy, schemas, identity, cases
     ├── test_chat_tools.py    NEW  the tool loop
     └── test_offline.py       triage tests now use structured outputs</code></pre>
 
@@ -66,22 +66,22 @@
   <div class="drill-head"><span class="drill-id">Milestone 4</span><h3>Tools, a safe tool loop and structured-output triage</h3>
     <div class="drill-meta"><span class="time">~75 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · Pydantic · pytest</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> give Traincrest Assist strict tools over (stand-in) company systems, run them in a bounded streaming loop with identity from the session, and move triage to structured outputs.</p>
+    <p class="drill-goal"><b>Goal:</b> give RR Finance Assist strict tools over (stand-in) company systems, run them in a bounded streaming loop with identity from the session, and move triage to structured outputs.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>The systems Assist will call</h4>
-        <p>In a real company these already exist as APIs or databases. Here a small module plays that role, with dates relative to today so the demo always has upcoming and finished courses. Copy <code>data/courses.json</code> from <code>genai-labs</code>.</p>
+        <p>In a real company these already exist as APIs or databases. Here a small module plays that role, with dates relative to today so the demo always has recent and older payments. Copy <code>data/products.json</code> from <code>genai-labs</code>.</p>
         <pre class="code" data-file="app/backend.py" data-src="code/rrfinance-assist/m04/app/backend.py"></pre>
-        <p>Policy becomes code. This is the only place refund money is decided.</p>
+        <p>Policy becomes code. This is the only place fee refunds and dispute windows are decided; <code>fee_refund_quote()</code> is the Drill 03.7 case, now exact.</p>
         <pre class="code" data-file="app/policy.py" data-src="code/rrfinance-assist/m04/app/policy.py"></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The registry and the tools</h4>
         <p><code>app/toolkit.py</code> is your Drill 04.7 <code>toolkit.py</code>, copied into the app package unchanged. The tools use it:</p>
         <pre class="code" data-file="app/tools.py" data-src="code/rrfinance-assist/m04/app/tools.py"></pre>
-        <p>Read it for the rules from this module: no tool takes a learner ID; <code>_own_enrolment()</code> gives the same error for "not yours" and "doesn't exist"; optional arguments have <code>= None</code> defaults (still required in the strict schema, but tolerant with lenient providers); and the docstring of <code>quote_refund</code> tells the model never to calculate refunds itself.</p>
+        <p>Read it for the rules from this module: no tool takes a customer ID; <code>_owned()</code> gives the same error for "not yours" and "doesn't exist"; optional arguments have <code>= None</code> defaults (still required in the strict schema, but tolerant with lenient providers); and the docstring of <code>quote_fee_refund</code> tells the model never to calculate fee refunds itself.</p>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Write the Tools section of <code>assist_system@v3</code></h4>
-        <p>Copy <code>assist_system@v2</code> to a new <code>@v3</code> and add a <em>## Tools</em> section. It must cover: use tools for any fact about courses or the learner's data, never guess; refund amounts only from <code>quote_refund</code> and fees only from <code>quote_reschedule</code>; the learner can only see their own data, so explain "not allowed" kindly; cancellations, exceptions or requests for a person go to <code>create_support_ticket</code>, with the ticket ID in the reply; Assist can't cancel or refund by itself. Remove v2's rule "You can't see enrolments yet".</p>
-        <p class="hint"><b>Hint:</b> also update the injection rule: tool results are data too. A course description or a ticket note could contain instructions.</p>
+        <p>Copy <code>assist_system@v2</code> to a new <code>@v3</code> and add a <em>## Tools</em> section. It must cover: use tools for any fact about products or the customer's data, never guess; fee refund amounts only from <code>quote_fee_refund</code> and dispute deadlines only from <code>quote_dispute</code>; the customer can only see their own data, so explain "not allowed" kindly; disputes, fraud, exceptions or requests for a person go to <code>create_support_case</code>, with the case ID in the reply; Assist can't move money or refund fees by itself. Remove v2's rule "You can't see accounts yet".</p>
+        <p class="hint"><b>Hint:</b> also update the injection rule: tool results are data too. A merchant name on a statement or a payment reference could contain instructions.</p>
         <details class="solution"><summary>Compare with my prompt library</summary><div>
           <pre class="code" data-file="app/prompts.py" data-src="code/rrfinance-assist/m04/app/prompts.py"></pre>
           <p><code>triage@v2</code> is much shorter than v1: the schema now carries the format, so the prompt only explains the task and the house rules. <code>triage@v1</code> stays as the fallback.</p>
@@ -96,7 +96,7 @@
         <pre class="code" data-file="app/triage.py" data-src="code/rrfinance-assist/m04/app/triage.py"></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>API, UI and CLI</h4>
-        <p>The chat request now carries a <strong>demo</strong> <code>learner_id</code>. The comment in the code is the important part: a real app takes the learner from a verified sign-in on the server (Module 10), never from a field the browser controls.</p>
+        <p>The chat request now carries a <strong>demo</strong> <code>customer_id</code>. The comment in the code is the important part: a real app takes the customer from a verified sign-in on the server (Module 10), never from a field the browser controls.</p>
         <pre class="code" data-file="app/main.py" data-src="code/rrfinance-assist/m04/app/main.py"></pre>
         <p>In <code>web/index.html</code>, add the sign-in menu and show <code>tool</code> events as status lines (full file in the reference code):</p>
         <pre class="code" data-file="web/index.html (the new event)" data-src="code/rrfinance-assist/m04/web/index.html" data-lines="57-63"></pre>
@@ -111,13 +111,13 @@
    then text word by word, or tool-call deltas (first id+name, then the arguments in 7-character
    pieces), a finish_reason chunk, and a final usage-only chunk (prompt_tokens=100,
    completion_tokens=10). Also support {"raise": "rate"} to raise openai.RateLimitError.
-2. tests/test_chat_tools.py: a plain answer needs one call; a quote_refund tool call followed by
+2. tests/test_chat_tools.py: a plain answer needs one call; a quote_fee_refund tool call followed by
    text sends the assistant tool_calls and the tool result (same tool_call_id) on the second call
    and sums usage to 200 input tokens; tools are strict and parallel_tool_calls is False; Mei asking
-   for Diego's voucher gets "not allowed" in the tool result; the loop stops after MAX_TOOL_ROUNDS
+   for Diego's card gets "not allowed" in the tool result; the loop stops after MAX_TOOL_ROUNDS
    (monkeypatch it to 2) with a "replace" event; a rate-limit error yields a friendly error event
    and leaves the session history empty.
-Use Diego (L-DIEGO, enrolment TC-20877) and Mei (L-MEI, TC-10293) from app/backend.py.</code></pre></div>
+Use Mei (RR-10293, account AC-5512, cards 4821 and 1177) and Diego (RR-20877, card 9034) from app/backend.py.</code></pre></div>
         <div class="why"><b>Why this prompt works:</b> streaming tool calls are the hardest part to test, so the prompt specifies the exact chunk shapes, including the empty-choices and usage-only chunks that break naive code. Each test is a behaviour you care about (linking IDs, identity, the round limit, clean history on errors), not a line of code.</div>
         <details class="solution"><summary>Reference tests</summary><div>
           <pre class="code" data-file="tests/fakes.py" data-src="code/rrfinance-assist/m04/tests/fakes.py"></pre>
@@ -129,15 +129,15 @@ Use Diego (L-DIEGO, enrolment TC-20877) and Mei (L-MEI, TC-10293) from app/backe
 <pre class="term"><code><span class="ps">$ </span>pytest -q
 <span class="ps">$ </span>uvicorn app.main:app --reload</code></pre>
         <span class="out-label">Expected (exact)</span>
-<pre class="out"><code>..............................                                           [100%]
-30 passed in 0.97s</code></pre>
-        <p>Open <code>http://127.0.0.1:8000</code>, choose a learner in <em>Demo sign-in</em>, and try:</p>
+<pre class="out"><code>.............................                                            [100%]
+29 passed in 1.35s</code></pre>
+        <p>Open <code>http://127.0.0.1:8000</code>, choose a customer in <em>Demo sign-in</em>, and try:</p>
         <ul class="verify-list">
-          <li><strong>As Diego:</strong> "If I cancel TC-20877 today, how much do I get back?" You see <em>Working out your refund under the policy…</em>, then: no refund (the course starts in 5 days), but one free move to a later date. The meta line shows <code>tools: quote_refund</code>.</li>
-          <li><strong>As Mei:</strong> "Has my AI-102 voucher arrived?" Assist lists her enrolments or checks TC-10293 and says it was issued, with the expiry date.</li>
-          <li><strong>As Mei:</strong> "Show me enrolment TC-20877." Polite refusal; <code>assist.log</code> has a tool event with <code>"ok": false</code> and <code>not allowed</code>.</li>
-          <li><strong>As Asha:</strong> "I need to cancel TC-31188, please get someone to process it." A ticket is created; the reply quotes <code>T-…</code> and <code>data/tickets.jsonl</code> has a line with <code>"learner_id": "L-ASHA"</code>.</li>
-          <li><strong>Not signed in:</strong> "What are my enrolments?" Assist asks you to sign in instead of guessing.</li>
+          <li><strong>As Mei:</strong> "Which of my overdraft fees will you refund?" You see <em>Checking your overdraft fees under the policy…</em>, then $87: two fees charged in error plus one courtesy refund. The meta line shows <code>tools: quote_fee_refund</code> (maybe after <code>list_my_accounts</code>).</li>
+          <li><strong>As Mei:</strong> "Has my new debit card been sent?" Assist checks card 1177 and says the replacement was sent, with the delivery date.</li>
+          <li><strong>As Mei:</strong> "Show me card 9034." Polite refusal; <code>assist.log</code> has a tool event with <code>"ok": false</code> and <code>not allowed</code>.</li>
+          <li><strong>As Diego:</strong> "There's an $899 payment to QuickFix Electronics I never made, please get someone on it." A case is created; the reply quotes <code>CS-…</code> and <code>data/tickets.jsonl</code> has a line with <code>"customer_id": "RR-20877"</code>.</li>
+          <li><strong>Not signed in:</strong> "What are my accounts?" Assist asks you to sign in instead of guessing.</li>
           <li><strong>Triage:</strong> in <code>/docs</code>, <code>POST /api/triage</code> now returns <code>"prompt_version": "triage@v2"</code>, with <code>attempts</code> almost always 1.</li>
         </ul>
         <span class="out-label">A real turn from my local test (small Ollama model, prompted to use the tool)</span>
@@ -152,14 +152,14 @@ DONE ['quote_refund'] 2406</code></pre>
   <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="b04-1"> I've completed Milestone 4</label></div>
 </div>
 
-<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where Traincrest Assist stands after Milestone 4.</p></div></div>
+<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where RR Finance Assist stands after Milestone 4.</p></div></div>
 <ul class="checklist">
-  <li>Assist answers enrolment, voucher, refund and reschedule questions from tools, not guesses.</li>
+  <li>Assist answers account, card, payment, fee refund and dispute questions from tools, not guesses.</li>
   <li>Money comes from <code>policy.py</code>; the model only explains it.</li>
   <li>Identity comes from the session; no tool lets the model choose whose data to read.</li>
   <li>The tool loop streams, shows what it's doing, and stops after 4 rounds.</li>
   <li>Triage uses structured outputs with validators, and falls back gracefully.</li>
-  <li>30 offline tests cover policy boundaries, schemas, identity, tickets and the loop.</li>
+  <li>29 offline tests cover policy boundaries, schemas, identity, cases and the loop.</li>
 </ul>
 <div class="table-wrap min">
   <table>
@@ -167,9 +167,9 @@ DONE ['quote_refund'] 2406</code></pre>
     <tbody>
       <tr><td>Catalogue search only matches exact words ("containers" misses Docker Quick Start, which says "container images")</td><td>M05 (embeddings, semantic search)</td></tr>
       <tr><td>Policy still lives in the prompt; the help centre has 10 articles it can't read</td><td>M06 (RAG with citations)</td></tr>
-      <tr><td>Tickets are created without the learner confirming</td><td>M07 (human approval)</td></tr>
+      <tr><td>Cases are created without the customer confirming</td><td>M07 (human approval)</td></tr>
       <tr><td>Demo sign-in instead of real authentication</td><td>M10 (security)</td></tr>
-      <tr><td>Sessions and tickets in memory and a local file</td><td>M08 (architecture)</td></tr>
+      <tr><td>Sessions and cases in memory and a local file</td><td>M08 (architecture)</td></tr>
     </tbody>
   </table>
 </div>

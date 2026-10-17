@@ -197,7 +197,7 @@
   <div class="frame">
     <svg viewBox="0 0 960 300" role="img" aria-labelledby="ob-t ob-d">
       <title id="ob-t">Closed book versus open book</title>
-      <desc id="ob-d">Closed book: the question goes straight to the model, which answers from its training data and may guess. Open book, which is RAG: the question first goes to a search over TrainCrest's documents, the matching passage is added to the prompt with the question, and the model answers from the passage and cites it.</desc>
+      <desc id="ob-d">Closed book: the question goes straight to the model, which answers from its training data and may guess. Open book, which is RAG: the question first goes to a search over RR Finance Bank's documents, the matching passage is added to the prompt with the question, and the model answers from the passage and cites it.</desc>
       <text x="20" y="34" class="t-m">CLOSED BOOK</text>
       <rect x="20" y="46" width="230" height="60" rx="12" class="s-surface"/><text x="135" y="72" class="t-b mid">question</text><text x="135" y="92" class="t-s mid">"What does LAB-503 mean?"</text>
       <path d="M250 76 H304" class="s-arrow" marker-end="url(#ah)"/>
@@ -229,7 +229,7 @@
       <tr><td><strong>Change:</strong> prices and rules change monthly</td><td>Edit the document and re-index the changed chunks; no model work</td></tr>
       <tr><td><strong>Hallucination:</strong> fluent guesses about specifics</td><td>Grounds the answer in real text and allows "not found" as a valid answer</td></tr>
       <tr><td><strong>Trust:</strong> "where does it say that?"</td><td>Citations link each fact to its source, so people and code can check it</td></tr>
-      <tr><td><strong>Access control:</strong> staff and learners may see different things</td><td>Retrieval filters by who is asking, so the model only sees what that person may see</td></tr>
+      <tr><td><strong>Access control:</strong> staff and customers may see different things</td><td>Retrieval filters by who is asking, so the model only sees what that person may see</td></tr>
       <tr><td><strong>Cost:</strong> pasting the whole handbook into every prompt</td><td>Sends only the 3 to 5 passages that matter</td></tr>
     </tbody>
   </table>
@@ -240,17 +240,22 @@
   <table>
     <thead><tr><th>Approach</th><th>Good for</th><th>Not for</th></tr></thead>
     <tbody>
-      <tr><td><strong>RAG</strong></td><td>Knowledge in documents: policies, manuals, wikis, FAQs, contracts</td><td>Live records (a learner's enrolment) or calculations</td></tr>
+      <tr><td><strong>RAG</strong></td><td>Knowledge in documents: policies, manuals, wikis, FAQs, contracts</td><td>Live records (a customer's enrolment) or calculations</td></tr>
       <tr><td><strong>Put everything in the prompt</strong></td><td>Small, stable knowledge (Milestone 3's five policy lines)</td><td>Hundreds of pages; it's slow, costly, and details get missed in long contexts</td></tr>
       <tr><td><strong>Tools / function calling</strong> (Module 04)</td><td>Live data and actions: enrolment status, refund quotes, tickets</td><td>Reading and summarising long text</td></tr>
       <tr><td><strong>Fine-tuning</strong></td><td>Style, format, tone, a narrow task done many times</td><td>Teaching facts that change; it's expensive to update and can't cite sources</td></tr>
     </tbody>
   </table>
 </div>
-<p>Real assistants combine them. Traincrest Assist will use RAG for "what is the policy?", tools for "what about <em>my</em> enrolment?" and code for "how much exactly?".</p>
+<p>Real assistants combine them. RR Finance Assist will use RAG for "what is the policy?", tools for "what about <em>my</em> enrolment?" and code for "how much exactly?".</p>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>RAG is how banks keep assistants inside approved content: answers come from the current policy manual, the product terms or the research library, with a citation a reviewer can check. When the fee schedule changes on Monday, the index is updated and Monday's answers are right, with no retraining. It's also how internal tools for staff ("what's the approval limit for a fee exception?") stay consistent across thousands of employees.</p>
+</div>
   <p>Most enterprise AI assistants are RAG systems. Office-suite copilots answer from your files, mail and chats and show references to them. Customer-service bots answer from a company's help centre and hand over to a person when nothing matches. Internal "ask HR" or "ask IT" assistants search policy sites. On Azure, the usual building blocks are Azure AI Search for retrieval and an Azure OpenAI model for generation. A Foundry agent can also use an Azure AI Search index as its knowledge source. You'll build the same pipeline by hand first, so you know what those services do for you.</p>
 </div>
 
@@ -386,26 +391,26 @@ for question, article, heading in QUESTIONS:
     print(f"Q: {question}\n\n  CLOSED BOOK: {closed}\n\n  OPEN BOOK:   {open_book}\n\n" + "-" * 80)</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab06_01_open_book.py</code></pre>
         <span class="out-label">Real output with llama3.2 (Ollama); yours will differ</span>
-<pre class="out"><code>Q: How much do I get back if I cancel my TrainCrest course 10 days before it starts?
+<pre class="out"><code>Q: How much do I get back if I cancel my RR Finance Bank course 10 days before it starts?
 
-  CLOSED BOOK: I'm TrainCrest's learner-support assistant, but I don't have real-time access to your course details. I recommend checking with TrainCrest directly for the most up-to-date refund policies.
+  CLOSED BOOK: I'm RR Finance Bank's customer-support assistant, but I don't have real-time access to your course details. I recommend checking with RR Finance Bank directly for the most up-to-date refund policies.
 
   OPEN BOOK:   According to the help centre, if you cancel 7 to 13 days before the start date, you'll get a 50% refund. Since you're cancelling 10 days before the start, that falls into this category.
 --------------------------------------------------------------------------------
-Q: My TrainCrest lab shows error LAB-503. What should I do?
+Q: My RR Finance Bank lab shows error LAB-503. What should I do?
 
-  CLOSED BOOK: LAB-503 typically indicates a "Malfunction in Instrument Communication". I recommend restarting your device, checking for loose connections, and consulting the user manual or contacting TrainCrest support for further assistance or troubleshooting guidance.
+  CLOSED BOOK: LAB-503 typically indicates a "Malfunction in Instrument Communication". I recommend restarting your device, checking for loose connections, and consulting the user manual or contacting RR Finance Bank support for further assistance or troubleshooting guidance.
 
   OPEN BOOK:   Wait two minutes and refresh.
 --------------------------------------------------------------------------------
-Q: How much does extra lab time cost at TrainCrest after the free extension?
+Q: How much does extra lab time cost at RR Finance Bank after the free extension?
 
   CLOSED BOOK: I don't have the most current information.
 
   OPEN BOOK:   After the free 7-day extension, extra lab time costs $49 per 14 days.</code></pre>
       </li>
       <li class="dstep nocode"><span class="st">No-code</span><h4>Try it in any chat app</h4>
-        <p>Open Copilot, ChatGPT or Claude in a browser. Ask: <em>"My TrainCrest lab shows error LAB-503. What should I do?"</em> Then start a new chat, paste the whole of <code>data/help/labs-and-sandboxes.md</code>, and ask again. Many chat apps do this for you when you attach a file: that's RAG built into the product.</p>
+        <p>Open Copilot, ChatGPT or Claude in a browser. Ask: <em>"My RR Finance Bank lab shows error LAB-503. What should I do?"</em> Then start a new chat, paste the whole of <code>data/help/labs-and-sandboxes.md</code>, and ask again. Many chat apps do this for you when you attach a file: that's RAG built into the product.</p>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>Read the answers</h4>
         <ol>
@@ -415,7 +420,7 @@ Q: How much does extra lab time cost at TrainCrest after the free extension?
         </ol>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
-            <li>The invention. A refusal sends the learner to support; a confident wrong instruction ("check for loose connections") wastes their time and erodes trust in every later answer. A good system prefers "I don't know" to a guess, and RAG makes "I know, here's where it says so" possible.</li>
+            <li>The invention. A refusal sends the customer to support; a confident wrong instruction ("check for loose connections") wastes their time and erodes trust in every later answer. A good system prefers "I don't know" to a guess, and RAG makes "I know, here's where it says so" possible.</li>
             <li>No. They contain exactly what the source says, which is the point. Tone can be added by the system prompt; facts shouldn't be.</li>
             <li>Ingest the documents, chunk them, embed and index them, then for each question retrieve the best chunks, build the prompt, and check the answer. That's the rest of this module, topic by topic.</li>
           </ol>
@@ -429,8 +434,8 @@ Q: How much does extra lab time cost at TrainCrest after the free extension?
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>What RAG is for.</p></div></div>
 <div class="quiz">
-  <details><summary>1. TrainCrest changes its lab extension price from $49 to $59. What do you update in a RAG system, and what in a fine-tuned one?</summary><div><p>RAG: edit the help article and re-index its changed chunk; the next answer uses $59. Fine-tuned: prepare new training data, run another fine-tuning job, evaluate and redeploy, and the model may still remember $49.</p></div></details>
-  <details><summary>2. "What is the status of my voucher?" Should that be answered with RAG?</summary><div><p>No. It's a live record for one learner, so it needs a tool that calls the voucher system (Module 04). RAG explains the voucher <em>policy</em>; tools fetch <em>this learner's</em> voucher.</p></div></details>
+  <details><summary>1. RR Finance Bank changes its lab extension price from $49 to $59. What do you update in a RAG system, and what in a fine-tuned one?</summary><div><p>RAG: edit the help article and re-index its changed chunk; the next answer uses $59. Fine-tuned: prepare new training data, run another fine-tuning job, evaluate and redeploy, and the model may still remember $49.</p></div></details>
+  <details><summary>2. "What is the status of my voucher?" Should that be answered with RAG?</summary><div><p>No. It's a live record for one customer, so it needs a tool that calls the voucher system (Module 04). RAG explains the voucher <em>policy</em>; tools fetch <em>this customer's</em> voucher.</p></div></details>
   <details><summary>3. Name two things RAG gives you that a long system prompt containing all policies doesn't.</summary><div><p>Any two of: scale beyond what fits in a prompt; lower cost per message; per-user access control by filtering retrieval; citations to specific sections; updates without editing and redeploying the prompt.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>RAG makes every question open book: retrieve the right passages, answer only from them, and allow "not found". Use it for document knowledge; use tools for live data.</p></div>

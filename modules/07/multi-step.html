@@ -230,6 +230,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Real banking requests chain steps: find the card, find the payment, check the dispute window, prepare the dispute, tell the customer when the provisional credit arrives. Each step depends on facts from the previous one, and every step is traced, because the bank must be able to show how a case was handled from the first message to the last action.</p>
+</div>
   <p>Observability tools for agents (for example tracing in Microsoft Foundry, or OpenTelemetry-based tracing) show each run as a tree of model calls and tool calls with tokens and timings, because "the agent was slow and expensive yesterday" is unanswerable without them. Teams set budgets per request type and alert when runs regularly hit them, which usually means a tool is missing or badly described.</p>
 </div>
 
@@ -240,7 +245,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Letting the final answer summarise a run that half-failed as "All done!". Build the answer from the trace: what succeeded, what's waiting for approval, what failed and what the learner can do next.</p>
+  <p>Letting the final answer summarise a run that half-failed as "All done!". Build the answer from the trace: what succeeded, what's waiting for approval, what failed and what the customer can do next.</p>
 </div>
 
 <div class="callout exam">
@@ -392,7 +397,7 @@ FakeLLM: an approved extend_lab produces a line starting "✓ extend_lab".</code
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Multi-step tasks.</p></div></div>
 <div class="quiz">
   <details><summary>1. Why does each extra step cost more than the one before?</summary><div><p>Every model call re-sends the system prompt, the tools and the whole conversation so far, including all previous tool results, so input tokens grow with each step.</p></div></details>
-  <details><summary>2. The agent hits its step budget after moving the date but before checking the lab. What should the learner see?</summary><div><p>The truth from the trace: the date was moved (with the fee), the lab check didn't complete, and a next step (ask again, or a ticket). Never a generic success or a generic failure.</p></div></details>
+  <details><summary>2. The agent hits its step budget after moving the date but before checking the lab. What should the customer see?</summary><div><p>The truth from the trace: the date was moved (with the fee), the lab check didn't complete, and a next step (ask again, or a ticket). Never a generic success or a generic failure.</p></div></details>
   <details><summary>3. How do you tell whether an argument was guessed?</summary><div><p>Check whether the value appears in an earlier tool result or in the user's message. Values from nowhere are guesses; identity-bearing ones are rejected by the tools, which is why identity checks live in code.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Multi-step tasks are runs: dependent steps, a budget, a trace, and an honest report of what changed, built from the log rather than from the model's summary.</p></div>

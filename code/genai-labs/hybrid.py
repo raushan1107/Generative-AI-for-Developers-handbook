@@ -11,7 +11,7 @@ STOP = set("a an and are as at be by can do does for from how i if in is it me m
 
 
 def tokenize(text):
-    """A tiny analyzer: lowercase, keep codes like az-104 together, drop filler words,
+    """A tiny analyzer: lowercase, keep codes like fr-12 together, drop filler words,
     and fold simple plurals (discounts -> discount). Search engines do this, and more, for you."""
     words = re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", text.lower())
     return [w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w

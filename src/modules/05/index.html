@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m05", "short": "Embeddings and Semantic Search", "h1": "Embeddings and Semantic Search: Finding by Meaning", "description": "Module 05 overview: embeddings, vector similarity, embedding models, vector databases, similarity search, chunking, metadata filtering and hybrid search, with 9 drills and Traincrest Assist milestone 5.", "lead": "Learners don't use your words. They ask for 'a cheap intro to containers' when your catalogue says 'Docker Quick Start', and 'money back if the trainer is ill' when your help centre says 'If TrainCrest cancels'. In this module you'll turn text into vectors, so software can find things by what they mean, not by which letters they share.", "chips": ["8 topics", "9 drills", "Milestone 5", "≈ 5 hours hands-on"]}
+{"id": "m05", "short": "Embeddings and Semantic Search", "h1": "Embeddings and Semantic Search: Finding by Meaning", "description": "Module 05 overview: embeddings, vector similarity, embedding models, vector databases, similarity search, chunking, metadata filtering and hybrid search, with 9 drills and RR Finance Assist milestone 5.", "lead": "Customers don't use your words. They ask for 'a card I can use on holiday' when your catalogue says 'no foreign transaction fees', and 'I paid the wrong person' when your help centre says 'Sent money to the wrong person'. In this module you'll turn text into vectors, so software can find things by what they mean, not by which letters they share.", "chips": ["8 topics", "9 drills", "Milestone 5", "≈ 5 hours hands-on"]}
 -->
 <h2 id="map">The mental map: two pipelines</h2>
 <p>Every semantic search system, from a help-centre search box to the retrieval step of a RAG chatbot, is two pipelines that share one embedding model. The module walks through both.</p>
@@ -7,9 +7,9 @@
   <div class="frame">
     <svg viewBox="0 0 960 330" role="img" aria-labelledby="m5-t m5-d">
       <title id="m5-t">Indexing and query pipelines for semantic search</title>
-      <desc id="m5-d">Indexing pipeline, run ahead of time: documents such as courses and help articles are split into chunks, each chunk is turned into a vector by the embedding model, and the vectors are stored with their text and metadata in a vector index. Query pipeline, run for every search: the user's question is embedded with the same model, the index finds the nearest vectors, optionally filtered by metadata and combined with keyword matching, and returns the top results.</desc>
+      <desc id="m5-d">Indexing pipeline, run ahead of time: documents such as products and help articles are split into chunks, each chunk is turned into a vector by the embedding model, and the vectors are stored with their text and metadata in a vector index. Query pipeline, run for every search: the user's question is embedded with the same model, the index finds the nearest vectors, optionally filtered by metadata and combined with keyword matching, and returns the top results.</desc>
       <text x="20" y="34" class="t-m">INDEXING · AHEAD OF TIME</text>
-      <rect x="20" y="48" width="160" height="70" rx="12" class="s-surface"/><text x="100" y="78" class="t-b mid">documents</text><text x="100" y="98" class="t-s mid">courses, help articles</text>
+      <rect x="20" y="48" width="160" height="70" rx="12" class="s-surface"/><text x="100" y="78" class="t-b mid">documents</text><text x="100" y="98" class="t-s mid">products, help articles</text>
       <path d="M180 83 H214" class="s-arrow" marker-end="url(#ah)"/>
       <rect x="220" y="48" width="150" height="70" rx="12" class="s-amber"/><text x="295" y="78" class="t-b mid">chunk</text><text x="295" y="98" class="t-s mid">topic 6</text>
       <path d="M370 83 H404" class="s-arrow" marker-end="url(#ah)"/>
@@ -17,14 +17,14 @@
       <path d="M580 83 H614" class="s-arrow" marker-end="url(#ah)"/>
       <rect x="620" y="48" width="320" height="70" rx="12" class="s-blue"/><text x="780" y="76" class="t-b mid">vector index</text><text x="780" y="96" class="t-s mid">vector + text + metadata (topic 4)</text>
       <text x="20" y="184" class="t-m">QUERY · EVERY SEARCH</text>
-      <rect x="20" y="198" width="160" height="70" rx="12" class="s-surface"/><text x="100" y="226" class="t-b mid">question</text><text x="100" y="246" class="t-s mid">"cheap intro to containers"</text>
+      <rect x="20" y="198" width="160" height="70" rx="12" class="s-surface"/><text x="100" y="226" class="t-b mid">question</text><text x="100" y="246" class="t-s mid">"card for my holiday"</text>
       <path d="M180 233 H404" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <rect x="410" y="198" width="170" height="70" rx="12" class="s-violet"/><text x="495" y="228" class="t-b mid">same model</text><text x="495" y="248" class="t-s mid">one query vector</text>
       <path d="M580 233 H614" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <rect x="620" y="198" width="320" height="70" rx="12" class="s-teal"/><text x="780" y="222" class="t-b mid">nearest neighbours</text><text x="780" y="242" class="t-s mid">similarity (2, 5) · filters (7)</text><text x="780" y="258" class="t-s mid">+ keywords = hybrid (8)</text>
       <path d="M780 118 V192" class="s-dash" marker-end="url(#ah)"/>
       <text x="790" y="160" class="t-s">searches</text>
-      <text x="780" y="304" class="t-b mid">→ Docker Quick Start, Kubernetes, ...</text>
+      <text x="780" y="304" class="t-b mid">→ Voyager Travel Card, ...</text>
       <path d="M780 268 V284" class="s-line"/>
     </svg>
   </div>
@@ -36,7 +36,7 @@
 </div>
 
 <h2 id="why">Why this module matters</h2>
-<p>Milestone 4 gave Traincrest Assist a <code>search_courses</code> tool, but it only matches exact words. Ask for "a cheap intro to containers" and the keyword <code>containers</code> finds Kubernetes for Developers ($1,190), not Docker Quick Start ($190), whose description says "container images". And the ten help-centre articles, with the answers to most learner questions, are invisible to it. Embeddings fix both, and they are the foundation of Module 06 (RAG).</p>
+<p>Milestone 4 gave RR Finance Assist a <code>search_products</code> tool, but it only matches exact words. Ask for "a card I can use on holiday without extra charges" and the keyword <code>holiday</code> finds nothing, although the Voyager Travel Card says "no foreign transaction fees" and "spending abroad". And the ten help-centre articles, with the answers to most customer questions, are invisible to it. Embeddings fix both, and they are the foundation of Module 06 (RAG).</p>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
   <p>A library shelves books by meaning: cookery near nutrition, travel guides near maps. A librarian asked for "something about eating well on a budget" walks to the right corner even though no title contains those words. Embeddings give your software that kind of map, built from text, with thousands of directions instead of a few shelves.</p>
@@ -62,8 +62,8 @@ OLLAMA_EMBED_MODEL=nomic-embed-text
 <span class="c"># Drill 05.5: Azure AI Search (endpoint and admin key from the portal)</span>
 AZURE_SEARCH_ENDPOINT=https://&lt;search-service-name&gt;.search.windows.net
 AZURE_SEARCH_API_KEY=&lt;admin key&gt;
-AZURE_SEARCH_INDEX=courses</code></pre></li>
+AZURE_SEARCH_INDEX=products</code></pre></li>
   <li><strong>New files in <code>genai-labs/</code>:</strong> <code>embed.py</code> (batched embeddings with a small disk cache), <code>data/help/</code> (ten fictional help-centre articles), <code>data/help_questions.json</code> (20 questions with known answers). Module 06 reuses all of them.</li>
   <li><strong>Cost:</strong> embeddings are cheap (a few cents for everything in this module), and the cache means re-runs cost nothing.</li>
-  <li><strong>Build:</strong> Milestone 5 gives Traincrest Assist a search index over courses and help sections, hybrid search with filters, a <code>/api/search</code> endpoint and a semantic <code>search_courses</code> tool.</li>
+  <li><strong>Build:</strong> Milestone 5 gives RR Finance Assist a search index over products and help sections, hybrid search with filters, a <code>/api/search</code> endpoint and a semantic <code>search_products</code> tool.</li>
 </ul>

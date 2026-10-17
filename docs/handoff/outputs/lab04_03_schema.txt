@@ -1,0 +1,5 @@
+dispute    urgent=False id=RR-10293  
+fees       urgent=False id=RR-20877  Request to refund $29 overdraft fee. Customer is disputing the fee, stating it was a one-off and not something they expected or were informed of.
+fraud      urgent=True  id=123456  Card stolen report - Please verify bank details to prevent further unauthorised activity and cancel your card if possible.
+dispute    urgent=True  id=RR-31002  transferencia lleva cinco días pendiente
+fraud      urgent=True  id=12345  {"amount":640,"method":"credit card"}

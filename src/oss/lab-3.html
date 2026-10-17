@@ -1,5 +1,5 @@
 <!--meta
-{"id": "oss-3", "short": "Lab 3: RAG and Agents", "h1": "Lab 3 · RAG and Agents with Open Models", "description": "Open-source lab guide, Lab 3 (Part III, Modules 06–07): build a company knowledge assistant that answers from public and internal documents with citations and audience filtering, then an agent that understands a request, selects and calls tools, processes the results and answers, and asks for your approval before it changes anything.", "lead": "You'll build the two projects of Part III with open models. First a company knowledge assistant: it ingests TrainCrest's help articles and staff documents, retrieves the right sections for each question, answers only from them and cites them, and shows staff-only documents only to staff. Then an agent that works through a request step by step and stops for your approval before it changes a booking.", "chips": ["Modules 06–07", "RAG with citations", "Audience filter", "Agent loop", "Human approval", "≈ 3 hours"], "time": "Estimated time: 3 hours"}
+{"id": "oss-3", "short": "Lab 3: RAG and Agents", "h1": "Lab 3 · RAG and Agents with Open Models", "description": "Open-source lab guide, Lab 3 (Part III, Modules 06–07): build a company knowledge assistant that answers from public and internal documents with citations and audience filtering, then an agent that understands a request, selects and calls tools, processes the results and answers, and asks for your approval before it changes anything.", "lead": "You'll build the two projects of Part III with open models. First a company knowledge assistant: it ingests RR Finance Bank's help articles and staff documents, retrieves the right sections for each question, answers only from them and cites them, and shows staff-only documents only to staff. Then an agent that works through a request step by step and stops for your approval before it changes a booking.", "chips": ["Modules 06–07", "RAG with citations", "Audience filter", "Agent loop", "Human approval", "≈ 3 hours"], "time": "Estimated time: 3 hours"}
 -->
 <h2 id="overview">Lab overview</h2>
 <div class="table-wrap min">
@@ -7,7 +7,7 @@
     <tbody>
       <tr><th>Objectives</th><td>Ingest documents in several formats · chunk, embed and store them · retrieve with a relevance floor and an audience filter · build a grounded prompt with numbered sources · check citations · run an agent loop with tools · require human approval for changes · verify outcomes in an audit log</td></tr>
       <tr><th>Prerequisites</th><td>Lab 2 completed · <code>llama3.2</code> and <code>nomic-embed-text</code> pulled; <code>qwen2.5:7b</code> recommended for Exercise 2 if you have 16 GB of RAM · Part III demonstrated</td></tr>
-      <tr><th>You finish with</th><td><code>l3_knowledge.py</code>, a company knowledge assistant with learner and staff views, and <code>l3_agent.py</code>, an agent that acts only with your approval</td></tr>
+      <tr><th>You finish with</th><td><code>l3_knowledge.py</code>, a company knowledge assistant with customer and staff views, and <code>l3_agent.py</code>, an agent that acts only with your approval</td></tr>
     </tbody>
   </table>
 </div>
@@ -59,17 +59,17 @@
     </ol></li>
 </ol>
 
-<h3>Task 3: Ask as a learner, then as staff</h3>
+<h3>Task 3: Ask as a customer, then as staff</h3>
 <ol>
-  <li>Start the learner view (the first run builds the index, which takes a few seconds):
+  <li>Start the customer view (the first run builds the index, which takes a few seconds):
 <pre class="term"><code><span class="ps">$ </span>python l3_knowledge.py</code></pre></li>
   <li>Ask these questions, one at a time:
 <pre class="out"><code>How much do I get back if I cancel 10 days before the course?
 My lab shows LAB-503. What should I do?
-How many learners can join a classroom course?
+How many customers can join a classroom course?
 What is the capital of France?</code></pre>
     <span class="out-label">Real session with llama3.2 (yours will differ)</span>
-<pre class="out"><code>TrainCrest knowledge assistant (learner view). Empty line to quit.
+<pre class="out"><code>RR Finance Bank knowledge assistant (customer view). Empty line to quit.
 
 Question: How much do I get back if I cancel 10 days before the course?
 50% refund. [1]
@@ -78,24 +78,24 @@ Question: How much do I get back if I cancel 10 days before the course?
 Question: My lab shows LAB-503. What should I do?
 Wait two minutes and refresh.
 
-Question: How many learners can join a classroom course?
-I couldn't find that in TrainCrest's documents.
+Question: How many customers can join a classroom course?
+I couldn't find that in RR Finance Bank's documents.
 
 Question: What is the capital of France?
-I couldn't find that in TrainCrest's documents.
+I couldn't find that in RR Finance Bank's documents.
 
 Question:</code></pre></li>
   <li>Press <kbd>Enter</kbd> on an empty line to quit, then start the staff view and ask the class-size question again:
 <pre class="term"><code><span class="ps">$ </span>python l3_knowledge.py --staff</code></pre>
     <span class="out-label">Real session with llama3.2</span>
-<pre class="out"><code>TrainCrest knowledge assistant (staff view). Empty line to quit.
+<pre class="out"><code>RR Finance Bank knowledge assistant (staff view). Empty line to quit.
 
-Question: How many learners can join a classroom course?
+Question: How many customers can join a classroom course?
 16 [1]
-  [1] Staff Faq &gt; How many learners can join a classroom course? (staff-faq.csv)
+  [1] Staff Faq &gt; How many customers can join a classroom course? (staff-faq.csv)
 
 Question:</code></pre></li>
-  <li>Compare: the same question, two answers. Learners never retrieve staff documents, because the audience filter runs inside the search, before the model sees anything.</li>
+  <li>Compare: the same question, two answers. Customers never retrieve staff documents, because the audience filter runs inside the search, before the model sees anything.</li>
 </ol>
 
 <h3>Task 4: Judge the answers</h3>
@@ -133,7 +133,7 @@ Question:</code></pre></li>
 
   APPROVAL NEEDED: extend TC-10293 by 7 days, free (lab currently open until 2026-10-16)
   Approve? [y/n] n
-  step 3: extend_lab({'enrolment_id': 'TC-10293'}) -&gt; {"error": "the learner declined this action"}
+  step 3: extend_lab({'enrolment_id': 'TC-10293'}) -&gt; {"error": "the customer declined this action"}
 
 Answer: The extension for your AI-102 lab was declined. The current end date remains 2026-10-16.
 Audit log (what really changed): nothing</code></pre></li>
@@ -166,7 +166,7 @@ Audit log (what really changed): [{'action': 'extend_lab', 'enrolment_id': 'TC-1
     <tbody>
       <tr><td>The knowledge assistant says "couldn't find" for everything</td><td>The relevance floor (0.55) is for <code>nomic-embed-text</code>. With another embedding model, lower <code>MIN_SCORE</code>; delete <code>data/kb_index.json</code> after changing the model.</td></tr>
       <tr><td>Answers have no [1] citations</td><td>Small models often skip them. The answer may still be right; use a larger model for reliable citations.</td></tr>
-      <tr><td>The agent asks <em>you</em> to look up your enrolments</td><td>A weak-model habit. Use <code>qwen2.5:7b</code>, or strengthen the system prompt ("never ask the learner to call tools").</td></tr>
+      <tr><td>The agent asks <em>you</em> to look up your enrolments</td><td>A weak-model habit. Use <code>qwen2.5:7b</code>, or strengthen the system prompt ("never ask the customer to call tools").</td></tr>
       <tr><td>The agent guesses an ID like TC-12345</td><td>The tool refuses it and tells the model to call <code>my_enrolments</code>; good models recover on the next step.</td></tr>
       <tr><td>Each agent step takes a minute</td><td>Normal for a 7B model on a CPU; the agent makes 3 to 5 calls. Close other apps, or use Lab 0's Option B for <code>AGENT_MODEL</code>.</td></tr>
     </tbody>
@@ -176,7 +176,7 @@ Audit log (what really changed): [{'action': 'extend_lab', 'enrolment_id': 'TC-1
 <h2 id="review">Review and cleanup</h2>
 <ul class="checklist">
   <li>RAG answers come from retrieved documents, with citations you can check and a way to say "not found".</li>
-  <li>Permission filters belong inside retrieval: learners never see staff documents.</li>
+  <li>Permission filters belong inside retrieval: customers never see staff documents.</li>
   <li>An agent is a loop: understand, select a tool, execute, evaluate, answer, within a step budget.</li>
   <li>Changes need a human's approval of an effect computed by code, and the audit log, not the model's words, says what happened.</li>
 </ul>

@@ -1,0 +1,43 @@
+
+'safe account'  (want: We will never ask)
+  keyword  OK   We will never ask          in top 3: yes
+  vector   MISS Deposit protection         in top 3: no
+  hybrid   OK   We will never ask          in top 3: yes
+
+'what costs $45?'  (want: Limits and fees)
+  keyword  OK   Limits and fees            in top 3: yes
+  vector   MISS Other fees                 in top 3: no
+  hybrid   OK   Limits and fees            in top 3: yes
+
+'4 pm cut-off'  (want: Timing)
+  keyword  OK   Timing                     in top 3: yes
+  vector   OK   Timing                     in top 3: yes
+  hybrid   OK   Timing                     in top 3: yes
+
+'provisional credit'  (want: What happens next)
+  keyword  OK   What happens next          in top 3: yes
+  vector   OK   What happens next          in top 3: yes
+  hybrid   OK   What happens next          in top 3: yes
+
+"Is there a fee if I'm only $30 overdrawn?"  (want: Overdrafts)
+  keyword  OK   Overdrafts                 in top 3: yes
+  vector   OK   Overdrafts                 in top 3: yes
+  hybrid   OK   Overdrafts                 in top 3: yes
+
+'can I log in with my fingerprint?'  (want: Signing in)
+  keyword  OK   Signing in                 in top 3: yes
+  vector   OK   Signing in                 in top 3: yes
+  hybrid   OK   Signing in                 in top 3: yes
+
+'I paid the wrong person, can you get it back?'  (want: Sent money to the wrong person)
+  keyword  MISS Making a complaint         in top 3: yes
+  vector   OK   Sent money to the wrong person in top 3: yes
+  hybrid   OK   Sent money to the wrong person in top 3: yes
+
+'cryptocurrency trading'  (want: no match)
+  keyword  OK   (no match)                 in top 3: yes
+  vector   MISS A payment you don't recognise in top 3: no
+  hybrid   MISS A payment you don't recognise in top 3: no
+
+Right section first:  keyword 7/8, vector 5/8, hybrid 7/8
+Right section in top 3: keyword 8/8, vector 5/8, hybrid 7/8

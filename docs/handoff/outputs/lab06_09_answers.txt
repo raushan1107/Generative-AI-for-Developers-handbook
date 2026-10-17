@@ -1,0 +1,32 @@
+[public] How long do I have to dispute a card payment?
+You have 60 days from the statement date on which the payment first appeared to raise a dispute [1].
+
+Sources:
+[1] Disputing a card transaction > Deadlines (card-disputes.md)
+checks: ok
+--------------------------------------------------------------------------------
+[public] My card was stolen and there are payments I didn't make. Will I get the money back, and how fast is a new card?
+If you report the card within 2 business days of noticing it's missing, you won't pay for payments you didn't make [1]. If the card is gone for good, a replacement card with a new number will be sent within 5 to 7 business days [2]. You can use a virtual card in your mobile wallet straight away [2].
+
+Sources:
+[1] Lost or stolen cards > Your liability (lost-stolen-cards.md)
+[2] Lost or stolen cards > Report it and get a replacement (lost-stolen-cards.md)
+checks: ok
+--------------------------------------------------------------------------------
+[public] ¿Cuánto cuesta una transferencia internacional?
+I couldn't find that in RR Finance Bank's documents. Shall I raise a case for the support team? (model calls: 0)
+--------------------------------------------------------------------------------
+[public] Can I bring my dog into the branch?
+I couldn't find that in RR Finance Bank's documents. Shall I raise a case for the support team? (model calls: 0)
+--------------------------------------------------------------------------------
+[public] Who can approve a fee refund exception of $300?
+According to RR Finance Bank's policies, a fee refund exception of $300 can be approved by the bank, but the specific decision-making authority is not specified in the provided sources.
+checks: ok
+--------------------------------------------------------------------------------
+[staff] Who can approve a fee refund exception of $300?
+According to the public fee policy, exceptions from $101 to $500 can be approved by a team lead. Therefore, a team lead can approve a fee refund exception of $300. [2]
+
+Sources:
+[2] Fee refund exceptions and approvals > Who can approve what (fee-waiver-approvals.html)
+checks: {'uncited': ['According to the public fee policy, exceptions from $101 to $500 can be approved by a team lead.']}
+--------------------------------------------------------------------------------

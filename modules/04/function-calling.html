@@ -175,7 +175,7 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 04 · Topic 4 of 7</span><h1>Function Calling: Letting the Model Ask Your Code</h1><p class="lead">Function calling is how a model gets things it can't know (today's price, Diego's booking) and asks for things it can't do (create a ticket). The model never runs your code. It replies with a request: 'please call find_courses with these arguments'. Your code runs it and sends the result back. You'll do every step by hand once, so nothing about it is magic.</p><div class="chips"><span class="chip">tools and tool_calls</span><span class="chip">tool_call_id</span><span class="chip">tool_choice · parallel calls</span><span class="chip">Drills 04.5 · 04.6</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 25 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 04 · Topic 4 of 7</span><h1>Function Calling: Letting the Model Ask Your Code</h1><p class="lead">Function calling is how a model gets things it can't know (today's price, Diego's booking) and asks for things it can't do (create a ticket). The model never runs your code. It replies with a request: 'please call find_products with these arguments'. Your code runs it and sends the result back. You'll do every step by hand once, so nothing about it is magic.</p><div class="chips"><span class="chip">tools and tool_calls</span><span class="chip">tool_call_id</span><span class="chip">tool_choice · parallel calls</span><span class="chip">Drills 04.5 · 04.6</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 25 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The model asks; your code answers.</p></div></div>
@@ -197,20 +197,20 @@
   <div class="frame">
     <svg viewBox="0 0 960 330" role="img" aria-labelledby="fc-t fc-d">
       <title id="fc-t">One function call, step by step</title>
-      <desc id="fc-d">Step 1: your app sends the messages and the tool definitions. Step 2: the model replies with finish_reason tool_calls and a call to find_courses with arguments level beginner and max price 300. Step 3: your app validates the arguments and runs the real function against the catalogue. Step 4: your app appends the assistant message with the tool call and a tool message with the result, linked by tool_call_id, and calls the model again. Step 5: the model writes the final answer using the result.</desc>
+      <desc id="fc-d">Step 1: your app sends the messages and the tool definitions. Step 2: the model replies with finish_reason tool_calls and a call to find_products with arguments family cards, audience student and maximum annual fee 0. Step 3: your app validates the arguments and runs the real function against the product catalogue. Step 4: your app appends the assistant message with the tool call and a tool message with the result, linked by tool_call_id, and calls the model again. Step 5: the model writes the final answer using the result.</desc>
       <rect x="20" y="20" width="200" height="290" rx="14" class="s-surface"/><text x="120" y="46" class="t-h mid">Your app</text>
       <rect x="740" y="20" width="200" height="290" rx="14" class="s-violet"/><text x="840" y="46" class="t-h mid">Model</text>
       <path d="M220 80 H734" class="s-arrow-accent" marker-end="url(#ah-a)"/>
-      <text x="478" y="72" class="t-b mid">1 · messages + tools=[find_courses, ...]</text>
+      <text x="478" y="72" class="t-b mid">1 · messages + tools=[find_products, ...]</text>
       <path d="M740 128 H226" class="s-arrow" marker-end="url(#ah)"/>
-      <text x="478" y="120" class="t-s mid">2 · tool_calls: find_courses({"level": "beginner", "max_price_usd": 300})</text>
+      <text x="478" y="120" class="t-s mid">2 · tool_calls: find_products({"family": "cards", "audience": "student", "max_annual_fee_usd": 0})</text>
       <rect x="250" y="146" width="460" height="54" rx="10" class="s-teal"/>
       <text x="480" y="168" class="t-b mid">3 · your code validates the arguments, runs the function</text>
-      <text x="480" y="188" class="t-s mid">find_courses(...) → [{"id": "C101", "price_usd": 290}, ...]</text>
+      <text x="480" y="188" class="t-s mid">find_products(...) → [{"id": "P112", "annual_fee_usd": 0, "rate_pct": 26.99}]</text>
       <path d="M220 236 H734" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <text x="478" y="228" class="t-b mid">4 · + assistant(tool_calls) + tool(tool_call_id, result)</text>
       <path d="M740 282 H226" class="s-arrow" marker-end="url(#ah)"/>
-      <text x="478" y="274" class="t-b mid">5 · "Yes: Python Foundations (C101), $290, self-paced."</text>
+      <text x="478" y="274" class="t-b mid">5 · "Yes: the Starter Credit Card, no annual fee, 26.99% APR."</text>
     </svg>
   </div>
   <figcaption><b>Two model calls, one function call in between.</b> The <code>tool_call_id</code> links each result to the request that asked for it.</figcaption>
@@ -242,6 +242,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Function calling is how an assistant reaches the bank's systems of record: balances, card status, payment history, product rates. The model never reads the core banking database directly; it asks for a narrowly defined function, and the bank's code decides whether the request is allowed. Read tools are introduced first; anything that moves money or changes an account comes later, behind approval (Module 07).</p>
+</div>
   <p>Booking assistants call availability and pricing APIs, banking assistants call balance and transaction lookups, and IT help desks call "reset password" or "open incident" functions. Behind every one is the same loop you'll build here, plus a rule that the model only <em>proposes</em> and the backend <em>decides</em>.</p>
 </div>
 
@@ -337,7 +342,7 @@ MODEL = {
     <p class="drill-goal"><b>Goal:</b> perform the five steps of the diagram yourself, with nothing hidden in a framework.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>The catalogue your app already has</h4>
-        <p>A plain Python function over <code>data/courses.json</code>. No AI in here: this is "your existing business logic".</p>
+        <p>A plain Python function over <code>data/products.json</code>. No AI in here: this is "your existing business logic".</p>
         <pre class="code" data-file="catalogue.py"><code>"""The RR Finance Bank product catalogue (fictional), used by Module 04 and 05 drills."""
 import json
 from pathlib import Path
@@ -424,18 +429,19 @@ def main():
 if __name__ == "__main__":
     main()</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab04_05_first_tool.py</code></pre>
-        <span class="out-label">Real run (small local model through Ollama); yours will differ in wording</span>
+        <span class="out-label">Real output with qwen2.5:7b (Ollama); yours will differ in wording</span>
 <pre class="out"><code>1) finish_reason: tool_calls
-2) model asks: find_courses({"max_price_usd":300,"text":"python","level":"beginner"})
+2) model asks: find_products({"audience":"student","max_annual_fee_usd":0,"family":"cards"})
    we ran it:  1 result(s)
-3) answer: Yes, there is a beginner Python course for under $300. It's called "Python Foundations"
-   and it's self-paced with a price of $290.</code></pre>
+3) answer: Yes, the "Starter Credit Card" is available for students with no annual fee. The interest
+   rate for this card is 26.99% APR.</code></pre>
+        <p class="small muted">The default <code>llama3.2</code> (3B) sent <code>{"family": "null", "max_annual_fee_usd": "null", ...}</code>: the <em>string</em> "null" where it meant no value, and validation stopped the call with a clear error. Tool calling needs a model trained for it; on Ollama, set <code>OLLAMA_MODEL=qwen2.5:7b</code> for the tool drills if you have 16 GB of RAM.</p>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
         <ul class="verify-list">
-          <li>The price in the answer ($290) came from <strong>your</strong> data via the tool, not from the model's memory.</li>
+          <li>The APR in the answer (26.99%) came from <strong>your</strong> data via the tool, not from the model's memory. In a bank, a rate quoted to a customer must always come from a system of record.</li>
           <li>Print <code>messages</code> before step 3: you'll see the assistant turn with <code>tool_calls</code> and the <code>tool</code> turn with the same <code>tool_call_id</code>.</li>
-          <li>Why validate with <code>FindCourses.model_validate_json</code> before calling? On my first local run the model sent an extra argument, <code>catalog_type</code>, and a plain <code>find_courses(**args)</code> crashed. Strict mode prevents that on Azure; validation protects you everywhere.</li>
+          <li>Why validate with <code>FindProducts.model_validate_json</code> before calling? With llama3.2 the model sent the string <code>"null"</code> for a number, and a plain <code>find_products(**args)</code> would have searched for a fee of "null". Strict mode prevents that on Azure; validation protects you everywhere.</li>
         </ul>
       </li>
     </ol>
@@ -446,18 +452,18 @@ if __name__ == "__main__":
 <pre class="code" data-file="first_tool_claude.py"><code>import json
 import openai
 from claude_llm import client, CLAUDE_MODEL, FALLBACK, text_of
-from catalogue import find_courses
-from lab04_05_first_tool import FindCourses        <span class="c"># the __main__ guard stops its own run</span>
+from catalogue import find_products
+from lab04_05_first_tool import FindProducts        <span class="c"># the __main__ guard stops its own run</span>
 
-tool = {"name": "find_courses", "description": FindCourses.__doc__,
-        "input_schema": openai.pydantic_function_tool(FindCourses)["function"]["parameters"]}
-messages = [{"role": "user", "content": "Is there a beginner Python course under $300?"}]
+tool = {"name": "find_products", "description": FindProducts.__doc__,
+        "input_schema": openai.pydantic_function_tool(FindProducts)["function"]["parameters"]}
+messages = [{"role": "user", "content": "Do you have a credit card with no annual fee for students?"}]
 msg = client.beta.messages.create(model=CLAUDE_MODEL, max_tokens=2000, tools=[tool],
                                   messages=messages, **FALLBACK)
 if msg.stop_reason == "tool_use":
     messages.append({"role": "assistant", "content": msg.content})
     results = [{"type": "tool_result", "tool_use_id": b.id,
-                "content": json.dumps(find_courses(**FindCourses.model_validate(b.input).model_dump()))}
+                "content": json.dumps(find_products(**FindProducts.model_validate(b.input).model_dump()))}
                for b in msg.content if b.type == "tool_use"]
     messages.append({"role": "user", "content": results})
     msg = client.beta.messages.create(model=CLAUDE_MODEL, max_tokens=2000, tools=[tool],
@@ -539,30 +545,27 @@ for q in QUESTIONS:
     print(f"{q:&lt;42} -&gt; {picked}")</code></pre>
 <pre class="term"><code><span class="ps">$ </span>python lab04_06_tool_choice.py
 <span class="ps">$ </span>python lab04_06_tool_choice.py none
-<span class="ps">$ </span>python lab04_06_tool_choice.py get_course
+<span class="ps">$ </span>python lab04_06_tool_choice.py get_product
 <span class="ps">$ </span>python lab04_06_tool_choice.py auto --parallel</code></pre>
-        <span class="out-label">Typical result with an Azure deployment (yours will differ)</span>
+        <span class="out-label">Real output with qwen2.5:7b (Ollama); yours will differ</span>
 <pre class="out"><code>tool_choice=auto  parallel_tool_calls=False
-What does C104 cover?                      -> get_course({'course_id': 'C104'})
-Has my voucher for TC-10293 been issued?   -> get_voucher_status({'enrolment_id': 'TC-10293'})
-Compare C110 and C111 for me.              -> get_course({'course_id': 'C110'})
-Thanks, that's all!                        -> no tool (text answer)
-
-tool_choice=auto  parallel_tool_calls=True
-...
-Compare C110 and C111 for me.              -> get_course({'course_id': 'C110'}), get_course({'course_id': 'C111'})</code></pre>
+What does P111 offer?                      -> get_product({'product_id': 'P111'})
+Has the replacement for my card ending 4821 been sent? -> get_card_status({'card_last4': '4821'})
+Compare P104 and P106 for me.              -> get_product({'product_id': 'P104'}), get_product({'product_id': 'P106'})
+Thanks, that's all!                        -> no tool (text answer)</code></pre>
+        <p>Look at the comparison: two calls in one turn, although the script sent <code>parallel_tool_calls=False</code>. Ollama ignores that setting. On Azure the model makes one call per round unless you allow parallel calls (with <code>--parallel</code>), which can't be combined with strict tools.</p>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>Read your results</h4>
         <ol>
-          <li>With <code>none</code>, what did the model say about the voucher? Is that safe?</li>
-          <li>With <code>get_course</code> forced, what happened to "Thanks, that's all!"?</li>
-          <li>Without parallel calls, how does the model still compare two courses?</li>
+          <li>With <code>none</code>, what did the model say about the replacement card? Is that safe?</li>
+          <li>With <code>get_product</code> forced, what happened to "Thanks, that's all!"?</li>
+          <li>Without parallel calls, how does the model still compare two products?</li>
         </ol>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
-            <li>With no tools allowed, a good model says it can't check; a weaker one invents a status. That's why the system prompt must say "never guess a status" <em>and</em> your loop should keep tools available when facts are needed.</li>
+            <li>With no tools allowed, a good model says it can't check; a weaker one invents a status ("your card was sent yesterday"). That's why the system prompt must say "never guess a status" <em>and</em> your loop should keep tools available when facts are needed.</li>
             <li>A forced tool is called even when it makes no sense (often with a made-up ID). Force a tool only for pipeline steps that must always happen.</li>
-            <li>It asks for C110, gets the result, then asks for C111 in the next round. That's why real assistants run a <strong>loop</strong> (next topic). Parallel calls save a round trip for independent lookups, but on Azure they can't be combined with strict tools.</li>
+            <li>It asks for P104, gets the result, then asks for P106 in the next round. That's why real assistants run a <strong>loop</strong> (next topic). Parallel calls save a round trip for independent lookups, but on Azure they can't be combined with strict tools.</li>
           </ol>
           <p class="small muted">Local servers may ignore <code>tool_choice</code>: the small Ollama model I tested still answered in text when <code>required</code> was set. Test the settings you rely on with the model you'll ship.</p>
         </div></details>
@@ -576,7 +579,7 @@ Compare C110 and C111 for me.              -> get_course({'course_id': 'C110'}),
 <div class="quiz">
   <details><summary>1. The model returned a tool call. Has anything happened in your system yet?</summary><div><p>No. A tool call is a <strong>request</strong>. Nothing happens until your code chooses to execute it.</p></div></details>
   <details><summary>2. You get a 400 error on the second call: "tool_call_id ... not found". Likely cause?</summary><div><p>You sent a <code>tool</code> message without first appending the <strong>assistant message that contains the matching tool_calls</strong>, or the IDs don't match.</p></div></details>
-  <details><summary>3. The model keeps picking <code>find_courses</code> when users ask about a specific course ID. What do you change first?</summary><div><p>The tool <strong>descriptions</strong>: say clearly when to use each one ("Full details of one course by its ID, like C104"). Descriptions are how the model chooses.</p></div></details>
+  <details><summary>3. The model keeps picking <code>find_products</code> when customers ask about a specific product ID. What do you change first?</summary><div><p>The tool <strong>descriptions</strong>: say clearly when to use each one ("Full details of one product by its ID, like P110"). Descriptions are how the model chooses.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>The model writes the request; your code is the only thing that ever acts.</p></div>
 

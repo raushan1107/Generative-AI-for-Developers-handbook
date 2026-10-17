@@ -40,6 +40,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>In finance, "fail safely" has a precise meaning: never act on a half-parsed instruction. A truncated or refused reply is logged, the customer gets a calm fallback, and nothing reaches a payment or a case system. Chaos tests like this drill are part of operational resilience testing, which many regulators now require for important business services.</p>
+</div>
   <p>Teams running document extraction at scale typically see a small but steady fraction of replies needing repair, and a far smaller fraction refused or filtered. They track each outcome separately on a dashboard. A jump in "truncated" usually means documents got longer; a jump in "invalid" after a deploy usually means someone changed the prompt or the schema.</p>
 </div>
 
@@ -50,7 +55,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Ignoring <code>finish_reason</code>. A reply cut off at the limit can still <em>look</em> fine in prose ("Your refund will be"), and in JSON mode it fails with a confusing parse error. Check why the model stopped before you read what it wrote.</p>
+  <p>Ignoring <code>finish_reason</code>. A reply cut off at the limit can still <em>look</em> fine in prose ("Your fee refund will be"), and in JSON mode it fails with a confusing parse error. Check why the model stopped before you read what it wrote.</p>
 </div>
 
 <div class="callout exam">
@@ -75,12 +80,12 @@
         <pre class="term"><code><span class="ps">$ </span>python lab04_10_chaos.py</code></pre>
         <span class="out-label">Output (exact)</span>
 <pre class="out"><code>scenario                  status     tries  detail / value
-clean JSON                ok         1      {'category': 'billing', 'urgent': False}
-fenced JSON               ok         1      {'category': 'billing', 'urgent': False}
-sentence + JSON           ok         1      {'category': 'billing', 'urgent': False}
-wrong value, then fixed   ok         2      {'category': 'billing', 'urgent': False}
-garbage twice             invalid    2      output: Invalid JSON: expected value at line 1 column 1
-cut off, then fixed       ok         2      {'category': 'billing', 'urgent': False}
+clean JSON                ok         1      {'category': 'fees', 'urgent': False}
+fenced JSON               ok         1      {'category': 'fees', 'urgent': False}
+sentence + JSON           ok         1      {'category': 'fees', 'urgent': False}
+wrong value, then fixed   ok         2      {'category': 'fees', 'urgent': False}
+garbage twice             invalid    2      output: Invalid JSON: expected ident at line 1 column 2
+cut off, then fixed       ok         2      {'category': 'fees', 'urgent': False}
 cut off twice             truncated  2      truncated at 1200 tokens
 refusal                   refused    1      I can't help with that request.
 content filter            blocked    1      content filter</code></pre>
@@ -95,7 +100,7 @@ content filter            blocked    1      content filter</code></pre>
         </ul>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>Add a scenario</h4>
-        <p>Add a tenth scenario to <code>SCENARIOS</code> and <code>EXPECTED</code>: the model returns valid JSON with an <strong>extra key</strong>, <code>{"category": "billing", "urgent": false, "note": "hi"}</code>. What outcome do you expect with the <code>Reply</code> model as written? What changes if you add <code>model_config = ConfigDict(extra="forbid")</code>?</p>
+        <p>Add a tenth scenario to <code>SCENARIOS</code> and <code>EXPECTED</code>: the model returns valid JSON with an <strong>extra key</strong>, <code>{"category": "fees", "urgent": false, "note": "hi"}</code>. What outcome do you expect with the <code>Reply</code> model as written? What changes if you add <code>model_config = ConfigDict(extra="forbid")</code>?</p>
         <details class="solution"><summary>Compare with my answer</summary><div><p>As written, Pydantic <strong>ignores</strong> extra keys by default, so the outcome is <code>ok</code> on the first try and <code>note</code> is silently dropped. With <code>extra="forbid"</code>, the first reply fails validation, the wrapper repairs once, and the outcome depends on the second reply. With strict structured outputs the extra key can't appear at all, but providers without strict mode can send it, so decide deliberately: ignore (tolerant) or forbid (strict). Milestone 3's <code>Triage</code> chose forbid.</p></div></details>
       </li>
     </ol>

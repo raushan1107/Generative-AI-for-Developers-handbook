@@ -1,0 +1,6 @@
+tool_choice=auto  parallel_tool_calls=False
+
+What does P111 offer?                      -> get_product({'product_id': 'P111'})
+Has the replacement for my card ending 4821 been sent? -> get_card_status({'card_last4': '4821'})
+Compare P104 and P106 for me.              -> no tool (text answer)
+Thanks, that's all!                        -> find_products({'family': 'None', 'audience': 'None', 'max_annual_fee_usd': 'None', 'text': 'None'})

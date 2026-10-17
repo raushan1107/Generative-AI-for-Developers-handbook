@@ -1,7 +1,7 @@
-"""Lab 2, Exercise 4: a semantic search application over TrainCrest's help centre.
+"""Lab 2, Exercise 4: a semantic search application over RR Finance Bank's help centre.
 Index: split each article by heading (keeping its introduction), embed every section once and save it.
 Search: embed the question, rank by meaning (cosine) and by keywords (BM25), merge the two rankings (RRF).
-Run:  python l2_search.py "money back if the trainer is ill" """
+Run:  python l2_search.py "money back if I paid the wrong person" """
 import json
 import re
 import sys
@@ -47,7 +47,7 @@ def load_index():
 
 
 def words(text):
-    """A tiny analyzer: lower-case, keep codes like lab-503 whole, fold simple plurals (discounts -> discount)."""
+    """A tiny analyzer: lower-case, keep codes like fr-12 whole, fold simple plurals (payments -> payment)."""
     found = re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", text.lower())
     return [w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w for w in found]
 
@@ -67,7 +67,7 @@ def search(query, docs, vectors, k=3):
 
 if __name__ == "__main__":
     docs, vectors = load_index()
-    queries = sys.argv[1:] or ["money back if the trainer is ill", "LAB-503", "pay in parts", "discount for my team"]
+    queries = sys.argv[1:] or ["money back if I paid the wrong person", "Instant Pay", "safe account", "fingerprint sign in"]
     for q in queries:
         print(f"\n{q}")
         for doc, score in search(q, docs, vectors):

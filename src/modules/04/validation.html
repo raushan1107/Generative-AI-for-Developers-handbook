@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m04-valid", "short": "Validating Model Outputs", "h1": "Validating Model Outputs", "description": "Module 04, topic 6: three layers of validation (shape, business rules, facts), Pydantic field and model validators, what to do when validation fails, and a drill that adds business rules to tool arguments and catches invented amounts.", "lead": "Structured outputs guarantee the shape. They can't tell an invented enrolment ID from a real one, a past date from a future one, or a refund the policy allows from one the model made up. Those checks are yours. This page sorts them into three layers and gives each one a home in your code.", "chips": ["Shape · rules · facts", "Pydantic validators", "Fail, retry or escalate", "Drill 04.9"], "time": "Learn 10 min · Do 20 min"}
+{"id": "m04-valid", "short": "Validating Model Outputs", "h1": "Validating Model Outputs", "description": "Module 04, topic 6: three layers of validation (shape, business rules, facts), Pydantic field and model validators, what to do when validation fails, and a drill that adds business rules to tool arguments and catches invented amounts.", "lead": "Structured outputs guarantee the shape. They can't tell an invented customer ID from a real one, a payment date inside the dispute window from one outside it, or a fee refund the policy allows from one the model made up. Those checks are yours. This page sorts them into three layers and gives each one a home in your code.", "chips": ["Shape · rules · facts", "Pydantic validators", "Fail, retry or escalate", "Drill 04.9"], "time": "Learn 10 min · Do 20 min"}
 -->
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Trust the shape. Check everything else.</p></div></div>
 
@@ -20,14 +20,14 @@
   <div class="frame">
     <svg viewBox="0 0 960 250" role="img" aria-labelledby="vl-t vl-d">
       <title id="vl-t">Three layers of validation</title>
-      <desc id="vl-d">Model output passes through three layers. Layer 1, shape, enforced by the JSON Schema in strict mode: keys, types and enums. Layer 2, rules, enforced by Pydantic validators in your code: ID format TC-12345, dates in the future, lengths and ranges, fields that depend on each other. Layer 3, facts, checked against your systems: the enrolment exists and belongs to this learner, and dollar amounts match what your code calculated. Output that passes all three is used; a failure leads to a retry with the error, a safe fallback, or a human.</desc>
+      <desc id="vl-d">Model output passes through three layers. Layer 1, shape, enforced by the JSON Schema in strict mode: keys, types and enums. Layer 2, rules, enforced by Pydantic validators in your code: ID format RR-12345, payment dates not in the future and inside the window, lengths and ranges, fields that depend on each other. Layer 3, facts, checked against your systems: the account exists and belongs to this customer, and dollar amounts match what your code calculated. Output that passes all three is used; a failure leads to a retry with the error, a safe fallback, or a human.</desc>
       <rect x="16" y="88" width="120" height="70" rx="12" class="s-violet"/><text x="76" y="118" class="t-b mid">model</text><text x="76" y="138" class="t-s mid">output</text>
       <path d="M136 123 H166" class="s-arrow" marker-end="url(#ah)"/>
       <rect x="172" y="40" width="200" height="166" rx="12" class="s-blue"/><text x="272" y="66" class="t-m mid t-blue">1 · SHAPE</text><text x="272" y="88" class="t-b mid">JSON Schema</text><text x="272" y="112" class="t-s mid">keys, types, enums</text><text x="272" y="130" class="t-s mid">nullable fields</text><text x="272" y="186" class="t-s mid">enforced by the API</text>
       <path d="M372 123 H402" class="s-arrow" marker-end="url(#ah)"/>
-      <rect x="408" y="40" width="200" height="166" rx="12" class="s-teal"/><text x="508" y="66" class="t-m mid t-teal">2 · RULES</text><text x="508" y="88" class="t-b mid">Pydantic validators</text><text x="508" y="112" class="t-s mid">TC-12345 format</text><text x="508" y="130" class="t-s mid">dates, lengths, ranges</text><text x="508" y="148" class="t-s mid">field A needs field B</text><text x="508" y="186" class="t-s mid">your code, every call</text>
+      <rect x="408" y="40" width="200" height="166" rx="12" class="s-teal"/><text x="508" y="66" class="t-m mid t-teal">2 · RULES</text><text x="508" y="88" class="t-b mid">Pydantic validators</text><text x="508" y="112" class="t-s mid">RR-12345 format</text><text x="508" y="130" class="t-s mid">dates, lengths, ranges</text><text x="508" y="148" class="t-s mid">field A needs field B</text><text x="508" y="186" class="t-s mid">your code, every call</text>
       <path d="M608 123 H638" class="s-arrow" marker-end="url(#ah)"/>
-      <rect x="644" y="40" width="200" height="166" rx="12" class="s-amber"/><text x="744" y="66" class="t-m mid t-amber">3 · FACTS</text><text x="744" y="88" class="t-b mid">your systems</text><text x="744" y="112" class="t-s mid">ID exists, belongs to user</text><text x="744" y="130" class="t-s mid">amounts we calculated</text><text x="744" y="148" class="t-s mid">course is on sale</text><text x="744" y="186" class="t-s mid">lookups and cross-checks</text>
+      <rect x="644" y="40" width="200" height="166" rx="12" class="s-amber"/><text x="744" y="66" class="t-m mid t-amber">3 · FACTS</text><text x="744" y="88" class="t-b mid">your systems</text><text x="744" y="112" class="t-s mid">ID exists, belongs to user</text><text x="744" y="130" class="t-s mid">amounts we calculated</text><text x="744" y="148" class="t-s mid">payment is on the card</text><text x="744" y="186" class="t-s mid">lookups and cross-checks</text>
       <path d="M844 123 H874" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <rect x="880" y="88" width="64" height="70" rx="12" class="s-green"/><text x="912" y="128" class="t-b mid">use</text>
       <text x="508" y="236" class="t-s mid">any layer fails → retry with the error message · safe fallback · or a human</text>
@@ -42,25 +42,30 @@
     <thead><tr><th>Check</th><th>Layer</th><th>How</th></tr></thead>
     <tbody>
       <tr><td><code>urgency</code> is low, medium or high</td><td>Shape</td><td><code>Literal[...]</code> becomes an enum in the schema</td></tr>
-      <tr><td><code>enrolment_id</code> looks like TC-12345</td><td>Rules</td><td><code>@field_validator</code> with a regex</td></tr>
-      <tr><td><code>preferred_date</code> is in the next 12 months</td><td>Rules</td><td><code>@field_validator</code> using today's date</td></tr>
-      <tr><td>A scheduling ticket includes an enrolment ID</td><td>Rules</td><td><code>@model_validator(mode="after")</code>: a rule across fields</td></tr>
-      <tr><td>The enrolment belongs to the signed-in learner</td><td>Facts</td><td>Lookup in the tool (Drill 04.8)</td></tr>
-      <tr><td>"$745 refund" matches the policy quote</td><td>Facts</td><td>Compare amounts in the answer with tool results</td></tr>
+      <tr><td><code>customer_id</code> looks like RR-12345</td><td>Rules</td><td><code>@field_validator</code> with a regex</td></tr>
+      <tr><td><code>transaction_date</code> is not in the future and at most 90 days old</td><td>Rules</td><td><code>@field_validator</code> using today's date</td></tr>
+      <tr><td>A dispute or fraud case includes a customer ID</td><td>Rules</td><td><code>@model_validator(mode="after")</code>: a rule across fields</td></tr>
+      <tr><td>The account belongs to the signed-in customer</td><td>Facts</td><td>Lookup in the tool (Drill 04.8)</td></tr>
+      <tr><td>"$87 refund" matches the policy quote</td><td>Facts</td><td>Compare amounts in the answer with tool results</td></tr>
     </tbody>
   </table>
 </div>
 
 <h3>When validation fails</h3>
 <ul>
-  <li><strong>Tool arguments:</strong> return the validation message as the tool result (<code>{"error": "invalid arguments: enrolment_id: must look like TC-12345"}</code>). The model usually fixes it, or asks the learner, on the next round.</li>
+  <li><strong>Tool arguments:</strong> return the validation message as the tool result (<code>{"error": "invalid arguments: customer_id: must look like RR-12345"}</code>). The model usually fixes it, or asks the customer, on the next round.</li>
   <li><strong>Structured replies:</strong> retry once with the error (Milestone 3's repair idea), then fall back to a safe default or a "couldn't process" response.</li>
-  <li><strong>Facts in the final answer:</strong> block, regenerate, or flag for review, depending on the risk. A wrong refund amount is worth blocking; a slightly long summary isn't.</li>
+  <li><strong>Facts in the final answer:</strong> block, regenerate, or flag for review, depending on the risk. A wrong fee refund amount is worth blocking; a slightly long summary isn't.</li>
   <li><strong>Always log it.</strong> A rising validation-failure rate is often the first sign a prompt, model or data change broke something (Module 09).</li>
 </ul>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banks validate in layers exactly like this drill: the schema checks the shape, validators check business rules (a dispute date can't be in the future, an IBAN must pass its checksum, an amount must be positive), and a facts layer compares what the model said with what the systems hold. Any amount in a customer reply that no system produced is a red flag, and is blocked before the customer sees it.</p>
+</div>
   <p>Finance and insurance teams using extraction models run all three layers: schema, rules (totals add up, dates are plausible), and facts (the supplier exists in the vendor database, the policy number is active). Documents that fail go to a human queue. The validation-failure rate is a dashboard metric, just like error rates for an API.</p>
 </div>
 
@@ -92,45 +97,44 @@
         <pre class="code" data-file="test_validators.py" data-src="code/genai-labs/test_validators.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>pytest -q test_validators.py</code></pre>
         <span class="out-label">Output (exact)</span>
-<pre class="out"><code>........                                                                 [100%]
-8 passed in 0.12s</code></pre>
+<pre class="out"><code>.........                                                                [100%]
+9 passed in 0.66s</code></pre>
         <p>See what a tool's error message would contain. In a Python shell:</p>
-<pre class="code" data-file="python shell"><code>from validators import TicketDraft
-TicketDraft.model_validate({"category": "scheduling", "summary": "help", "enrolment_id": "20877",
-                            "urgency": "medium", "preferred_date": None})</code></pre>
-<pre class="out"><code>2 validation errors for TicketDraft
+<pre class="code" data-file="python shell"><code>from validators import CaseDraft
+CaseDraft.model_validate({"category": "dispute", "summary": "help", "customer_id": "10293",
+                          "urgency": "high", "transaction_date": None})</code></pre>
+<pre class="out"><code>2 validation errors for CaseDraft
 summary
   Value error, summary must be 10 to 200 characters [type=value_error, input_value='help', input_type=str]
-enrolment_id
-  Value error, enrolment_id must look like TC-12345 [type=value_error, input_value='20877', input_type=str]</code></pre>
+customer_id
+  Value error, customer_id must look like RR-12345 [type=value_error, input_value='10293', input_type=str]</code></pre>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Add a rule with your AI assistant</h4>
-        <p>New requirement from the support lead: <em>a ticket with urgency "high" must say why in the summary, using one of the words "exam", "deadline", "blocked" or "today".</em> Write the prompt for your assistant:</p>
-        <div class="template-box"><pre><code>Goal: add a rule to TicketDraft in #file:validators.py
+        <p>New requirement from the fraud team: <em>a case in the "fraud" or "card" category must have urgency "high", because money can still be leaving the account.</em> Write the prompt for your assistant:</p>
+        <div class="template-box"><pre><code>Goal: add a rule to CaseDraft in #file:validators.py
 Context: ...
 Constraints: put the rule in the right kind of validator (one field or several?) ...
              error message the model can act on ...
              add tests to #file:test_validators.py; don't change existing tests
 Done when: pytest -q test_validators.py passes, including a new test for the rule</code></pre></div>
-        <p class="hint"><b>Hint:</b> the rule involves two fields (<code>urgency</code> and <code>summary</code>), so it belongs in a <code>@model_validator(mode="after")</code>, like <code>scheduling_needs_an_enrolment</code>. Make the message tell the model what to do: <em>"high urgency needs a reason in the summary (exam, deadline, blocked or today)"</em>.</p>
+        <p class="hint"><b>Hint:</b> the rule involves two fields (<code>category</code> and <code>urgency</code>), so it belongs in a <code>@model_validator(mode="after")</code>, like <code>disputes_need_a_customer</code>. Make the message tell the model what to do: <em>"fraud and card cases must be high urgency"</em>.</p>
         <details class="solution"><summary>Compare with my solution</summary><div>
-<pre class="code" data-file="validators.py (added to TicketDraft)"><code>    @model_validator(mode="after")
-    def high_urgency_needs_a_reason(self):
-        if self.urgency == "high" and not re.search(r"\b(exam|deadline|blocked|today)\b", self.summary, re.I):
-            raise ValueError("high urgency needs a reason in the summary (exam, deadline, blocked or today)")
+<pre class="code" data-file="validators.py (added to CaseDraft)"><code>    @model_validator(mode="after")
+    def fraud_and_cards_are_urgent(self):
+        if self.category in ("fraud", "card") and self.urgency != "high":
+            raise ValueError("fraud and card cases must be high urgency")
         return self</code></pre>
-<pre class="code" data-file="test_validators.py (new test)"><code>def test_high_urgency_needs_a_reason():
-    with pytest.raises(ValidationError, match="needs a reason"):
-        TicketDraft.model_validate({**GOOD, "urgency": "high"})
-    assert TicketDraft.model_validate({**GOOD, "urgency": "high",
-                                       "summary": "Exam on Friday; needs a new date urgently."})</code></pre>
+<pre class="code" data-file="test_validators.py (new test)"><code>def test_fraud_and_cards_are_urgent():
+    with pytest.raises(ValidationError, match="must be high urgency"):
+        CaseDraft.model_validate({**GOOD, "category": "fraud", "urgency": "medium"})
+    assert CaseDraft.model_validate({**GOOD, "category": "fraud", "urgency": "high"})</code></pre>
         </div></details>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Layer 3: amounts the model made up</h4>
-        <p>Look at <code>unsupported_amounts()</code> and its test. Our code knows the refund quote was $745.00 and the reschedule fee is $50; any other dollar figure in the answer wasn't produced by our systems.</p>
+        <p>Look at <code>unsupported_amounts()</code> and its test. Our code knows the fee refund quote was $29 and the express card fee is $15; any other dollar figure in the answer wasn't produced by our systems.</p>
         <ul class="verify-list">
-          <li>Your new test passes and the original 8 still pass.</li>
-          <li><code>unsupported_amounts("Good news: a full refund of $1,490!", {745.0})</code> returns <code>[1490.0]</code>: a figure to block or flag before the learner sees it.</li>
+          <li>Your new test passes and the original 9 still pass.</li>
+          <li><code>unsupported_amounts("Good news: we'll refund all $145 of fees!", {29.0})</code> returns <code>[145.0]</code>: a figure to block or flag before the customer sees it.</li>
           <li>Think about cost: layer 2 is free (pure Python); layer 3 may need lookups. Run both on anything involving money, identity or commitments.</li>
         </ul>
       </li>
@@ -141,8 +145,8 @@ Done when: pytest -q test_validators.py passes, including a new test for the rul
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Validation.</p></div></div>
 <div class="quiz">
-  <details><summary>1. The schema says <code>preferred_date</code> is a string. The model sends "next Tuesday". Which layer catches it, and how?</summary><div><p>Layer 2: a <code>@field_validator</code> that parses ISO dates (<code>date.fromisoformat</code>) and checks the range. Return the message to the model so it can ask the learner for a date or convert it.</p></div></details>
+  <details><summary>1. The schema says <code>transaction_date</code> is a string. The model sends "last Tuesday". Which layer catches it, and how?</summary><div><p>Layer 2: a <code>@field_validator</code> that parses ISO dates (<code>date.fromisoformat</code>) and checks the range. Return the message to the model so it can ask the customer for a date or convert it.</p></div></details>
   <details><summary>2. Why return validation errors to the model instead of just raising?</summary><div><p>Because the model can often <strong>fix</strong> the problem (reformat, ask the user) on the next round. Raising ends the conversation with a generic error.</p></div></details>
-  <details><summary>3. Name a check that no schema or validator can do on its own.</summary><div><p>Anything needing your data: the enrolment <strong>exists</strong> and belongs to this learner, the refund amount <strong>matches</strong> the policy quote, the course is <strong>currently offered</strong>.</p></div></details>
+  <details><summary>3. Name a check that no schema or validator can do on its own.</summary><div><p>Anything needing your data: the account <strong>exists</strong> and belongs to this customer, the fee refund amount <strong>matches</strong> the policy quote, the payment is <strong>on this customer's card</strong>.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Schema for shape, validators for rules, your systems for facts. Validate at every boundary and log every failure.</p></div>

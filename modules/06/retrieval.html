@@ -235,6 +235,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>The relevance floor matters more in finance than almost anywhere: if nothing relevant is found, "I couldn't find that, shall I raise a case?" is far better than an answer stitched together from an unrelated policy. Retrieval also enforces entitlements: a customer's question must never retrieve a staff-only approval limit, which is why audience is a filter, not an instruction.</p>
+</div>
   <p>Production RAG systems on Azure AI Search commonly run hybrid queries with the semantic ranker on top, filter by the user's group ids (security trimming), and keep a minimum reranker score below which the bot says it can't find an answer. Chat products also rewrite every follow-up into a standalone query, which is why their logs show search queries the user never typed.</p>
 </div>
 
@@ -380,7 +385,7 @@ for floor in (0.40, 0.45, 0.50, 0.55, 0.60):
   0.694  Can I swap to a different course instead?
 Highest off-topic scores:
   0.686  Can I bring my dog to a classroom course?
-  0.636  Is TrainCrest hiring trainers?
+  0.636  Is RR Finance Bank hiring trainers?
   0.514  Do you sell gift cards?
   0.475  Can you recommend a good laptop for programming?
 
@@ -478,9 +483,9 @@ Rewritten : Does the cost of replacing or updating a certificate issued with an 
         <p>The rewritten questions are clumsy (a 3-billion-parameter model wrote them), yet two of three raw follow-ups retrieved the wrong article and all three rewrites found the right one, with much higher scores. Notice also that the third raw follow-up (0.56) passes even the 0.55 floor from Drill 06.6: a floor can't fix a query that has lost its subject.</p>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Make the rewriter handle other languages</h4>
-        <p>In Drill 06.9 a Spanish question finds nothing: <code>nomic-embed-text</code> is mostly English and the help centre is English. Improve the <code>REWRITE</code> prompt so the search query is always English, while the learner still gets an answer in their language later.</p>
+        <p>In Drill 06.9 a Spanish question finds nothing: <code>nomic-embed-text</code> is mostly English and the help centre is English. Improve the <code>REWRITE</code> prompt so the search query is always English, while the customer still gets an answer in their language later.</p>
         <div class="template-box"><pre><code>Goal: improve REWRITE in #file:lab06_07_rewrite.py
-Context: the index is English; learners write in any language ...
+Context: the index is English; customers write in any language ...
 Constraints: output ...
              keep ... (codes, numbers, product names) ...
              only the question, nothing else

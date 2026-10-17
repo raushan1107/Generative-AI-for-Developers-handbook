@@ -1,0 +1,13 @@
+model: nomic-embed-text | tokens used: 30
+
+How do I dispute a double charge?
+  dimensions: 768   length (norm): 1.000
+  first 5 numbers: [0.107, 0.0585, -0.1743, 0.0016, 0.0803]
+
+Can I have my money back for a wrong payment?
+  dimensions: 768   length (norm): 1.000
+  first 5 numbers: [0.1186, 0.0437, -0.1497, 0.0178, 0.02]
+
+My card was stolen.
+  dimensions: 768   length (norm): 1.000
+  first 5 numbers: [0.074, -0.0114, -0.1544, 0.0045, 0.0483]

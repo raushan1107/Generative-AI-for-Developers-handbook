@@ -1,0 +1,9 @@
+
+nomic-embed-text dims=768 +prefix   (6.3s, cached calls are instant)
+  OK  0.62  Can I get my money back for a double charge?   -> card-disputes
+  OK  0.72  Someone stole my wallet with my card in it     -> lost-stolen-cards
+  MISS 0.52  Why was I charged $29 last night?              -> card-disputes
+  MISS 0.60  The money I sent my landlord hasn't arrived    -> complaints
+  OK  0.56  I'm locked out of the app                      -> online-banking-access
+  OK  0.54  ¿Qué pasa si saco el dinero de mi depósito a p -> savings-and-cds
+  4/6 questions matched the right article

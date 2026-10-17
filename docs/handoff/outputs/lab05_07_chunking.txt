@@ -1,0 +1,8 @@
+strategy          chunks avg chars  hit@1  hit@3
+fixed 300 chars       51       276  15/20  18/20
+      missed: What documents do I need to open an account?
+      missed: I was tricked into paying a fake invoice, will I get the money back?
+fixed 800 chars       20       650  18/20  20/20
+sentences 400         39       307  11/20  19/20
+      missed: I was tricked into paying a fake invoice, will I get the money back?
+by headings           54       238  17/20  20/20

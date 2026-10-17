@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Build: Milestone 5</title>
-<meta name="description" content="Traincrest Assist milestone 5: a search index over courses and help-centre sections built with embeddings, local hybrid search (BM25 + vectors + RRF) with metadata pre-filters or Azure AI Search as the backend, a /api/search endpoint, and a semantic search_courses tool with a keyword fallback.">
+<meta name="description" content="RR Finance Assist milestone 5: a search index over courses and help-centre sections built with embeddings, local hybrid search (BM25 + vectors + RRF) with metadata pre-filters or Azure AI Search as the backend, a /api/search endpoint, and a semantic search_courses tool with a keyword fallback.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -175,22 +175,22 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 05 · Build milestone</span><h1>Build · Milestone 5: Search by Meaning</h1><p class="lead">Version 0.5 understands what learners mean. An index holds every course and every help-centre section as vectors with text and metadata; a search service runs hybrid search with filters, locally or on Azure AI Search; a new /api/search endpoint exposes it; and the search_courses tool now finds 'a cheap intro to containers'. The help-centre index is also the retrieval layer Module 06 builds RAG on.</p><div class="chips"><span class="chip">Index: 20 courses + 40 sections</span><span class="chip">Hybrid + filters</span><span class="chip">Local or Azure AI Search</span><span class="chip">/api/search</span><span class="chip">≈ 60 min</span></div><div class="flow"><em>Plan 10 min · Build 35 min · Verify 15 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 05 · Build milestone</span><h1>Build · Milestone 5: Search by Meaning</h1><p class="lead">Version 0.5 understands what customers mean. An index holds every course and every help-centre section as vectors with text and metadata; a search service runs hybrid search with filters, locally or on Azure AI Search; a new /api/search endpoint exposes it; and the search_courses tool now finds 'a cheap intro to containers'. The help-centre index is also the retrieval layer Module 06 builds RAG on.</p><div class="chips"><span class="chip">Index: 20 courses + 40 sections</span><span class="chip">Hybrid + filters</span><span class="chip">Local or Azure AI Search</span><span class="chip">/api/search</span><span class="chip">≈ 60 min</span></div><div class="flow"><em>Plan 10 min · Build 35 min · Verify 15 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From matching words to matching meaning.</p></div></div>
 
 <div class="case">
-  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 5</span></div>
+  <div class="case-head"><b>RR Finance Bank</b><span>· the brief for milestone 5</span></div>
   <div class="case-body">
-    <p>Learners describe what they want in their own words, and the catalogue tool misses half of it. The support team also wants a search over the ten help-centre articles, both for their own use and as the base for grounded answers next month. Constraints: it must run on a laptop for development, on Azure AI Search in production, and keep working (with plain keyword search) if the embedding service has a bad day.</p>
+    <p>Customers describe what they want in their own words, and the catalogue tool misses half of it. The support team also wants a search over the ten help-centre articles, both for their own use and as the base for grounded answers next month. Constraints: it must run on a laptop for development, on Azure AI Search in production, and keep working (with plain keyword search) if the embedding service has a bad day.</p>
   </div>
 </div>
 
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 330" role="img" aria-labelledby="b5-t b5-d">
-      <title id="b5-t">Traincrest Assist v0.5</title>
+      <title id="b5-t">RR Finance Assist v0.5</title>
       <desc id="b5-d">Ahead of time, scripts/build_index.py loads 20 courses and the help articles, chunks the articles by heading into 40 sections, embeds everything with the embedding deployment, and saves a local index with vectors, text and metadata, or uploads it to Azure AI Search. At run time, SearchService embeds the query, then the local index pre-filters by kind, level, format and price, ranks by BM25 and by cosine, and merges with RRF; the Azure backend does the same on the service. GET /api/search and the search_courses tool both use SearchService; the tool falls back to keyword filtering if the index or embeddings are unavailable.</desc>
       <text x="20" y="30" class="t-m">AHEAD OF TIME · python -m scripts.build_index</text>
       <rect x="20" y="42" width="190" height="66" rx="12" class="s-surface"/><text x="115" y="70" class="t-b mid">courses.json</text><text x="115" y="90" class="t-s mid">+ data/help/*.md</text>
@@ -283,7 +283,7 @@ AZURE_SEARCH_INDEX=traincrest</code></pre></div></details>
   <div class="drill-head"><span class="drill-id">Milestone 5</span><h3>Index, hybrid search service, API and semantic tool</h3>
     <div class="drill-meta"><span class="time">~60 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-azure">Azure AI Search optional</span><span class="badge b-tool">numpy · rank_bm25 · pytest</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> give Traincrest Assist a search index over courses and help sections, hybrid search with filters behind one service, a search API, and a catalogue tool that understands paraphrases.</p>
+    <p class="drill-goal"><b>Goal:</b> give RR Finance Assist a search index over courses and help sections, hybrid search with filters behind one service, a search API, and a catalogue tool that understands paraphrases.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Settings</h4>
         <p>Copy <code>data/help/</code> from <code>genai-labs</code>, then add to <code>app/config.py</code> (and the matching lines to <code>.env</code>):</p>
@@ -297,11 +297,11 @@ SEARCH_BACKEND = os.getenv("SEARCH_BACKEND", "local").lower()      <span class="
 INDEX_DIR = os.getenv("INDEX_DIR", "data/index")                    <span class="c"># where the local index is saved</span>
 AZURE_SEARCH_ENDPOINT = os.getenv("AZURE_SEARCH_ENDPOINT", "")
 AZURE_SEARCH_API_KEY = os.getenv("AZURE_SEARCH_API_KEY", "")
-AZURE_SEARCH_INDEX = os.getenv("AZURE_SEARCH_INDEX", "traincrest")</code></pre>
+AZURE_SEARCH_INDEX = os.getenv("AZURE_SEARCH_INDEX", "rrfinance")</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The search module</h4>
         <p>Everything from this module in one file: chunk by heading (the winner in Drill 05.7), embed in batches, pre-filter, BM25 with a small analyzer, cosine, RRF (Drill 05.9), and the same <code>search()</code> on Azure AI Search. <code>LocalIndex.load()</code> refuses an index built with a different embedding model.</p>
-        <pre class="code" data-file="app/search.py"><code>"""Semantic and hybrid search over the course catalogue and help-centre articles (milestone 5).
+        <pre class="code" data-file="app/search.py"><code>"""Semantic and hybrid search over the product catalogue and help-centre articles (milestone 5).
 
 Two backends with the same interface:
 - LocalIndex: vectors in a numpy file plus BM25 keywords, merged with RRF. No cloud needed.
@@ -334,16 +334,16 @@ def chunk_by_headings(markdown: str):
 
 
 def load_documents():
-    """Everything we search, as plain dicts: one per course and one per help-article section."""
+    """Everything we search, as plain dicts: one per product and one per help-article section."""
     docs = []
-    for c in backend.COURSES.values():
-        docs.append({"id": c["id"], "kind": "course", "title": c["title"],
-                     "text": f"{c['title']}. {c['description']}",
-                     "level": c["level"], "format": c["format"], "price_usd": c["price_usd"]})
+    for p in backend.PRODUCTS.values():
+        docs.append({"id": p["id"], "kind": "product", "title": p["name"],
+                     "text": f"{p['name']}. {p['description']}",
+                     "family": p["family"], "audience": p["audience"], "annual_fee_usd": p["annual_fee_usd"]})
     for path in sorted(HELP_DIR.glob("*.md")):
         for n, (heading, text) in enumerate(chunk_by_headings(path.read_text(encoding="utf-8")), 1):
             docs.append({"id": f"{path.stem}-{n}", "kind": "help", "title": heading, "text": text,
-                         "source": f"{path.stem}.md", "level": None, "format": None, "price_usd": None})
+                         "source": f"{path.stem}.md", "family": None, "audience": None, "annual_fee_usd": None})
     return docs
 
 
@@ -373,11 +373,11 @@ def rrf(rankings, k=60):
 def _matches(doc, filters):
     if filters.get("kind") and doc["kind"] != filters["kind"]:
         return False
-    if filters.get("level") and doc["level"] != filters["level"]:
+    if filters.get("family") and doc["family"] != filters["family"]:
         return False
-    if filters.get("format") and doc["format"] != filters["format"]:
+    if filters.get("audience") and doc["audience"] != filters["audience"]:
         return False
-    if filters.get("max_price_usd") is not None and (doc["price_usd"] is None or doc["price_usd"] &gt; filters["max_price_usd"]):
+    if filters.get("max_annual_fee_usd") is not None and (doc["annual_fee_usd"] is None or doc["annual_fee_usd"] &gt; filters["max_annual_fee_usd"]):
         return False
     return True
 
@@ -432,15 +432,15 @@ class AzureIndex:
     def search(self, query, query_vector, k=5, **filters):
         from azure.search.documents.models import VectorizedQuery
         clauses = []
-        for field in ("kind", "level", "format"):
+        for field in ("kind", "family", "audience"):
             if filters.get(field):
                 clauses.append(f"{field} eq '{filters[field]}'")          <span class="c"># values come from enums, not free text</span>
-        if filters.get("max_price_usd") is not None:
-            clauses.append(f"price_usd le {int(filters['max_price_usd'])}")
+        if filters.get("max_annual_fee_usd") is not None:
+            clauses.append(f"annual_fee_usd le {int(filters['max_annual_fee_usd'])}")
         results = self.client.search(
             search_text=query, top=k, filter=" and ".join(clauses) or None,
             vector_queries=[VectorizedQuery(vector=query_vector.tolist(), k_nearest_neighbors=k, fields="contentVector")])
-        return [{**{key: r.get(key) for key in ("id", "kind", "title", "text", "source", "level", "format", "price_usd")},
+        return [{**{key: r.get(key) for key in ("id", "kind", "title", "text", "source", "family", "audience", "annual_fee_usd")},
                  "score": round(r["@search.score"], 4)} for r in results]
 
 
@@ -477,9 +477,9 @@ python -m scripts.build_index from the project folder.
           <pre class="code" data-file="scripts/build_index.py"><code>"""Build the search index for RR Finance Assist (milestone 5).
 
 From the project folder:  python -m scripts.build_index
-SEARCH_BACKEND=local  -&gt; embeds courses and help sections, saves data/index/ (vectors.npy + docs.json)
+SEARCH_BACKEND=local  -&gt; embeds products and help sections, saves data/index/ (vectors.npy + docs.json)
 SEARCH_BACKEND=azure  -&gt; creates or updates the Azure AI Search index and uploads the same documents
-Re-run it whenever courses or help articles change, or when you switch embedding model."""
+Re-run it whenever products or help articles change, or when you switch embedding model."""
 import time
 
 from app.config import AZURE_SEARCH_API_KEY, AZURE_SEARCH_ENDPOINT, AZURE_SEARCH_INDEX, EMBED_MODEL, SEARCH_BACKEND
@@ -503,9 +503,9 @@ def build_azure(client):
         SearchableField(name="title", type=s.String),
         SearchableField(name="text", type=s.String, analyzer_name="en.microsoft"),   <span class="c"># stemming, stop words</span>
         SimpleField(name="source", type=s.String),
-        SimpleField(name="level", type=s.String, filterable=True),
-        SimpleField(name="format", type=s.String, filterable=True),
-        SimpleField(name="price_usd", type=s.Int32, filterable=True, sortable=True),
+        SimpleField(name="family", type=s.String, filterable=True),
+        SimpleField(name="audience", type=s.String, filterable=True),
+        SimpleField(name="annual_fee_usd", type=s.Int32, filterable=True, sortable=True),
         SearchField(name="contentVector", type=s.Collection(s.Single), searchable=True,
                     vector_search_dimensions=vectors.shape[1], vector_search_profile_name="vprofile"),
     ]
@@ -527,7 +527,7 @@ def main():
         index = LocalIndex.build(client)
         index.save()
         kinds = [d["kind"] for d in index.docs]
-        print(f"Local index: {kinds.count('course')} courses + {kinds.count('help')} help sections, "
+        print(f"Local index: {kinds.count('product')} products + {kinds.count('help')} help sections, "
               f"{index.vectors.shape[1]}-dimension vectors from {EMBED_MODEL}.")
     print(f"Done in {time.perf_counter() - start:.1f}s.")
 
@@ -541,52 +541,52 @@ if __name__ == "__main__":
 Done in 5.0s.</code></pre>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Upgrade the <code>search_courses</code> tool</h4>
-        <p>Milestone 4's tool took a single keyword. Write a prompt for your assistant that changes it to take the learner's words plus typed filters, use the search service, and fall back safely.</p>
+        <p>Milestone 4's tool took a single keyword. Write a prompt for your assistant that changes it to take the customer's words plus typed filters, use the search service, and fall back safely.</p>
         <div class="template-box"><pre><code>Goal: upgrade search_courses in #file:app/tools.py to semantic search
 Context: app/search.py has SearchService.search(query, k, **filters) with filters
          kind, level, format, max_price_usd
-Constraints: arguments: query (the learner's words) + optional typed filters ...
+Constraints: arguments: query (the customer's words) + optional typed filters ...
              how the service is provided to the tool ...
              fallback when ...
              return only id, title, level, format, price_usd
 Done when: pytest -q passes and "cheap intro to containers" returns Docker Quick Start first</code></pre></div>
         <p class="hint"><b>Hint:</b> tools are plain functions, so give the module a <code>set_search_service()</code> that <code>main.py</code> calls at start-up. Filters must be <code>Literal</code>/<code>int</code> fields, never free text pasted into a filter. Fall back to the Milestone 4 keyword filter when no service is set <em>or</em> the search raises (embedding service down).</p>
         <details class="solution"><summary>Compare with my version</summary><div>
-          <pre class="code" data-file="app/tools.py (search_courses)"><code><span class="c"># ---------------------------------------------------------------- catalogue (no identity needed)</span>
-_search = None          <span class="c"># the SearchService, set by the app at start-up (milestone 5)</span>
+          <pre class="code" data-file="app/tools.py (search_courses)"><code>    return _owned(backend.CARDS, last4, context, "cards")
 
 
-def set_search_service(service):
-    global _search
-    _search = service
+def _own_account(account_id: str, context: dict) -&gt; dict:
+    return _owned(backend.ACCOUNTS, account_id, context, "accounts")
 
 
-class SearchCoursesArgs(BaseModel):
-    query: str = Field(description="What the learner is looking for, in their own words, e.g. 'make apps that understand photos'")
-    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
-    max_price_usd: Optional[int] = Field(default=None, description="Highest price in USD, or null")
-    format: Optional[Literal["live-online", "classroom", "self-paced"]] = None
+def _own_transaction(txn_id: str, context: dict) -&gt; dict:
+    t = backend.TRANSACTIONS.get(txn_id)
+    if t is None:
+        _signed_in(context)
+        raise PermissionError(f"{txn_id} is not a payment on the signed-in customer's cards")
+    _owned(backend.CARDS, t["card"], context, "cards")
+    return t
 
 
-@kit.register(SearchCoursesArgs)
-def search_courses(args):
-    """Find TrainCrest courses that match what the learner describes (semantic + keyword search),
-    optionally filtered by level, maximum price and format."""
-    filters = {"kind": "course", "level": args.level, "max_price_usd": args.max_price_usd, "format": args.format}
-    if _search is not None:
-        try:
-            hits = _search.search(args.query, k=5, **filters)
-            return [{k: h[k] for k in ("id", "title", "level", "format", "price_usd")} for h in hits]
-        except Exception:                     <span class="c"># embedding service down: degrade instead of failing</span>
-            pass
-    <span class="c"># No index yet, or search failed: fall back to milestone 4's keyword filter so the assistant still works.</span>
-    words = [w for w in args.query.lower().split() if len(w) &gt; 3]
-    hits = [c for c in backend.COURSES.values()
-            if (not args.level or c["level"] == args.level)
-            and (args.max_price_usd is None or c["price_usd"] &lt;= args.max_price_usd)
-            and (not args.format or c["format"] == args.format)
-            and (not words or any(w in (c["title"] + " " + c["description"]).lower() for w in words))]
-    return [{k: c[k] for k in ("id", "title", "level", "format", "price_usd")} for c in hits[:5]]</code></pre>
+def _upper_match(pattern, example):
+    def check(cls, v):
+        v = v.strip().upper()
+        if not pattern.fullmatch(v):
+            raise ValueError(f"must look like {example}")
+        return v
+    return classmethod(check)
+
+
+<span class="c"># ---------------------------------------------------------------- catalogue (no identity needed)</span>
+class SearchProductsArgs(BaseModel):
+    query: str = Field(description="What the customer is looking for, in their own words, e.g. 'save for a house deposit'")
+    family: Optional[Literal["accounts", "cards", "loans"]] = None
+    audience: Optional[Literal["personal", "student", "business"]] = None
+    max_annual_fee_usd: Optional[int] = Field(default=None, description="Highest annual fee in USD, or null")
+
+
+FIELDS = ("id", "name", "family", "audience", "annual_fee_usd", "rate_pct", "rate_type")
+</code></pre>
           <p>And in <code>main.py</code>, the service is created at start-up (a missing index is logged, not fatal) and exposed as <code>GET /api/search</code>:</p>
           <pre class="code" data-file="app/main.py"><code>"""RR Finance Assist API, milestone 5.
 
@@ -623,9 +623,9 @@ WEB = Path(__file__).resolve().parent.parent / "web"
 class ChatRequest(BaseModel):
     session_id: str = Field(min_length=8, max_length=64)
     message: str = Field(min_length=1, max_length=4000)
-    <span class="c"># DEMO ONLY: the UI says who is "signed in". A real app takes the learner from a verified</span>
+    <span class="c"># DEMO ONLY: the UI says who is "signed in". A real app takes the customer from a verified</span>
     <span class="c"># sign-in token on the server (Module 10), never from a field the browser can change.</span>
-    learner_id: Optional[str] = None
+    customer_id: Optional[str] = None
 
 
 class ResetRequest(BaseModel):
@@ -646,20 +646,20 @@ def health():
     return {"status": "ok"}
 
 
-@app.get("/api/demo-learners")
-def demo_learners():
-    """New in milestone 4: the fictional learners the demo UI can 'sign in' as."""
-    return [{"learner_id": k, "name": v["name"]} for k, v in backend.LEARNERS.items()]
+@app.get("/api/demo-customers")
+def demo_customers():
+    """New in milestone 4: the fictional customers the demo UI can 'sign in' as."""
+    return [{"customer_id": k, "name": v["name"]} for k, v in backend.CUSTOMERS.items()]
 
 
 @app.post("/api/chat")
 def chat_endpoint(req: ChatRequest):
     """Stream the answer as server-sent events: one `data: {json}` line per event."""
-    if req.learner_id is not None and req.learner_id not in backend.LEARNERS:
-        raise HTTPException(status_code=400, detail="Unknown learner.")
+    if req.customer_id is not None and req.customer_id not in backend.CUSTOMERS:
+        raise HTTPException(status_code=400, detail="Unknown customer.")
 
     def events():
-        for event in chat.stream(req.session_id, req.message, learner_id=req.learner_id):
+        for event in chat.stream(req.session_id, req.message, customer_id=req.customer_id):
             yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
     return StreamingResponse(events(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
@@ -672,26 +672,26 @@ def reset(req: ResetRequest):
 
 
 @app.get("/api/search")
-def search_endpoint(q: str = Query(min_length=2, max_length=200), kind: Literal["course", "help"] = "course",
-                    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None,
-                    max_price_usd: Optional[int] = Query(default=None, ge=0),
+def search_endpoint(q: str = Query(min_length=2, max_length=200), kind: Literal["product", "help"] = "product",
+                    family: Optional[Literal["accounts", "cards", "loans"]] = None,
+                    max_annual_fee_usd: Optional[int] = Query(default=None, ge=0),
                     k: int = Query(default=5, ge=1, le=20)):
-    """New in milestone 5: semantic + keyword (hybrid) search over courses or help-centre sections."""
+    """New in milestone 5: semantic + keyword (hybrid) search over products or help-centre sections."""
     if search is None:
         raise HTTPException(status_code=503, detail="Search index not built. Run: python -m scripts.build_index")
     try:
-        hits = search.search(q, k=k, kind=kind, level=level, max_price_usd=max_price_usd)
+        hits = search.search(q, k=k, kind=kind, family=family, max_annual_fee_usd=max_annual_fee_usd)
     except openai.APIError as e:
         log_event(level="error", event="search_api_error", error=type(e).__name__)
         raise HTTPException(status_code=503, detail="The embedding service is unavailable. Please try again shortly.")
     return {"query": q, "kind": kind, "results": [
-        {k_: h.get(k_) for k_ in ("id", "title", "score", "source", "level", "price_usd")} | {"text": h["text"][:300]}
+        {k_: h.get(k_) for k_ in ("id", "title", "score", "source", "family", "annual_fee_usd")} | {"text": h["text"][:300]}
         for h in hits]}
 
 
 @app.post("/api/triage")
 def triage_endpoint(req: TriageRequest):
-    """Classify a learner message into validated JSON for routing (structured outputs since milestone 4)."""
+    """Classify a customer message into validated JSON for routing (structured outputs since milestone 4)."""
     try:
         result, version, attempts = triage(chat.client, req.message)
     except TriageError as e:
@@ -750,28 +750,29 @@ def service():
     return SearchService(client, index=LocalIndex.build(client))
 
 
-def test_documents_cover_courses_and_help_sections():
+def test_documents_cover_products_and_help_sections():
     docs = load_documents()
-    assert sum(d["kind"] == "course" for d in docs) == 20
-    assert sum(d["kind"] == "help" for d in docs) == 40
+    assert sum(d["kind"] == "product" for d in docs) == 20
+    assert sum(d["kind"] == "help" for d in docs) == 44
     assert len({d["id"] for d in docs}) == len(docs)                  <span class="c"># ids are unique</span>
 
 
 def test_chunks_keep_article_and_section_titles():
-    heading, text = next(chunk_by_headings("# Labs\nintro\n## Problems\nLAB-503 means wait."))
-    assert heading == "Problems" and text.startswith("Labs &gt; Problems\n")
+    heading, text = next(chunk_by_headings("# Cards\nintro\n## Freeze it first\nFreeze it in the app."))
+    assert heading == "Freeze it first" and text.startswith("Cards &gt; Freeze it first\n")
 
 
-def test_hybrid_search_finds_exact_codes(service):
-    top = service.search("I get error LAB-503", k=3, kind="help")[0]
-    assert top["source"] == "labs-and-sandboxes.md" and "LAB-503" in top["text"]
+def test_hybrid_search_finds_exact_terms(service):
+    top = service.search("the 4 pm cut-off for wires", k=3, kind="help")[0]
+    assert top["source"] == "transfers-and-payments.md" and "4 pm" in top["text"]
 
 
 def test_filters_are_applied_before_ranking(service):
-    hits = service.search("python programming course", k=5, kind="course", level="beginner", max_price_usd=300)
-    assert hits and all(h["level"] == "beginner" and h["price_usd"] &lt;= 300 for h in hits)
-    assert hits[0]["id"] == "C101"
-    assert service.search("anything", kind="course", max_price_usd=10) == []
+    hits = service.search("travel card with no foreign transaction fees", k=5, kind="product",
+                          family="cards", max_annual_fee_usd=100)
+    assert hits and all(h["family"] == "cards" and h["annual_fee_usd"] &lt;= 100 for h in hits)
+    assert hits[0]["id"] == "P111"
+    assert service.search("anything", kind="product", max_annual_fee_usd=-1) == []
 
 
 def test_index_save_and_load(service, tmp_path, monkeypatch):
@@ -785,19 +786,20 @@ def test_index_save_and_load(service, tmp_path, monkeypatch):
 
 def test_search_tool_uses_the_index_and_falls_back(service, monkeypatch):
     def run(args):
-        return json.loads(kit.dispatch("search_courses", json.dumps(args)))
+        return json.loads(kit.dispatch("search_products", json.dumps(args)))
 
+    none = {"family": None, "audience": None, "max_annual_fee_usd": None}
     monkeypatch.setattr(tools, "_search", service)
-    assert run({"query": "AZ-104 Azure Administrator", "level": None, "max_price_usd": None, "format": None})[0]["id"] == "C110"
+    assert run({"query": "Voyager Travel Card", **none})[0]["id"] == "P111"
 
     class Broken:
         def search(self, *a, **k):
             raise ConnectionError("embedding service down")
 
     monkeypatch.setattr(tools, "_search", Broken())                   <span class="c"># search down -&gt; keyword fallback</span>
-    assert run({"query": "kubernetes", "level": None, "max_price_usd": None, "format": None})[0]["id"] == "C113"
+    assert run({"query": "mortgage", **none})[0]["id"] == "P118"
     monkeypatch.setattr(tools, "_search", None)                       <span class="c"># no index -&gt; keyword fallback</span>
-    assert run({"query": "docker", "level": "beginner", "max_price_usd": None, "format": None})[0]["id"] == "C114"</code></pre>
+    assert run({"query": "students", **none, "family": "cards"})[0]["id"] == "P112"</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Evidence</h4>
 <pre class="term"><code><span class="ps">$ </span>pytest -q
@@ -812,7 +814,7 @@ I get error LAB-503 (help)              -> labs-and-sandboxes-2 "Common problems
 Is there a discount for a team of 12? (help) -> corporate-training-2 "Group discounts", ...
 hands-on cloud course, beginner, max $500 -> C109 AZ-900 ($350), C114 Docker ($190), C105 Prompt Eng. ($390)</code></pre>
         <ul class="verify-list">
-          <li>In the chat, as any learner: "Is there a cheap intro to containers?" The meta line shows <code>tools: search_courses</code> and the answer names Docker Quick Start ($190).</li>
+          <li>In the chat, as any customer: "Is there a cheap intro to containers?" The meta line shows <code>tools: search_courses</code> and the answer names Docker Quick Start ($190).</li>
           <li>"Beginner cloud courses under $400?" The tool is called with <code>level="beginner"</code> and <code>max_price_usd=400</code>, and every course in the answer obeys both.</li>
           <li>Stop Ollama (or break the embedding deployment name in <code>.env</code>) and ask again: the tool falls back to keyword search; Assist still answers, just less cleverly.</li>
           <li>Delete <code>data/index/</code> and restart: <code>/api/search</code> returns 503 with "run python -m scripts.build_index", and chat still works.</li>
@@ -824,7 +826,7 @@ hands-on cloud course, beginner, max $500 -> C109 AZ-900 ($350), C114 Docker ($1
   <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="b05-1"> I've completed Milestone 5</label></div>
 </div>
 
-<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where Traincrest Assist stands after Part II.</p></div></div>
+<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where RR Finance Assist stands after Part II.</p></div></div>
 <ul class="checklist">
   <li>Every course and help section is embedded in an index that records its embedding model.</li>
   <li>Search is hybrid (BM25 + vectors + RRF) with metadata pre-filters, locally or on Azure AI Search.</li>

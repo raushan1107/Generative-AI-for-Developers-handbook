@@ -28,14 +28,14 @@
       <text x="34" y="140" class="t-s">## How much you get back</text>
       <text x="34" y="166" class="t-s">## How to cancel</text>
       <text x="34" y="192" class="t-s">## When the money arrives</text>
-      <text x="34" y="218" class="t-s">## If TrainCrest cancels</text>
+      <text x="34" y="218" class="t-s">## If RR Finance Bank cancels</text>
       <text x="34" y="252" class="t-s t-rose">Milestone 5 kept 4 sections, lost the intro</text>
       <path d="M270 155 H320" class="s-arrow" marker-end="url(#ah)"/>
       <text x="330" y="30" class="t-m">CHUNKS FOR RAG (rag_chunks.py)</text>
       <rect x="330" y="40" width="610" height="40" rx="8" class="s-green"/><text x="344" y="65" class="t-s">#1 · Refunds and cancellations › Overview · "The start date is the first day of..."</text>
       <rect x="330" y="86" width="610" height="40" rx="8" class="s-green"/><text x="344" y="111" class="t-s">#2 · Refunds and cancellations › How much you get back · "- Cancel 14 or more days..."</text>
       <rect x="330" y="132" width="610" height="40" rx="8" class="s-green"/><text x="344" y="157" class="t-s">#3 · › How to cancel</text>
-      <rect x="330" y="178" width="610" height="40" rx="8" class="s-green"/><text x="344" y="203" class="t-s">#4 · › When the money arrives · #5 › If TrainCrest cancels</text>
+      <rect x="330" y="178" width="610" height="40" rx="8" class="s-green"/><text x="344" y="203" class="t-s">#4 · › When the money arrives · #5 › If RR Finance Bank cancels</text>
       <text x="330" y="244" class="t-s">each chunk: id refunds-and-cancellations#2 · source refunds-and-cancellations.md · audience public</text>
       <text x="330" y="266" class="t-s">long sections: split at blank lines, header repeated on every piece</text>
     </svg>
@@ -64,6 +64,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Policies are written with conditions next to rules ("$29, at most 3 times a day, no fee if overdrawn by $50 or less"). If chunking separates the rule from its condition, the model answers with half a rule. Keeping whole sections, with their introductions, is why the help-centre chunker in this module keeps each section intact.</p>
+</div>
   <p>A common production bug: a PDF extractor puts each page's header and footer into the text, and a fixed-size chunker splits mid-table. The bot then answers "the fee is $" with a citation. Teams catch these by sampling chunks by eye after every chunker change and by keeping a small set of questions whose answers sit in awkward places (intros, tables, footnotes), exactly like the five intro questions in Drill 06.4.</p>
 </div>
 

@@ -1,19 +1,19 @@
 <!--meta
-{"id": "m05-build", "short": "Build: Milestone 5", "h1": "Build · Milestone 5: Search by Meaning", "description": "Traincrest Assist milestone 5: a search index over courses and help-centre sections built with embeddings, local hybrid search (BM25 + vectors + RRF) with metadata pre-filters or Azure AI Search as the backend, a /api/search endpoint, and a semantic search_courses tool with a keyword fallback.", "lead": "Version 0.5 understands what learners mean. An index holds every course and every help-centre section as vectors with text and metadata; a search service runs hybrid search with filters, locally or on Azure AI Search; a new /api/search endpoint exposes it; and the search_courses tool now finds 'a cheap intro to containers'. The help-centre index is also the retrieval layer Module 06 builds RAG on.", "chips": ["Index: 20 courses + 40 sections", "Hybrid + filters", "Local or Azure AI Search", "/api/search", "≈ 60 min"], "time": "Plan 10 min · Build 35 min · Verify 15 min"}
+{"id": "m05-build", "short": "Build: Milestone 5", "h1": "Build · Milestone 5: Search by Meaning", "description": "RR Finance Assist milestone 5: a search index over courses and help-centre sections built with embeddings, local hybrid search (BM25 + vectors + RRF) with metadata pre-filters or Azure AI Search as the backend, a /api/search endpoint, and a semantic search_courses tool with a keyword fallback.", "lead": "Version 0.5 understands what customers mean. An index holds every course and every help-centre section as vectors with text and metadata; a search service runs hybrid search with filters, locally or on Azure AI Search; a new /api/search endpoint exposes it; and the search_courses tool now finds 'a cheap intro to containers'. The help-centre index is also the retrieval layer Module 06 builds RAG on.", "chips": ["Index: 20 courses + 40 sections", "Hybrid + filters", "Local or Azure AI Search", "/api/search", "≈ 60 min"], "time": "Plan 10 min · Build 35 min · Verify 15 min"}
 -->
 <div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From matching words to matching meaning.</p></div></div>
 
 <div class="case">
-  <div class="case-head"><b>TrainCrest</b><span>· the brief for milestone 5</span></div>
+  <div class="case-head"><b>RR Finance Bank</b><span>· the brief for milestone 5</span></div>
   <div class="case-body">
-    <p>Learners describe what they want in their own words, and the catalogue tool misses half of it. The support team also wants a search over the ten help-centre articles, both for their own use and as the base for grounded answers next month. Constraints: it must run on a laptop for development, on Azure AI Search in production, and keep working (with plain keyword search) if the embedding service has a bad day.</p>
+    <p>Customers describe what they want in their own words, and the catalogue tool misses half of it. The support team also wants a search over the ten help-centre articles, both for their own use and as the base for grounded answers next month. Constraints: it must run on a laptop for development, on Azure AI Search in production, and keep working (with plain keyword search) if the embedding service has a bad day.</p>
   </div>
 </div>
 
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 330" role="img" aria-labelledby="b5-t b5-d">
-      <title id="b5-t">Traincrest Assist v0.5</title>
+      <title id="b5-t">RR Finance Assist v0.5</title>
       <desc id="b5-d">Ahead of time, scripts/build_index.py loads 20 courses and the help articles, chunks the articles by heading into 40 sections, embeds everything with the embedding deployment, and saves a local index with vectors, text and metadata, or uploads it to Azure AI Search. At run time, SearchService embeds the query, then the local index pre-filters by kind, level, format and price, ranks by BM25 and by cosine, and merges with RRF; the Azure backend does the same on the service. GET /api/search and the search_courses tool both use SearchService; the tool falls back to keyword filtering if the index or embeddings are unavailable.</desc>
       <text x="20" y="30" class="t-m">AHEAD OF TIME · python -m scripts.build_index</text>
       <rect x="20" y="42" width="190" height="66" rx="12" class="s-surface"/><text x="115" y="70" class="t-b mid">courses.json</text><text x="115" y="90" class="t-s mid">+ data/help/*.md</text>
@@ -65,7 +65,7 @@
   <div class="drill-head"><span class="drill-id">Milestone 5</span><h3>Index, hybrid search service, API and semantic tool</h3>
     <div class="drill-meta"><span class="time">~60 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-azure">Azure AI Search optional</span><span class="badge b-tool">numpy · rank_bm25 · pytest</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> give Traincrest Assist a search index over courses and help sections, hybrid search with filters behind one service, a search API, and a catalogue tool that understands paraphrases.</p>
+    <p class="drill-goal"><b>Goal:</b> give RR Finance Assist a search index over courses and help sections, hybrid search with filters behind one service, a search API, and a catalogue tool that understands paraphrases.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Settings</h4>
         <p>Copy <code>data/help/</code> from <code>genai-labs</code>, then add to <code>app/config.py</code> (and the matching lines to <code>.env</code>):</p>
@@ -98,11 +98,11 @@ python -m scripts.build_index from the project folder.
 Done in 5.0s.</code></pre>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Upgrade the <code>search_courses</code> tool</h4>
-        <p>Milestone 4's tool took a single keyword. Write a prompt for your assistant that changes it to take the learner's words plus typed filters, use the search service, and fall back safely.</p>
+        <p>Milestone 4's tool took a single keyword. Write a prompt for your assistant that changes it to take the customer's words plus typed filters, use the search service, and fall back safely.</p>
         <div class="template-box"><pre><code>Goal: upgrade search_courses in #file:app/tools.py to semantic search
 Context: app/search.py has SearchService.search(query, k, **filters) with filters
          kind, level, format, max_price_usd
-Constraints: arguments: query (the learner's words) + optional typed filters ...
+Constraints: arguments: query (the customer's words) + optional typed filters ...
              how the service is provided to the tool ...
              fallback when ...
              return only id, title, level, format, price_usd
@@ -132,7 +132,7 @@ I get error LAB-503 (help)              -> labs-and-sandboxes-2 "Common problems
 Is there a discount for a team of 12? (help) -> corporate-training-2 "Group discounts", ...
 hands-on cloud course, beginner, max $500 -> C109 AZ-900 ($350), C114 Docker ($190), C105 Prompt Eng. ($390)</code></pre>
         <ul class="verify-list">
-          <li>In the chat, as any learner: "Is there a cheap intro to containers?" The meta line shows <code>tools: search_courses</code> and the answer names Docker Quick Start ($190).</li>
+          <li>In the chat, as any customer: "Is there a cheap intro to containers?" The meta line shows <code>tools: search_courses</code> and the answer names Docker Quick Start ($190).</li>
           <li>"Beginner cloud courses under $400?" The tool is called with <code>level="beginner"</code> and <code>max_price_usd=400</code>, and every course in the answer obeys both.</li>
           <li>Stop Ollama (or break the embedding deployment name in <code>.env</code>) and ask again: the tool falls back to keyword search; Assist still answers, just less cleverly.</li>
           <li>Delete <code>data/index/</code> and restart: <code>/api/search</code> returns 503 with "run python -m scripts.build_index", and chat still works.</li>
@@ -144,7 +144,7 @@ hands-on cloud course, beginner, max $500 -> C109 AZ-900 ($350), C114 Docker ($1
   <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="b05-1"> I've completed Milestone 5</label></div>
 </div>
 
-<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where Traincrest Assist stands after Part II.</p></div></div>
+<div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where RR Finance Assist stands after Part II.</p></div></div>
 <ul class="checklist">
   <li>Every course and help section is embedded in an index that records its embedding model.</li>
   <li>Search is hybrid (BM25 + vectors + RRF) with metadata pre-filters, locally or on Azure AI Search.</li>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Retrieval-Augmented Generation</title>
-<meta name="description" content="Module 06 overview: what RAG is and why teams use it, the RAG architecture, document ingestion, chunking, embeddings and vector storage, retrieval, prompt construction, response generation and citations, with 10 drills and Traincrest Assist milestone 6.">
+<meta name="description" content="Module 06 overview: what RAG is and why teams use it, the RAG architecture, document ingestion, chunking, embeddings and vector storage, retrieval, prompt construction, response generation and citations, with 10 drills and RR Finance Assist milestone 6.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -175,7 +175,7 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 06 · Overview</span><h1>Retrieval-Augmented Generation: Answers from Your Own Documents</h1><p class="lead">A model knows the public internet up to its training cut-off. It doesn't know TrainCrest's refund rules, last week's lab incident or the approval limits on an internal wiki page. Retrieval-augmented generation fixes that without retraining anything: find the right passages at question time, put them in the prompt, and make the model answer from them, with citations you can check.</p><div class="chips"><span class="chip">9 topics</span><span class="chip">10 drills</span><span class="chip">Milestone 6</span><span class="chip">≈ 5 hours hands-on</span></div></header>
+<header class="page-hero"><span class="eyebrow">Module 06 · Overview</span><h1>Retrieval-Augmented Generation: Answers from Your Own Documents</h1><p class="lead">A model knows the public internet up to its training cut-off. It doesn't know RR Finance Bank's refund rules, last week's lab incident or the approval limits on an internal wiki page. Retrieval-augmented generation fixes that without retraining anything: find the right passages at question time, put them in the prompt, and make the model answer from them, with citations you can check.</p><div class="chips"><span class="chip">9 topics</span><span class="chip">10 drills</span><span class="chip">Milestone 6</span><span class="chip">≈ 5 hours hands-on</span></div></header>
 <div class="content">
 
 <h2 id="map">The mental map: index once, retrieve every time</h2>
@@ -219,8 +219,8 @@
 </div>
 
 <h2 id="why">Why this module matters</h2>
-<p>Traincrest Assist's policy lives in its system prompt: five lines, typed by hand in Milestone 3. That doesn't scale. The help centre has ten articles and forty-seven sections; the support team's internal wiki has more; both change every month. Put all of it in every prompt and you pay for thousands of tokens per message and the model still misses details. Leave it out and the model guesses, confidently. In Drill 06.1 a model asked about error LAB-503 without the help centre explains it as a "malfunction in instrument communication".</p>
-<p>The hands-on project of this module is a <strong>company knowledge assistant</strong>: it answers from TrainCrest's own documents, public and internal, says when they don't cover a question, and shows where each fact came from.</p>
+<p>RR Finance Assist's policy lives in its system prompt: five lines, typed by hand in Milestone 3. That doesn't scale. The help centre has ten articles and forty-seven sections; the support team's internal wiki has more; both change every month. Put all of it in every prompt and you pay for thousands of tokens per message and the model still misses details. Leave it out and the model guesses, confidently. In Drill 06.1 a model asked about error LAB-503 without the help centre explains it as a "malfunction in instrument communication".</p>
+<p>The hands-on project of this module is a <strong>company knowledge assistant</strong>: it answers from RR Finance Bank's own documents, public and internal, says when they don't cover a question, and shows where each fact came from.</p>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
   <p>A new call-centre agent doesn't memorise the policy binder. When a caller asks something, they look up the right page, read it, answer from it, and say "that's in section 4.2" if challenged. A good RAG system works the same way: it looks things up every time, and it can show its page numbers.</p>
@@ -239,7 +239,7 @@
 <a class="page-card k-topic" href="../../modules/06/retrieval.html"><span class="pc-tag">Learn · Do · Check</span><b>Retrieval</b><ul><li><span class="mono">06.6</span> Calibrate a relevance floor <span class="muted">· ~15 min</span></li><li><span class="mono">06.7</span> Rewrite follow-ups before searching <span class="muted">· ~15 min</span></li></ul></a>
 <a class="page-card k-topic" href="../../modules/06/prompt-construction.html"><span class="pc-tag">Learn · Do · Check</span><b>Prompt construction</b><ul><li><span class="mono">06.8</span> The RAG prompt and its token budget <span class="muted">· ~20 min</span></li></ul></a>
 <a class="page-card k-topic" href="../../modules/06/generation.html"><span class="pc-tag">Learn · Do · Check</span><b>Response generation</b><ul><li><span class="mono">06.9</span> The Company Knowledge Assistant, end to end <span class="muted">· ~30 min</span></li></ul></a>
-<a class="page-card k-topic" href="../../modules/06/citations.html"><span class="pc-tag">Learn · Do · Check</span><b>Citation and source attribution</b><ul><li><span class="mono">06.10</span> Check citations before the learner sees them <span class="muted">· ~20 min</span></li></ul></a>
+<a class="page-card k-topic" href="../../modules/06/citations.html"><span class="pc-tag">Learn · Do · Check</span><b>Citation and source attribution</b><ul><li><span class="mono">06.10</span> Check citations before the customer sees them <span class="muted">· ~20 min</span></li></ul></a>
 <a class="page-card k-build" href="../../modules/06/build.html"><span class="pc-tag">RR Finance Assist</span><b>Build: Milestone 6</b><ul><li><span class="mono">M6</span> Milestone 6: help-centre RAG with checked citations <span class="muted">· ~75 min</span></li></ul></a>
 <a class="page-card k-recap" href="../../modules/06/recap.html"><span class="pc-tag">Check</span><b>Recap and self-check</b></a></div>
 
@@ -252,7 +252,7 @@
 <pre class="code" data-file=".env (optional)"><code><span class="c"># Module 06: relevance floor for retrieval. Leave unset to use the default for your embedding model,</span>
 <span class="c"># or set the value you calibrate in Drill 06.6.</span>
 RAG_MIN_SCORE=</code></pre></li>
-  <li><strong>New data in <code>genai-labs/data/internal/</code>:</strong> four fictional internal documents for TrainCrest's support staff, in four formats (a markdown playbook, an HTML wiki export, a plain-text runbook and a CSV FAQ), plus a duplicate file to catch.</li>
+  <li><strong>New data in <code>genai-labs/data/internal/</code>:</strong> four fictional internal documents for RR Finance Bank's support staff, in four formats (a markdown playbook, an HTML wiki export, a plain-text runbook and a CSV FAQ), plus a duplicate file to catch.</li>
   <li><strong>New helpers in <code>genai-labs/</code>:</strong> <code>ingest.py</code>, <code>rag_chunks.py</code>, <code>kb_index.py</code>, <code>rag_prompt.py</code>, <code>citations.py</code>, and <code>rag.py</code>, which puts them together. Each drill builds or uses one of them, with tests.</li>
   <li><strong>Cost:</strong> a few cents on Azure for the whole module; embeddings are cached on disk, so re-runs are free.</li>
   <li><strong>Build:</strong> Milestone 6 moves the policy out of the prompt and into the help centre: a <code>search_help</code> tool, citations checked in code, sources in the UI, and a <code>/api/ask</code> endpoint for a help-centre search box.</li>

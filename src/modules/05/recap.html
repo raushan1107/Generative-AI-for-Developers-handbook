@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m05-recap", "short": "Module 05 Recap", "h1": "Module 05 Recap and Self-Check", "description": "Module 05 recap: a semantic search checklist, the Traincrest Assist search design decisions, and a six-question self-check on embeddings, similarity, models, vector databases, chunking, filters and hybrid search.", "lead": "Check what stuck, review the search decisions Traincrest Assist now carries, and see what Part III adds.", "chips": ["Checklist", "Design decisions", "6 questions", "End of Part II"]}
+{"id": "m05-recap", "short": "Module 05 Recap", "h1": "Module 05 Recap and Self-Check", "description": "Module 05 recap: a semantic search checklist, the RR Finance Assist search design decisions, and a six-question self-check on embeddings, similarity, models, vector databases, chunking, filters and hybrid search.", "lead": "Check what stuck, review the search decisions RR Finance Assist now carries, and see what Part III adds.", "chips": ["Checklist", "Design decisions", "6 questions", "End of Part II"]}
 -->
 <h2 id="checklist">Semantic search checklist</h2>
 <ul class="checklist">
@@ -13,14 +13,14 @@
   <li>Keyword and vector results are merged by rank, with a proper analyzer, and measured (Drill 05.9).</li>
 </ul>
 
-<h2 id="decisions">Traincrest Assist: the search design</h2>
+<h2 id="decisions">RR Finance Assist: the search design</h2>
 <div class="table-wrap min">
   <table>
     <thead><tr><th>Requirement</th><th>Decision</th><th>Why this and not something else</th></tr></thead>
     <tbody>
-      <tr><td>Find courses in learners' own words</td><td>Embed title + description; semantic <code>search_courses</code> with typed filters</td><td>Descriptions hold the ideas learners ask about; typed filters keep hard rules exact</td></tr>
-      <tr><td>Search the help centre</td><td>Chunk by heading with "Article › Section" prefixes: 40 sections</td><td>Best hit rate in Drill 05.7; each chunk makes sense alone and keeps its source for citations</td></tr>
-      <tr><td>Exact codes and paraphrases</td><td>Hybrid: BM25 with a small analyzer + cosine, merged with RRF</td><td>7/8 right first in Drill 05.9 versus 6/8 keyword and 4/8 vector</td></tr>
+      <tr><td>Find products in customers' own words</td><td>Embed name + description; semantic <code>search_products</code> with typed filters</td><td>Descriptions hold the ideas customers ask about; typed filters keep hard rules exact</td></tr>
+      <tr><td>Search the help centre</td><td>Chunk by heading with "Article › Section" prefixes: 44 sections</td><td>20/20 in the top 3 in Drill 05.7 with small, focused chunks; each makes sense alone and keeps its source for citations</td></tr>
+      <tr><td>Exact codes and paraphrases</td><td>Hybrid: BM25 with a small analyzer + cosine, merged with RRF</td><td>7/8 right first in Drill 05.9 versus 5/8 vector; the keyword side catches exact phrases like "safe account"</td></tr>
       <tr><td>Laptop and cloud</td><td>One <code>SearchService</code>, two backends (<code>LocalIndex</code>, <code>AzureIndex</code>), chosen by <code>SEARCH_BACKEND</code></td><td>Free local development; managed scale, filters and analyzers in production</td></tr>
       <tr><td>Safe model changes</td><td>Index records its embedding model; load refuses a mismatch</td><td>Mixing vector spaces fails silently otherwise</td></tr>
       <tr><td>Resilience</td><td>No index or embedding error → keyword fallback in the tool; 503 with instructions on <code>/api/search</code></td><td>Chat keeps working; the operator gets a clear message</td></tr>
@@ -33,12 +33,12 @@
   <details><summary>1. In one sentence, what is an embedding and why does it enable semantic search?</summary><div><p>A vector representation of meaning, where similar texts land close together, so "find similar" becomes "find the nearest vectors", whatever words were used.</p></div></details>
   <details><summary>2. Your similarity scores all sit between 0.3 and 0.7. Is something broken?</summary><div><p>Probably not: score ranges are <strong>model-specific</strong>. Look at rankings, and calibrate any threshold on labelled examples for that model.</p></div></details>
   <details><summary>3. You switch the <code>embed</code> deployment to a new model. What breaks, and what do you do?</summary><div><p>Old vectors and new query vectors are in different spaces (maybe different sizes), so results become meaningless. Re-embed everything, rebuild the index, and compare hit rates before switching traffic.</p></div></details>
-  <details><summary>4. Why did heading-based chunks beat fixed 800-character chunks for top-1 hits?</summary><div><p>Each heading chunk is one idea with its title, so its vector is focused; an 800-character chunk mixes several topics, so its vector blurs and the most relevant one doesn't always rank first.</p></div></details>
-  <details><summary>5. "Beginner courses under $500" returns nothing with post-filtering. Explain and fix.</summary><div><p>The top k by meaning were all intermediate and expensive, and filtering afterwards removed them all. Use <strong>pre-filtering</strong>, so ranking happens only among courses that satisfy the filter.</p></div></details>
+  <details><summary>4. Fixed 800-character chunks scored best in Drill 05.7. Why did we still choose heading chunks?</summary><div><p>The bank's articles are short, so 800-character chunks are half an article and nearly always contain the answer. But they send about three times the text to the model in RAG and can't be cited precisely. Heading chunks found every answer in the top 3, are one idea each, and cite as "Fees and charges › Overdrafts".</p></div></details>
+  <details><summary>5. "Cards with no annual fee for earning rewards abroad" returns nothing with post-filtering. Explain and fix.</summary><div><p>The top k by meaning were a card with a $95 fee and two savings accounts, and filtering afterwards removed them all. Use <strong>pre-filtering</strong>, so ranking happens only among products that satisfy the filter.</p></div></details>
   <details><summary>6. What does Reciprocal Rank Fusion combine, and why not just add scores?</summary><div><p>It combines <strong>ranks</strong> from the keyword and vector lists (<code>Σ 1/(60 + rank)</code>). BM25 and cosine scores are on different scales, so adding them lets one side dominate.</p></div></details>
 </div>
 
 <div class="callout takeaway">
   <div class="c-label">End of Part II · carry this into Part III</div>
-  <p>Traincrest Assist now returns data your code can trust, calls your functions safely, and finds information by meaning. Part III puts it together: <strong>RAG</strong> retrieves the right help sections and makes the model answer from them, with citations (Module 06), and <strong>agents</strong> plan multi-step tasks with tools and a human in the loop (Module 07).</p>
+  <p>RR Finance Assist now returns data your code can trust, calls your functions safely, and finds information by meaning. Part III puts it together: <strong>RAG</strong> retrieves the right help sections and makes the model answer from them, with citations (Module 06), and <strong>agents</strong> plan multi-step tasks with tools and a human in the loop (Module 07).</p>
 </div>

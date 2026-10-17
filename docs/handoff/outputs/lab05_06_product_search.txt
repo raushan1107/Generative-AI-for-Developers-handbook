@@ -1,0 +1,20 @@
+
+I want to stop paying so much interest on my credit card debt
+  keyword : Cashback Card  (2 shared words)
+  semantic: Balance Transfer Card  (cosine 0.68)
+
+a card I can use on holiday without extra charges
+  keyword : Everyday Checking  (1 shared words)
+  semantic: Voyager Travel Card  (cosine 0.70)
+
+somewhere safe for my rainy-day money that grows
+  keyword : Business Savings  (1 shared words)
+  semantic: High-Yield Savings  (cosine 0.61)
+
+first bank account for my 19-year-old at university
+  keyword : Student Checking  (3 shared words)
+  semantic: Student Checking  (cosine 0.75)
+
+buy my first flat
+  keyword : 30-Year Fixed Mortgage  (2 shared words)
+  semantic: 30-Year Fixed Mortgage  (cosine 0.62)

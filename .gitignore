@@ -11,9 +11,10 @@ response.json
 .embed_cache.json
 code/genai-labs/data/kb_index/
 code/genai-labs/data/agent_state/
-code/traincrest-assist/*/data/index/
-code/traincrest-assist/*/data/tickets.jsonl
-code/traincrest-assist/*/data/actions.jsonl
+code/rrfinance-assist/*/data/index/
+code/rrfinance-assist/*/data/tickets.jsonl
+code/rrfinance-assist/*/data/actions.jsonl
 code/oss-labs/data/search_index.json
 code/oss-labs/data/kb_index.json
 chat_log.jsonl
+code/genai-labs/chroma_db/

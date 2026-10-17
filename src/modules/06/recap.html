@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m06-recap", "short": "Module 06 Recap", "h1": "Module 06 Recap and Self-Check", "description": "Module 06 recap: a RAG checklist, the Traincrest Assist RAG design decisions, and a six-question self-check on retrieval-augmented generation, ingestion, chunking, indexing, retrieval, prompt construction, generation and citations.", "lead": "Check what stuck, review the RAG decisions Traincrest Assist now carries, and see what Module 07 adds: an assistant that can act, not just answer.", "chips": ["Checklist", "Design decisions", "6 questions"]}
+{"id": "m06-recap", "short": "Module 06 Recap", "h1": "Module 06 Recap and Self-Check", "description": "Module 06 recap: a RAG checklist, the RR Finance Assist RAG design decisions, and a six-question self-check on retrieval-augmented generation, ingestion, chunking, indexing, retrieval, prompt construction, generation and citations.", "lead": "Check what stuck, review the RAG decisions RR Finance Assist now carries, and see what Module 07 adds: an assistant that can act, not just answer.", "chips": ["Checklist", "Design decisions", "6 questions"]}
 -->
 <h2 id="checklist">RAG checklist</h2>
 <ul class="checklist">
@@ -15,7 +15,7 @@
   <li>Citations are checked in code before anyone reads them, and only cited sources are shown (Drill 06.10).</li>
 </ul>
 
-<h2 id="decisions">Traincrest Assist: the RAG design</h2>
+<h2 id="decisions">RR Finance Assist: the RAG design</h2>
 <div class="table-wrap min">
   <table>
     <thead><tr><th>Requirement</th><th>Decision</th><th>Why this and not something else</th></tr></thead>
@@ -23,10 +23,10 @@
       <tr><td>Policy answers that stay current</td><td>Policy removed from the prompt (<code>assist_system@v4</code>); answers come from the help centre</td><td>One source of truth; editing an article and re-indexing updates answers, with no prompt release</td></tr>
       <tr><td>Chat that searches when it needs to</td><td>Tool-based RAG: <code>search_help</code> with "a complete question" as its argument</td><td>The model decides when to search and rewrites follow-ups as it writes the query</td></tr>
       <tr><td>A search box on the help-centre site</td><td>Pipeline RAG: <code>POST /api/ask</code> with <code>rag_answer@v1</code></td><td>Always searches, one model call at most, zero when nothing is relevant</td></tr>
-      <tr><td>Answers learners can check</td><td>Numbered sources; citations checked in code; only cited sources shown, uncited ones labelled "related"</td><td>Invented citations never reach the learner; the UI never overstates its evidence</td></tr>
+      <tr><td>Answers customers can check</td><td>Numbered sources; citations checked in code; only cited sources shown, uncited ones labelled "related"</td><td>Invented citations never reach the customer; the UI never overstates its evidence</td></tr>
       <tr><td>Nothing lost in chunking</td><td>Introductions kept as "Overview"; chunker version recorded and checked</td><td>Drill 06.4 found answers only in introductions; a changed chunker must force a rebuild</td></tr>
       <tr><td>Off-topic questions</td><td>Relevance floor per embedding model, plus the NOT_FOUND rule</td><td>Cheap first filter, honest second one; neither is enough alone (Drills 06.6, 06.9)</td></tr>
-      <tr><td>Staff documents</td><td>Not in the learner-facing index at all</td><td>Audience filters work (Drill 06.9), but the safest document is the one that isn't there</td></tr>
+      <tr><td>Staff documents</td><td>Not in the customer-facing index at all</td><td>Audience filters work (Drill 06.9), but the safest document is the one that isn't there</td></tr>
     </tbody>
   </table>
 </div>
@@ -37,11 +37,11 @@
   <details><summary>2. An answer about voucher validity is wrong. List the order in which you'd investigate.</summary><div><p>Retrieved chunks first (was the right section there?), then chunking (is the fact in one chunk with its context?), ingestion (is the article current and clean?), the prompt (rules, budget), and only then the model.</p></div></details>
   <details><summary>3. Why does the knowledge index record its chunker version as well as its embedding model?</summary><div><p>A new chunker produces different chunk ids and texts. Loading an old index with new code would break citations and incremental updates silently; recording the version makes the mismatch an error and forces a rebuild.</p></div></details>
   <details><summary>4. "Can I bring my dog to class?" scored higher than a real question. What protects the user?</summary><div><p>Layers: the floor drops most off-topic questions; for the rest, the prompt requires answers only from sources and a NOT_FOUND sentinel; citation checks and, later, evaluation catch what slips through. No single layer is enough.</p></div></details>
-  <details><summary>5. A model cites [5] when only four sources were sent. What does Traincrest Assist do?</summary><div><p><code>check_citations</code> removes the [5] marker, the chat sends a <code>replace</code> event with the cleaned text, logs an <code>unknown_citations</code> warning, and lists only the real cited sources.</p></div></details>
-  <details><summary>6. Why is the answer to "how much would I get back?" a combination of RAG and a tool?</summary><div><p>RAG explains the policy with a citation (14+ days 100%, 7 to 13 days 50%); the <code>quote_refund</code> tool applies it to this learner's enrolment, dates and price. Policy from documents, numbers from code.</p></div></details>
+  <details><summary>5. A model cites [5] when only four sources were sent. What does RR Finance Assist do?</summary><div><p><code>check_citations</code> removes the [5] marker, the chat sends a <code>replace</code> event with the cleaned text, logs an <code>unknown_citations</code> warning, and lists only the real cited sources.</p></div></details>
+  <details><summary>6. Why is the answer to "how much would I get back?" a combination of RAG and a tool?</summary><div><p>RAG explains the policy with a citation (14+ days 100%, 7 to 13 days 50%); the <code>quote_refund</code> tool applies it to this customer's enrolment, dates and price. Policy from documents, numbers from code.</p></div></details>
 </div>
 
 <div class="callout takeaway">
   <div class="c-label">Carry this into Module 07</div>
-  <p>Traincrest Assist now knows what TrainCrest's documents say and can prove it. Next it learns to <strong>act</strong>: plan multi-step requests, call tools that change things (extend a lab, move a course date), keep state across steps, and stop for a human's approval before anything irreversible happens.</p>
+  <p>RR Finance Assist now knows what RR Finance Bank's documents say and can prove it. Next it learns to <strong>act</strong>: plan multi-step requests, call tools that change things (extend a lab, move a course date), keep state across steps, and stop for a human's approval before anything irreversible happens.</p>
 </div>

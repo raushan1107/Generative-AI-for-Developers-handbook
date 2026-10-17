@@ -20,11 +20,11 @@
   <div class="frame">
     <svg viewBox="0 0 960 280" role="img" aria-labelledby="cs-t cs-d">
       <title id="cs-t">Cosine similarity as an angle</title>
-      <desc id="cs-d">Three arrows from one origin. The arrows for "refund" and "money back" point almost the same way, with a small angle and cosine close to 1. The arrow for "lab quota" points in a very different direction, with a wide angle and a low cosine. A note says that on vectors of length 1, cosine equals the dot product.</desc>
+      <desc id="cs-d">Three arrows from one origin. The arrows for "card stolen" and "wallet taken" point almost the same way, with a small angle and cosine close to 1. The arrow for "weather" points in a very different direction, with a wide angle and a low cosine. A note says that on vectors of length 1, cosine equals the dot product.</desc>
       <circle cx="160" cy="230" r="4" class="s-surface2"/>
-      <path d="M160 230 L440 70" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="448" y="66" class="t-b">"refund"</text>
-      <path d="M160 230 L460 110" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="468" y="112" class="t-b">"money back"</text>
-      <path d="M160 230 L250 40" class="s-arrow" marker-end="url(#ah)"/><text x="196" y="34" class="t-b">"lab quota"</text>
+      <path d="M160 230 L440 70" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="448" y="66" class="t-b">"card stolen"</text>
+      <path d="M160 230 L460 110" class="s-arrow-accent" marker-end="url(#ah-a)"/><text x="468" y="112" class="t-b">"wallet taken"</text>
+      <path d="M160 230 L250 40" class="s-arrow" marker-end="url(#ah)"/><text x="196" y="34" class="t-b">"weather"</text>
       <path d="M262 172 Q270 180 274 184" class="s-line"/><text x="290" y="200" class="t-s">small angle → cosine ≈ 0.99</text>
       <text x="30" y="110" class="t-s">wide angle → cosine ≈ 0.22</text>
       <rect x="600" y="40" width="340" height="200" rx="14" class="s-surface"/>
@@ -58,12 +58,17 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Similarity scores drive real decisions in banking search tools, so their meaning must be understood: a cosine of 0.62 isn't a probability, and it isn't comparable across embedding models. Teams calibrate thresholds on labelled examples (the right policy section for each test question) before trusting them, and record the model version with the score.</p>
+</div>
   <p>Duplicate-ticket detectors and "related articles" widgets are built on exactly this: embed, compute cosine against recent items, show the top few above a threshold tuned on labelled examples. Teams re-tune that threshold whenever they change embedding model, because the score distribution moves.</p>
 </div>
 
 <div class="lens">
   <div><h5>Traditional developer view</h5><p>"Similarity is string distance: shared characters, edit distance."</p></div>
-  <div><h5>GenAI developer view</h5><p>"Similarity is the <strong>angle between meaning vectors</strong>. 'Refund' and 'money back' share no letters and still point the same way. I read scores as rankings, and calibrate any threshold per model."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Similarity is the <strong>angle between meaning vectors</strong>. 'Card stolen' and 'wallet taken' share no words and still point the same way. I read scores as rankings, and calibrate any threshold per model."</p></div>
 </div>
 
 <div class="callout pitfall">
@@ -89,31 +94,32 @@
         <pre class="code" data-file="lab05_02_similarity.py" data-src="code/genai-labs/lab05_02_similarity.py"></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab05_02_similarity.py --toy</code></pre>
         <span class="out-label">Output (exact)</span>
-<pre class="out"><code>refund vs money_back       cosine=0.991  dot=0.740  euclidean=0.141
-refund vs money_back_long  cosine=0.991  dot=1.480  euclidean=0.762
-refund vs lab_quota        cosine=0.220  dot=0.180  euclidean=1.131</code></pre>
+<pre class="out"><code>dispute vs money_back       cosine=0.991  dot=0.740  euclidean=0.141
+dispute vs money_back_long  cosine=0.991  dot=1.480  euclidean=0.762
+dispute vs stolen_card      cosine=0.220  dot=0.180  euclidean=1.131</code></pre>
         <p>Same direction, twice the length: cosine doesn't move, dot product doubles, distance grows. That's why we normalise.</p>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Real embeddings</h4>
         <pre class="term"><code><span class="ps">$ </span>python lab05_02_similarity.py</code></pre>
         <span class="out-label">Real output with nomic-embed-text (Ollama); yours will differ</span>
-<pre class="out"><code>               money    refund reembolso     quota   sandbox   weather
-money           1.00      0.67      0.40      0.37      0.39      0.34
-refund          0.67      1.00      0.35      0.40      0.32      0.35
-reembolso       0.40      0.35      1.00      0.33      0.32      0.29
-quota           0.37      0.40      0.33      1.00      0.33      0.25
-sandbox         0.39      0.32      0.32      0.33      1.00      0.28
-weather         0.34      0.35      0.29      0.25      0.28      1.00</code></pre>
+<pre class="out"><code>               money   dispute  reclamar    stolen    wallet   weather
+money           1.00      0.48      0.43      0.62      0.64      0.34
+dispute         0.48      1.00      0.32      0.44      0.47      0.33
+reclamar        0.43      0.32      1.00      0.37      0.40      0.32
+stolen          0.62      0.44      0.37      1.00      0.79      0.28
+wallet          0.64      0.47      0.40      0.79      1.00      0.30
+weather         0.34      0.33      0.32      0.28      0.30      1.00</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
         <ul class="verify-list">
           <li>The diagonal is 1.00 and the matrix is symmetric: run <code>pytest -q test_similarity.py</code> to confirm the maths (4 tests).</li>
-          <li>"money back" and "refund" are the strongest pair (0.67) with no shared words.</li>
+          <li>"My card was stolen" and "Someone took my wallet" are the strongest pair (0.79) with no shared words.</li>
+          <li>Surprise: "How do I get my money back?" sits closer to the theft sentences (0.62, 0.64) than to "Can I dispute a double charge?" (0.48). Embeddings capture what a text is <em>about</em> (losing money), not your bank's categories. That's why triage uses a classifier with house rules (Module 03), and search is evaluated on real questions.</li>
           <li>Notice how narrow this model's range is: unrelated pairs still score 0.25 to 0.40. A fixed "0.5 = match" rule would be meaningless here.</li>
         </ul>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>The Spanish sentence</h4>
-        <p>"¿Cómo puedo obtener un reembolso?" means "How can I get a refund?". With nomic-embed-text it scored only 0.35 against "refund". Run the same script on your Azure <code>text-embedding-3-small</code> deployment. What do you expect, and what does it mean for TrainCrest, whose learners write in many languages?</p>
+        <p>"¿Cómo puedo reclamar un cargo?" means "How can I dispute a charge?". With nomic-embed-text it scored only 0.32 against "Can I dispute a double charge?". Run the same script on your Azure <code>text-embedding-3-small</code> deployment. What do you expect, and what does it mean for RR Finance Bank, whose customers write in many languages?</p>
         <details class="solution"><summary>Compare with my answer</summary><div><p><code>nomic-embed-text</code> is trained mostly on English, so translations don't land close together. The <code>text-embedding-3</code> models are trained on many languages and are expected to place the Spanish sentence much nearer the English ones; check the actual numbers on your deployment rather than assuming. For a multilingual help centre, the embedding model's <strong>language coverage</strong> is a selection criterion, tested with your own sentences (next topic).</p></div></details>
       </li>
     </ol>

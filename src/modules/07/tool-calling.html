@@ -20,13 +20,13 @@
   <div class="frame">
     <svg viewBox="0 0 960 280" role="img" aria-labelledby="tc-t tc-d">
       <title id="tc-t">What the model sees, and what it gets back</title>
-      <desc id="tc-d">Left: a terse tool definition, name 'ext', no description, a parameter p0. Right: a clear one, name extend_lab, a description saying it uses the learner's one free 7-day extension and needs approval, and a parameter enrolment_id with an example format. Below: an unhelpful error 'tool failed' versus an actionable one: 'TC12345 is not one of this learner's enrolments; use my_enrolments to see them'.</desc>
+      <desc id="tc-d">Left: a terse tool definition, name 'ext', no description, a parameter p0. Right: a clear one, name extend_lab, a description saying it uses the customer's one free 7-day extension and needs approval, and a parameter enrolment_id with an example format. Below: an unhelpful error 'tool failed' versus an actionable one: 'TC12345 is not one of this customer's enrolments; use my_enrolments to see them'.</desc>
       <text x="20" y="30" class="t-m">THE MODEL SEES ONLY THIS</text>
       <rect x="20" y="42" width="440" height="100" rx="12" class="s-rose"/><text x="36" y="68" class="t-b">terse</text><text x="36" y="94" class="t-m">ext(p0: string)</text><text x="36" y="118" class="t-s">description: ""</text>
       <rect x="500" y="42" width="440" height="100" rx="12" class="s-green"/><text x="516" y="68" class="t-b">written for a reader</text><text x="516" y="94" class="t-m">extend_lab(enrolment_id: "TC-12345")</text><text x="516" y="118" class="t-s">"Use the one free 7-day extension. Needs approval."</text>
       <text x="20" y="178" class="t-m">AND THEN READS THIS</text>
       <rect x="20" y="190" width="440" height="70" rx="12" class="s-rose"/><text x="36" y="218" class="t-m">{"error": "tool failed: DeskError"}</text><text x="36" y="242" class="t-s">the model can only guess or give up</text>
-      <rect x="500" y="190" width="440" height="70" rx="12" class="s-green"/><text x="516" y="216" class="t-s">{"error": "TC12345 is not one of this learner's</text><text x="516" y="234" class="t-s">enrolments; use my_enrolments to see them"}</text><text x="516" y="252" class="t-s">the next step is in the message</text>
+      <rect x="500" y="190" width="440" height="70" rx="12" class="s-green"/><text x="516" y="216" class="t-s">{"error": "TC12345 is not one of this customer's</text><text x="516" y="234" class="t-s">enrolments; use my_enrolments to see them"}</text><text x="516" y="252" class="t-s">the next step is in the message</text>
     </svg>
   </div>
   <figcaption><b>Descriptions choose tools; error messages choose the next step.</b> Both are prompts, so write them like prompts.</figcaption>
@@ -42,7 +42,7 @@
       <tr><td>Parameters have descriptions and examples</td><td>Fewer malformed arguments</td><td>"Enrolment ID like TC-12345, from my_enrolments"</td></tr>
       <tr><td>Small, focused tools; separate reads from writes</td><td>Reads can run freely; writes get approvals and idempotency</td><td>Quote (read) and reschedule (write) are separate</td></tr>
       <tr><td>Errors are observations with a next step</td><td>The model recovers instead of looping or giving up</td><td><code>actionable()</code> returns the system's message</td></tr>
-      <tr><td>Identity never comes from the model</td><td>A prompt can't make the agent act as someone else</td><td><code>context["learner"]</code>, set by the app</td></tr>
+      <tr><td>Identity never comes from the model</td><td>A prompt can't make the agent act as someone else</td><td><code>context["customer"]</code>, set by the app</td></tr>
       <tr><td>Return what's needed, not everything</td><td>Every result is tokens in the next call</td><td>Enrolment rows have 5 fields, not the whole record</td></tr>
       <tr><td>Keep the tool count modest</td><td>Choice gets harder with dozens of similar tools</td><td>7 tools; group or route when you have many more</td></tr>
     </tbody>
@@ -51,6 +51,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Tool design is access design. A bank exposes narrow tools ("freeze this signed-in customer's card") rather than broad ones ("update any account"), names and describes them so the model picks the right one, and returns errors the model can act on. Each tool maps to an entitlement the security team can review, exactly like an API for a mobile app.</p>
+</div>
   <p>Teams that wrap an existing internal API for an agent usually start by exposing its endpoints one-to-one, and the agent struggles: cryptic names, dozens of parameters, error codes like <code>E4012</code>. The fix that works is a thin "agent-facing" layer: fewer, task-shaped tools, descriptions written for the model, and errors translated into sentences. The Model Context Protocol (MCP) has made this layer reusable across assistants, but the design rules are the same.</p>
 </div>
 
@@ -124,7 +129,7 @@ CLEAR tools: 6/8 right first call</code></pre>
 "Can I still move TC-20877, and how much would it cost?" clearly maps to it: say it answers
 "can I move and what does it cost" questions, needs only the enrolment ID, and changes nothing.
 Keep it under 30 words. Don't change any code or other docstrings.</code></pre></div>
-        <div class="why"><b>Why this prompt works:</b> it targets one measured failure, gives the wording learners actually use, adds the reassuring fact the model needs ("changes nothing", so it's safe to call), and limits the change so the next run measures only this edit.</div>
+        <div class="why"><b>Why this prompt works:</b> it targets one measured failure, gives the wording customers actually use, adds the reassuring fact the model needs ("changes nothing", so it's safe to call), and limits the change so the next run measures only this edit.</div>
         <p>Run the drill again and compare the clear-tools score. Keep the change only if it helps without breaking another request.</p>
       </li>
     </ol>

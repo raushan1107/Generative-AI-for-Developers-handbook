@@ -225,7 +225,7 @@
   <table>
     <thead><tr><th>You might write in Pydantic</th><th>JSON Schema keyword</th><th>Azure structured outputs</th><th>Do this instead</th></tr></thead>
     <tbody>
-      <tr><td><code>Field(pattern=r"^TC-\d{5}$")</code></td><td><code>pattern</code></td><td>Not supported</td><td><code>@field_validator</code> in your code</td></tr>
+      <tr><td><code>Field(pattern=r"^RR-\d{5}$")</code></td><td><code>pattern</code></td><td>Not supported</td><td><code>@field_validator</code> in your code</td></tr>
       <tr><td><code>Field(max_length=200)</code></td><td><code>maxLength</code></td><td>Not supported</td><td>Validator, plus "at most 20 words" in the description</td></tr>
       <tr><td><code>Field(ge=1, le=500)</code></td><td><code>minimum</code> / <code>maximum</code></td><td>Not supported</td><td>Validator</td></tr>
       <tr><td><code>date</code>, <code>EmailStr</code></td><td><code>format</code></td><td>Not supported</td><td><code>str</code> + description + validator</td></tr>
@@ -237,11 +237,16 @@
 
 <div class="callout note">
   <div class="c-label">Descriptions are prompts</div>
-  <p>Field descriptions travel inside the schema and the model reads them. <code>Field(description="Like TC-12345. Null if not given. Never invent one.")</code> is an instruction exactly where it's needed. Write them as carefully as your system prompt.</p>
+  <p>Field descriptions travel inside the schema and the model reads them. <code>Field(description="Like RR-12345. Null if not given. Never invent one.")</code> is an instruction exactly where it's needed. Write them as carefully as your system prompt.</p>
 </div>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Banks extract the same fields again and again: payee, amount, currency, date and reference from payment instructions; borrower, income and employer from loan applications; counterparty and notional from trade confirmations. A strict schema per document type, with enums for currencies and categories and null for anything missing, turns those extractions into data a controls team can test. Amounts should be numbers in a stated currency, never strings with symbols.</p>
+</div>
   <p>Extraction services (invoices, insurance claims, CVs, support tickets) define one Pydantic model per document type and share it between the model call, the API response and the database layer. When the business adds a field, one class changes and the schema, the docs and the validation all follow.</p>
 </div>
 
@@ -252,7 +257,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Believing a schema makes answers <em>correct</em>. It guarantees <code>enrolment_id</code> is a string or null; it can't stop the model inventing <code>"TC-12345"</code>. Shape is enforced; truth is not. That's topic 6.</p>
+  <p>Believing a schema makes answers <em>correct</em>. It guarantees <code>customer_id</code> is a string or null; it can't stop the model inventing <code>"RR-12345"</code>. Shape is enforced; truth is not. That's topic 6.</p>
 </div>
 
 <div class="callout exam">
@@ -392,13 +397,13 @@ if __name__ == "__main__":
         <span class="out-label">Output (exact, shortened)</span>
 <pre class="out"><code>{
   "properties": {
-    "learner_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "description": "First name if given, else null", ...},
-    "enrolment_id": {"anyOf": [{"type": "string"}, {"type": "null"}], "description": "Like TC-12345. ...", ...},
-    "category": {"enum": ["scheduling", "billing", "exam_voucher", "certificate", "lab_access", "account", "other"], ...},
-    "urgent": {"description": "True if a deadline is within 3 days or the learner is blocked", "type": "boolean", ...},
+    "customer_name": {"anyOf": [{"type": "string"}, {"type": "null"}], "description": "First name if given, else null", ...},
+    "customer_id": {"anyOf": [{"type": "string"}, {"type": "null"}], "description": "Like RR-12345. ...", ...},
+    "category": {"enum": ["card", "dispute", "fraud", "fees", "transfers", "loans", "account", "other"], ...},
+    "urgent": {"description": "True for fraud, a lost or stolen card, or a deadline within 3 days", "type": "boolean", ...},
     "summary": {"description": "One English sentence, at most 20 words", "type": "string", ...}
   },
-  "required": ["learner_name", "enrolment_id", "category", "urgent", "summary"],
+  "required": ["customer_name", "customer_id", "category", "urgent", "summary"],
   "type": "object",
   "additionalProperties": false
 }</code></pre>
@@ -406,17 +411,17 @@ if __name__ == "__main__":
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Now triage with the schema enforced</h4>
         <pre class="term"><code><span class="ps">$ </span>python lab04_03_schema.py</code></pre>
-        <span class="out-label">Real run on a small local model (Ollama); a larger Azure model is usually far more accurate</span>
-<pre class="out"><code>lab_access    urgent=True  id=TC-10293  Mei has reached her lab access quota for TC-10293 and is scheduled for an exam on Friday. ...
-billing       urgent=True  id=TC-20877  The student John Doe is inquiring about a refund for TC-20877, ...
-exam_voucher  urgent=True  id=12345  The ticket number is 12345 and you have finished the course 5 days ago.
-certificate   urgent=False id=TC-31002  TrainCrest learner supports: Change class date
-certificate   urgent=False id=2019-01-19-B01C3</code></pre>
+        <span class="out-label">Real run on a small local model (llama3.2 on Ollama); a larger Azure model is usually far more accurate</span>
+<pre class="out"><code>dispute    urgent=False id=RR-10293
+fees       urgent=False id=RR-20877  Request to refund $29 overdraft fee. Customer is disputing the fee, stating it was a one-off and not something they expected or were informed of.
+fraud      urgent=True  id=123456  Card stolen report - Please verify bank details to prevent further unauthorised activity and cancel your card if possible.
+dispute    urgent=True  id=RR-31002  transferencia lleva cinco días pendiente
+fraud      urgent=True  id=12345  {"amount":640,"method":"credit card"}</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>What the schema fixed, and what it couldn't</h4>
         <ul class="verify-list">
-          <li><strong>Fixed:</strong> every reply has all five keys, every category is one of the seven, <code>urgent</code> is a real boolean. No key drift, no <code>"null"</code> strings, and your code got <code>Triage</code> objects, not dicts.</li>
-          <li><strong>Not fixed:</strong> the small model still invented <code>12345</code> and <code>2019-01-19-B01C3</code>, wrote a "John Doe" who doesn't exist, ignored "20 words", and filed Asha's reschedule as a certificate issue. Shape is guaranteed; truth and rules aren't.</li>
+          <li><strong>Fixed:</strong> every reply has all five keys, every category is one of the eight, <code>urgent</code> is a real boolean. No key drift, no <code>"null"</code> strings, no empty objects, and your code got <code>Triage</code> objects, not dicts.</li>
+          <li><strong>Not fixed:</strong> the small model invented two customer IDs (<code>123456</code> and <code>12345</code>), left Mei's summary empty, wrote a 30-word summary and a JSON fragment as "summaries", filed Asha's pending transfer as a dispute, and marked the stolen card summary with "Please verify bank details", which is exactly the phrasing fraudsters use. Shape is guaranteed; truth and rules aren't.</li>
           <li>Run against your Azure deployment and compare. Expect correct categories and IDs most of the time, which is exactly why you still need validators (topic 6) for the rest.</li>
         </ul>
       </li>
@@ -440,7 +445,7 @@ for text in MESSAGES:
         messages=[{"role": "user", "content": text}], **FALLBACK)
     data = next(b.input for b in msg.content if b.type == "tool_use")
     t = Triage.model_validate(data)                                 <span class="c"># validate anyway</span>
-    print(f"{t.category:&lt;13} urgent={t.urgent!s:&lt;5} id={t.enrolment_id}  {t.summary}")</code></pre>
+    print(f"{t.category:&lt;10} urgent={t.urgent!s:&lt;5} id={t.customer_id}  {t.summary}")</code></pre>
       </div>
     </div>
   </div>
@@ -451,24 +456,24 @@ for text in MESSAGES:
   <div class="drill-head"><span class="drill-id">Drill 04.4</span><h3>Design a schema with your AI assistant, then lint it</h3>
     <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">Offline · no API key</span><span class="badge b-tool">Copilot · Claude Code · Codex</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> have your assistant design a nested schema for company course enquiries, and check it against strict-mode rules <em>before</em> any model sees it.</p>
+    <p class="drill-goal"><b>Goal:</b> have your assistant design a nested schema for business-banking enquiries from companies, and check it against strict-mode rules <em>before</em> any model sees it.</p>
     <ol class="dsteps">
       <li class="dstep ask"><span class="st">Ask AI</span><h4>Design <code>business_enquiry.py</code></h4>
-        <div class="prompt-box"><pre><code>Create business_enquiry.py with Pydantic v2 models for extracting a company's training enquiry
-from an email, for use with OpenAI/Azure strict structured outputs.
+        <div class="prompt-box"><pre><code>Create business_enquiry.py with Pydantic v2 models for extracting a company's business-banking
+enquiry from an email, for use with OpenAI/Azure strict structured outputs.
 
 Models:
 - Contact: name, company, email (each may be null)
-- CourseRequest: topic (str), learners (int or null), preferred_format
-  (one of "live-online", "classroom", "self-paced", "any")
-- CourseEnquiry (root): contact, requests (list of CourseRequest), budget_usd (int or null),
-  wants_private_class (bool), deadline (string YYYY-MM-DD or null)
+- ProductRequest: product_type (one of "business_checking", "business_savings", "business_card",
+  "business_loan", "other"), amount_usd (int or null), cards_needed (int or null)
+- BusinessEnquiry (root): contact, requests (list of ProductRequest), annual_revenue_usd
+  (int or null), wants_relationship_manager (bool), decision_deadline (string YYYY-MM-DD or null)
 
 Rules:
 - Every field is required; use Optional[...] for "may be null". Give each field a description.
 - Do NOT use pattern, max_length, ge/le, EmailStr or date types: Azure strict mode rejects them.
-  Enforce these with @field_validator instead: email looks like an address, learners between
-  1 and 500, deadline matches YYYY-MM-DD.
+  Enforce these with @field_validator instead: email looks like an address, amount_usd between
+  1 and 5,000,000, cards_needed between 1 and 500, decision_deadline matches YYYY-MM-DD.
 - Don't create or change any other file.</code></pre></div>
         <div class="why"><b>Why this prompt works:</b> it names every field and type, states the strict-mode rules (required fields, nullable via <code>Optional</code>), lists the keywords to avoid <em>and</em> where those rules should go instead, and fences the change to one file. Without the middle rule, assistants reach straight for <code>EmailStr</code> and <code>Field(ge=1)</code>.</div>
         <details class="solution"><summary>Reference solution</summary><div>
@@ -614,11 +619,11 @@ if __name__ == "__main__":
 <pre class="term"><code><span class="ps">$ </span>python schema_lint.py business_enquiry:BusinessEnquiry
 <span class="ps">$ </span>python schema_lint.py test_schema_lint:TooClever</code></pre>
         <span class="out-label">Output (exact)</span>
-<pre class="out"><code>CourseEnquiry: OK, ready for strict structured outputs
-PROBLEM root.enrolment_id: 'pattern' is not supported; enforce it in a validator instead
+<pre class="out"><code>BusinessEnquiry: OK, ready for strict structured outputs
+PROBLEM root.customer_id: 'pattern' is not supported; enforce it in a validator instead
 PROBLEM root.summary: 'maxLength' is not supported; enforce it in a validator instead
-PROBLEM root.learners: 'maximum' is not supported; enforce it in a validator instead
-PROBLEM root.learners: 'minimum' is not supported; enforce it in a validator instead
+PROBLEM root.cards: 'maximum' is not supported; enforce it in a validator instead
+PROBLEM root.cards: 'minimum' is not supported; enforce it in a validator instead
 TooClever: 4 problem(s)</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
@@ -688,7 +693,7 @@ def test_business_rules_live_in_validators():
         <pre class="term"><code><span class="ps">$ </span>pytest -q test_schema_lint.py</code></pre>
         <ul class="verify-list">
           <li><code>4 passed</code>. If your assistant's version fails the lint, paste the PROBLEM lines back to it: they say exactly what to change.</li>
-          <li>Notice that <code>CourseEnquiry</code> has a list of nested objects and still passes: depth and <code>$defs</code> are fine within the limits.</li>
+          <li>Notice that <code>BusinessEnquiry</code> has a list of nested objects and still passes: depth and <code>$defs</code> are fine within the limits.</li>
           <li>Stretch: run <code>python schema_lint.py test_schema_lint:TooDeep</code> to see the nesting limit fire.</li>
         </ul>
       </li>
@@ -701,7 +706,7 @@ def test_business_rules_live_in_validators():
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Schemas.</p></div></div>
 <div class="quiz">
   <details><summary>1. In strict mode, how do you express "this field may be missing"?</summary><div><p>You don't make it missing; you make it <strong>nullable</strong>. The field stays required and its type is <code>anyOf [type, null]</code> (in Pydantic, <code>Optional[...]</code>).</p></div></details>
-  <details><summary>2. Your Pydantic model has <code>Field(pattern=r"^TC-\d{5}$")</code> and Azure rejects the request. Fix?</summary><div><p>Remove <code>pattern</code> from the schema and enforce the format in a <code>@field_validator</code>. Put the format in the field's <strong>description</strong> so the model knows it too.</p></div></details>
+  <details><summary>2. Your Pydantic model has <code>Field(pattern=r"^RR-\d{5}$")</code> and Azure rejects the request. Fix?</summary><div><p>Remove <code>pattern</code> from the schema and enforce the format in a <code>@field_validator</code>. Put the format in the field's <strong>description</strong> so the model knows it too.</p></div></details>
   <details><summary>3. <code>message.parsed</code> is <code>None</code>. What happened?</summary><div><p>Most likely a <strong>refusal</strong>: check <code>message.refusal</code>. (A cut-off reply raises <code>LengthFinishReasonError</code> instead; topic 7.)</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Let the API enforce the shape; keep the schema to what strict mode supports; push every other rule into validators.</p></div>

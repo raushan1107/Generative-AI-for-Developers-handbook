@@ -1,0 +1,16 @@
+1) finish_reason: tool_calls
+2) model asks: find_products({"text":"null","audience":"student","family":"null","max_annual_fee_usd":"null"})
+Traceback (most recent call last):
+  File "R:\Handbooks\GenerativeAIforDevelopers\code\genai-labs\lab04_05_first_tool.py", line 57, in <module>
+    main()
+  File "R:\Handbooks\GenerativeAIforDevelopers\code\genai-labs\lab04_05_first_tool.py", line 46, in main
+    args = FindProducts.model_validate_json(call.function.arguments)
+  File "C:\Users\raush\AppData\Local\Programs\Python\Python310\lib\site-packages\pydantic\main.py", line 625, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(json_data, strict=strict, context=context)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for FindProducts
+family
+  Input should be 'accounts', 'cards' or 'loans' [type=literal_error, input_value='null', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.9/v/literal_error
+max_annual_fee_usd
+  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='null', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.9/v/int_parsing

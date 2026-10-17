@@ -8,22 +8,22 @@ from pydantic import BaseModel, Field
 from client import CHAT_MODEL, get_client
 
 
-class CourseRequest(BaseModel):
-    topic: str = Field(description="What the learner wants to learn, in a few words")
-    level: Optional[Literal["beginner", "intermediate", "advanced"]]
-    max_price_usd: Optional[int] = Field(description="Budget in US dollars, or null")
-    format: Optional[Literal["live-online", "classroom", "self-paced"]]
+class ProductRequest(BaseModel):
+    need: str = Field(description="What the customer wants the product for, in a few words")
+    family: Optional[Literal["accounts", "cards", "loans"]]
+    max_annual_fee_usd: Optional[int] = Field(description="Highest annual fee in US dollars, or null")
+    audience: Optional[Literal["personal", "student", "business"]]
 
 
 REQUESTS = [
-    "I'm new to the cloud and want something on Azure basics, under 400 dollars please.",
-    "Looking for an advanced course on building RAG apps, online with a trainer.",
-    "Any self-paced Python course? Budget is about $300.",
+    "I'm a student and need a credit card to build my credit, no annual fee please.",
+    "Looking for somewhere to keep my small company's tax money that earns some interest.",
+    "Any card for travelling abroad? I could pay up to $100 a year.",
 ]
 client = get_client()
 for text in REQUESTS:
     completion = client.chat.completions.parse(
-        model=CHAT_MODEL, temperature=0, response_format=CourseRequest,
-        messages=[{"role": "system", "content": "Extract the learner's course request. Use null for anything not stated."},
+        model=CHAT_MODEL, temperature=0, response_format=ProductRequest,
+        messages=[{"role": "system", "content": "Extract the customer's product request. Use null for anything not stated."},
                   {"role": "user", "content": text}])
     print(f"{text}\n  -> {completion.choices[0].message.parsed}\n")

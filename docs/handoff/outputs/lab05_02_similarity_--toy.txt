@@ -1,0 +1,3 @@
+dispute vs money_back       cosine=0.991  dot=0.740  euclidean=0.141
+dispute vs money_back_long  cosine=0.991  dot=1.480  euclidean=0.762
+dispute vs stolen_card      cosine=0.220  dot=0.180  euclidean=1.131

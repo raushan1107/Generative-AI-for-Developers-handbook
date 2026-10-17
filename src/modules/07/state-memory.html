@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m07-memory", "short": "State and Memory", "h1": "State and Memory", "description": "Module 07, topic 5: the kinds of state an agent keeps: the working context of one run, task state that survives pauses, conversation history and its budget, and long-term memory of a user; what to store, where, for how long, and what never to store; with a drill that adds an explicit memory tool and recalls it in a new session.", "lead": "A model remembers nothing between calls. Everything an agent 'knows' about the task so far, the conversation, or the learner is state your code keeps and sends back. Decide deliberately what that is, where it lives, how long it lasts and what it must never contain. You'll give the agent a memory tool, start a fresh session, and watch it use what it saved.", "chips": ["Working context", "Task state", "Long-term memory", "Privacy", "Drill 07.5"], "time": "Learn 12 min · Do 20 min"}
+{"id": "m07-memory", "short": "State and Memory", "h1": "State and Memory", "description": "Module 07, topic 5: the kinds of state an agent keeps: the working context of one run, task state that survives pauses, conversation history and its budget, and long-term memory of a user; what to store, where, for how long, and what never to store; with a drill that adds an explicit memory tool and recalls it in a new session.", "lead": "A model remembers nothing between calls. Everything an agent 'knows' about the task so far, the conversation, or the customer is state your code keeps and sends back. Decide deliberately what that is, where it lives, how long it lasts and what it must never contain. You'll give the agent a memory tool, start a fresh session, and watch it use what it saved.", "chips": ["Working context", "Task state", "Long-term memory", "Privacy", "Drill 07.5"], "time": "Learn 12 min · Do 20 min"}
 -->
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>The model forgets; your code remembers on purpose.</p></div></div>
 
@@ -47,6 +47,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+
+<div class="callout finance">
+  <div class="c-label">In finance</div>
+  <p>Memory in a bank is personal data with rules attached: what may be stored, for how long, and how the customer can see or delete it. A customer asking to be contacted by email only is a useful fact to remember; a card number, a balance or a health detail mentioned in passing must never be stored by the assistant. Task state also matters: a dispute paused for approval must resume exactly where it stopped.</p>
+</div>
   <p>Chat assistants with memory let users view, edit and delete what's remembered, and many store facts only when the user asks or clearly states a preference, because unexpected memories feel creepy and can leak in shared contexts. Enterprise agents keep task state in durable storage so a request waiting for a manager's approval survives a deployment. On Azure, conversation threads and agent state can live in Azure Cosmos DB, a common choice for per-user documents.</p>
 </div>
 
@@ -105,9 +110,9 @@ SESSION 2 (new conversation; memory goes into the system prompt)
         </ol>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
-            <li><code>memory.as_prompt()</code> added "Known about this learner from earlier sessions" to the system prompt. The model didn't remember anything; the code did, and put it back in front of the model.</li>
+            <li><code>memory.as_prompt()</code> added "Known about this customer from earlier sessions" to the system prompt. The model didn't remember anything; the code did, and put it back in front of the model.</li>
             <li><code>LearnerMemory.remember</code> refuses it in code (the <code>SENSITIVE</code> check), and the agent should explain that payment details are never stored. Don't rely on the prompt alone for this.</li>
-            <li>In task state (<code>TaskState.pending</code>), keyed by task, with an expiry. It belongs to one task, not to the learner's lasting profile; Milestone 7 keeps pending actions in an <code>ActionStore</code> for the same reason.</li>
+            <li>In task state (<code>TaskState.pending</code>), keyed by task, with an expiry. It belongs to one task, not to the customer's lasting profile; Milestone 7 keeps pending actions in an <code>ActionStore</code> for the same reason.</li>
           </ol>
         </div></details>
       </li>

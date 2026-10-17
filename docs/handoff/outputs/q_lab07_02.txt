@@ -1,0 +1,11 @@
+GOAL: Handle Mei's request regarding a possible duplicate charge and disputing the charge if possible.
+  1. my_cards             Identify which card was charged and check its status.
+  2. card_status          Check if the identified card is active, which is required before any dispute can be opened.
+  3. recent_transactions  Inspect the recent transactions on the identified card to find the duplicate charge.
+  4. dispute_quote        Determine if the duplicate charge can still be disputed.
+  5. open_dispute         [needs approval] If the duplicate charge is still disputable, this step will open the dispute and provide an estimated date of provisional credit.
+  6. create_case          If the charge cannot be disputed or for any other issues that couldn't be resolved, create a case for human support.
+  ask first: freeze_card
+  ask first: open_dispute
+
+PLAN CHECK: OK
