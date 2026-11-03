@@ -296,21 +296,28 @@ def sidebar_html(page):
             continue
         parts.append(f'<div class="sb-section"><div class="sb-title">{html.escape(section["title"])}</div>')
         for item in section.get("items", []):
-            if item.get("draft") and not page.get("draft"):         # not live yet: shown greyed, not linked
-                parts.append(f'<div class="sb-module soon"><span class="sb-ico">{KIND_ICON.get(item["kind"], "•")}</span>'
-                             f'{html.escape(item["title"])}<span class="sb-soon">soon</span></div>')
+            item_draft = bool(section.get("draft") or item.get("draft"))
+            item_status = "Draft" if item_draft else ("Live" if item["id"] in {"oss-0", "oss-1"} else "")
+            if item_draft and not page.get("draft"):                # not live yet: shown greyed, not linked
+                parts.append(f'<div class="sb-module status-draft"><span class="sb-ico">{KIND_ICON.get(item["kind"], "•")}</span>'
+                             f'{html.escape(item["title"])}<span class="sb-status sb-status-draft">Draft</span></div>')
                 continue
             cls = "active" if item["id"] == page["id"] else ""
             parts.append(f'<a class="sb-link {cls}" data-page-id="{item["id"]}" href="{rel(here, item["path"])}">'
-                         f'<span class="sb-ico">{KIND_ICON.get(item["kind"], "•")}</span>{html.escape(item["title"])}</a>')
+                         f'<span class="sb-ico">{KIND_ICON.get(item["kind"], "•")}</span>{html.escape(item["title"])}'
+                         + (f'<span class="sb-status sb-status-live">Live</span>' if item_status == "Live" else
+                            f'<span class="sb-status sb-status-draft">Draft</span>' if item_status == "Draft" else "")
+                         + '</a>')
         for module in section.get("modules", []):
+            status = "Planned" if module.get("soon") else ("Draft" if module.get("draft") else "Live")
+            status_class = status.lower()
             if module.get("soon") or (module.get("draft") and not page.get("draft")):
-                parts.append(f'<div class="sb-module soon"><span class="sb-num">{module["num"]}</span>'
-                             f'{html.escape(module["title"])}<span class="sb-soon">soon</span></div>')
+                parts.append(f'<div class="sb-module status-{status_class}"><span class="sb-num">{module["num"]}</span>'
+                             f'{html.escape(module["title"])}<span class="sb-status sb-status-{status_class}">{status}</span></div>')
                 continue
             is_open = any(p["id"] == page["id"] for p in module["pages"])
             parts.append(f'<details class="sb-mod"{" open" if is_open else ""}><summary><span class="sb-num">{module["num"]}</span>'
-                         f'{html.escape(module["title"])}</summary>')
+                         f'{html.escape(module["title"])}<span class="sb-status sb-status-{status_class}">{status}</span></summary>')
             for p in module["pages"]:
                 cls = "active" if p["id"] == page["id"] else ""
                 parts.append(f'<a class="sb-link sub k-{p["kind"]} {cls}" data-page-id="{p["id"]}" href="{rel(here, p["path"])}">'

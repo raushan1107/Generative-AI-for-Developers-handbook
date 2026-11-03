@@ -65,13 +65,13 @@ Build after any change: `python tools/build.py` (from the repo root). It fails l
 - `<pre class="code" data-file="name.py" data-src="code/genai-labs/x.py"></pre>` inlines the real file, HTML-escaped, with `#` comments highlighted. Optional `data-lines="a-b"`.
 - `<!--MODULE_PAGES:NN-->` renders the module's page cards with their drills (overview pages).
 - `<!--DRILL_INDEX-->` renders the catalogue of all drills (labs page), filterable by step type.
-- Sidebar, breadcrumbs, prev/next pager and "Mark this page as done" are generated for every page.
+- Sidebar, breadcrumbs, prev/next pager and "Mark this page as done" are generated for every page. Curriculum navigation labels published modules and open-source Labs 0–1 as "Live", draft modules/labs as "Draft", and roadmap-only modules as "Planned".
 - Prose references such as "Module 02", "Milestone 2" and "Drill 02.4" are linked to their overview, build page or drill. Draft references remain visibly marked as coming soon; references to planned modules link to their roadmap rows.
 
 ### Draft modules (build now, publish later)
 
 - In `tools/nav.json`, a module with `"draft": true` and a `pages` list is built like any other module, but:
-  - live pages still show it as "soon" in the sidebar, and it is left out of the live prev/next pager, the drill catalogue (`<!--DRILL_INDEX-->`) and the drill count;
+  - live pages label it "Draft" in the sidebar, and it is left out of the live prev/next pager, the drill catalogue (`<!--DRILL_INDEX-->`) and the drill count;
   - draft pages link to each other (sidebar and pager), carry `<meta name="robots" content="noindex">` and show "Draft" in the top bar;
   - the build **fails** if a live page links to a draft page, so nothing leaks by accident.
 - Files inlined on live pages must not change while their module is a draft. In `genai-labs/` that means `llm.py`, `.env.example` and `requirements.txt` stay at their Part I versions; Part II adds `llm_tools.py` (tool settings) and `embed.py` (embedding model setting), and its pages list the extra `.env` lines and packages.

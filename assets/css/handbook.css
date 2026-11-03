@@ -149,12 +149,15 @@ code, kbd, pre, .mono, .t-m { font-variant-ligatures: none; font-feature-setting
   padding: 6px 8px; border-radius: 6px; color: var(--ink); font-size: 14px; font-weight: 600; line-height: 1.35;
 }
 .sb-mod > summary::-webkit-details-marker { display: none; }
-.sb-mod > summary::after { content: "›"; margin-left: auto; color: var(--muted); transition: transform .15s; }
+.sb-mod > summary::after { content: "›"; margin-left: 0; color: var(--muted); transition: transform .15s; }
 .sb-mod[open] > summary::after { transform: rotate(90deg); }
 .sb-mod > summary:hover { background: var(--line); }
 .sb-num { font: 500 12px var(--font-mono); color: var(--muted); flex: none; }
-.sb-module.soon { display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-size: 14px; color: var(--muted); line-height: 1.35; }
-.sb-soon { margin-left: auto; font-size: 11px; color: var(--muted); }
+.sb-module.status-draft, .sb-module.status-planned { display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-size: 14px; color: var(--muted); line-height: 1.35; }
+.sb-status { margin-left: auto; flex: none; font-size: 10px; font-weight: 550; line-height: 1.3; }
+.sb-status-live { color: var(--green); }
+.sb-status-draft { color: var(--amber); }
+.sb-status-planned { color: var(--muted); }
 .sb-foot { padding: 12px 18px 16px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); line-height: 1.5; }
 .sb-foot a { color: var(--ink-2); font-weight: 600; text-decoration: none; }
 .sb-foot a:hover { color: var(--accent); }
