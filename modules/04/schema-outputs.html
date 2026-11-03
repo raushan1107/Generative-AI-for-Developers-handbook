@@ -265,7 +265,7 @@
   <p>"Structured outputs use <strong>constrained decoding against a strict JSON Schema</strong>: required fields, no extra properties, enums enforced. I define it with Pydantic, handle <code>refusal</code>, keep unsupported keywords like <code>pattern</code> out of the schema and enforce them in validators."</p>
 </div>
 
-<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Same messages as Drill 04.2, now with a contract. Then design a schema with your AI assistant.</p></div></div>
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Same messages as <a class="xref" href="../../modules/04/json-mode.html#d04-2">Drill 04.2</a>, now with a contract. Then design a schema with your AI assistant.</p></div></div>
 
 <div class="callout note prereq">
   <div class="c-label">Before you run this code</div>
@@ -339,7 +339,7 @@ MODEL = {
   <div class="drill-head"><span class="drill-id">Drill 04.3</span><h3>Strict schema with Pydantic and parse()</h3>
     <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · Pydantic</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> see the schema the API actually receives, then get typed objects back for the five messages from Drill 04.2.</p>
+    <p class="drill-goal"><b>Goal:</b> see the schema the API actually receives, then get typed objects back for the five messages from <a class="xref" href="../../modules/04/json-mode.html#d04-2">Drill 04.2</a>.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>First, look at the schema (offline)</h4>
         <pre class="code" data-file="lab04_03_schema.py"><code>"""Drill 04.3: structured outputs. A Pydantic model becomes a strict JSON Schema,

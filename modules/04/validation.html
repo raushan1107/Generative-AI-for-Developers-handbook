@@ -222,7 +222,7 @@
       <tr><td><code>customer_id</code> looks like RR-12345</td><td>Rules</td><td><code>@field_validator</code> with a regex</td></tr>
       <tr><td><code>transaction_date</code> is not in the future and at most 90 days old</td><td>Rules</td><td><code>@field_validator</code> using today's date</td></tr>
       <tr><td>A dispute or fraud case includes a customer ID</td><td>Rules</td><td><code>@model_validator(mode="after")</code>: a rule across fields</td></tr>
-      <tr><td>The account belongs to the signed-in customer</td><td>Facts</td><td>Lookup in the tool (Drill 04.8)</td></tr>
+      <tr><td>The account belongs to the signed-in customer</td><td>Facts</td><td>Lookup in the tool (<a class="xref" href="../../modules/04/app-logic.html#d04-8">Drill 04.8</a>)</td></tr>
       <tr><td>"$87 refund" matches the policy quote</td><td>Facts</td><td>Compare amounts in the answer with tool results</td></tr>
     </tbody>
   </table>
@@ -231,9 +231,9 @@
 <h3>When validation fails</h3>
 <ul>
   <li><strong>Tool arguments:</strong> return the validation message as the tool result (<code>{"error": "invalid arguments: customer_id: must look like RR-12345"}</code>). The model usually fixes it, or asks the customer, on the next round.</li>
-  <li><strong>Structured replies:</strong> retry once with the error (Milestone 3's repair idea), then fall back to a safe default or a "couldn't process" response.</li>
+  <li><strong>Structured replies:</strong> retry once with the error (<a class="xref" href="../../modules/03/build.html#b03-1">Milestone 3</a>'s repair idea), then fall back to a safe default or a "couldn't process" response.</li>
   <li><strong>Facts in the final answer:</strong> block, regenerate, or flag for review, depending on the risk. A wrong fee refund amount is worth blocking; a slightly long summary isn't.</li>
-  <li><strong>Always log it.</strong> A rising validation-failure rate is often the first sign a prompt, model or data change broke something (Module 09).</li>
+  <li><strong>Always log it.</strong> A rising validation-failure rate is often the first sign a prompt, model or data change broke something (<a class="xref" href="../../project/index.html#module-09">Module 09</a>).</li>
 </ul>
 
 <div class="callout realworld">

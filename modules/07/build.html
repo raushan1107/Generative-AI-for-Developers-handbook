@@ -281,7 +281,7 @@ HELP_CENTRE_URL=https://help.rrfinance.example/</code></pre></div></details>
   <div class="drill-head"><span class="drill-id">Milestone 7</span><h3>Actions with the customer's approval</h3>
     <div class="drill-meta"><span class="time">~75 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · Pydantic · pytest</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> the Module 07 hands-on exercise: an agent that understands a request, selects and calls tools, processes the results and returns a final answer, now able to change bookings, only with the customer's approval, exactly once.</p>
+    <p class="drill-goal"><b>Goal:</b> the <a class="xref" href="../../modules/07/index.html">Module 07</a> hands-on exercise: an agent that understands a request, selects and calls tools, processes the results and returns a final answer, now able to change bookings, only with the customer's approval, exactly once.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Backend: data that can change, and safe writes</h4>
         <p>Append to <code>app/backend.py</code>. The two write functions re-check the rules, take an idempotency key, and log every change:</p>
@@ -708,7 +708,7 @@ You: exit</code></pre>
 
 <div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where RR Finance Assist stands after Part III.</p></div></div>
 <ul class="checklist">
-  <li>Assist answers policy questions from the help centre with checked citations (Milestone 6).</li>
+  <li>Assist answers policy questions from the help centre with checked citations (<a class="xref" href="../../modules/06/build.html#b06-1">Milestone 6</a>).</li>
   <li>It can propose a lab extension or a date change; nothing changes until the customer approves.</li>
   <li>Approvals show an effect computed by code, expire, accept one decision, re-check the rules and execute once.</li>
   <li>Every change is logged; the conversation records what was approved or declined.</li>

@@ -184,7 +184,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Using an LLM for everything. Calculating interest, validating an IBAN or an email address, checking whether a customer ID exists, sorting transactions by date: these have <strong>exact answers</strong>. Plain code does them perfectly, instantly and for free. Use the LLM for the fuzzy part (understanding the customer's message) and code for the exact part (looking up the account). Module 04 wires the two together.</p>
+  <p>Using an LLM for everything. Calculating interest, validating an IBAN or an email address, checking whether a customer ID exists, sorting transactions by date: these have <strong>exact answers</strong>. Plain code does them perfectly, instantly and for free. Use the LLM for the fuzzy part (understanding the customer's message) and code for the exact part (looking up the account). <span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 04 <span class="badge b-tool">Coming soon</span></span> wires the two together.</p>
 </div>
 
 <div class="lens">
@@ -274,7 +274,7 @@ MODEL = {
     <p class="drill-goal"><b>Goal:</b> feel the difference in data needs, speed, cost and robustness between classic ML and an LLM, on the same 12 bank customer messages.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Create the shared ticket file</h4>
-        <p>This file holds 12 labelled test tickets and RR Finance Bank's house rules. Module 03 reuses it.</p>
+        <p>This file holds 12 labelled test tickets and RR Finance Bank's house rules. <a class="xref" href="../../modules/03/index.html">Module 03</a> reuses it.</p>
         <pre class="code" data-file="tickets.py"><code>"""Synthetic RR Finance Bank contact-centre tickets (fictional bank, no real customer data).
 Shared by drills in Module 01 and Module 03."""
 
@@ -406,7 +406,7 @@ LLM:        7/12 correct · no training · 28.9s for all · 891 tokens</code></p
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
             <li>Classic ML only knows the words it was trained on. The training data was English only, so the Spanish message was a guess; and "wire" appears in many transfers examples, so word statistics beat the meaning ("refund the fee"). The LLM understood Spanish and the fee request for free.</li>
-            <li>"Money is missing after a text with a link" <em>sounds</em> like a payment problem, and "charged but the order was cancelled" mentions a card. RR Finance Bank's house rule (recognised but wrong = dispute; not recognised = fraud) decides which team handles it, and the bank's fraud team works to different deadlines. The LLM can't know a house rule you didn't tell it; Module 03 fixes this with clear instructions and few-shot examples. A small local model also makes more mistakes than a large hosted one: compare yours.</li>
+            <li>"Money is missing after a text with a link" <em>sounds</em> like a payment problem, and "charged but the order was cancelled" mentions a card. RR Finance Bank's house rule (recognised but wrong = dispute; not recognised = fraud) decides which team handles it, and the bank's fraud team works to different deadlines. The LLM can't know a house rule you didn't tell it; <a class="xref" href="../../modules/03/index.html">Module 03</a> fixes this with clear instructions and few-shot examples. A small local model also makes more mistakes than a large hosted one: compare yours.</li>
             <li>It depends, and that's the real answer. The LLM is more robust to wording and language with zero training; classic ML is thousands of times faster and free per call. Banks have run classic models for card-fraud scoring for decades for exactly that reason. A common production pattern: an LLM to label historical tickets, then a small classic model for high-volume routing, with the LLM as a fallback for low-confidence cases.</li>
           </ol>
         </div></details>

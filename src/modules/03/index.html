@@ -2,7 +2,7 @@
 {"id": "m03", "short": "Prompt Engineering", "h1": "Prompt Engineering: Writing Instructions a Model Can't Misread", "description": "Module 03 overview: the prompt design framework, clear instructions, roles, zero- and few-shot, chain-of-thought, templates, structured prompts, output constraints and prompt injection, with 13 drills and RR Finance Assist milestone 3.", "lead": "RR Finance Assist v0.2 has a solid pipe, but what flows through it is one vague sentence, and vague in means unpredictable out. In this module the prompt becomes what it really is: a specification you write, version, test and defend. You'll practise on the model, and on your AI coding assistant, because prompting it is the same skill.", "chips": ["10 topics", "13 drills", "Milestone 3", "≈ 5 hours hands-on"]}
 -->
 <h2 id="map">The mental map: the prompt design framework</h2>
-<p>Every good prompt I've seen in production, whatever the model and task, answers the same five questions. The whole module hangs off them.</p>
+<p>Use these five questions as a practical prompt-design checklist. Different tasks and models may need different details, so test the prompt against your success criteria.</p>
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 420" role="img" aria-labelledby="m3-t m3-d">
@@ -51,4 +51,10 @@
   <li><strong>You'll reuse:</strong> <code>tickets.py</code> from Drill 01.3. You'll create <code>data/eval_tickets.json</code> (Drill 03.4) and <code>prompts.py</code> (Drill 03.8), which Milestone 3 builds on.</li>
   <li><strong>Two kinds of prompting:</strong> prompts for the model inside your app, and prompts for your AI coding assistant. Drill 03.1 shows they're the same skill.</li>
   <li><strong>Build:</strong> Milestone 3 turns RR Finance Assist's prompts into versioned, tested code and adds a JSON triage endpoint with validation and an output guard.</li>
+</ul>
+
+<h2 id="sources">Official documentation</h2>
+<ul>
+  <li><a href="https://developers.openai.com/api/docs/guides/prompt-engineering">Prompt engineering</a> (OpenAI) and <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview">Prompt engineering overview</a> (Anthropic).</li>
+  <li><a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/">LLM01: Prompt Injection</a> (OWASP) and <a href="https://learn.microsoft.com/azure/foundry/openai/concepts/content-filter-prompt-shields">Prompt Shields in Microsoft Foundry</a>.</li>
 </ul>

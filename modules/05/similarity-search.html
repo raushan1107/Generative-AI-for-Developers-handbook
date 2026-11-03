@@ -217,7 +217,7 @@
 
 <h3>Decisions you make</h3>
 <ul>
-  <li><strong>k (how many):</strong> a search page shows 5 to 10. RAG (Module 06) usually sends 3 to 8 chunks to the model: too few misses the answer, too many adds cost and noise.</li>
+  <li><strong>k (how many):</strong> a search page shows 5 to 10. RAG (<a class="xref" href="../../modules/06/index.html">Module 06</a>) usually sends 3 to 8 chunks to the model: too few misses the answer, too many adds cost and noise.</li>
   <li><strong>Threshold:</strong> vector search always returns k results, even for nonsense. Decide what "no good match" looks like for your model (calibrated on real queries), or combine with keywords (topic 8).</li>
   <li><strong>What to embed:</strong> for products, name plus description; for articles, chunks with their headings (topic 6). Whatever you embed is what can be found.</li>
   <li><strong>Query side:</strong> questions are short and documents long; that asymmetry is normal. Some models want a query prefix (topic 3).</li>
@@ -240,7 +240,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Passing the top results to a model without checking relevance. Ask RR Finance Bank's help sections about "Docker" and vector search returns <em>Ways to pay</em> as the best match (Drill 05.9 shows it). A chatbot would then answer a Docker question with payment details.</p>
+  <p>Passing the top results to a model without checking relevance. Ask RR Finance Bank's help sections about "Docker" and vector search returns <em>Ways to pay</em> as the best match (<a class="xref" href="../../modules/05/hybrid-search.html#d05-9">Drill 05.9</a> shows it). A chatbot would then answer a Docker question with payment details.</p>
 </div>
 
 <div class="callout exam">
@@ -400,7 +400,7 @@ buy my first flat
           <ol>
             <li>Shared words, not shared meaning: "credit" and "card" appear in the Cashback Card's description, and one common word matched Everyday Checking, the first product in the list. The Balance Transfer Card is the product built for paying down card debt, but it says "debt" and "pay down", not "stop paying interest". Keyword search counts words, not meaning.</li>
             <li>The customer happened to use the catalogue's own words ("first", "student", "mortgage"-like terms such as "buy my first"). When vocabularies match, both methods work.</li>
-            <li>Exact identifiers and rare terms: a product code like <code>P113</code> (if it were in the text), an alert code like <code>FR-12</code>, a fee name such as "Instant Pay". Drill 05.9 tests exactly this, with some surprises.</li>
+            <li>Exact identifiers and rare terms: a product code like <code>P113</code> (if it were in the text), an alert code like <code>FR-12</code>, a fee name such as "Instant Pay". <a class="xref" href="../../modules/05/hybrid-search.html#d05-9">Drill 05.9</a> tests exactly this, with some surprises.</li>
           </ol>
         </div></details>
       </li>

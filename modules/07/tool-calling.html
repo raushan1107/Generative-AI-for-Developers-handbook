@@ -408,7 +408,7 @@ CLEAR tools: 6/8 right first call</code></pre>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
             <li>"Can I still move…?" went to <code>move</code> and "I want to complain about my trainer" went to <code>ext</code>: two <em>write</em> tools, for requests that should only read or raise a ticket. Short names carry almost no meaning, so the model matches surface words ("move") or guesses. Without approvals, a vague tool set turns a question into a booking change.</li>
-            <li>The description of <code>lab_status</code> ("Lab access for one enrolment: open until which date…") lets the model connect "sandbox" and "still running" to lab access, as embeddings connected paraphrases in Module 05.</li>
+            <li>The description of <code>lab_status</code> ("Lab access for one enrolment: open until which date…") lets the model connect "sandbox" and "still running" to lab access, as embeddings connected paraphrases in <a class="xref" href="../../modules/05/index.html">Module 05</a>.</li>
             <li>Here it was wrong (both requests need facts or an action), but not always: greetings and general questions need no tool. A strict scorer counts only the ideal first step, so read each miss before "fixing" a description, and compare models: the same clear tools got 8/8 with qwen2.5:7b.</li>
           </ol>
         </div></details>

@@ -386,7 +386,7 @@ Constraints: exactly these keys and no others: ...
              allowed values for category: ...
              what to write when a value is missing: ...
 Done when: all five messages produce the same key set</code></pre></div>
-        <p class="hint"><b>Hint:</b> name each key, its type, and the missing-value rule (<code>null</code>, not <code>"null"</code> or <code>""</code>). List the eight categories from Module 03.</p>
+        <p class="hint"><b>Hint:</b> name each key, its type, and the missing-value rule (<code>null</code>, not <code>"null"</code> or <code>""</code>). List the eight categories from <a class="xref" href="../../modules/03/index.html">Module 03</a>.</p>
         <details class="solution"><summary>Compare with my prompt</summary><div><p>Mine is the <code>TIGHT</code> string in the script. Run it:</p>
           <pre class="term"><code><span class="ps">$ </span>python lab04_02_json_mode.py --tight</code></pre>
           <span class="out-label">Same small model, tight prompt</span>
@@ -405,7 +405,7 @@ Different key sets seen: 2
         <ul class="verify-list">
           <li>The key sets dropped from five to two (four replies in the right shape, one empty object): the prompt mostly fixed the <strong>shape</strong>.</li>
           <li>Now read the <strong>values</strong> in that last run: Mei's category is <code>" disput"</code> (a typo with a leading space), <code>"urgent": "false"</code> is a <em>string</em>, not a boolean, the casino message has the <em>string</em> <code>"null"</code> twice, and a stolen card, which should go first, has no ID and the fee-refund message vanished as <code>{}</code>. The unrecognised casino payment is labelled dispute instead of fraud. JSON mode can't catch any of that.</li>
-          <li>Keep this output. In Drill 04.3 you'll run the same messages with a schema, and in Drill 04.9 you'll add the rules that catch invented or malformed IDs.</li>
+          <li>Keep this output. In <a class="xref" href="../../modules/04/schema-outputs.html#d04-3">Drill 04.3</a> you'll run the same messages with a schema, and in <a class="xref" href="../../modules/04/validation.html#d04-9">Drill 04.9</a> you'll add the rules that catch invented or malformed IDs.</li>
         </ul>
       </li>
     </ol>

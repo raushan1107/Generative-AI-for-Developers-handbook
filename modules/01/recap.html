@@ -131,16 +131,16 @@
 
 <h2 id="checklist">What you should now be able to explain, and show</h2>
 <ul class="checklist">
-  <li>The difference between generative and discriminative AI, and when classic ML or plain code beats an LLM (Drill 01.3).</li>
+  <li>The difference between generative and discriminative AI, and when classic ML or plain code beats an LLM (<a class="xref" href="../../modules/01/genai-vs-ml.html#d01-3">Drill 01.3</a>).</li>
   <li>What a token is, why languages and JSON cost different amounts, and what the context window holds (Drills 01.5, 01.6).</li>
   <li>How an LLM generates one token at a time, what temperature does, and why that leads to hallucinations (Drills 01.4, 01.7, 01.8).</li>
   <li>Why your app only does inference, and why RAG beats fine-tuning for changing facts (Drills 01.9, 01.10).</li>
-  <li>How to choose a model by measuring, not guessing (Drill 01.11).</li>
-  <li>Which pattern fits a feature request, including "not GenAI" (Drill 01.13).</li>
+  <li>How to choose a model by measuring, not guessing (<a class="xref" href="../../modules/01/foundation-models.html#d01-11">Drill 01.11</a>).</li>
+  <li>Which pattern fits a feature request, including "not GenAI" (<a class="xref" href="../../modules/01/use-cases.html#d01-13">Drill 01.13</a>).</li>
 </ul>
 
 <h2 id="map">RR Finance Bank: the GenAI opportunity map</h2>
-<p>Module 01's job for our case is to look at RR Finance Bank's wish list through the patterns you now know, and be honest about what GenAI should and shouldn't do.</p>
+<p><a class="xref" href="../../modules/01/index.html">Module 01</a>'s job for our case is to look at RR Finance Bank's wish list through the patterns you now know, and be honest about what GenAI should and shouldn't do.</p>
 <div class="table-wrap min">
   <table>
     <thead><tr><th>RR Finance Bank needs</th><th>Pattern</th><th>Why GenAI (or why not)</th><th>Module</th></tr></thead>
@@ -159,16 +159,16 @@
 
 <h2 id="quiz">Self-check</h2>
 <div class="quiz">
-  <details><summary>1. RR Finance Assist told a customer the overdraft fee is $35; RR Finance Bank's is $29. The code has no bugs. What happened, and what's the fix?</summary><div><p>A <strong>hallucination</strong>: the model produced plausible text without the fact. Fix it by <strong>grounding</strong> the answer in the real fee schedule (in the prompt now, RAG in Module 06) and telling the model to say when information isn't provided.</p></div></details>
-  <details><summary>2. Why did the Japanese sentence in Drill 01.5 have the fewest characters but the most tokens?</summary><div><p>The tokenizer's vocabulary covers Japanese less efficiently, so characters are split into more, smaller tokens. <strong>Cost and context use depend on tokens, not characters.</strong></p></div></details>
-  <details><summary>3. Your bigram model (Drill 01.4) and a real LLM do the same core job. What is it, and what makes the LLM so much better?</summary><div><p>Both <strong>predict a probability for each next token and sample</strong>. The LLM uses thousands of tokens of context with attention, learned meaning instead of exact counts, and vast scale.</p></div></details>
+  <details><summary>1. RR Finance Assist told a customer the overdraft fee is $35; RR Finance Bank's is $29. The code has no bugs. What happened, and what's the fix?</summary><div><p>A <strong>hallucination</strong>: the model produced plausible text without the fact. Fix it by <strong>grounding</strong> the answer in the real fee schedule (in the prompt now, RAG in <span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 06 <span class="badge b-tool">Coming soon</span></span>) and telling the model to say when information isn't provided.</p></div></details>
+  <details><summary>2. Why did the Japanese sentence in <a class="xref" href="../../modules/01/tokens.html#d01-5">Drill 01.5</a> have the fewest characters but the most tokens?</summary><div><p>The tokenizer's vocabulary covers Japanese less efficiently, so characters are split into more, smaller tokens. <strong>Cost and context use depend on tokens, not characters.</strong></p></div></details>
+  <details><summary>3. Your bigram model (<a class="xref" href="../../modules/01/llms.html#d01-4">Drill 01.4</a>) and a real LLM do the same core job. What is it, and what makes the LLM so much better?</summary><div><p>Both <strong>predict a probability for each next token and sample</strong>. The LLM uses thousands of tokens of context with attention, learned meaning instead of exact counts, and vast scale.</p></div></details>
   <details><summary>4. A teammate wants temperature 0 "so the bot stops making things up". Will it?</summary><div><p>No. Temperature changes <strong>variety</strong>, not knowledge. A hallucination at temperature 0 is just a consistent hallucination. Grounding and constraints fix it.</p></div></details>
-  <details><summary>5. Classic ML scored 9/12 in Drill 01.3 and missed the Spanish ticket. Name two ways to fix that.</summary><div><p>Add <strong>multilingual training examples</strong> (an LLM can help generate them), or <strong>route</strong> non-English or low-confidence tickets to the LLM.</p></div></details>
-  <details><summary>6. What's the difference between what ChatGPT the app does and what the model behind it does?</summary><div><p>The model only predicts tokens from its context. The app adds a hidden system prompt, <strong>conversation history</strong>, often <strong>web search</strong> and tools, and safety layers. With the API, adding those is your job, starting in Module 02.</p></div></details>
+  <details><summary>5. Classic ML scored 9/12 in <a class="xref" href="../../modules/01/genai-vs-ml.html#d01-3">Drill 01.3</a> and missed the Spanish ticket. Name two ways to fix that.</summary><div><p>Add <strong>multilingual training examples</strong> (an LLM can help generate them), or <strong>route</strong> non-English or low-confidence tickets to the LLM.</p></div></details>
+  <details><summary>6. What's the difference between what ChatGPT the app does and what the model behind it does?</summary><div><p>The model only predicts tokens from its context. The app adds a hidden system prompt, <strong>conversation history</strong>, often <strong>web search</strong> and tools, and safety layers. With the API, adding those is your job, starting in <a class="xref" href="../../modules/02/index.html">Module 02</a>.</p></div></details>
 </div>
 
 <div class="callout takeaway">
-  <div class="c-label">Carry this into Module 02</div>
+  <div class="c-label">Carry this into <a class="xref" href="../../modules/02/index.html">Module 02</a></div>
   <p>RR Finance Assist v0.1 forgets names, freezes while thinking and would crash on the first network blip. Next you'll treat the LLM as what it really is (a slow, metered, rate-limited HTTPS API that sometimes fails) and call it like a professional: roles and memory, parameters, streaming, errors, retries and cost.</p>
 </div>
 

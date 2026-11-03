@@ -130,7 +130,7 @@
 <div class="content">
 
 <h2 id="map">The mental map: the prompt design framework</h2>
-<p>Every good prompt I've seen in production, whatever the model and task, answers the same five questions. The whole module hangs off them.</p>
+<p>Use these five questions as a practical prompt-design checklist. Different tasks and models may need different details, so test the prompt against your success criteria.</p>
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 420" role="img" aria-labelledby="m3-t m3-d">
@@ -160,7 +160,7 @@
 </div>
 
 <h2 id="why">Why prompts are specifications</h2>
-<p>In Module 01 you met the brilliant new joiner who has read everything but knows nothing about your company. The prompt is the only briefing that joiner ever gets. Every time. Nothing you <em>meant</em> reaches the model; only what you wrote.</p>
+<p>In <a class="xref" href="../../modules/01/index.html">Module 01</a> you met the brilliant new joiner who has read everything but knows nothing about your company. The prompt is the only briefing that joiner ever gets. Every time. Nothing you <em>meant</em> reaches the model; only what you wrote.</p>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
   <p>You walk into a tailor's shop and say "make me a shirt". You'll get <em>a</em> shirt: maybe the wrong size, a collar you hate, winter fabric when you wanted summer, ready next month when the wedding is on Saturday. Now walk in with your measurements, the fabric, "button-down collar, short sleeves, ready by Friday, here's a photo". Same tailor, same skill, completely different result. <strong>The brief got better.</strong></p>
@@ -187,9 +187,15 @@
 <h2 id="kit">Lab kit for Module 03</h2>
 <ul>
   <li><strong>The golden rule:</strong> never judge a prompt from one run. Every drill runs prompts several times or over several inputs and prints something you can count.</li>
-  <li><strong>You'll reuse:</strong> <code>tickets.py</code> from Drill 01.3. You'll create <code>data/eval_tickets.json</code> (Drill 03.4) and <code>prompts.py</code> (Drill 03.8), which Milestone 3 builds on.</li>
-  <li><strong>Two kinds of prompting:</strong> prompts for the model inside your app, and prompts for your AI coding assistant. Drill 03.1 shows they're the same skill.</li>
-  <li><strong>Build:</strong> Milestone 3 turns RR Finance Assist's prompts into versioned, tested code and adds a JSON triage endpoint with validation and an output guard.</li>
+  <li><strong>You'll reuse:</strong> <code>tickets.py</code> from <a class="xref" href="../../modules/01/genai-vs-ml.html#d01-3">Drill 01.3</a>. You'll create <code>data/eval_tickets.json</code> (<a class="xref" href="../../modules/03/zero-shot.html#d03-4">Drill 03.4</a>) and <code>prompts.py</code> (<a class="xref" href="../../modules/03/templates.html#d03-8">Drill 03.8</a>), which <a class="xref" href="../../modules/03/build.html#b03-1">Milestone 3</a> builds on.</li>
+  <li><strong>Two kinds of prompting:</strong> prompts for the model inside your app, and prompts for your AI coding assistant. <a class="xref" href="../../modules/03/what-is-prompt-engineering.html#d03-1">Drill 03.1</a> shows they're the same skill.</li>
+  <li><strong>Build:</strong> <a class="xref" href="../../modules/03/build.html#b03-1">Milestone 3</a> turns RR Finance Assist's prompts into versioned, tested code and adds a JSON triage endpoint with validation and an output guard.</li>
+</ul>
+
+<h2 id="sources">Official documentation</h2>
+<ul>
+  <li><a href="https://developers.openai.com/api/docs/guides/prompt-engineering">Prompt engineering</a> (OpenAI) and <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview">Prompt engineering overview</a> (Anthropic).</li>
+  <li><a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/">LLM01: Prompt Injection</a> (OWASP) and <a href="https://learn.microsoft.com/azure/foundry/openai/concepts/content-filter-prompt-shields">Prompt Shields in Microsoft Foundry</a>.</li>
 </ul>
 
 </div>

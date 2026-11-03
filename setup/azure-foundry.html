@@ -210,7 +210,7 @@ Constraints:
 Done when: give me separate az commands to verify the resource group, the resource and the
 deployment exist (table output), and explain what each script line does in one comment.</code></pre></div>
         </div></details>
-        <div class="why"><b>Why this works:</b> every blank that the model would otherwise guess (shell, names, model, SKU, capacity) is filled in, and "Done when" forces it to hand you a way to check its own work. That's the prompt design framework you'll study in Module 03.</div>
+        <div class="why"><b>Why this works:</b> every blank that the model would otherwise guess (shell, names, model, SKU, capacity) is filled in, and "Done when" forces it to hand you a way to check its own work. That's the prompt design framework you'll study in <a class="xref" href="../modules/03/index.html">Module 03</a>.</div>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Read the script, then run it</h4>
         <p>Read every line before running it. You're the reviewer. It should look broadly like the reference below (yours may differ in style). If the model version is rejected, ask your assistant to look up valid versions with <code>az cognitiveservices account list-models</code>.</p>
@@ -251,7 +251,7 @@ az cognitiveservices account show --name $name --resource-group $rg --query prop
 </div>
 
 <h2 id="keyless">Optional: keyless sign-in with Microsoft Entra ID</h2>
-<p>Keys are simple, which is why the labs use them. In production you'd rather have no key at all: the app signs in with its identity and Azure checks its role. You'll do this hands-on in Drill 02.3; the quick version is <code>az login</code>, the <em>Cognitive Services OpenAI User</em> role on the resource, and <code>DefaultAzureCredential</code> in code.</p>
+<p>Keys are simple, which is why the labs use them. In production you'd rather have no key at all: the app signs in with its identity and Azure checks its role. You'll do this hands-on in <a class="xref" href="../modules/02/authentication.html#d02-3">Drill 02.3</a>; the quick version is <code>az login</code>, the <em>Cognitive Services OpenAI User</em> role on the resource, and <code>DefaultAzureCredential</code> in code.</p>
 
 </div>
 <label class="page-done"><input type="checkbox" data-page-done="setup-azure"> Mark this page as done</label><nav class="pager" aria-label="Page navigation"><a class="prev" href="../setup/index.html"><small>Previous</small><span>← Choose your track</span></a><a class="next" href="../setup/workstation.html"><small>Next</small><span>Workstation and AI assistant →</span></a></nav>

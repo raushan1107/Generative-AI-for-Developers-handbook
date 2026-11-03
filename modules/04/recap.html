@@ -180,17 +180,17 @@
 
 <h2 id="checklist">Checklist before your model touches your app</h2>
 <ul class="checklist">
-  <li>Output that code reads is structured, never parsed from prose (Drill 04.1).</li>
-  <li>JSON mode is only a fallback, always with validation (Drill 04.2).</li>
+  <li>Output that code reads is structured, never parsed from prose (<a class="xref" href="../../modules/04/why-structured.html#d04-1">Drill 04.1</a>).</li>
+  <li>JSON mode is only a fallback, always with validation (<a class="xref" href="../../modules/04/json-mode.html#d04-2">Drill 04.2</a>).</li>
   <li>Schemas are Pydantic models, strict-mode compatible, linted and tested (Drills 04.3, 04.4).</li>
   <li>Every tool has a precise description, a strict schema and validated arguments (Drills 04.5, 04.6).</li>
-  <li>Tools run through a dispatcher in a bounded loop; errors go back to the model as data (Drill 04.7).</li>
-  <li>Identity comes from the session; no tool parameter chooses whose data is read (Drill 04.8).</li>
-  <li>Business rules live in validators; facts are cross-checked against your systems (Drill 04.9).</li>
-  <li>Every failure mode has a name, a bounded policy and a counter (Drill 04.10).</li>
+  <li>Tools run through a dispatcher in a bounded loop; errors go back to the model as data (<a class="xref" href="../../modules/04/app-logic.html#d04-7">Drill 04.7</a>).</li>
+  <li>Identity comes from the session; no tool parameter chooses whose data is read (<a class="xref" href="../../modules/04/app-logic.html#d04-8">Drill 04.8</a>).</li>
+  <li>Business rules live in validators; facts are cross-checked against your systems (<a class="xref" href="../../modules/04/validation.html#d04-9">Drill 04.9</a>).</li>
+  <li>Every failure mode has a name, a bounded policy and a counter (<a class="xref" href="../../modules/04/malformed.html#d04-10">Drill 04.10</a>).</li>
 </ul>
 
-<h2 id="decisions">RR Finance Assist: the milestone 4 design</h2>
+<h2 id="decisions">RR Finance Assist: the <a class="xref" href="../../modules/04/build.html#b04-1">milestone 4</a> design</h2>
 <div class="table-wrap min">
   <table>
     <thead><tr><th>Requirement</th><th>Decision</th><th>Why this and not something else</th></tr></thead>
@@ -198,7 +198,7 @@
       <tr><td>Answer with the customer's real data</td><td>Eight small, strict tools over the (stand-in) bank systems</td><td>Narrow tools are easier for the model to pick and for us to secure and test than one generic query tool</td></tr>
       <tr><td>Fee refund figures compliance can trust</td><td><code>quote_fee_refund</code> backed by <code>policy.fee_refund_quote()</code>; <code>quote_dispute</code> for the 60-day window</td><td>Exact, consistent, auditable; the model only explains the number</td></tr>
       <tr><td>No customer sees another's data</td><td><code>customer_id</code> from the session context; same error for "not yours" and "doesn't exist"</td><td>A prompt can be talked round; a code check can't. Identical errors stop ID probing</td></tr>
-      <tr><td>Hand over to people</td><td><code>create_support_case</code> writes a case with a summary</td><td>Assist never moves money or refunds fees; humans act (Module 07 adds approval first)</td></tr>
+      <tr><td>Hand over to people</td><td><code>create_support_case</code> writes a case with a summary</td><td>Assist never moves money or refunds fees; humans act (<a class="xref" href="../../modules/07/index.html">Module 07</a> adds approval first)</td></tr>
       <tr><td>Responsive UI while tools run</td><td>Streaming loop with <code>tool</code> status events</td><td>Users see progress; text still streams token by token</td></tr>
       <tr><td>Predictable cost</td><td>Max 4 tool rounds, one call at a time, only the final answer kept in history</td><td>Bounded worst case; strict tools on Azure can't run in parallel anyway</td></tr>
       <tr><td>Reliable triage</td><td><code>parse()</code> with the <code>Triage</code> model, validators for rules, JSON-repair fallback</td><td>Shape guaranteed by the API; works on providers without structured outputs</td></tr>
@@ -217,8 +217,8 @@
 </div>
 
 <div class="callout takeaway">
-  <div class="c-label">Carry this into Module 05</div>
-  <p>RR Finance Assist can now use your functions safely. But its catalogue search only matches exact words: ask for "a card I can use on holiday without extra charges" and the keyword <code>holiday</code> finds nothing, although the Voyager Travel Card's description says "no foreign transaction fees" and "spending abroad". Module 05 gives it <strong>embeddings</strong>, so it can search by meaning across products and help articles.</p>
+  <div class="c-label">Carry this into <a class="xref" href="../../modules/05/index.html">Module 05</a></div>
+  <p>RR Finance Assist can now use your functions safely. But its catalogue search only matches exact words: ask for "a card I can use on holiday without extra charges" and the keyword <code>holiday</code> finds nothing, although the Voyager Travel Card's description says "no foreign transaction fees" and "spending abroad". <a class="xref" href="../../modules/05/index.html">Module 05</a> gives it <strong>embeddings</strong>, so it can search by meaning across products and help articles.</p>
 </div>
 
 </div>

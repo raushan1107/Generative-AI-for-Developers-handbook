@@ -178,7 +178,7 @@
   <li>The system message has the strongest influence on behaviour: rules, persona, tone and boundaries go there.</li>
   <li>Newer OpenAI reasoning models also accept a <strong>developer</strong> role that works like system. Don't send both in one request.</li>
   <li>Claude's API takes the system prompt as a separate <code>system</code> parameter, and its <code>messages</code> list starts with a user turn.</li>
-  <li>You can write assistant messages yourself to show the model an example exchange: few-shot prompting (Module 03).</li>
+  <li>You can write assistant messages yourself to show the model an example exchange: few-shot prompting (<a class="xref" href="../../modules/03/index.html">Module 03</a>).</li>
   <li>A user can write <em>anything</em>, including "ignore your instructions". User content is never trusted (Modules 03 and 10).</li>
 </ul>
 
@@ -344,7 +344,7 @@ print("   ", chat(pattern)[0])</code></pre>
         <ul class="verify-list">
           <li>Part 1: zero memory. Part 2: memory appeared only because <em>you</em> resent history, and input tokens grew every turn.</li>
           <li>Part 3: one line of system message changed the whole persona.</li>
-          <li>Part 4 should worry you. The model invented a status, a date and even a reason ("insufficient funds") for payment PAY-10293 because the pattern made it plausible. Imagine that text reaching a customer whose salary payment is, in fact, fine. That's why lookups must be <strong>tool calls</strong> (Module 04), never generated text.</li>
+          <li>Part 4 should worry you. The model invented a status, a date and even a reason ("insufficient funds") for payment PAY-10293 because the pattern made it plausible. Imagine that text reaching a customer whose salary payment is, in fact, fine. That's why lookups must be <strong>tool calls</strong> (<span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 04 <span class="badge b-tool">Coming soon</span></span>), never generated text.</li>
         </ul>
       </li>
     </ol>
@@ -356,7 +356,7 @@ print("   ", chat(pattern)[0])</code></pre>
   <div class="drill-head"><span class="drill-id">Drill 02.6</span><h3>Write a tested history-trimming function</h3>
     <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · pytest</span><span class="badge b-tool">no API cost</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> a small, correct, tested utility that keeps the system message and the last N exchanges. Milestone 2 uses the same rule.</p>
+    <p class="drill-goal"><b>Goal:</b> a small, correct, tested utility that keeps the system message and the last N exchanges. <a class="xref" href="../../modules/02/build.html#b02-1">Milestone 2</a> uses the same rule.</p>
     <ol class="dsteps">
       <li class="dstep write"><span class="st">Your prompt</span><h4>Ask for tests first, then the function</h4>
         <div class="template-box"><pre><code>Goal:        history.py with trim_history(messages, max_turns) and test_history.py
@@ -446,7 +446,7 @@ def test_does_not_modify_input():
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Roles and state.</p></div></div>
 <div class="quiz">
-  <details><summary>1. A customer says "I told you my customer ID five messages ago!" and the bot doesn't know it. Likely cause?</summary><div><p>The history was <strong>trimmed</strong> (or never sent), so that message wasn't in the request. Fixes: keep more turns, summarise older turns, or pull key facts like the customer ID into the system context (Module 07).</p></div></details>
+  <details><summary>1. A customer says "I told you my customer ID five messages ago!" and the bot doesn't know it. Likely cause?</summary><div><p>The history was <strong>trimmed</strong> (or never sent), so that message wasn't in the request. Fixes: keep more turns, summarise older turns, or pull key facts like the customer ID into the system context (<span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 07 <span class="badge b-tool">Coming soon</span></span>).</p></div></details>
   <details><summary>2. Where should "Never promise refunds" go: system or user message?</summary><div><p>The <strong>system</strong> message. Rules belong to you, not to the user's turn, and the system message has the strongest influence.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>The model is stateless; your app is the memory. Decide deliberately what you resend.</p></div>

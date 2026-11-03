@@ -7,7 +7,7 @@
   <div class="frame">
     <svg viewBox="0 0 960 360" role="img" aria-labelledby="m2-t m2-d">
       <title id="m2-t">The four stages of an LLM API call</title>
-      <desc id="m2-d">Your backend authenticates with a key or token, sends a request with messages and parameters, receives the response as a stream, and handles errors such as 429 rate limits with retries. Each stage lists what can go wrong and which topic covers it. Cost is counted from token usage on every call.</desc>
+      <desc id="m2-d">Your backend authenticates with a key or token, sends a request with messages and parameters, receives a response, and handles errors such as 429 rate limits. Each stage lists what can go wrong and which topic covers it. Usage and billing rules depend on the provider and model.</desc>
       <rect x="20" y="130" width="130" height="90" rx="12" class="s-surface"/><text x="85" y="162" class="t-b mid">Your backend</text><text x="85" y="182" class="t-s mid">Python, Node,</text><text x="85" y="198" class="t-s mid">.NET, Java…</text>
       <circle cx="250" cy="175" r="64" class="s-blue"/><text x="250" y="160" class="t-m mid t-blue">1</text><text x="250" y="180" class="t-b mid">Authenticate</text><text x="250" y="198" class="t-s mid">key or token</text>
       <circle cx="420" cy="175" r="64" class="s-teal"/><text x="420" y="160" class="t-m mid t-teal">2</text><text x="420" y="180" class="t-b mid">Send request</text><text x="420" y="198" class="t-s mid">JSON body</text>
@@ -27,7 +27,7 @@
       <path d="M824 175 H846" class="s-arrow" marker-end="url(#ah)"/>
     </svg>
   </div>
-  <figcaption><b>Authenticate, send, stream, handle errors.</b> The labels above each circle are what goes wrong at that stage. And every call, successful or not, has a token bill attached.</figcaption>
+  <figcaption><b>Authenticate, send, receive (and stream when supported), handle errors.</b> The labels above each circle are what can go wrong at each stage. Some providers bill token usage even when a request returns no usable answer; check the provider's usage and billing rules.</figcaption>
 </figure>
 
 <h2 id="why">An API like no other</h2>
@@ -36,12 +36,12 @@
   <table>
     <thead><tr><th>Property</th><th>A typical REST API</th><th>An LLM API</th><th>What it forces you to do</th></tr></thead>
     <tbody>
-      <tr><td>Latency</td><td>50–200 ms</td><td>1–30+ seconds</td><td>Stream, show progress, set generous timeouts</td></tr>
-      <tr><td>Determinism</td><td>Same request, same response</td><td>Same request, different response</td><td>Validate outputs; test with datasets, not one example</td></tr>
-      <tr><td>Billing</td><td>Per call, or flat</td><td>Per token; input and output priced differently</td><td>Count tokens, cap output, watch prompt size</td></tr>
-      <tr><td>Rate limits</td><td>Requests per second</td><td>Tokens per minute <em>and</em> requests per minute</td><td>Back off and retry; queue background work</td></tr>
-      <tr><td>State</td><td>Often session-based</td><td>Stateless: resend the conversation every time</td><td>Manage history yourself</td></tr>
-      <tr><td>"Success"</td><td>200 means it worked</td><td>200 can still be truncated, filtered or wrong</td><td>Check <code>finish_reason</code>; validate content</td></tr>
+      <tr><td>Latency</td><td>Often sub-second for simple requests</td><td>Can take seconds; depends on model and output</td><td>Stream where supported, show progress, set timeouts</td></tr>
+      <tr><td>Output variability</td><td>Often follows a defined response contract</td><td>Content can vary across identical requests</td><td>Validate required properties; test a dataset, not one example</td></tr>
+      <tr><td>Billing</td><td>Per call, usage-based or flat</td><td>Often usage-based; token and feature pricing varies</td><td>Read provider usage and pricing rules; track tokens where reported</td></tr>
+      <tr><td>Rate limits</td><td>Often request-based</td><td>May limit requests, tokens or both over time windows</td><td>Follow provider guidance; honor retry instructions when supplied</td></tr>
+      <tr><td>State</td><td>Depends on the service contract</td><td>Many chat APIs require history in each request</td><td>Manage history, or use a provider's stateful API where appropriate</td></tr>
+      <tr><td>"Success"</td><td>2xx means the HTTP request succeeded</td><td>A successful response can still be incomplete, filtered or wrong</td><td>Check completion status and validate content</td></tr>
     </tbody>
   </table>
 </div>
@@ -63,4 +63,11 @@
   <li><strong>New packages:</strong> <code>fastapi</code>, <code>uvicorn</code> and <code>pytest</code> (already in <code>requirements.txt</code>).</li>
   <li><strong>Unit tests without an API:</strong> Drills 02.6, 02.11 and 02.13 have you build tested utilities (history trimming, error mapping, retries) that the milestone reuses.</li>
   <li><strong>Build:</strong> Milestone 2 turns RR Finance Assist into a FastAPI service with a streaming web chat.</li>
+</ul>
+
+<h2 id="sources">Official documentation</h2>
+<ul>
+  <li><a href="https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning">Azure OpenAI reasoning models</a> and <a href="https://learn.microsoft.com/microsoft-cloud/dev/dev-proxy/concepts/llm-rate-limits">LLM rate limits</a> (Microsoft Learn).</li>
+  <li><a href="https://azure.microsoft.com/pricing/details/azure-openai/">Azure OpenAI pricing</a>; prices and billing rules change, so check the current provider page.</li>
+  <li><a href="https://developers.openai.com/api/docs/guides/text">OpenAI text generation</a> and the <a href="https://platform.claude.com/docs/en/api/messages">Anthropic Messages API</a> for provider-specific request behavior.</li>
 </ul>

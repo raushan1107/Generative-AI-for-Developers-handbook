@@ -1,5 +1,5 @@
 <!--meta
-{"id": "project", "short": "RR Finance Assist: The Build", "h1": "RR Finance Assist: The Progressive Build", "description": "The progressive project of the Generative AI for Developers handbook: RR Finance Assist, an AI customer-support assistant for RR Finance Bank, a fictional retail bank, built one milestone per module from a CLI to a deployed, evaluated, secured product.", "lead": "One real application, built one milestone per module. Each milestone applies that module's skills to the same codebase, so by the end of Part V you have a working, tested, deployed GenAI product, and the scars that come with building one.", "chips": ["12 milestones", "3 available", "Reference code per milestone", "FastAPI · Azure OpenAI"]}
+{"id": "project", "short": "RR Finance Assist: The Build", "h1": "RR Finance Assist: The Progressive Build", "description": "The progressive project of the Generative AI for Developers handbook: RR Finance Assist, an AI customer-support assistant for RR Finance Bank, a fictional retail bank. Milestones 01–03 are published; later milestones are on the roadmap.", "lead": "One real application, built one milestone per module as the handbook grows. Milestones 01–03 and their reference code are available now; later capabilities will be published when their modules are complete.", "chips": ["12 milestones", "3 available", "Reference code per milestone", "FastAPI · Azure OpenAI"]}
 -->
 <h2 id="problem">The business problem</h2>
 <div class="case">
@@ -48,17 +48,17 @@
       <tr><td><a href="../modules/05/build.html">M5 · Search by meaning</a></td><td>05</td><td>Hybrid search over products and help-centre sections, locally or on Azure AI Search; a semantic product tool</td><td><span class="badge b-run" data-module="05">Available</span></td></tr>
       <tr><td><a href="../modules/06/build.html">M6 · Knowledge assistant</a></td><td>06</td><td>Answers from the help centre with citations checked in code; a help-centre search box (<code>/api/ask</code>)</td><td><span class="badge b-run" data-module="06">Available</span></td></tr>
       <tr><td><a href="../modules/07/build.html">M7 · Support agent</a></td><td>07</td><td>Proposes freezing a card or opening a dispute; a person approves; code executes once and logs it for audit</td><td><span class="badge b-run" data-module="07">Available</span></td></tr>
-      <tr><td>M8 · Production architecture</td><td>08</td><td>AI gateway, persistent sessions, caching, queues, tracing</td><td><span class="badge b-tool">Coming soon</span></td></tr>
-      <tr><td>M9 · Evaluation</td><td>09</td><td>Groundedness, relevance, triage accuracy and fraud recall in a regression pipeline</td><td><span class="badge b-tool">Coming soon</span></td></tr>
-      <tr><td>M10 · Security</td><td>10</td><td>Prompt Shields, PII masking (card and account numbers), least-privilege tools, no-advice rules, red-team tests</td><td><span class="badge b-tool">Coming soon</span></td></tr>
-      <tr><td>M11 · Cost and speed</td><td>11</td><td>Model routing, prompt caching, batching, cost dashboards</td><td><span class="badge b-tool">Coming soon</span></td></tr>
-      <tr><td>M12 · Ship it</td><td>12</td><td>Containers, secrets, fallbacks, prompt and model versioning, CI/CD, model risk review</td><td><span class="badge b-tool">Coming soon</span></td></tr>
+      <tr id="module-08"><td>M8 · Production architecture</td><td>08</td><td>AI gateway, persistent sessions, caching, queues, tracing</td><td><span class="badge b-tool">Coming soon</span></td></tr>
+      <tr id="module-09"><td>M9 · Evaluation</td><td>09</td><td>Groundedness, relevance, triage accuracy and fraud recall in a regression pipeline</td><td><span class="badge b-tool">Coming soon</span></td></tr>
+      <tr id="module-10"><td>M10 · Security</td><td>10</td><td>Prompt Shields, PII masking (card and account numbers), least-privilege tools, no-advice rules, red-team tests</td><td><span class="badge b-tool">Coming soon</span></td></tr>
+      <tr id="module-11"><td>M11 · Cost and speed</td><td>11</td><td>Model routing, prompt caching, batching, cost dashboards</td><td><span class="badge b-tool">Coming soon</span></td></tr>
+      <tr id="module-12"><td>M12 · Ship it</td><td>12</td><td>Containers, secrets, fallbacks, prompt and model versioning, CI/CD, model risk review</td><td><span class="badge b-tool">Coming soon</span></td></tr>
     </tbody>
   </table>
 </div>
 
 <h2 id="catchup">Reference code and catching up</h2>
-<p>Every milestone page shows all the code, and the complete project snapshot for each milestone is in the handbook repository under <code>code/rrfinance-assist/m01</code>, <code>m02</code>, <code>m03</code>. If you miss a session, copy the latest snapshot, add your <code>.env</code>, and continue. Each snapshot has been tested against a fake model: streaming, memory, history trimming, friendly errors, triage validation and repair, and the output guard.</p>
+<p>Every published milestone page shows all its code. The complete reference snapshots for M1–M3 are in the handbook repository under <code>code/rrfinance-assist/m01</code>, <code>m02</code> and <code>m03</code>. If you miss a session, copy the latest available snapshot, add your <code>.env</code>, and continue. Each snapshot has been tested against a fake model: streaming, memory, history trimming, friendly errors, triage validation and repair, and the output guard.</p>
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
   <p>This is how GenAI products actually get built: a thin end-to-end slice first (Milestone 1), then hardening (2), then making behaviour deliberate and measurable (3), then capabilities (tools, retrieval, agents), then the production disciplines. Teams that start with an impressive agent demo usually end up rebuilding exactly these foundations later.</p>

@@ -1,6 +1,6 @@
 # Generative AI for Developers handbook: build guide
 
-Notes for myself (not published on the site): how this handbook is built and how to add Parts II–V in the same style. Part I (setup, Modules 01–03, the project, labs and capstone pages) is live. Parts II (Modules 04–05) and III (Modules 06–07) and the **open-source lab guide** (section 8) went live on 2026-10-12. New Parts start as drafts (see "Draft modules" below).
+Notes for myself (not published on the site): how this handbook is built and how to add Parts II–V in the same style. Part I (setup, Modules 01–03, project milestones 1–3, drills, and open-source Labs 0–1) is live. Modules 04–07 and open-source Labs 2–3 are drafts; Modules 08–12, the remaining concept maps, and the full capstone brief are not complete yet. New modules start as drafts (see "Draft modules" below).
 
 ---
 
@@ -66,6 +66,7 @@ Build after any change: `python tools/build.py` (from the repo root). It fails l
 - `<!--MODULE_PAGES:NN-->` renders the module's page cards with their drills (overview pages).
 - `<!--DRILL_INDEX-->` renders the catalogue of all drills (labs page), filterable by step type.
 - Sidebar, breadcrumbs, prev/next pager and "Mark this page as done" are generated for every page.
+- Prose references such as "Module 02", "Milestone 2" and "Drill 02.4" are linked to their overview, build page or drill. Draft references remain visibly marked as coming soon; references to planned modules link to their roadmap rows.
 
 ### Draft modules (build now, publish later)
 
@@ -183,6 +184,7 @@ Since 2026-10-16 every lab uses this case (learner feedback: most learners are f
 - `tools/stage_site.py` copies the public files (`index.html`, `assets/`, `start/`, `setup/`, `modules/`, `project/`, `labs/`, `capstone/`, `code/`) and **leaves out**:
   - this guide and anything else in `docs/` (notes for me, not for learners);
   - `src/` and `tools/`;
+  - local `.env` files, runtime `.log` files, and `.jsonl` usage/chat logs;
   - every draft module: `modules/NN/` and `code/rrfinance-assist/mNN/` for modules with `"draft": true` in `nav.json`.
   So removing `"draft": true` and pushing is what publishes a Part.
 - Preview locally exactly what will go live: `python tools/build.py && python tools/stage_site.py`, then serve `_site/` (e.g. `python -m http.server -d _site 8000`). `_site/` is git-ignored.
@@ -198,7 +200,7 @@ A second, separate track for learners without Azure or paid API access, written 
 - Code: `code/oss-labs/` is the learner's project folder `oss-genai-labs`: `client.py` (LLM_BASE_URL / LLM_API_KEY / CHAT_MODEL / AGENT_MODEL / EMBED_*), `.env.example`, `requirements.txt`, `lab0_check.py`, `lN_*.py` per lab, `data/` (courses, help articles, 3 internal docs). Programs are self-contained, simpler than the handbook drills, and Ollama-first.
 - Keys: Ollama needs none (the placeholder `ollama` satisfies the OpenAI library). Option B, documented in Lab 0, is a hosted open-model provider with a free key (Groq, OpenRouter); embeddings stay on Ollama.
 - Models: `llama3.2` (chat, 8 GB RAM), `nomic-embed-text` (embeddings), `qwen2.5:7b` (agents, 16 GB RAM).
-- Live since 2026-10-12. The section keeps `"code_dirs": ["code/oss-labs"]`, so if it is ever set back to `"draft": true`, `tools/stage_site.py` hides its pages and code again. When a new Part is built as a draft, put its new lab on a draft section of its own, or keep the whole guide live and add the lab when the Part goes live.
+- Labs 0–1 are live; Labs 2–3 are drafts. The section keeps `"code_dirs": ["code/oss-labs"]`, so if it is ever set back to `"draft": true`, `tools/stage_site.py` hides its pages and code again. When a new Part is built as a draft, put its new lab on a draft section of its own, or keep the whole guide live and add the lab when the Part goes live.
 - Draft sections work like draft modules: any nav section can carry `"draft": true`.
 
 ---

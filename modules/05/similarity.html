@@ -414,7 +414,7 @@ weather         0.34      0.33      0.32      0.28      0.30      1.00</code></p
         <ul class="verify-list">
           <li>The diagonal is 1.00 and the matrix is symmetric: run <code>pytest -q test_similarity.py</code> to confirm the maths (4 tests).</li>
           <li>"My card was stolen" and "Someone took my wallet" are the strongest pair (0.79) with no shared words.</li>
-          <li>Surprise: "How do I get my money back?" sits closer to the theft sentences (0.62, 0.64) than to "Can I dispute a double charge?" (0.48). Embeddings capture what a text is <em>about</em> (losing money), not your bank's categories. That's why triage uses a classifier with house rules (Module 03), and search is evaluated on real questions.</li>
+          <li>Surprise: "How do I get my money back?" sits closer to the theft sentences (0.62, 0.64) than to "Can I dispute a double charge?" (0.48). Embeddings capture what a text is <em>about</em> (losing money), not your bank's categories. That's why triage uses a classifier with house rules (<a class="xref" href="../../modules/03/index.html">Module 03</a>), and search is evaluated on real questions.</li>
           <li>Notice how narrow this model's range is: unrelated pairs still score 0.25 to 0.40. A fixed "0.5 = match" rule would be meaningless here.</li>
         </ul>
       </li>

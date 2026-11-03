@@ -300,7 +300,7 @@ AZURE_SEARCH_API_KEY = os.getenv("AZURE_SEARCH_API_KEY", "")
 AZURE_SEARCH_INDEX = os.getenv("AZURE_SEARCH_INDEX", "rrfinance")</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The search module</h4>
-        <p>Everything from this module in one file: chunk by heading (the winner in Drill 05.7), embed in batches, pre-filter, BM25 with a small analyzer, cosine, RRF (Drill 05.9), and the same <code>search()</code> on Azure AI Search. <code>LocalIndex.load()</code> refuses an index built with a different embedding model.</p>
+        <p>Everything from this module in one file: chunk by heading (the winner in <a class="xref" href="../../modules/05/chunking.html#d05-7">Drill 05.7</a>), embed in batches, pre-filter, BM25 with a small analyzer, cosine, RRF (<a class="xref" href="../../modules/05/hybrid-search.html#d05-9">Drill 05.9</a>), and the same <code>search()</code> on Azure AI Search. <code>LocalIndex.load()</code> refuses an index built with a different embedding model.</p>
         <pre class="code" data-file="app/search.py"><code>"""Semantic and hybrid search over the product catalogue and help-centre articles (milestone 5).
 
 Two backends with the same interface:
@@ -541,7 +541,7 @@ if __name__ == "__main__":
 Done in 5.0s.</code></pre>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Upgrade the <code>search_courses</code> tool</h4>
-        <p>Milestone 4's tool took a single keyword. Write a prompt for your assistant that changes it to take the customer's words plus typed filters, use the search service, and fall back safely.</p>
+        <p><a class="xref" href="../../modules/04/build.html#b04-1">Milestone 4</a>'s tool took a single keyword. Write a prompt for your assistant that changes it to take the customer's words plus typed filters, use the search service, and fall back safely.</p>
         <div class="template-box"><pre><code>Goal: upgrade search_courses in #file:app/tools.py to semantic search
 Context: app/search.py has SearchService.search(query, k, **filters) with filters
          kind, level, format, max_price_usd
@@ -550,7 +550,7 @@ Constraints: arguments: query (the customer's words) + optional typed filters ..
              fallback when ...
              return only id, title, level, format, price_usd
 Done when: pytest -q passes and "cheap intro to containers" returns Docker Quick Start first</code></pre></div>
-        <p class="hint"><b>Hint:</b> tools are plain functions, so give the module a <code>set_search_service()</code> that <code>main.py</code> calls at start-up. Filters must be <code>Literal</code>/<code>int</code> fields, never free text pasted into a filter. Fall back to the Milestone 4 keyword filter when no service is set <em>or</em> the search raises (embedding service down).</p>
+        <p class="hint"><b>Hint:</b> tools are plain functions, so give the module a <code>set_search_service()</code> that <code>main.py</code> calls at start-up. Filters must be <code>Literal</code>/<code>int</code> fields, never free text pasted into a filter. Fall back to the <a class="xref" href="../../modules/04/build.html#b04-1">Milestone 4</a> keyword filter when no service is set <em>or</em> the search raises (embedding service down).</p>
         <details class="solution"><summary>Compare with my version</summary><div>
           <pre class="code" data-file="app/tools.py (search_courses)"><code>    return _owned(backend.CARDS, last4, context, "cards")
 

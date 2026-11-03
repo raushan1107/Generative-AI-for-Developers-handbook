@@ -237,7 +237,7 @@
   <div class="c-label">In finance</div>
   <p>Four-eyes control is centuries older than AI: in banks, a second person approves payments, limit changes and exceptions. An agent fits the same model. It prepares the action and a code-written summary ("Dispute $412.00 to SkyHigh Airlines on 9 September"), and a person approves it. Regulators increasingly expect this human oversight for automated decisions that affect customers.</p>
 </div>
-  <p>Coding agents ask before running shell commands or editing files outside the workspace, and let you allow-list safe commands so approvals stay meaningful. Expense and procurement agents prepare a purchase and route it to the budget holder. Support agents issue small goodwill credits on their own but escalate refunds above a limit to a person, mirroring the approval table in RR Finance Bank's internal wiki from Module 06. Too many approval prompts and people click yes without reading; place them where the risk is.</p>
+  <p>Coding agents ask before running shell commands or editing files outside the workspace, and let you allow-list safe commands so approvals stay meaningful. Expense and procurement agents prepare a purchase and route it to the budget holder. Support agents issue small goodwill credits on their own but escalate refunds above a limit to a person, mirroring the approval table in RR Finance Bank's internal wiki from <a class="xref" href="../../modules/06/index.html">Module 06</a>. Too many approval prompts and people click yes without reading; place them where the risk is.</p>
 </div>
 
 <div class="lens">
@@ -395,16 +395,16 @@ audit log: [{'action': 'extend_lab', 'enrolment_id': 'TC-10293', 'lab_until': '2
       <li class="dstep think"><span class="st">Think</span><h4>Where the control lives</h4>
         <ol>
           <li>After the decline, what told the model it had been declined, and what stopped it from trying again?</li>
-          <li>In this drill the approver runs inside the agent loop, so the program waits. Why doesn't that work for a web app, and what does Milestone 7 do instead?</li>
+          <li>In this drill the approver runs inside the agent loop, so the program waits. Why doesn't that work for a web app, and what does <a class="xref" href="../../modules/07/build.html#b07-1">Milestone 7</a> do instead?</li>
           <li>Which RR Finance Bank actions would you never give the agent, even with approval?</li>
           <li>In the approved run, the first approval request says "can't preview": the model had guessed an ID. What should happen instead of asking the person?</li>
         </ol>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
             <li>The tool result <code>{"error": "the customer did not approve this action: ..."}</code>, plus the system prompt rule "If they decline, don't try again". Even if the model ignored the rule, every retry would hit the approver again.</li>
-            <li>A web request can't wait minutes for a click. Milestone 7 ends the turn with a stored proposal and an Approve/Decline card; a separate request executes it later. That's the pause-and-resume pattern, with the proposal as task state.</li>
-            <li>Refunds and other money going out, exceptions to policy, changes to someone else's data, and anything irreversible like deleting an account. Those go to staff through a ticket (Module 06's approval limits), or stay manual.</li>
-            <li>Validate first, ask second. An action that fails identity or policy checks should go straight back to the model as an error; asking a person to approve something impossible wastes their attention and trains them to click yes. (Here the tool still refused it after the "yes", so nothing broke.) Milestone 7's <code>request_…</code> tools check ownership and rules before a proposal ever reaches the customer.</li>
+            <li>A web request can't wait minutes for a click. <a class="xref" href="../../modules/07/build.html#b07-1">Milestone 7</a> ends the turn with a stored proposal and an Approve/Decline card; a separate request executes it later. That's the pause-and-resume pattern, with the proposal as task state.</li>
+            <li>Refunds and other money going out, exceptions to policy, changes to someone else's data, and anything irreversible like deleting an account. Those go to staff through a ticket (<a class="xref" href="../../modules/06/index.html">Module 06</a>'s approval limits), or stay manual.</li>
+            <li>Validate first, ask second. An action that fails identity or policy checks should go straight back to the model as an error; asking a person to approve something impossible wastes their attention and trains them to click yes. (Here the tool still refused it after the "yes", so nothing broke.) <a class="xref" href="../../modules/07/build.html#b07-1">Milestone 7</a>'s <code>request_…</code> tools check ownership and rules before a proposal ever reaches the customer.</li>
           </ol>
         </div></details>
       </li>

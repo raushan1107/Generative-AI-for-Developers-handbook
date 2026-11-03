@@ -208,7 +208,7 @@
 </div>
 
 <h2 id="why">Why this module changes what you build</h2>
-<p>In Milestone 3, RR Finance Assist triaged messages into JSON, and we still needed a repair loop because the model sometimes wrapped its answer in code fences. Worse, when Mei asked "which of my overdraft fees will you refund?", Assist could only recite policy: it couldn't see her account, so it couldn't give her a number. Both problems have the same cure: stop treating the model as a text generator and start treating it as a <strong>component with a contract</strong>.</p>
+<p>In <a class="xref" href="../../modules/03/build.html#b03-1">Milestone 3</a>, RR Finance Assist triaged messages into JSON, and we still needed a repair loop because the model sometimes wrapped its answer in code fences. Worse, when Mei asked "which of my overdraft fees will you refund?", Assist could only recite policy: it couldn't see her account, so it couldn't give her a number. Both problems have the same cure: stop treating the model as a text generator and start treating it as a <strong>component with a contract</strong>.</p>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
   <p>A hotel concierge doesn't walk into the kitchen and cook your dinner. They fill in a room-service form with fixed boxes (dish, quantity, room number) and hand it to the kitchen. The kitchen checks the room is real, cooks, and sends back a receipt the concierge reads to you. Structured outputs are the form. Function calling is handing it to the kitchen. Your code is the kitchen: it decides what actually gets made.</p>
@@ -231,7 +231,7 @@
 
 <h2 id="kit">Lab kit for Module 04</h2>
 <ul>
-  <li><strong>New files in <code>genai-labs/</code>:</strong> <code>catalogue.py</code> over <code>data/products.json</code> (20 fictional RR Finance Bank accounts, cards and loans), used here and in Module 05.</li>
+  <li><strong>New files in <code>genai-labs/</code>:</strong> <code>catalogue.py</code> over <code>data/products.json</code> (20 fictional RR Finance Bank accounts, cards and loans), used here and in <a class="xref" href="../../modules/05/index.html">Module 05</a>.</li>
   <li><strong>Install:</strong> <code>pip install pydantic</code> (already there if you did Part I's labs with FastAPI).</li>
   <li><strong>Many drills run offline.</strong> Drills 04.1, 04.4, 04.7 (tests), 04.8, 04.9 and 04.10 need no API key, so you can practise the hard parts anywhere and get exact outputs.</li>
   <li><strong>New helper, <code>llm_tools.py</code>:</strong> if a tool drill fails with <em>"Function tools with reasoning_effort are not supported"</em>, your deployment is a reasoning model that wants the Responses API for tools. For these drills, add <code>TOOLS_REASONING_EFFORT=none</code> to <code>.env</code>; this helper passes it on every tool request. Or use a non-reasoning deployment.
@@ -245,7 +245,7 @@ import llm  <span class="c"># noqa: F401  (loads .env)</span>
 
 _effort = os.getenv("TOOLS_REASONING_EFFORT", "").strip()
 TOOL_EXTRAS = {"reasoning_effort": _effort} if _effort else {}</code></pre></li>
-  <li><strong>Build:</strong> Milestone 4 gives RR Finance Assist strict tools (product search, the customer's accounts, cards and payments, card status, fee refund and dispute quotes, support cases) and moves triage to structured outputs.</li>
+  <li><strong>Build:</strong> <a class="xref" href="../../modules/04/build.html#b04-1">Milestone 4</a> gives RR Finance Assist strict tools (product search, the customer's accounts, cards and payments, card status, fee refund and dispute quotes, support cases) and moves triage to structured outputs.</li>
 </ul>
 
 </div>

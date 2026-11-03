@@ -18,7 +18,7 @@ OUT = ROOT / "_site"
 PUBLIC = ["index.html", ".nojekyll", "assets", "start", "setup", "modules",
           "project", "labs", "capstone", "oss", "maps", "code"]
 SKIP = shutil.ignore_patterns("__pycache__", ".pytest_cache", "*.pyc", ".env",
-                              ".venv", "usage.jsonl", "response.json")
+                              ".venv", "*.log", "*.jsonl", "response.json")
 
 
 def draft_paths():
@@ -46,7 +46,7 @@ def zip_folder(src, target, top, keep=lambda rel: True):
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as z:
         for p in sorted(src.rglob("*")):
             rel = p.relative_to(src)
-            if p.is_file() and not skip & set(rel.parts) and not p.suffix == ".log" and keep(rel):
+            if p.is_file() and not skip & set(rel.parts) and p.suffix.lower() not in {".log", ".jsonl"} and keep(rel):
                 z.write(p, Path(top) / rel)
 
 
@@ -72,6 +72,7 @@ def make_lab_downloads(drafts):
     skip = {"__pycache__", ".pytest_cache", ".env", "search_index.json", "kb_index.json", "chat_log.jsonl"}
     hidden = set(drafts)                               # code of labs that aren't live yet stays out of the zip
     files = [p for p in sorted(src.rglob("*")) if p.is_file() and not skip & set(p.relative_to(src).parts)
+             and p.suffix.lower() not in {".log", ".jsonl"}
              and p.relative_to(ROOT).as_posix() not in hidden]
     for name, keep in (("oss-labs-data.zip", lambda r: r.parts[0] == "data"), ("oss-labs-complete.zip", lambda r: True)):
         with zipfile.ZipFile(OUT / "code" / name, "w", zipfile.ZIP_DEFLATED) as z:

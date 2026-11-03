@@ -445,7 +445,7 @@ Next steps: Confirm using the RR Finance Bank app or website.</code></pre>
             <li>The workflow always uses exactly two; the agent used two to four. At volume, that difference multiplies your model bill and latency, which is why routers handle the common cases, but only if they route correctly.</li>
             <li>"Next dates for my RAG course" went to <code>extend_lab</code> (the system refused, and the reply invented that dates "haven't been scheduled"), and "extend my lab" went to <code>lab_status</code>. A workflow fails <em>silently</em> when the router is wrong: every later step runs perfectly on the wrong path.</li>
             <li>Neither. The workflow only read the status, yet its reply says the extension "has been processed"; the agent looked things up and then announced a new end date without calling <code>extend_lab</code>. Both prove the rule from topic 1: confirmations must come from code and logs, never from a model's sentence about what happened.</li>
-            <li>Describe each category in the router prompt (with an example per category), add an "unclear" category that falls back to the agent or a person, evaluate the router on a labelled set of real requests (Module 09), and add the approval step before <code>extend_lab</code> so a misroute can't change anything on its own.</li>
+            <li>Describe each category in the router prompt (with an example per category), add an "unclear" category that falls back to the agent or a person, evaluate the router on a labelled set of real requests (<a class="xref" href="../../project/index.html#module-09">Module 09</a>), and add the approval step before <code>extend_lab</code> so a misroute can't change anything on its own.</li>
           </ol>
         </div></details>
       </li>
@@ -458,7 +458,7 @@ Next steps: Confirm using the RR Finance Bank app or website.</code></pre>
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Workflows.</p></div></div>
 <div class="quiz">
   <details><summary>1. Name the five workflow patterns and one use of each.</summary><div><p>Chaining (draft then polish), routing (send each ticket category to its handler), parallel (fetch lab and voucher status at once), orchestrator-workers (split a long research task), evaluator-optimiser (check a reply against rules and revise).</p></div></details>
-  <details><summary>2. Is Milestone 6's <code>/api/ask</code> a workflow or an agent?</summary><div><p>A workflow: a fixed chain (retrieve, then maybe generate, then check). The chat's <code>search_help</code> tool is agentic: the model decides when and how often to search.</p></div></details>
+  <details><summary>2. Is <a class="xref" href="../../modules/06/build.html#b06-1">Milestone 6</a>'s <code>/api/ask</code> a workflow or an agent?</summary><div><p>A workflow: a fixed chain (retrieve, then maybe generate, then check). The chat's <code>search_help</code> tool is agentic: the model decides when and how often to search.</p></div></details>
   <details><summary>3. Your router sends 85% of requests to fixed handlers and 15% to an agent. Why is that a good design?</summary><div><p>Most traffic gets the cheap, fast, predictable path; the agent's extra cost and risk are spent only where flexibility is needed, and both share the same tools and guard rails.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>If you can draw the flowchart, build a workflow. Give the model the steering wheel only where the path really varies.</p></div>

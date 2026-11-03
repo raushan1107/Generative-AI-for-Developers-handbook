@@ -243,7 +243,7 @@
   <div class="c-label">In finance</div>
   <p>Embeddings let a bank compare texts by meaning: a complaint that says "they took my money twice" lands next to the dispute policy even though it shares no words with it. The same idea finds similar past fraud cases, groups customer complaints by theme for the conduct-risk team, and matches analyst questions to the right section of a research report.</p>
 </div>
-  <p>Online shops embed product descriptions so "shoes for wet weather" finds waterproof boots. Help centres embed articles so "money back" finds the refunds page. Support teams embed tickets to spot duplicates and trending problems. And almost every "chat with your documents" product embeds document chunks so it can retrieve the right ones before the model answers (Module 06).</p>
+  <p>Online shops embed product descriptions so "shoes for wet weather" finds waterproof boots. Help centres embed articles so "money back" finds the refunds page. Support teams embed tickets to spot duplicates and trending problems. And almost every "chat with your documents" product embeds document chunks so it can retrieve the right ones before the model answers (<a class="xref" href="../../modules/06/index.html">Module 06</a>).</p>
 </div>
 
 <div class="lens">
@@ -253,7 +253,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Building an index with one embedding model, then switching models (or deployments with different dimensions) for queries. The vectors live in different spaces; similarity scores become meaningless, often without any error. Store the model name with the index and rebuild when it changes (Milestone 5 checks this).</p>
+  <p>Building an index with one embedding model, then switching models (or deployments with different dimensions) for queries. The vectors live in different spaces; similarity scores become meaningless, often without any error. Store the model name with the index and rebuild when it changes (<a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a> checks this).</p>
 </div>
 
 <div class="callout exam">
@@ -368,7 +368,7 @@ for text, item in zip(texts, response.data):
     print(f"\n{text}")
     print(f"  dimensions: {len(v)}   length (norm): {np.linalg.norm(v):.3f}")
     print(f"  first 5 numbers: {np.round(v[:5], 4).tolist()}")</code></pre>
-        <p>The embedding model setting lives in <code>embed.py</code>, the helper you'll use in every Module 05 drill. It batches requests and caches vectors on disk, so re-running a drill costs nothing:</p>
+        <p>The embedding model setting lives in <code>embed.py</code>, the helper you'll use in every <a class="xref" href="../../modules/05/index.html">Module 05</a> drill. It batches requests and caches vectors on disk, so re-running a drill costs nothing:</p>
         <pre class="code" data-file="embed.py"><code>"""Module 05 helper: turn texts into embedding vectors, in batches, with a small disk cache
 so re-running a drill doesn't pay for the same embeddings twice."""
 import hashlib

@@ -370,8 +370,8 @@ changes: [{'action': 'reschedule', 'enrolment_id': 'TC-20877', 'old_start': '202
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
             <li>In a good run, every ID and date in an argument appears in an earlier tool result (TC-20877 and C110 from <code>my_enrolments</code>; the new date from <code>upcoming_sessions</code>). Any value that appears from nowhere is a guess, and the tools reject guesses about identity.</li>
-            <li>Only the log is evidence. If the answer mentions a fee or date that no tool returned, or a change that isn't in the log, that's exactly the hallucinated action from Drill 07.1, now inside an agent.</li>
-            <li>Each step is a model call that re-sends the whole conversation, so tokens grow quickly. For a common request type, consider a workflow (topic 4), smaller tool results, or a faster model for routine steps (Module 11).</li>
+            <li>Only the log is evidence. If the answer mentions a fee or date that no tool returned, or a change that isn't in the log, that's exactly the hallucinated action from <a class="xref" href="../../modules/07/what-is-an-agent.html#d07-1">Drill 07.1</a>, now inside an agent.</li>
+            <li>Each step is a model call that re-sends the whole conversation, so tokens grow quickly. For a common request type, consider a workflow (topic 4), smaller tool results, or a faster model for routine steps (<a class="xref" href="../../project/index.html#module-11">Module 11</a>).</li>
           </ol>
         </div></details>
       </li>

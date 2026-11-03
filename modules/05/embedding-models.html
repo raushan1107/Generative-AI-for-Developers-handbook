@@ -210,7 +210,7 @@
 <h3>The choices that matter</h3>
 <ul>
   <li><strong>Quality on your data:</strong> build 20 to 50 real questions with known answers (like <code>data/help_questions.json</code>) and measure how often the right document comes first. That number beats any leaderboard.</li>
-  <li><strong>Languages:</strong> if users write in Spanish and Hindi, test in Spanish and Hindi (Drill 05.2 showed a mostly-English model missing a Spanish paraphrase).</li>
+  <li><strong>Languages:</strong> if users write in Spanish and Hindi, test in Spanish and Hindi (<a class="xref" href="../../modules/05/similarity.html#d05-2">Drill 05.2</a> showed a mostly-English model missing a Spanish paraphrase).</li>
   <li><strong>Dimensions and storage:</strong> 1,536 float32 numbers take about 6 KB, so a million chunks is about 6 GB of vectors before indexes. The <code>text-embedding-3</code> models accept a <code>dimensions</code> parameter to return shorter vectors (for example 256) that keep most of the quality.</li>
   <li><strong>Input length:</strong> text-embedding-3 accepts up to 8,191 tokens per input, but retrieval usually works better on shorter, focused chunks (topic 6).</li>
   <li><strong>Task prefixes:</strong> some models (like <code>nomic-embed-text</code>) expect <code>search_query: </code> on questions and <code>search_document: </code> on documents. Skipping them still works, just less well.</li>
@@ -319,7 +319,7 @@ MODEL = {
     <p class="drill-goal"><b>Goal:</b> match six customer questions (one in Spanish) to the right help article, and compare full-size vectors, shortened vectors and task prefixes.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Six questions, ten articles</h4>
-        <p>The ten fictional help-centre articles are in <code>data/help/</code>; Module 06 reuses them.</p>
+        <p>The ten fictional help-centre articles are in <code>data/help/</code>; <a class="xref" href="../../modules/06/index.html">Module 06</a> reuses them.</p>
         <pre class="code" data-file="lab05_03_models.py"><code>"""Drill 05.3: same questions, different embedding settings. Does the best match change?
 Run:  python lab05_03_models.py                    (your EMBED_MODEL, full size)
       python lab05_03_models.py --dims 256 1536    (text-embedding-3 models only: shortened vectors)
@@ -399,9 +399,9 @@ if __name__ == "__main__":
         </ol>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
-            <li>Not clearly. Higher scores alone aren't the goal; correct <em>rankings</em> are. The prefix fixed "locked out of the app" and broke "charged $29", and both versions sent "the money I sent hasn't arrived" to complaints, because a frustrated customer sounds like a complaint. Whole articles mix topics; Drill 05.7 shows that smaller, section-sized chunks fix much of this.</li>
+            <li>Not clearly. Higher scores alone aren't the goal; correct <em>rankings</em> are. The prefix fixed "locked out of the app" and broke "charged $29", and both versions sent "the money I sent hasn't arrived" to complaints, because a frustrated customer sounds like a complaint. Whole articles mix topics; <a class="xref" href="../../modules/05/chunking.html#d05-7">Drill 05.7</a> shows that smaller, section-sized chunks fix much of this.</li>
             <li>If shortened vectors keep the same hits, you store about a sixth of the data (roughly 1 KB instead of 6 KB per chunk, about 5 GB saved per million chunks) and search faster.</li>
-            <li>No. Six questions, each answered by a whole article, is a smoke test. Drill 05.7 uses 20 questions with a required phrase in the retrieved chunk; real projects use hundreds of real user questions.</li>
+            <li>No. Six questions, each answered by a whole article, is a smoke test. <a class="xref" href="../../modules/05/chunking.html#d05-7">Drill 05.7</a> uses 20 questions with a required phrase in the retrieved chunk; real projects use hundreds of real user questions.</li>
           </ol>
         </div></details>
       </li>

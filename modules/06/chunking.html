@@ -223,7 +223,7 @@
 <h3>What changes when chunks feed a prompt</h3>
 <div class="table-wrap min">
   <table>
-    <thead><tr><th>Concern</th><th>Search only (Module 05)</th><th>RAG (this module)</th></tr></thead>
+    <thead><tr><th>Concern</th><th>Search only (<a class="xref" href="../../modules/05/index.html">Module 05</a>)</th><th>RAG (this module)</th></tr></thead>
     <tbody>
       <tr><td>Size</td><td>Whatever ranks best</td><td>Also <strong>tokens sent</strong>: top-k × chunk size is paid on every question</td></tr>
       <tr><td>Completeness</td><td>A missing paragraph is a missed search result</td><td>A missing paragraph is a fact the model can never use; it will say "not found" or guess</td></tr>
@@ -236,7 +236,7 @@
 <ul>
   <li><strong>Small to retrieve, big to read</strong> is a common upgrade: index small chunks for precise matching, but send the parent section (or neighbours) to the model. Use it when answers need surrounding context.</li>
   <li><strong>Tables and lists</strong> should stay whole inside one chunk; a price table split in half produces wrong answers with real-looking citations.</li>
-  <li><strong>Version your chunker.</strong> Changing it changes every chunk id and vector, so the index must be rebuilt (Milestone 6 records <code>headings-v2</code> and refuses older indexes).</li>
+  <li><strong>Version your chunker.</strong> Changing it changes every chunk id and vector, so the index must be rebuilt (<a class="xref" href="../../modules/06/build.html#b06-1">Milestone 6</a> records <code>headings-v2</code> and refuses older indexes).</li>
 </ul>
 
 <div class="callout realworld">
@@ -256,7 +256,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Trusting a hit-rate table built only from "easy" questions. Milestone 5's chunker scored 20/20 in Module 05 and still dropped seven article introductions. Add questions whose answers sit in introductions, tables and footnotes, or you won't see the gap.</p>
+  <p>Trusting a hit-rate table built only from "easy" questions. <a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a>'s chunker scored 20/20 in <a class="xref" href="../../modules/05/index.html">Module 05</a> and still dropped seven article introductions. Add questions whose answers sit in introductions, tables and footnotes, or you won't see the gap.</p>
 </div>
 
 <div class="callout exam">
@@ -338,7 +338,7 @@ MODEL = {
   <div class="drill-head"><span class="drill-id">Drill 06.4</span><h3>Chunking for answers: recall and tokens</h3>
     <div class="drill-meta"><span class="time">~20 min</span><span class="badge b-azure">Azure OpenAI embeddings</span><span class="badge b-tool">Python</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> compare whole articles, Milestone 5's chunks and the new RAG chunker on the 20 help questions plus 5 whose answers sit in introductions, measuring both recall (hit@3) and the tokens each question would send to the model.</p>
+    <p class="drill-goal"><b>Goal:</b> compare whole articles, <a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a>'s chunks and the new RAG chunker on the 20 help questions plus 5 whose answers sit in introductions, measuring both recall (hit@3) and the tokens each question would send to the model.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>The RAG chunker</h4>
         <pre class="code" data-file="rag_chunks.py"><code>"""Module 06 helper: chunking for answers, not just for search.
@@ -467,7 +467,7 @@ sections + intros, max 200       53       20/20        5/5      123 avg</code></
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>Read the table</h4>
         <ol>
-          <li>Milestone 5's chunks score 0/5 on intro questions. Why didn't Module 05's measurements show this?</li>
+          <li><a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a>'s chunks score 0/5 on intro questions. Why didn't <a class="xref" href="../../modules/05/index.html">Module 05</a>'s measurements show this?</li>
           <li>Whole articles score almost as well. Why not just retrieve whole articles?</li>
           <li>"Max 200" sends the fewest tokens. What could go wrong with even smaller chunks?</li>
         </ol>

@@ -169,10 +169,10 @@
 
 <h3>Getting examples right</h3>
 <ul>
-  <li><strong>Two to five examples</strong> usually suffice; more costs tokens on every call.</li>
+  <li><strong>Start with a small set of relevant examples</strong>; the useful number depends on the task. More examples use more prompt tokens on APIs that bill for usage.</li>
   <li><strong>Cover the tricky cases</strong>, not just the easy ones. Examples should sit on the boundaries you care about.</li>
-  <li><strong>Vary and balance them.</strong> Four dispute examples and one other nudge the model towards dispute.</li>
-  <li><strong>Keep the format identical.</strong> The model copies format faithfully, mistakes included.</li>
+  <li><strong>Vary and balance them.</strong> An unbalanced set can bias the model toward overrepresented labels.</li>
+  <li><strong>Keep the format consistent.</strong> Examples influence formatting, but validate the output rather than assuming it will match.</li>
   <li>Use <strong>user/assistant pairs</strong> or a clearly delimited block in the system message; both work.</li>
 </ul>
 
@@ -183,7 +183,7 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
-  <p>Few-shot is the workhorse of production classification and extraction pipelines: routing tickets, tagging reviews, normalising product attributes. Some teams go a step further and <strong>retrieve</strong> the most similar labelled examples for each new input (dynamic few-shot), combining this topic with the embeddings of Module 05.</p>
+  <p>Few-shot is the workhorse of production classification and extraction pipelines: routing tickets, tagging reviews, normalising product attributes. Some teams go a step further and <strong>retrieve</strong> the most similar labelled examples for each new input (dynamic few-shot), combining this topic with the embeddings of <span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 05 <span class="badge b-tool">Coming soon</span></span>.</p>
 </div>
 
 <div class="callout pitfall">
@@ -273,7 +273,7 @@ MODEL = {
     <p class="drill-goal"><b>Goal:</b> measure the accuracy gain from five examples, and its token cost.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span>
-        <p>The examples are <code>FEW_SHOT_EXAMPLES</code> in <code>tickets.py</code> (Drill 01.3); the script is <code>lab03_05_triage.py</code> from Drill 03.5.</p>
+        <p>The examples are <code>FEW_SHOT_EXAMPLES</code> in <code>tickets.py</code> (<a class="xref" href="../../modules/01/genai-vs-ml.html#d01-3">Drill 01.3</a>); the script is <code>lab03_05_triage.py</code> from <a class="xref" href="../../modules/03/zero-shot.html#d03-5">Drill 03.5</a>.</p>
         <pre class="term"><code><span class="ps">$ </span>python lab03_05_triage.py --mode both
 <span class="ps">$ </span>python lab03_05_triage.py --mode both --data data/eval_tickets.json</code></pre>
         <span class="out-label">Real output (llama3.2 on Ollama; yours will vary)</span>
@@ -294,7 +294,7 @@ Accuracy 10/12 (83%) · off-list labels: 0 · avg input tokens: 186
 Most common mistakes: fraud -&gt; dispute x1, account -&gt; dispute x1</code></pre></code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
-        <ul class="verify-list"><li>Five examples took the same small model from 5/12 to 10/12, and fixed the "money missing after a text" fraud case and the fee-refund rule.</li><li>One fraud message ("a payment to a shop in another country") is still labelled <em>dispute</em>: the examples don't cover "a payment in a place I've never been". Which example would you add?</li><li>Input tokens more than doubled. At 40,000 messages a month, work out the extra cost with your price (Drill 02.14). Is the accuracy gain worth it? Usually, yes.</li></ul>
+        <ul class="verify-list"><li>Five examples took the same small model from 5/12 to 10/12, and fixed the "money missing after a text" fraud case and the fee-refund rule.</li><li>One fraud message ("a payment to a shop in another country") is still labelled <em>dispute</em>: the examples don't cover "a payment in a place I've never been". Which example would you add?</li><li>Input tokens more than doubled. At 40,000 messages a month, work out the extra cost with your price (<a class="xref" href="../../modules/02/cost.html#d02-14">Drill 02.14</a>). Is the accuracy gain worth it? Usually, yes.</li></ul>
       </li>
       <li class="dstep think"><span class="st">Think</span>
         <p>Edit <code>FEW_SHOT_EXAMPLES</code> to contain four dispute examples and one card example, and rerun. What happens to tickets in other categories?</p>

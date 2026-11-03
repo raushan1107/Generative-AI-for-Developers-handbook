@@ -338,7 +338,7 @@ def accounts_of(customer_id: str) -&gt; list[dict]:
 def cards_of(customer_id: str) -&gt; list[dict]:
     return [{"card_last4": last4, "product": PRODUCTS[c["product_id"]]["name"], "status": c["status"]}
             for last4, c in CARDS.items() if c["customer_id"] == customer_id]</code></pre>
-        <p>Policy becomes code. This is the only place fee refunds and dispute windows are decided; <code>fee_refund_quote()</code> is the Drill 03.7 case, now exact.</p>
+        <p>Policy becomes code. This is the only place fee refunds and dispute windows are decided; <code>fee_refund_quote()</code> is the <a class="xref" href="../../modules/03/chain-of-thought.html#d03-7">Drill 03.7</a> case, now exact.</p>
         <pre class="code" data-file="app/policy.py"><code>"""RR Finance Bank policy as code (fictional). Money and dates are decided here, never by the model."""
 from datetime import date, timedelta
 
@@ -379,7 +379,7 @@ def dispute_quote(payment_date: date, today: date) -&gt; dict:
             "note": "Inside the 60-day window: a provisional credit within 10 business days."}</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The registry and the tools</h4>
-        <p><code>app/toolkit.py</code> is your Drill 04.7 <code>toolkit.py</code>, copied into the app package unchanged. The tools use it:</p>
+        <p><code>app/toolkit.py</code> is your <a class="xref" href="../../modules/04/app-logic.html#d04-7">Drill 04.7</a> <code>toolkit.py</code>, copied into the app package unchanged. The tools use it:</p>
         <pre class="code" data-file="app/tools.py"><code>"""RR Finance Assist tools (milestone 4).
 The model can ask for these; our code decides whether and how they run.
 Identity rule: the signed-in customer comes from `context`, set by the app, never from the model."""
@@ -888,7 +888,7 @@ class ChatService:
         yield event</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Triage on structured outputs</h4>
-        <p>The schema guarantees the shape, so the <code>pattern</code> and <code>max_length</code> from Milestone 3 move into validators (Azure rejects them in a strict schema). If a validator fails, it retries; if the provider doesn't support structured outputs, it falls back to the Milestone 3 method.</p>
+        <p>The schema guarantees the shape, so the <code>pattern</code> and <code>max_length</code> from <a class="xref" href="../../modules/03/build.html#b03-1">Milestone 3</a> move into validators (Azure rejects them in a strict schema). If a validator fails, it retries; if the provider doesn't support structured outputs, it falls back to the <a class="xref" href="../../modules/03/build.html#b03-1">Milestone 3</a> method.</p>
         <pre class="code" data-file="app/triage.py"><code>"""Ticket triage.
 Milestone 3: the model returned JSON, Pydantic validated it, one repair attempt.
 Milestone 4: structured outputs. The schema is enforced by the API, so the shape is guaranteed;
@@ -985,7 +985,7 @@ def _triage_json_repair(client, message: str, max_attempts: int = 2):
     raise TriageError(f"invalid JSON after {max_attempts} attempts: {problem}")</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>API, UI and CLI</h4>
-        <p>The chat request now carries a <strong>demo</strong> <code>customer_id</code>. The comment in the code is the important part: a real app takes the customer from a verified sign-in on the server (Module 10), never from a field the browser controls.</p>
+        <p>The chat request now carries a <strong>demo</strong> <code>customer_id</code>. The comment in the code is the important part: a real app takes the customer from a verified sign-in on the server (<a class="xref" href="../../project/index.html#module-10">Module 10</a>), never from a field the browser controls.</p>
         <pre class="code" data-file="app/main.py"><code>"""RR Finance Assist API, milestone 4.
 
 Run from the project folder:  uvicorn app.main:app --reload
@@ -1326,7 +1326,7 @@ def test_case_is_written_with_the_session_customer(tmp_path, monkeypatch):
 If you cancel today, you won't receive a refund because the cancellation requirement is 14 or more
 days before the start. However, you can move back to a later date for free by rescheduling.
 DONE ['quote_refund'] 2406</code></pre>
-        <p class="small muted">Without the nudge, that same small model skipped the tool and confidently said "100% refund". That's the gap between a model that follows tool instructions and one that doesn't, and why you'll measure it in Module 09 rather than trust a demo.</p>
+        <p class="small muted">Without the nudge, that same small model skipped the tool and confidently said "100% refund". That's the gap between a model that follows tool instructions and one that doesn't, and why you'll measure it in <a class="xref" href="../../project/index.html#module-09">Module 09</a> rather than trust a demo.</p>
       </li>
     </ol>
   </div>
@@ -1356,7 +1356,7 @@ DONE ['quote_refund'] 2406</code></pre>
 </div>
 <div class="callout note">
   <div class="c-label">Fell behind? Catch up here</div>
-  <p>The complete reference code is in <a href="../../code/rrfinance-assist/m04/app/tools.py"><code>code/rrfinance-assist/m04/</code></a>, including tests and data. Copy it over your project, keep your <code>.env</code>, run <code>pytest -q</code>, and you're ready for Module 05.</p>
+  <p>The complete reference code is in <a href="../../code/rrfinance-assist/m04/app/tools.py"><code>code/rrfinance-assist/m04/</code></a>, including tests and data. Copy it over your project, keep your <code>.env</code>, run <code>pytest -q</code>, and you're ready for <a class="xref" href="../../modules/05/index.html">Module 05</a>.</p>
 </div>
 
 </div>

@@ -227,8 +227,8 @@
       <tr><td>Product type, audience</td><td><code>family eq 'cards'</code></td><td>User choices in the UI</td></tr>
       <tr><td>Fee, date</td><td><code>annual_fee_usd le 0</code>, <code>updated ge 2026-01-01</code></td><td>Budgets and freshness</td></tr>
       <tr><td>Language, region</td><td><code>language eq 'es'</code></td><td>Answer from the right version of a document</td></tr>
-      <tr><td>Kind of document</td><td><code>kind eq 'help'</code></td><td>One index, several collections (Milestone 5 does this)</td></tr>
-      <tr><td>Tenant, permission group</td><td><code>group_ids/any(g: search.in(g, 'sales,all'))</code></td><td><strong>Security trimming</strong>: users only retrieve what they may see (Module 10)</td></tr>
+      <tr><td>Kind of document</td><td><code>kind eq 'help'</code></td><td>One index, several collections (<a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a> does this)</td></tr>
+      <tr><td>Tenant, permission group</td><td><code>group_ids/any(g: search.in(g, 'sales,all'))</code></td><td><strong>Security trimming</strong>: users only retrieve what they may see (<a class="xref" href="../../project/index.html#module-10">Module 10</a>)</td></tr>
     </tbody>
   </table>
 </div>
@@ -339,7 +339,7 @@ MODEL = {
   <div class="drill-body">
     <p class="drill-goal"><b>Goal:</b> run the same search three ways (no filter, post-filter, pre-filter) and see why the order matters.</p>
     <ol class="dsteps">
-      <li class="dstep run"><span class="st">Run</span><h4>With your Drill 05.4 vector store</h4>
+      <li class="dstep run"><span class="st">Run</span><h4>With your <a class="xref" href="../../modules/05/vector-databases.html#d05-4">Drill 05.4</a> vector store</h4>
         <pre class="code" data-file="lab05_08_filters.py"><code>"""Drill 05.8: metadata filters. Filter BEFORE ranking (pre-filter) or AFTER (post-filter)?"""
 from catalogue import PRODUCTS
 from embed import embed
@@ -389,7 +389,7 @@ Pre-filter (filter first, then top 3):
         <p>Look at the pre-filtered list: the Cashback Card (1.5% back on every purchase) is the best answer to "earn rewards", but the Balance Transfer Card ranks above it. With a tiny catalogue and a small embedding model, scores 0.02 apart are noise. That's one reason a bank shows a short list with the facts, rather than declaring one product "the best for you".
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>The same filter on Azure AI Search</h4>
-        <p>If you built the index in Drill 05.5, the filter is an OData expression on <code>filterable</code> fields:</p>
+        <p>If you built the index in <a class="xref" href="../../modules/05/vector-databases.html#d05-5">Drill 05.5</a>, the filter is an OData expression on <code>filterable</code> fields:</p>
         <pre class="term"><code><span class="ps">$ </span>python lab05_05_azure_search.py query "earn rewards when I travel and spend abroad" --mode vector --filter "family eq 'cards' and annual_fee_usd le 0"</code></pre>
         <ul class="verify-list">
           <li>Azure returns three cards with no annual fee: it pre-filters vector queries by default.</li>
@@ -397,8 +397,8 @@ Pre-filter (filter first, then top 3):
         </ul>
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>Where should the filter values come from?</h4>
-        <p>In Milestone 5 the model calls <code>search_products(query, family, audience, max_annual_fee_usd)</code>. Who decides those filter values, and how do they become a filter safely?</p>
-        <details class="solution"><summary>Compare with my answer</summary><div><p>The model extracts them from the conversation ("a card", "no annual fee"), but only as <strong>typed arguments</strong>: <code>family</code> is a <code>Literal</code> enum and <code>max_annual_fee_usd</code> an integer, validated by Pydantic. Code then builds the filter from those values, never by pasting text into a filter string. Permission filters (Module 10) never come from the model at all: they come from the signed-in user, like identity in Module 04.</p></div></details>
+        <p>In <a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a> the model calls <code>search_products(query, family, audience, max_annual_fee_usd)</code>. Who decides those filter values, and how do they become a filter safely?</p>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>The model extracts them from the conversation ("a card", "no annual fee"), but only as <strong>typed arguments</strong>: <code>family</code> is a <code>Literal</code> enum and <code>max_annual_fee_usd</code> an integer, validated by Pydantic. Code then builds the filter from those values, never by pasting text into a filter string. Permission filters (<a class="xref" href="../../project/index.html#module-10">Module 10</a>) never come from the model at all: they come from the signed-in user, like identity in <a class="xref" href="../../modules/04/index.html">Module 04</a>.</p></div></details>
       </li>
     </ol>
   </div>

@@ -224,9 +224,9 @@
   <table>
     <thead><tr><th>Level</th><th>Who decides the steps</th><th>Example</th></tr></thead>
     <tbody>
-      <tr><td>Chatbot</td><td>No steps; one reply</td><td>Milestone 2's chat</td></tr>
+      <tr><td>Chatbot</td><td>No steps; one reply</td><td><a class="xref" href="../../modules/02/build.html#b02-1">Milestone 2</a>'s chat</td></tr>
       <tr><td>Tool-using assistant</td><td>The model picks a few tools for one turn, in a bounded loop</td><td>Milestones 4 to 6: look-ups, quotes, help-centre search</td></tr>
-      <tr><td>Workflow</td><td>Your code fixes the steps; the model fills in some of them</td><td>Classify → fetch → draft a reply (Drill 07.4)</td></tr>
+      <tr><td>Workflow</td><td>Your code fixes the steps; the model fills in some of them</td><td>Classify → fetch → draft a reply (<a class="xref" href="../../modules/07/workflows.html#d07-4">Drill 07.4</a>)</td></tr>
       <tr><td>Agent</td><td>The model chooses the steps towards a goal, including actions</td><td>"Move me to the next date and tell me the fee"</td></tr>
       <tr><td>Autonomous agent</td><td>Long-running, many steps, little supervision</td><td>Coding agents that open pull requests; research agents</td></tr>
     </tbody>
@@ -651,9 +651,9 @@ AGENT (tools; approvals granted automatically for this demo, see Drill 07.7)
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
             <li>From the system prompt, which mentions the tool; the 7B chatbot even prints fake "tool output". A false claim of action is the worst outcome: the customer believes their lab is extended and loses access days later. Never report actions from model text.</li>
-            <li>Agents need models that are good at multi-step tool use: reading an error and taking the suggested next step. Small models can follow single tool calls but give up or loop on multi-step tasks. Choose by measuring on your tasks (Module 09).</li>
+            <li>Agents need models that are good at multi-step tool use: reading an error and taking the suggested next step. Small models can follow single tool calls but give up or loop on multi-step tasks. Choose by measuring on your tasks (<a class="xref" href="../../project/index.html#module-09">Module 09</a>).</li>
             <li>Identity came from the app (<code>context["customer"]</code>), so the guessed ID was checked against Mei's enrolments and refused, and nothing was written. Guard rails in code make a weak model safe, just not useful.</li>
-            <li>It said "I have extended your AI-102 lab… new end date 2026-10-23" without ever calling <code>extend_lab</code>: the date is its own arithmetic, and the audit log shows no change. In another run with the same model and prompt it did call <code>extend_lab</code> and the log showed the change. Agents are probabilistic, so the outcome you report must come from tool results and logs. Milestone 7 does exactly that: only code writes the confirmation.</li>
+            <li>It said "I have extended your AI-102 lab… new end date 2026-10-23" without ever calling <code>extend_lab</code>: the date is its own arithmetic, and the audit log shows no change. In another run with the same model and prompt it did call <code>extend_lab</code> and the log showed the change. Agents are probabilistic, so the outcome you report must come from tool results and logs. <a class="xref" href="../../modules/07/build.html#b07-1">Milestone 7</a> does exactly that: only code writes the confirmation.</li>
           </ol>
         </div></details>
       </li>

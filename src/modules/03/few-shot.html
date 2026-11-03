@@ -41,10 +41,10 @@
 
 <h3>Getting examples right</h3>
 <ul>
-  <li><strong>Two to five examples</strong> usually suffice; more costs tokens on every call.</li>
+  <li><strong>Start with a small set of relevant examples</strong>; the useful number depends on the task. More examples use more prompt tokens on APIs that bill for usage.</li>
   <li><strong>Cover the tricky cases</strong>, not just the easy ones. Examples should sit on the boundaries you care about.</li>
-  <li><strong>Vary and balance them.</strong> Four dispute examples and one other nudge the model towards dispute.</li>
-  <li><strong>Keep the format identical.</strong> The model copies format faithfully, mistakes included.</li>
+  <li><strong>Vary and balance them.</strong> An unbalanced set can bias the model toward overrepresented labels.</li>
+  <li><strong>Keep the format consistent.</strong> Examples influence formatting, but validate the output rather than assuming it will match.</li>
   <li>Use <strong>user/assistant pairs</strong> or a clearly delimited block in the system message; both work.</li>
 </ul>
 

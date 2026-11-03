@@ -213,7 +213,7 @@
 </div>
 
 <h2 id="why">Why this module matters</h2>
-<p>Milestone 4 gave RR Finance Assist a <code>search_products</code> tool, but it only matches exact words. Ask for "a card I can use on holiday without extra charges" and the keyword <code>holiday</code> finds nothing, although the Voyager Travel Card says "no foreign transaction fees" and "spending abroad". And the ten help-centre articles, with the answers to most customer questions, are invisible to it. Embeddings fix both, and they are the foundation of Module 06 (RAG).</p>
+<p><a class="xref" href="../../modules/04/build.html#b04-1">Milestone 4</a> gave RR Finance Assist a <code>search_products</code> tool, but it only matches exact words. Ask for "a card I can use on holiday without extra charges" and the keyword <code>holiday</code> finds nothing, although the Voyager Travel Card says "no foreign transaction fees" and "spending abroad". And the ten help-centre articles, with the answers to most customer questions, are invisible to it. Embeddings fix both, and they are the foundation of <a class="xref" href="../../modules/06/index.html">Module 06</a> (RAG).</p>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
   <p>A library shelves books by meaning: cookery near nutrition, travel guides near maps. A librarian asked for "something about eating well on a budget" walks to the right corner even though no title contains those words. Embeddings give your software that kind of map, built from text, with thousands of directions instead of a few shelves.</p>
@@ -237,7 +237,7 @@
 
 <h2 id="kit">Lab kit for Module 05</h2>
 <ul>
-  <li><strong>Azure:</strong> deploy an embedding model in your Foundry project (deployment name <code>embed</code>, for example <code>text-embedding-3-small</code>), and in Drill 05.5 create an <strong>Azure AI Search</strong> service (the Free tier is enough for these labs; one per subscription).</li>
+  <li><strong>Azure:</strong> deploy an embedding model in your Foundry project (deployment name <code>embed</code>, for example <code>text-embedding-3-small</code>), and in <a class="xref" href="../../modules/05/vector-databases.html#d05-5">Drill 05.5</a> create an <strong>Azure AI Search</strong> service (the Free tier is enough for these labs; one per subscription).</li>
   <li><strong>Free, local alternative:</strong> <code>ollama pull nomic-embed-text</code> and set <code>LLM_PROVIDER=ollama</code>. Many real outputs on these pages come from it, so you can compare.</li>
   <li><strong>Install:</strong> <code>pip install numpy rank_bm25 azure-search-documents chromadb</code>.</li>
   <li><strong>Add to your <code>.env</code>:</strong>
@@ -249,9 +249,9 @@ OLLAMA_EMBED_MODEL=nomic-embed-text
 AZURE_SEARCH_ENDPOINT=https://&lt;search-service-name&gt;.search.windows.net
 AZURE_SEARCH_API_KEY=&lt;admin key&gt;
 AZURE_SEARCH_INDEX=products</code></pre></li>
-  <li><strong>New files in <code>genai-labs/</code>:</strong> <code>embed.py</code> (batched embeddings with a small disk cache), <code>data/help/</code> (ten fictional help-centre articles), <code>data/help_questions.json</code> (20 questions with known answers). Module 06 reuses all of them.</li>
+  <li><strong>New files in <code>genai-labs/</code>:</strong> <code>embed.py</code> (batched embeddings with a small disk cache), <code>data/help/</code> (ten fictional help-centre articles), <code>data/help_questions.json</code> (20 questions with known answers). <a class="xref" href="../../modules/06/index.html">Module 06</a> reuses all of them.</li>
   <li><strong>Cost:</strong> embeddings are cheap (a few cents for everything in this module), and the cache means re-runs cost nothing.</li>
-  <li><strong>Build:</strong> Milestone 5 gives RR Finance Assist a search index over products and help sections, hybrid search with filters, a <code>/api/search</code> endpoint and a semantic <code>search_products</code> tool.</li>
+  <li><strong>Build:</strong> <a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a> gives RR Finance Assist a search index over products and help sections, hybrid search with filters, a <code>/api/search</code> endpoint and a semantic <code>search_products</code> tool.</li>
 </ul>
 
 </div>

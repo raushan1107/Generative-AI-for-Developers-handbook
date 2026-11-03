@@ -230,7 +230,7 @@
   <li><strong>Incremental:</strong> hash each chunk's text; re-embed only new or changed chunks and delete the removed ones. A nightly job over thousands of pages then costs cents, not dollars.</li>
   <li><strong>Same model for documents and questions,</strong> recorded in the manifest. Some models (for example <code>nomic-embed-text</code>) also recommend different prefixes for documents and queries; follow the model card.</li>
   <li><strong>Normalise</strong> vectors to length 1 so a dot product is the cosine similarity.</li>
-  <li><strong>Retries:</strong> embedding APIs rate-limit too. The Module 02 retry rules apply to indexing jobs.</li>
+  <li><strong>Retries:</strong> embedding APIs rate-limit too. The <a class="xref" href="../../modules/02/index.html">Module 02</a> retry rules apply to indexing jobs.</li>
 </ul>
 
 <h3>Vector storage: what each record holds</h3>

@@ -133,11 +133,11 @@
 
 <div class="callout definition">
   <div class="c-label">Definition</div>
-  <p>Generation parameters control how tokens are selected and how much is generated: <strong>temperature</strong> and <strong>top_p</strong> shape sampling randomness, <strong>max_completion_tokens</strong> caps output length, <strong>stop</strong> sequences end generation early, and on reasoning models <strong>reasoning_effort</strong> controls how much internal reasoning happens before answering.</p>
+  <p>Common generation parameters, where a model supports them, shape token selection or output length. For example, <strong>temperature</strong> and <strong>top_p</strong> affect sampling, an API-specific output-token limit caps generation, and some reasoning models expose a control such as <strong>reasoning_effort</strong>. Names, values and support vary by model and API.</p>
 </div>
 <div class="callout plain">
   <div class="c-label">In plain words</div>
-  <p>Temperature is "how adventurous" (you implemented it in Drill 01.7). Max tokens is "how long, at most". Reasoning effort, on thinking models, is "how hard to think before speaking". Defaults are usually fine; change a knob for a reason.</p>
+  <p>Temperature is "how adventurous" (you implemented it in <a class="xref" href="../../modules/01/generation.html#d01-7">Drill 01.7</a>). Max tokens is "how long, at most". Reasoning effort, on thinking models, is "how hard to think before speaking". Defaults are usually fine; change a knob for a reason.</p>
 </div>
 
 <div class="table-wrap min">
@@ -145,7 +145,7 @@
     <thead><tr><th>Parameter</th><th>What it does</th><th>Typical values</th><th>Watch out for</th></tr></thead>
     <tbody>
       <tr><td><code>temperature</code></td><td>Sampling randomness</td><td>0–0.3 extraction · ~0.7 chat · 1+ creative</td><td>Many reasoning models only accept the default and reject other values</td></tr>
-      <tr><td><code>top_p</code></td><td>Sample only from the top tokens covering probability p</td><td>Leave at default</td><td>Change temperature <em>or</em> top_p, not both</td></tr>
+      <tr><td><code>top_p</code></td><td>Restrict sampling to a likely-token set whose cumulative probability reaches p</td><td>Leave at default</td><td>Change temperature <em>or</em> top_p, not both</td></tr>
       <tr><td><code>max_completion_tokens</code></td><td>Upper limit on generated tokens, including hidden reasoning</td><td>Longest valid answer plus margin</td><td>Too low: <code>finish_reason: length</code>; some providers and older models use <code>max_tokens</code></td></tr>
       <tr><td><code>stop</code></td><td>Strings that end generation</td><td>e.g. <code>["\n\n"]</code></td><td>Not supported on some reasoning models</td></tr>
       <tr><td><code>reasoning_effort</code></td><td>How much the model thinks first</td><td><code>none</code>/<code>low</code> simple tasks; <code>medium</code>/<code>high</code> hard ones</td><td>Higher effort = more hidden tokens, slower and costlier; values vary by model</td></tr>
@@ -157,7 +157,7 @@
 
 <div class="callout note">
   <div class="c-label">Name check: reasoning models changed the knobs</div>
-  <p>With reasoning models (OpenAI o-series and GPT-5 and later, current Claude models), providers increasingly fix sampling for you. Azure's documentation lists <code>temperature</code>, <code>top_p</code>, penalties, <code>logprobs</code> and <code>max_tokens</code> as unsupported on most reasoning models, with <code>reasoning_effort</code> and <code>max_completion_tokens</code> as the controls instead. Current Claude models likewise reject non-default sampling values. Check your model's parameter table, or let Drill 02.7 check it for you.</p>
+  <p>Support is model- and API-specific. For example, Azure documents that many reasoning models reject sampling parameters such as <code>temperature</code> and <code>top_p</code>; Chat Completions uses <code>max_completion_tokens</code>, while the Responses API uses <code>max_output_tokens</code>. Other providers expose different controls. Check the current parameter table for your exact deployment, or let Drill 02.7 check it for you.</p>
 </div>
 
 <h3>Settings by task</h3>
@@ -185,7 +185,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>"Set temperature to 0 and the output will be deterministic and correct." Neither is guaranteed. Low temperature makes answers more <em>consistent</em>, not more <em>true</em>, and providers don't promise identical outputs even at 0. For reliability, constrain the format (Module 03, 04) and evaluate (Module 09).</p>
+  <p>"Set temperature to 0 and the output will be deterministic and correct." Neither is guaranteed. Low temperature makes answers more <em>consistent</em>, not more <em>true</em>, and providers don't promise identical outputs even at 0. For reliability, constrain the format (<a class="xref" href="../../modules/03/index.html">Module 03</a>, 04) and evaluate (<a class="xref" href="../../project/index.html#module-09">Module 09</a>).</p>
 </div>
 
 <div class="callout exam">

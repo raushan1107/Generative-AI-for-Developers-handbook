@@ -1,52 +1,54 @@
 <!--meta
-{"id": "m03-cot", "short": "Chain-of-Thought", "h1": "Chain-of-Thought Considerations", "description": "Module 03, topic 6: step-by-step reasoning, how reasoning models changed it, keeping reasoning separate from answers, and a drill on a multi-step overdraft-fee case.", "lead": "Because the model writes one token at a time, it 'thinks' by writing. Give it room to work step by step, or use a reasoning model that does it silently, and multi-step answers get better. You'll compare a direct and a step-by-step answer on a refund case, and keep the reasoning away from the customer.", "chips": ["Step-by-step", "Reasoning models", "Reasoning vs answer", "Drill 03.7"], "time": "Learn 10 min · Do 15 min"}
+{"id": "m03-cot", "short": "Chain-of-Thought", "h1": "Chain-of-Thought Considerations", "description": "Module 03, topic 6: when step-by-step prompting may help, how reasoning models handle internal reasoning, why explanations are not proof, and a drill on a multi-step overdraft-fee case.", "lead": "Asking for intermediate steps can help on some tasks, but it does not guarantee a correct answer or a faithful account of the model's internal process. Some reasoning models use hidden reasoning tokens. You'll compare outputs on a refund case and verify the result independently.", "chips": ["Step-by-step", "Reasoning models", "Reasoning vs answer", "Drill 03.7"], "time": "Learn 10 min · Do 15 min"}
 -->
-<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Show your working, but not to the customer.</p></div></div>
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Ask for an explanation when useful, then verify it.</p></div></div>
 
 <div class="callout definition">
   <div class="c-label">Definition</div>
-  <p>Chain-of-thought (CoT) prompting asks a model to produce intermediate reasoning steps before its final answer, which can improve accuracy on multi-step problems such as arithmetic, logic and policy application. Reasoning models perform this kind of reasoning internally before responding.</p>
+  <p>Chain-of-thought (CoT) prompting asks a model to write intermediate steps before a final answer. It can help on some multi-step tasks, but results vary by task and model, and a generated explanation is not proof that the answer is correct. Some reasoning models use hidden reasoning tokens without returning those internal steps in the visible response; Azure OpenAI counts these tokens in the context window and bills them as output tokens.</p>
 </div>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
-  <p>Maths exams at school: "show your working". A student who writes each step makes fewer mistakes, and when they're wrong the teacher can see where. Reasoning models are students who always do rough work on a hidden sheet: you see only the final answer, but you're charged for the sheet.</p>
+  <p>Maths exams at school: "show your working". Written steps can help someone review a solution, but they don't guarantee the answer is right. Some reasoning models use hidden tokens that aren't returned as a readable transcript; in Azure OpenAI, these are billed as output tokens.</p>
 </div>
 
 <div class="table-wrap min">
   <table>
     <thead><tr><th>Model type</th><th>How to get step-by-step reasoning</th><th>Watch out for</th></tr></thead>
     <tbody>
-      <tr><td>Non-reasoning chat model</td><td>Ask for it: "Work through it step by step inside &lt;reasoning&gt;, then give the answer inside &lt;answer&gt;."</td><td>More output tokens and latency; you must separate reasoning from the answer</td></tr>
-      <tr><td>Reasoning model</td><td>Built in. Raise <code>reasoning_effort</code> for harder problems; no need for "think step by step"</td><td>Hidden reasoning tokens are billed. Over-prescribing steps can make results worse; state the goal and constraints instead.</td></tr>
+      <tr><td>Standard chat model</td><td>For a learning exercise, you can ask for a brief explanation before the answer.</td><td>Explanations can be incomplete or unfaithful; evaluate the answer separately.</td></tr>
+      <tr><td>Reasoning model</td><td>Some APIs expose an effort or thinking control. State the goal, constraints and output you need.</td><td>Controls and usage accounting vary. Do not assume hidden reasoning is available or correct.</td></tr>
     </tbody>
   </table>
 </div>
 
 <h3>Rules for CoT in an application</h3>
 <ul>
-  <li><strong>Separate thinking from answering.</strong> Reasoning in one field or tag, the final answer in another; show users only the answer.</li>
-  <li><strong>Don't use visible CoT where it isn't needed.</strong> Classifying "charged twice" doesn't need five steps.</li>
+  <li><strong>Keep customer-facing output separate from internal records.</strong> Return the answer and any concise, evidence-based explanation you need; don't treat free-form reasoning as a verified trace.</li>
+  <li><strong>Don't request long reasoning where it isn't needed.</strong> Classifying "charged twice" doesn't need five steps.</li>
   <li><strong>Reasoning isn't proof.</strong> Convincing steps can still be wrong. Verify critical results in code (dates, amounts) or with evaluation.</li>
 </ul>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Some reasoning-model APIs provide an effort or thinking control, while others use different parameters. For auditability, keep reproducible inputs, tool traces, cited evidence and a concise explanation; don't rely on raw chain-of-thought as evidence.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Fee and interest calculations, dispute deadlines and eligibility checks are multi-step problems, which is exactly where models make confident mistakes. Banks use model reasoning for <em>understanding</em> the case (which rule applies, what the customer is really asking) and keep the arithmetic in code that has been tested against the product terms. Stored reasoning is useful for the audit trail when a human reviewer approves a refund or a complaint outcome, but it is treated as internal working, never as the customer-facing explanation.</p>
+  <p>Fee and interest calculations, dispute deadlines and eligibility checks are multi-step problems, which is exactly where models can make confident mistakes. Banks can use a model to help interpret a case, but should keep authoritative arithmetic in tested code. For an audit trail, record the input, model and prompt versions, cited policy, tool calls, output and human decision; a generated chain of thought is not a verified record of how the model reached its answer.</p>
 </div>
-  <p>Reasoning models made explicit CoT prompting far less necessary: products now expose an "effort" or "thinking" setting instead. Where teams still ask for visible reasoning, it's usually for <strong>auditability</strong>, for example storing why an AI recommended a refund decision for a human reviewer, never shown to the customer.</p>
-</div>
+
+<p class="small muted">Reasoning features and token accounting are model-specific. See the current <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI reasoning guide</a> and <a href="https://learn.microsoft.com/azure/foundry/openai/how-to/reasoning">Microsoft Foundry reasoning-model documentation</a>.</p>
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Showing raw reasoning to the customer: "Step 1: the customer seems annoyed. Step 2: policy says the fee stands…". Reasoning is a working note for your system, not customer text.</p>
+  <p>Treating raw reasoning as reliable internal notes or customer text. Return a concise explanation only when it is useful, and verify any factual claims in it.</p>
 </div>
 
 <div class="callout exam">
   <div class="c-label">Interview cue</div>
-  <p>"CoT helps on <strong>multi-step</strong> problems by giving the model room to reason. With reasoning models it's internal and controlled by <strong>reasoning effort</strong>. In apps I keep reasoning separate from the answer and verify critical results in code."</p>
+  <p>"Step-by-step prompting can help on some <strong>multi-step</strong> tasks, but it doesn't prove correctness. Some reasoning models offer an effort control and don't return hidden reasoning. I verify critical results in code."</p>
 </div>
 
 <div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>A fee case with two days, a daily cap and a courtesy rule.</p></div></div>
@@ -84,7 +86,7 @@ refund applied since it has been requested.
 Shown to the customer: (no &lt;answer&gt; tag: handle this case!)</code></pre>
       <li class="dstep verify"><span class="st">Verify</span><h4>Check against the correct answer</h4>
         <p>9 March: the account ended the day more than $50 overdrawn, so fees apply, but at most <strong>3</strong>: the fourth $29 fee was charged in error. 10 March: $31 overdrawn is $50 or less, so that <strong>$29</strong> fee was charged in error too. Errors are always refunded: <strong>$58</strong>. The customer hasn't used the courtesy refund, so one more fee comes back: <strong>$29</strong>. Total <strong>$87</strong>, not the $145 requested; three fees of $29 on 9 March, minus the courtesy one, leave $58 that stands.</p>
-        <ul class="verify-list"><li>On a reasoning model both versions are usually right; compare output tokens (hidden reasoning is included).</li><li>On a small local model both can be wrong, as above. The direct answer simply repeated the customer's $145. Step by step found the two fees charged in error (with muddled reasoning about 9 March) and then mishandled the courtesy rule. It also forgot the closing <code>&lt;/answer&gt;</code> tag, so the extraction code correctly refused to show anything.</li><li>"Shown to the customer" contains only the answer, never the reasoning, and nothing at all when the format is broken. That fallback is the most important line of the script.</li></ul>
+        <ul class="verify-list"><li>Compare both outputs with the known correct result; a reasoning model is not guaranteed to be right. Check hidden-token usage only when the provider exposes it.</li><li>On a small local model both can be wrong, as above. The direct answer simply repeated the customer's $145. Step by step found the two fees charged in error (with muddled reasoning about 9 March) and then mishandled the courtesy rule. It also forgot the closing <code>&lt;/answer&gt;</code> tag, so the extraction code correctly refused to show anything.</li><li>"Shown to the customer" contains only the answer, never the reasoning, and nothing at all when the format is broken. That fallback is the most important line of the script.</li></ul>
       </li>
       <li class="dstep think"><span class="st">Think</span>
         <p>Which part of this task should never be left to the model in production?</p>

@@ -137,7 +137,7 @@
 </div>
 <div class="callout plain">
   <div class="c-label">In plain words</div>
-  <p>The model writes one token at a time anyway (Module 01). Streaming just sends each piece the moment it exists, instead of waiting for the whole answer. The user starts reading in under a second.</p>
+  <p>The model writes one token at a time anyway (<a class="xref" href="../../modules/01/index.html">Module 01</a>). Streaming just sends each piece the moment it exists, instead of waiting for the whole answer. The user starts reading in under a second.</p>
 </div>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
@@ -178,7 +178,7 @@ data: [DONE]</code></pre>
   <li>Some chunks have <strong>no choices</strong> (Azure sends content-filter results this way; the final usage chunk is empty too). Always check before indexing.</li>
   <li>Usage isn't in streamed chunks by default: ask with <code>stream_options={"include_usage": True}</code>; it arrives last.</li>
   <li>You can't validate a whole JSON object until the stream ends. Stream text to humans; collect structured output before using it.</li>
-  <li>Proxies that buffer responses silently break streaming end-to-end. Test through the full path (Milestone 2 sets a header for this).</li>
+  <li>Proxies that buffer responses silently break streaming end-to-end. Test through the full path (<a class="xref" href="../../modules/02/build.html#b02-1">Milestone 2</a> sets a header for this).</li>
 </ul>
 
 <div class="callout realworld">
@@ -186,9 +186,9 @@ data: [DONE]</code></pre>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Streaming makes a banking chat feel responsive, but it creates a compliance wrinkle: text reaches the customer <em>before</em> you have checked it. Banks handle this by streaming only low-risk answers, checking the text in small chunks as it arrives (and replacing the message if a check fails, as Milestone 3 does), or buffering anything that quotes a rate, a fee or a balance until the full answer has been validated. Analyst tools that summarise long reports stream freely, because a human reviews the output anyway.</p>
+  <p>Streaming makes a banking chat feel responsive, but it creates a compliance wrinkle: text reaches the customer <em>before</em> you have checked it. Banks handle this by streaming only low-risk answers, checking the text in small chunks as it arrives (and replacing the message if a check fails, as <a class="xref" href="../../modules/03/build.html#b03-1">Milestone 3</a> does), or buffering anything that quotes a rate, a fee or a balance until the full answer has been validated. Analyst tools that summarise long reports stream freely, because a human reviews the output anyway.</p>
 </div>
-  <p>Every major chat product streams, and teams track TTFT as a headline metric alongside total latency. Voice assistants go further: they start speaking the first sentence while the rest is still being generated. Back-end jobs (summarising 10,000 tickets overnight) don't stream at all: nobody is watching, so they use batch processing instead (Module 11).</p>
+  <p>Every major chat product streams, and teams track TTFT as a headline metric alongside total latency. Voice assistants go further: they start speaking the first sentence while the rest is still being generated. Back-end jobs (summarising 10,000 tickets overnight) don't stream at all: nobody is watching, so they use batch processing instead (<a class="xref" href="../../project/index.html#module-11">Module 11</a>).</p>
 </div>
 
 <div class="callout exam">
@@ -349,7 +349,7 @@ print(f"\n\nTTFT {ttft:.1f}s · total {time.perf_counter() - start:.1f}s · {fin
   <div class="drill-head"><span class="drill-id">Drill 02.9</span><h3>Look at the raw server-sent events</h3>
     <div class="drill-meta"><span class="time">~10 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">Python · requests</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> see the SSE format you'll produce yourself in Milestone 2, where your backend streams to a browser.</p>
+    <p class="drill-goal"><b>Goal:</b> see the SSE format you'll produce yourself in <a class="xref" href="../../modules/02/build.html#b02-1">Milestone 2</a>, where your backend streams to a browser.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span>
         <pre class="code" data-file="lab02_09_raw_sse.py"><code>"""Drill 02.9: look at the raw server-sent events (SSE) behind streaming."""
@@ -375,9 +375,9 @@ with requests.post(url, headers=headers, json=body, stream=True, timeout=60) as 
             print(line[:140])</code></pre>
         <pre class="term"><code><span class="ps">$ </span>python lab02_09_raw_sse.py</code></pre>
       </li>
-      <li class="dstep think"><span class="st">Think</span><h4>Design question for Milestone 2</h4>
+      <li class="dstep think"><span class="st">Think</span><h4>Design question for <a class="xref" href="../../modules/02/build.html#b02-1">Milestone 2</a></h4>
         <p>Your FastAPI backend will receive these chunks from Azure and forward text to the browser. Should it forward Azure's raw events, or send its own simpler events? Why?</p>
-        <details class="solution"><summary>Compare with my answer</summary><div><p>Send <strong>your own</strong> events (for example <code>{"type": "delta", "text": …}</code> and a final <code>{"type": "done", …}</code>). The browser shouldn't depend on one provider's format, you can add your own fields (cost, prompt version), and you can switch providers without touching the front end. That's exactly what Milestone 2 does.</p></div></details>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>Send <strong>your own</strong> events (for example <code>{"type": "delta", "text": …}</code> and a final <code>{"type": "done", …}</code>). The browser shouldn't depend on one provider's format, you can add your own fields (cost, prompt version), and you can switch providers without touching the front end. That's exactly what <a class="xref" href="../../modules/02/build.html#b02-1">Milestone 2</a> does.</p></div></details>
       </li>
     </ol>
   </div>

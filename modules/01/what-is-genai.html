@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What Is Generative AI?</title>
-<meta name="description" content="Module 01, topic 1: what generative AI is, how it differs from models that only judge, real-world examples, and two drills: a first no-code conversation and one brief turned into text, code and JSON.">
+<meta name="description" content="Module 01, topic 1: how generative models differ from classification models, real-world examples, and two drills: a first no-code conversation and one brief turned into text, code and JSON.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -126,7 +126,7 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 01 · Topic 1 of 9</span><h1>What Is Generative AI?</h1><p class="lead">Older AI judged things: spam or not spam, cat or dog. Generative AI makes things: a reply, a function, a summary, an image. Learn what that really means, then see it with your own eyes in two drills.</p><div class="chips"><span class="chip">Generative vs discriminative</span><span class="chip">Real-world examples</span><span class="chip">Drills 01.1 · 01.2</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 01 · Topic 1 of 9</span><h1>What Is Generative AI?</h1><p class="lead">Some AI models classify or score: spam or not spam, cat or dog. Generative models create content: a reply, a function, a summary, an image. Learn the difference, then see it with your own eyes in two drills.</p><div class="chips"><span class="chip">Classification vs generation</span><span class="chip">Real-world examples</span><span class="chip">Drills 01.1 · 01.2</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 10 min · Do 20 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Generators vs judges, and why it matters to your code.</p></div></div>
@@ -137,7 +137,7 @@
 </div>
 <div class="callout plain">
   <div class="c-label">In plain words</div>
-  <p>Older AI mostly <em>judged</em>: "is this email spam?", "is this a cat?". Generative AI <em>makes</em>: "write a reply to this email", "draw a cat riding a scooter". It learned what good text or images look like, and produces new ones on request.</p>
+  <p>A classification model might <em>judge</em>: "is this email spam?", "is this a cat?". A generative model can <em>make</em>: "write a reply to this email", "draw a cat riding a scooter". These are different kinds of tasks, not a division between all older AI and all newer AI.</p>
 </div>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
@@ -148,20 +148,20 @@
   <div class="frame">
     <svg viewBox="0 0 900 250" role="img" aria-labelledby="gd-t gd-d">
       <title id="gd-t">Discriminative versus generative models</title>
-      <desc id="gd-d">Top row: a discriminative model takes an email and outputs a label, spam. Bottom row: a generative model takes a prompt asking for a polite reply and outputs a brand-new paragraph.</desc>
-      <text x="20" y="30" class="t-m t-accent">DISCRIMINATIVE · JUDGES</text>
+      <desc id="gd-d">Top row: a classification model takes an email and outputs a label, spam. Bottom row: a generative model takes a prompt asking for a polite reply and produces a paragraph.</desc>
+      <text x="20" y="30" class="t-m t-accent">CLASSIFICATION · CHOOSES A LABEL</text>
       <rect x="20" y="44" width="220" height="62" rx="10" class="s-surface"/><text x="130" y="70" class="t-b mid">An email</text><text x="130" y="90" class="t-s mid">"You won $10,000!!! Click…"</text>
       <rect x="330" y="44" width="200" height="62" rx="10" class="s-blue"/><text x="430" y="72" class="t-b mid">Classifier</text><text x="430" y="92" class="t-s mid">traditional ML</text>
       <rect x="620" y="44" width="260" height="62" rx="10" class="s-rose"/><text x="750" y="72" class="t-b mid">Label: SPAM (97%)</text><text x="750" y="92" class="t-s mid">picks from fixed options</text>
       <path d="M240 75 H324" class="s-arrow" marker-end="url(#ah)"/><path d="M530 75 H614" class="s-arrow" marker-end="url(#ah)"/>
-      <text x="20" y="150" class="t-m t-accent">GENERATIVE · CREATES</text>
+      <text x="20" y="150" class="t-m t-accent">GENERATION · CREATES CONTENT</text>
       <rect x="20" y="164" width="220" height="62" rx="10" class="s-surface"/><text x="130" y="190" class="t-b mid">A prompt</text><text x="130" y="210" class="t-s mid">"Reply kindly, explain the fee"</text>
       <rect x="330" y="164" width="200" height="62" rx="10" class="s-violet"/><text x="430" y="192" class="t-b mid">LLM</text><text x="430" y="212" class="t-s mid">generative model</text>
       <rect x="620" y="164" width="260" height="62" rx="10" class="s-green"/><text x="750" y="190" class="t-b mid">New text, never seen before</text><text x="750" y="210" class="t-s mid">"Hi Omar, I'm sorry to hear…"</text>
       <path d="M240 195 H324" class="s-arrow" marker-end="url(#ah)"/><path d="M530 195 H614" class="s-arrow" marker-end="url(#ah)"/>
     </svg>
   </div>
-  <figcaption><b>Choose from a list vs write something new.</b> A discriminative model's output is one of a few fixed answers. A generative model's output is open-ended, which is exactly why it's powerful and why it needs guardrails.</figcaption>
+  <figcaption><b>Assign a label vs generate content.</b> This classifier chooses from a defined set of labels. A generative model can produce open-ended content, which is powerful and needs appropriate validation.</figcaption>
 </figure>
 
 <div class="www">
@@ -181,13 +181,13 @@
 </div>
 
 <div class="lens">
-  <div><h5>Traditional developer view</h5><p>"My functions return values I can predict and test exactly."</p></div>
+  <div><h5>Traditional developer view</h5><p>"Many conventional functions return values I can predict and test exactly."</p></div>
   <div><h5>GenAI developer view</h5><p>"Generative output is open-ended. I test for <strong>properties</strong> (valid format, right facts, right tone) across many runs, not for one exact string."</p></div>
 </div>
 
 <div class="callout exam">
   <div class="c-label">Interview cue</div>
-  <p>Asked "what is generative AI?", say: <strong>"Models that generate new content by learning patterns from data, as opposed to models that only classify or predict a label."</strong> Then give one example of each. Interviewers like the contrast more than the definition.</p>
+  <p>Asked "what is generative AI?", say: <strong>"Models that generate content from learned patterns, rather than only assigning a label or score."</strong> Then give one example of each. The contrast is useful, but AI includes many other model types and tasks.</p>
 </div>
 
 <div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Meet the model's quirks, then make it generate three very different things.</p></div></div>
@@ -283,7 +283,7 @@ MODEL = {
             <li>An invented policy or a polite deflection: without facts, it produces <em>plausible</em> text (topic 5). Newer models guess less often, but never rely on it.</li>
             <li>Arithmetic may be slightly off: numbers are chopped into tokens (topic 4). Chat apps often run a hidden calculator tool; the raw API doesn't.</li>
             <li>Date and news unknown or guessed: knowledge is frozen at a cutoff (topic 6). Apps that answer correctly add web search around the model.</li>
-            <li>The new chat forgot Mei: each request starts with an empty context (topic 4). Chat apps resend history for you; in Module 02 you'll do it yourself.</li>
+            <li>The new chat forgot Mei: each request starts with an empty context (topic 4). Chat apps resend history for you; in <a class="xref" href="../../modules/02/index.html">Module 02</a> you'll do it yourself.</li>
           </ul>
         </div></details>
       </li>
@@ -344,7 +344,7 @@ pytest.approx(abs=0.01). Then run pytest and show me the result. Don't modify sa
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
         <pre class="term"><code><span class="ps">$ </span>pytest -q test_savings.py</code></pre>
-        <ul class="verify-list"><li>All four tests pass, or a failing test shows the generated code was wrong. A very common miss: the model divides 4.10% by 12, which gives $3.42 instead of $3.35, because APY already includes compounding. That's the lesson: generated code is plausible, and only a test with numbers you trust proves it right.</li><li>Look closely at the JSON: <code>"4.10"</code> and <code>"0"</code> are <em>strings</em>, not numbers. Code that adds up fees would break. The output parses: save it as <code>record.json</code> and run <code>python -m json.tool record.json</code>. If the model wrapped it in <code>```json</code> fences, it won't parse as-is (Module 03 fixes that).</li></ul>
+        <ul class="verify-list"><li>All four tests pass, or a failing test shows the generated code was wrong. A very common miss: the model divides 4.10% by 12, which gives $3.42 instead of $3.35, because APY already includes compounding. That's the lesson: generated code is plausible, and only a test with numbers you trust proves it right.</li><li>Look closely at the JSON: <code>"4.10"</code> and <code>"0"</code> are <em>strings</em>, not numbers. Code that adds up fees would break. The output parses: save it as <code>record.json</code> and run <code>python -m json.tool record.json</code>. If the model wrapped it in <code>```json</code> fences, it won't parse as-is (<a class="xref" href="../../modules/03/index.html">Module 03</a> fixes that).</li></ul>
       </li>
     </ol>
     <p class="lab-try"><b>Try this:</b> change the brief's rate to 3.75% APY and run again. Does the generated code update the rate? Generation follows the prompt, not the bank's rate table.</p>

@@ -265,7 +265,7 @@ def get_embed_client() -&gt; OpenAI:
 <div class="callout note"><div class="c-label">Missing files, or starting fresh?</div><p>Download <a href="../code/oss-labs-complete.zip"><code>oss-labs-complete.zip</code></a>: it has <code>client.py</code>, <code>.env.example</code>, <code>requirements.txt</code>, the data folder and the code of every lab released so far. Unzip it, copy <code>.env.example</code> to <code>.env</code>, create the virtual environment and run <code>pip install -r requirements.txt</code> (Lab 0, Exercise 3).</p></div>
 
 <h2 id="ex1">Exercise 1 · A company knowledge assistant (RAG)</h2>
-<p>Module 06's hands-on project: a company knowledge assistant that answers questions from internal documents.</p>
+<p><a class="xref" href="../modules/06/index.html">Module 06</a>'s hands-on project: a company knowledge assistant that answers questions from internal documents.</p>
 
 <h3>Task 1: Look at the documents</h3>
 <ol>
@@ -374,7 +374,7 @@ if __name__ == "__main__":
         for n, s in cited:
             print(f"  [{n}] {s['title']} ({s['source']})")
         print()</code></pre></li>
-  <li>Follow the numbered stages in the comments, which match the RAG architecture from Module 06:
+  <li>Follow the numbered stages in the comments, which match the RAG architecture from <a class="xref" href="../modules/06/index.html">Module 06</a>:
     <ol>
       <li><strong>Ingest:</strong> <code>read_document()</code> turns markdown, text and CSV into one shape.</li>
       <li><strong>Chunk:</strong> one chunk per section, with the document title on every chunk and the introduction kept.</li>
@@ -428,12 +428,12 @@ Question:</code></pre></li>
 <ol>
   <li>For each answer, open the cited file and check the fact is really there. Citations make answers checkable; they don't make them correct.</li>
   <li>"What is the capital of France?" should give "I couldn't find that": either no section passed the relevance floor (no model call at all) or the model replied <code>NOT_FOUND</code>.</li>
-  <li>Did any answer state a fact without a citation, or a number that isn't in its source? Small models do this; the handbook's Drill 06.10 shows how to catch it in code.</li>
+  <li>Did any answer state a fact without a citation, or a number that isn't in its source? Small models do this; the handbook's <a class="xref" href="../modules/06/citations.html#d06-10">Drill 06.10</a> shows how to catch it in code.</li>
 </ol>
 <div class="callout note"><div class="c-label">Checkpoint</div><p>Your assistant answers from the documents with cited sources, says when it can't find something, and gives staff-only answers only in the staff view.</p></div>
 
 <h2 id="ex2">Exercise 2 · An agent that asks before it acts</h2>
-<p>Module 07's hands-on exercise: an agent that understands a user request, selects and calls an appropriate tool, processes the result and returns a final response.</p>
+<p><a class="xref" href="../modules/07/index.html">Module 07</a>'s hands-on exercise: an agent that understands a user request, selects and calls an appropriate tool, processes the result and returns a final response.</p>
 
 <h3>Task 1: Choose the agent model</h3>
 <ol>

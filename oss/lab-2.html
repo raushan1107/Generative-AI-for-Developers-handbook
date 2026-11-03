@@ -316,7 +316,7 @@ Any self-paced Python course? Budget is about $300.
 <div class="callout note"><div class="c-label">Checkpoint</div><p>You get <code>CourseRequest</code> objects, not text, and can say what a schema does and doesn't guarantee.</p></div>
 
 <h2 id="ex2">Exercise 2 · An assistant that calls your functions</h2>
-<p>Module 04's hands-on exercise: an AI assistant that calls application functions: search products (here, courses), retrieve customer information, create a support ticket and check order (enrolment) status.</p>
+<p><a class="xref" href="../modules/04/index.html">Module 04</a>'s hands-on exercise: an AI assistant that calls application functions: search products (here, courses), retrieve customer information, create a support ticket and check order (enrolment) status.</p>
 <h3>Task 1: Build the assistant</h3>
 <ol>
   <li>Create <code>l2_tools.py</code>:
@@ -446,7 +446,7 @@ Q: My invoice is wrong, please open a ticket for me.
   -&gt; create_support_ticket({'summary': 'Incorrect invoice amount', 'category': 'billing'}) = {"ticket_id": "T-D4BBD9", "status": "created", "category": "billing"}
 A: A support ticket has been created for you regarding your billing issue. Your ticket ID is T-D4BBD9.</code></pre></li>
   <li>For each question, check the arrows (<code>-&gt;</code>): which function did the model choose, with which arguments, and did the final answer use the result?</li>
-  <li>Look closely at the RAG question in the real run: the model guessed an ID (<code>TC-RAG</code>), got a clear error, said "Let's get your profile"… and stopped without calling it. Announcing a step instead of taking it is a common habit of smaller models. Run it again: the result varies from run to run, which is why real systems measure tool use over many runs (Module 09). A larger model, or the handbook's Azure deployment, does this reliably.</li>
+  <li>Look closely at the RAG question in the real run: the model guessed an ID (<code>TC-RAG</code>), got a clear error, said "Let's get your profile"… and stopped without calling it. Announcing a step instead of taking it is a common habit of smaller models. Run it again: the result varies from run to run, which is why real systems measure tool use over many runs (<a class="xref" href="../project/index.html#module-09">Module 09</a>). A larger model, or the handbook's Azure deployment, does this reliably.</li>
   <li>Try your own: <code>python l2_tools.py "Is there an advanced course under $1,300?"</code> and <code>python l2_tools.py "Show me Diego's enrolments."</code> (the second should fail safely: only Mei is signed in).</li>
 </ol>
 <div class="callout note"><div class="c-label">Checkpoint</div><p>The model calls functions for the catalogue and ticket questions, your code runs them, and the answers use the results. You can explain what went wrong in any question where it didn't.</p></div>
@@ -494,7 +494,7 @@ What's the weather in Paris?           closest: Can I have a refund for my cours
 <div class="callout note"><div class="c-label">Checkpoint</div><p>You can explain why "money back" and "refund" are close in vector space.</p></div>
 
 <h2 id="ex4">Exercise 4 · A semantic search app</h2>
-<p>Module 05's hands-on exercise: a semantic search application over a collection of documents.</p>
+<p><a class="xref" href="../modules/05/index.html">Module 05</a>'s hands-on exercise: a semantic search application over a collection of documents.</p>
 <h3>Task 1: Build the index and the search</h3>
 <ol>
   <li>Create <code>l2_search.py</code>:

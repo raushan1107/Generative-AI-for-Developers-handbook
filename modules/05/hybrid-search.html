@@ -507,8 +507,8 @@ Right section in top 3: keyword 8/8, vector 5/8, hybrid 7/8</code></pre>
         </ol>
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
-            <li>Treat it as "no good match": when keyword search finds nothing and the best vector score is low for this model, say the help centre doesn't cover it (or search the catalogue instead). Never pass a weak match to a model as if it were the answer; Module 06 builds this into the RAG prompt and the retrieval code.</li>
-            <li>On my run, without the analyzer, the plural "costs" no longer matched and filler words matched random sections: keyword search put <em>Certificates of deposit</em> first for "what costs $45?", and hybrid fell to <strong>6/8 first</strong> ("safe account" now lost to <em>Who can open an account</em>). With the analyzer: 7/8. The keyword half of hybrid is only as good as its text processing, which is why Milestone 5's Azure index uses the <code>en.microsoft</code> analyzer.</li>
+            <li>Treat it as "no good match": when keyword search finds nothing and the best vector score is low for this model, say the help centre doesn't cover it (or search the catalogue instead). Never pass a weak match to a model as if it were the answer; <a class="xref" href="../../modules/06/index.html">Module 06</a> builds this into the RAG prompt and the retrieval code.</li>
+            <li>On my run, without the analyzer, the plural "costs" no longer matched and filler words matched random sections: keyword search put <em>Certificates of deposit</em> first for "what costs $45?", and hybrid fell to <strong>6/8 first</strong> ("safe account" now lost to <em>Who can open an account</em>). With the analyzer: 7/8. The keyword half of hybrid is only as good as its text processing, which is why <a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a>'s Azure index uses the <code>en.microsoft</code> analyzer.</li>
           </ol>
         </div></details>
       </li>

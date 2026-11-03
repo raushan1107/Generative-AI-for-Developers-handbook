@@ -223,14 +223,14 @@
       <tr><td>Nothing relevant retrieved</td><td>A polite "not found", no cost</td><td>Skip the model when retrieval returns nothing (floor, topic 6)</td></tr>
       <tr><td>Retrieved, but no answer in it</td><td>"Not found", not an improvised answer</td><td>The NOT_FOUND rule; detect the sentinel in code</td></tr>
       <tr><td>Answer spans two sections</td><td>Both used and both cited</td><td>k ≥ 3, "[1][3]" allowed in the prompt</td></tr>
-      <tr><td>Question in another language</td><td>Answer in that language, from English sources</td><td>Rule in the prompt, and rewrite the <em>query</em> into the index language (Drill 06.7)</td></tr>
+      <tr><td>Question in another language</td><td>Answer in that language, from English sources</td><td>Rule in the prompt, and rewrite the <em>query</em> into the index language (<a class="xref" href="../../modules/06/retrieval.html#d06-7">Drill 06.7</a>)</td></tr>
       <tr><td>Two sources disagree</td><td>The newer or more authoritative one, or say they differ</td><td>Dates and source type in metadata; tell the model which wins</td></tr>
       <tr><td>Numbers and money</td><td>Copied exactly, never computed</td><td>"Don't guess numbers", citation checks, and tools for calculations</td></tr>
       <tr><td>Factual tone</td><td>Consistent answers</td><td>Low temperature (0 to 0.3) where the model supports it</td></tr>
     </tbody>
   </table>
 </div>
-<p><strong>Model choice matters more here than anywhere else in RAG.</strong> Following "only from the sources, cite each fact, else NOT_FOUND" is an instruction-following skill: larger hosted models do it reliably; small local models often skip citations, ignore the sentinel or add details. Use small models to learn and prototype; measure before shipping (Module 09).</p>
+<p><strong>Model choice matters more here than anywhere else in RAG.</strong> Following "only from the sources, cite each fact, else NOT_FOUND" is an instruction-following skill: larger hosted models do it reliably; small local models often skip citations, ignore the sentinel or add details. Use small models to learn and prototype; measure before shipping (<a class="xref" href="../../project/index.html#module-09">Module 09</a>).</p>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
@@ -442,8 +442,8 @@ checks: {'uncited': ['According to the public refund policy, a team lead can app
         <details class="solution"><summary>Compare with my answers</summary><div>
           <ol>
             <li>It invents "typically 1-2 billing cycles" and drops the actual "5 to 10 business days". The numbers check flagged 1 and 2 as unsupported by source [1]. Without it, this answer would look perfectly sourced.</li>
-            <li>The English-centric embedding model scored the Spanish question below the 0.55 floor, so retrieval returned nothing and the model was never asked. Fix it at retrieval: rewrite the query into English first (Drill 06.7's stretch) or use a multilingual embedding model; the floor did its job.</li>
-            <li>The content is right, but code can't tell it apart from a real answer, so it's shown as one, with no sources. A stronger model follows the sentinel more reliably; Module 09 measures how often each model does.</li>
+            <li>The English-centric embedding model scored the Spanish question below the 0.55 floor, so retrieval returned nothing and the model was never asked. Fix it at retrieval: rewrite the query into English first (<a class="xref" href="../../modules/06/retrieval.html#d06-7">Drill 06.7</a>'s stretch) or use a multilingual embedding model; the floor did its job.</li>
+            <li>The content is right, but code can't tell it apart from a real answer, so it's shown as one, with no sources. A stronger model follows the sentinel more reliably; <a class="xref" href="../../project/index.html#module-09">Module 09</a> measures how often each model does.</li>
             <li>The audience pre-filter in retrieval. For the customer, the staff-only approvals page was never a candidate, so the model saw only public refund sections and correctly said NOT_FOUND.</li>
           </ol>
         </div></details>
@@ -498,7 +498,7 @@ There is no information on the maximum number of customers that can join a class
         <p>Same question, two audiences: the staff view answers from the CSV FAQ and cites it; the customer view never sees that FAQ. Ask your own questions about refunds, labs, vouchers and approvals, in both views.</p>
       </li>
     </ol>
-    <p class="lab-try"><b>Stretch:</b> add Drill 06.7's query rewriting to <code>rag.answer()</code> so the Spanish question finds "Rescheduling a course › Fees" and the answer comes back in Spanish.</p>
+    <p class="lab-try"><b>Stretch:</b> add <a class="xref" href="../../modules/06/retrieval.html#d06-7">Drill 06.7</a>'s query rewriting to <code>rag.answer()</code> so the Spanish question finds "Rescheduling a course › Fees" and the answer comes back in Spanish.</p>
   </div>
   <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d06-9"> I've completed Drill 06.9</label></div>
 </div>

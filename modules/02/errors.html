@@ -150,7 +150,7 @@
       <tr><td>404</td><td><code>NotFoundError</code></td><td>Wrong deployment name or URL</td><td>No</td><td>Fix configuration</td></tr>
       <tr><td>timeout</td><td><code>APITimeoutError</code></td><td>Slow response, network trouble</td><td>Yes</td><td>Retry; longer timeout for long outputs</td></tr>
       <tr><td>429</td><td><code>RateLimitError</code></td><td>Tokens or requests per minute exceeded</td><td>Yes, after a wait</td><td>Back off; honour <code>retry-after</code></td></tr>
-      <tr><td>500/503</td><td><code>InternalServerError</code></td><td>Provider problem or overload</td><td>Yes</td><td>Retry; fall back to another model or region (Module 12)</td></tr>
+      <tr><td>500/503</td><td><code>InternalServerError</code></td><td>Provider problem or overload</td><td>Yes</td><td>Retry; fall back to another model or region (<a class="xref" href="../../project/index.html#module-12">Module 12</a>)</td></tr>
       <tr><td>no response</td><td><code>APIConnectionError</code></td><td>DNS, network, endpoint down</td><td>Yes</td><td>Retry; check connectivity</td></tr>
     </tbody>
   </table>

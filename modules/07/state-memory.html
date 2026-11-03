@@ -216,8 +216,8 @@
       <tr><td>What may it contain?</td><td>Preferences and stable facts; never payment details, passwords, health or other sensitive data; enforce it in code</td></tr>
       <tr><td>How big?</td><td>Small (tens of facts per user), oldest out first; memory is a prompt cost on every session</td></tr>
       <tr><td>Can the user see and delete it?</td><td>Yes; privacy law often requires it, and trust does too</td></tr>
-      <tr><td>Where does task state live?</td><td>A store keyed by task id, so a pause for approval survives restarts (Module 08 moves it to a database)</td></tr>
-      <tr><td>Long conversations?</td><td>Keep the last N turns, summarise older ones (Module 02 kept 6 pairs and dropped the rest)</td></tr>
+      <tr><td>Where does task state live?</td><td>A store keyed by task id, so a pause for approval survives restarts (<a class="xref" href="../../project/index.html#module-08">Module 08</a> moves it to a database)</td></tr>
+      <tr><td>Long conversations?</td><td>Keep the last N turns, summarise older ones (<a class="xref" href="../../modules/02/index.html">Module 02</a> kept 6 pairs and dropped the rest)</td></tr>
     </tbody>
   </table>
 </div>
@@ -519,7 +519,7 @@ SESSION 2 (new conversation; memory goes into the system prompt)
           <ol>
             <li><code>memory.as_prompt()</code> added "Known about this customer from earlier sessions" to the system prompt. The model didn't remember anything; the code did, and put it back in front of the model.</li>
             <li><code>LearnerMemory.remember</code> refuses it in code (the <code>SENSITIVE</code> check), and the agent should explain that payment details are never stored. Don't rely on the prompt alone for this.</li>
-            <li>In task state (<code>TaskState.pending</code>), keyed by task, with an expiry. It belongs to one task, not to the customer's lasting profile; Milestone 7 keeps pending actions in an <code>ActionStore</code> for the same reason.</li>
+            <li>In task state (<code>TaskState.pending</code>), keyed by task, with an expiry. It belongs to one task, not to the customer's lasting profile; <a class="xref" href="../../modules/07/build.html#b07-1">Milestone 7</a> keeps pending actions in an <code>ActionStore</code> for the same reason.</li>
           </ol>
         </div></details>
       </li>

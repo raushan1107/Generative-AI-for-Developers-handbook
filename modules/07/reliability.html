@@ -198,15 +198,15 @@
   <table>
     <thead><tr><th>Failure</th><th>Example</th><th>Control</th><th>In this module</th></tr></thead>
     <tbody>
-      <tr><td>Wrong tool</td><td>Calls <code>reschedule</code> when asked for a quote</td><td>Clear tool design; separate read and write tools; approvals on writes</td><td>Drill 07.3</td></tr>
-      <tr><td>Invented arguments</td><td>Uses <code>TC-12345</code> as the ID</td><td>Identity and ownership checked in code; actionable errors</td><td>Drill 07.1</td></tr>
+      <tr><td>Wrong tool</td><td>Calls <code>reschedule</code> when asked for a quote</td><td>Clear tool design; separate read and write tools; approvals on writes</td><td><a class="xref" href="../../modules/07/tool-calling.html#d07-3">Drill 07.3</a></td></tr>
+      <tr><td>Invented arguments</td><td>Uses <code>TC-12345</code> as the ID</td><td>Identity and ownership checked in code; actionable errors</td><td><a class="xref" href="../../modules/07/what-is-an-agent.html#d07-1">Drill 07.1</a></td></tr>
       <tr><td>Loops</td><td>Calls <code>my_enrolments</code> again and again</td><td>Repeat detection; step budget</td><td><code>agent.py</code>, test</td></tr>
-      <tr><td>Giving up or asking the user to do its job</td><td>"Please run my_enrolments"</td><td>Prompt rules; better error wording; a stronger model; evaluations</td><td>Drill 07.1</td></tr>
+      <tr><td>Giving up or asking the user to do its job</td><td>"Please run my_enrolments"</td><td>Prompt rules; better error wording; a stronger model; evaluations</td><td><a class="xref" href="../../modules/07/what-is-an-agent.html#d07-1">Drill 07.1</a></td></tr>
       <tr><td>False claims</td><td>"I've extended your lab" with no tool call</td><td>Report outcomes from logs; check claims against the trace</td><td>Drills 07.1, 07.6</td></tr>
       <tr><td>Flaky services</td><td>The lab service times out</td><td>Retryable errors; limited retries</td><td>Drill 07.8</td></tr>
       <tr><td>Double execution</td><td>A retry extends the lab twice</td><td>Idempotency keys on every write</td><td>Drill 07.8</td></tr>
-      <tr><td>Tool call written as text</td><td><code>{"name": "quote_extLAB", ...}</code> shown to the customer</td><td>Detect and replace before display</td><td>Milestone 7</td></tr>
-      <tr><td>Regressions</td><td>A prompt edit breaks the approval flow</td><td>Offline tests with a scripted model; evaluation sets (Module 09)</td><td><code>test_agent.py</code></td></tr>
+      <tr><td>Tool call written as text</td><td><code>{"name": "quote_extLAB", ...}</code> shown to the customer</td><td>Detect and replace before display</td><td><a class="xref" href="../../modules/07/build.html#b07-1">Milestone 7</a></td></tr>
+      <tr><td>Regressions</td><td>A prompt edit breaks the approval flow</td><td>Offline tests with a scripted model; evaluation sets (<a class="xref" href="../../project/index.html#module-09">Module 09</a>)</td><td><code>test_agent.py</code></td></tr>
     </tbody>
   </table>
 </div>
@@ -238,7 +238,7 @@
   <div class="c-label">In finance</div>
   <p>The worst agent failure in banking isn't a crash, it's doing something twice: two disputes for one payment means a double credit, and two payments means real money lost. Idempotency keys, retries that are safe, step budgets and an audit log are standard in payment systems, and an agent that acts on accounts needs all of them before it goes live.</p>
 </div>
-  <p>Payment APIs pioneered idempotency keys for exactly this reason: networks drop replies, clients retry, and nobody wants to be charged twice. Agent platforms add the rest: per-run step and token limits, tool timeouts, traces of every model and tool call, and test suites where a scripted model replays known conversations so a code change can't silently break the approval flow. Teams then run evaluation sets of real requests against each new prompt or model before release (Module 09).</p>
+  <p>Payment APIs pioneered idempotency keys for exactly this reason: networks drop replies, clients retry, and nobody wants to be charged twice. Agent platforms add the rest: per-run step and token limits, tool timeouts, traces of every model and tool call, and test suites where a scripted model replays known conversations so a code change can't silently break the approval flow. Teams then run evaluation sets of real requests against each new prompt or model before release (<a class="xref" href="../../project/index.html#module-09">Module 09</a>).</p>
 </div>
 
 <div class="lens">
@@ -499,7 +499,7 @@ for seed in range(1, 6):
           <ol>
             <li>No. Look at seed 2: it "finished" and told Mei her lab was extended until October 16, but the extensions column is 0, and 16 October is the <em>old</em> date. Seed 4 didn't finish, yet it stopped cleanly and said so. For the business, a correct state and an honest answer matter more than "finished".</li>
             <li>Extensions. In five runs with 3 to 5 errors each, it was never more than 1: the "one free extension" rule in <code>desk.py</code> and the idempotency key per approved action guarantee it, whatever the model retries.</li>
-            <li>In code, around read tools (a short retry with back-off, as in Module 02), so the model isn't spending steps on transient errors. For writes, retry only with the same idempotency key. Leave the model to handle errors that need a decision.</li>
+            <li>In code, around read tools (a short retry with back-off, as in <a class="xref" href="../../modules/02/index.html">Module 02</a>), so the model isn't spending steps on transient errors. For writes, retry only with the same idempotency key. Leave the model to handle errors that need a decision.</li>
           </ol>
         </div></details>
       </li>

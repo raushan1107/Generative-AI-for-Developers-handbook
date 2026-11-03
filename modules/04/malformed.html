@@ -210,7 +210,7 @@
 
 <h3>Retry only when retrying can help</h3>
 <ul>
-  <li><strong>Worth retrying:</strong> truncation (with more room), invalid or rule-breaking output (with the error), transient API errors (the SDK retries 429 and 5xx for you, Module 02).</li>
+  <li><strong>Worth retrying:</strong> truncation (with more room), invalid or rule-breaking output (with the error), transient API errors (the SDK retries 429 and 5xx for you, <a class="xref" href="../../modules/02/index.html">Module 02</a>).</li>
   <li><strong>Not worth retrying:</strong> refusals, content-filter blocks, authentication errors. Same input, same outcome, double the bill.</li>
   <li><strong>Always bounded:</strong> one repair round is usually enough; two at most. After that the problem is your prompt, schema or model choice, and the logs should tell you so.</li>
 </ul>
@@ -471,7 +471,7 @@ def test_extract_json():
       </li>
       <li class="dstep think"><span class="st">Think</span><h4>Add a scenario</h4>
         <p>Add a tenth scenario to <code>SCENARIOS</code> and <code>EXPECTED</code>: the model returns valid JSON with an <strong>extra key</strong>, <code>{"category": "fees", "urgent": false, "note": "hi"}</code>. What outcome do you expect with the <code>Reply</code> model as written? What changes if you add <code>model_config = ConfigDict(extra="forbid")</code>?</p>
-        <details class="solution"><summary>Compare with my answer</summary><div><p>As written, Pydantic <strong>ignores</strong> extra keys by default, so the outcome is <code>ok</code> on the first try and <code>note</code> is silently dropped. With <code>extra="forbid"</code>, the first reply fails validation, the wrapper repairs once, and the outcome depends on the second reply. With strict structured outputs the extra key can't appear at all, but providers without strict mode can send it, so decide deliberately: ignore (tolerant) or forbid (strict). Milestone 3's <code>Triage</code> chose forbid.</p></div></details>
+        <details class="solution"><summary>Compare with my answer</summary><div><p>As written, Pydantic <strong>ignores</strong> extra keys by default, so the outcome is <code>ok</code> on the first try and <code>note</code> is silently dropped. With <code>extra="forbid"</code>, the first reply fails validation, the wrapper repairs once, and the outcome depends on the second reply. With strict structured outputs the extra key can't appear at all, but providers without strict mode can send it, so decide deliberately: ignore (tolerant) or forbid (strict). <a class="xref" href="../../modules/03/build.html#b03-1">Milestone 3</a>'s <code>Triage</code> chose forbid.</p></div></details>
       </li>
     </ol>
     <p class="lab-say"><b>Remember:</b> “Don't wait for production to show you how replies fail. Write the failures yourself and test against them.”</p>

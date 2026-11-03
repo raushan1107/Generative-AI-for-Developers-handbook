@@ -241,8 +241,8 @@
     <thead><tr><th>Approach</th><th>Good for</th><th>Not for</th></tr></thead>
     <tbody>
       <tr><td><strong>RAG</strong></td><td>Knowledge in documents: policies, manuals, wikis, FAQs, contracts</td><td>Live records (a customer's enrolment) or calculations</td></tr>
-      <tr><td><strong>Put everything in the prompt</strong></td><td>Small, stable knowledge (Milestone 3's five policy lines)</td><td>Hundreds of pages; it's slow, costly, and details get missed in long contexts</td></tr>
-      <tr><td><strong>Tools / function calling</strong> (Module 04)</td><td>Live data and actions: enrolment status, refund quotes, tickets</td><td>Reading and summarising long text</td></tr>
+      <tr><td><strong>Put everything in the prompt</strong></td><td>Small, stable knowledge (<a class="xref" href="../../modules/03/build.html#b03-1">Milestone 3</a>'s five policy lines)</td><td>Hundreds of pages; it's slow, costly, and details get missed in long contexts</td></tr>
+      <tr><td><strong>Tools / function calling</strong> (<a class="xref" href="../../modules/04/index.html">Module 04</a>)</td><td>Live data and actions: enrolment status, refund quotes, tickets</td><td>Reading and summarising long text</td></tr>
       <tr><td><strong>Fine-tuning</strong></td><td>Style, format, tone, a narrow task done many times</td><td>Teaching facts that change; it's expensive to update and can't cite sources</td></tr>
     </tbody>
   </table>
@@ -266,7 +266,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Believing RAG ends hallucination. It reduces it a lot, but the model can still misread a passage, mix two sources, add a "helpful" detail of its own, or answer from the wrong chunk if retrieval missed. In Drill 06.9 a small model cites a real source and still invents "1-2 billing cycles". RAG needs checks (topic 9) and evaluation (Module 09).</p>
+  <p>Believing RAG ends hallucination. It reduces it a lot, but the model can still misread a passage, mix two sources, add a "helpful" detail of its own, or answer from the wrong chunk if retrieval missed. In <a class="xref" href="../../modules/06/generation.html#d06-9">Drill 06.9</a> a small model cites a real source and still invents "1-2 billing cycles". RAG needs checks (topic 9) and evaluation (<a class="xref" href="../../project/index.html#module-09">Module 09</a>).</p>
 </div>
 
 <div class="callout exam">
@@ -435,7 +435,7 @@ Q: How much does extra lab time cost at RR Finance Bank after the free extension
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>What RAG is for.</p></div></div>
 <div class="quiz">
   <details><summary>1. RR Finance Bank changes its lab extension price from $49 to $59. What do you update in a RAG system, and what in a fine-tuned one?</summary><div><p>RAG: edit the help article and re-index its changed chunk; the next answer uses $59. Fine-tuned: prepare new training data, run another fine-tuning job, evaluate and redeploy, and the model may still remember $49.</p></div></details>
-  <details><summary>2. "What is the status of my voucher?" Should that be answered with RAG?</summary><div><p>No. It's a live record for one customer, so it needs a tool that calls the voucher system (Module 04). RAG explains the voucher <em>policy</em>; tools fetch <em>this customer's</em> voucher.</p></div></details>
+  <details><summary>2. "What is the status of my voucher?" Should that be answered with RAG?</summary><div><p>No. It's a live record for one customer, so it needs a tool that calls the voucher system (<a class="xref" href="../../modules/04/index.html">Module 04</a>). RAG explains the voucher <em>policy</em>; tools fetch <em>this customer's</em> voucher.</p></div></details>
   <details><summary>3. Name two things RAG gives you that a long system prompt containing all policies doesn't.</summary><div><p>Any two of: scale beyond what fits in a prompt; lower cost per message; per-user access control by filtering retrieval; citations to specific sections; updates without editing and redeploying the prompt.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>RAG makes every question open book: retrieve the right passages, answer only from them, and allow "not found". Use it for document knowledge; use tools for live data.</p></div>

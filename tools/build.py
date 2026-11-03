@@ -169,6 +169,65 @@ def collect_drills(fragments):
     return drills
 
 
+REFERENCE_RE = re.compile(r"\b(?P<kind>Module|Milestone|Drill)\s+(?P<ref>\d{2}(?:\.\d+)?|\d+)\b", re.I)
+TAG_RE = re.compile(r"<(/?)([A-Za-z][\w:-]*)\b[^>]*>")
+REFERENCE_SKIP_TAGS = {"a", "code", "pre", "script", "style", "svg"}
+MODULE_NUMS = {module["num"] for section in NAV["sections"] for module in section.get("modules", [])}
+
+
+def link_references(content, page, drills):
+    """Link prose references to published or draft module, milestone, and drill pages."""
+    drill_pages = {
+        drill["id"][1:].replace("-", "."): BY_ID[drill["page"]]
+        for drill in drills if drill["id"].startswith("d")
+    }
+
+    def link_text(text):
+        def replace(match):
+            kind, ref = match.group("kind").lower(), match.group("ref")
+            anchor = ""
+            if kind == "module" and "." not in ref:
+                number = int(ref)
+                target = BY_ID.get(f"m{number:02d}")
+                if not target and f"{number:02d}" in MODULE_NUMS:
+                    target = BY_ID.get("project")
+                    anchor = f"#module-{number:02d}"
+            elif kind == "milestone" and "." not in ref:
+                number = int(ref)
+                target = BY_ID.get(f"m{number:02d}-build")
+                anchor = f"#b{number:02d}-1"
+                if not target and f"{number:02d}" in MODULE_NUMS:
+                    target = BY_ID.get("project")
+                    anchor = f"#module-{number:02d}"
+            elif kind == "drill" and "." in ref:
+                target = drill_pages.get(ref)
+                anchor = f"#d{ref.replace('.', '-')}"
+            else:
+                target = None
+            if not target or target["path"] == page["path"]:
+                return match.group(0)
+            href = html.escape(rel(page["path"], target["path"]) + anchor, quote=True)
+            return f'<a class="xref" href="{href}">{match.group(0)}</a>'
+        return REFERENCE_RE.sub(replace, text)
+
+    pieces, ignored = [], []
+    for piece in re.split(r"(<[^>]*>)", content):
+        if not piece:
+            continue
+        tag = TAG_RE.fullmatch(piece)
+        if tag:
+            closing, name = tag.group(1), tag.group(2).lower()
+            if closing:
+                if name in ignored:
+                    ignored.remove(name)
+            elif name in REFERENCE_SKIP_TAGS and not piece.rstrip().endswith("/>"):
+                ignored.append(name)
+            pieces.append(piece)
+        else:
+            pieces.append(piece if ignored else link_text(piece))
+    return "".join(pieces)
+
+
 def drill_label(drill_id, short=False):
     """d01-5 -> 'Drill 01.5' (or '01.5'); b01-1 -> 'Milestone 1' (or 'M1')."""
     if drill_id.startswith("b"):
@@ -488,6 +547,8 @@ def gate_drafts(content, path, draft_paths):
         tag = "div" if 'class="page-card' in attrs or 'class="btn' in attrs else "span"
         attrs = re.sub(r'class="([^"]*)"', r'class="\1 is-soon"', attrs) if "class=" in attrs else attrs + ' class="is-soon"'
         attrs = re.sub(r'\s(?:target|rel)="[^"]*"', "", attrs)
+        if 'class="xref' in attrs:
+            inner += ' <span class="badge b-tool">Coming soon</span>'
         return f'<{tag}{attrs} aria-disabled="true" title="Coming soon">{inner}</{tag}>'
 
     content = re.sub(r'<a\b([^>]*?)\shref="([^"#:][^"]*)"([^>]*)>(.*?)</a>', unlink, content, flags=re.S)
@@ -533,6 +594,7 @@ def main():
         content = content.replace("<!--DRILL_INDEX-->", drill_index_html(drills, page["path"]))
         content = re.sub(r"<!--MODULE_PAGES:(\d\d)-->",
                          lambda mm: module_pages_html(mm.group(1), drills, page["path"]), content)
+        content = link_references(content, page, drills)
         if not page.get("draft"):
             content = gate_drafts(content, page["path"], draft_paths)
         out = ROOT / page["path"]

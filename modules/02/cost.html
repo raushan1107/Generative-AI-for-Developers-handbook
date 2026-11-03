@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Managing API Costs</title>
-<meta name="description" content="Module 02, topic 9: how LLM costs are calculated, a worked monthly projection for RR Finance Bank, the cost levers in order, and drills that build a cost meter and a usage report with your AI assistant.">
+<meta name="description" content="Module 02, topic 9: how usage-based LLM costs are estimated, a worked monthly projection for RR Finance Bank, the cost levers in order, and drills that build a cost meter and usage report.">
 <meta name="author" content="Raushan Ranjan (MCT)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -126,22 +126,23 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Module 02 · Topic 9 of 9</span><h1>Managing API Costs</h1><p class="lead">Every token in and out is metered. One call costs a fraction of a cent; 40,000 bank customers chatting four turns each, with a bloated prompt on an expensive model, is a real monthly bill. You'll do the maths once, build a cost meter, and have your assistant turn the logs into a usage report.</p><div class="chips"><span class="chip">Cost formula</span><span class="chip">Monthly projection</span><span class="chip">Cost levers</span><span class="chip">Drills 02.14 · 02.15</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 25 min</em></div></header>
+<header class="page-hero"><span class="eyebrow">Module 02 · Topic 9 of 9</span><h1>Managing API Costs</h1><p class="lead">For usage-priced APIs, input and output tokens are common cost drivers, but rates and billing rules vary by provider and model. A call may cost a fraction of a cent; at 40,000 conversations a month, prompt size and model choice matter. You'll do the maths with illustrative prices, build a cost meter, and turn usage logs into a report.</p><div class="chips"><span class="chip">Cost formula</span><span class="chip">Monthly projection</span><span class="chip">Cost levers</span><span class="chip">Drills 02.14 · 02.15</span></div><div class="flow"><a href="#learn"><b>1</b>Learn</a><span>→</span><a href="#do"><b>2</b>Do</a><span>→</span><a href="#check"><b>3</b>Check</a><em>Learn 12 min · Do 25 min</em></div></header>
 <div class="content">
 
 <div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>A taxi meter that runs on words.</p></div></div>
 
 <div class="callout definition">
   <div class="c-label">Definition</div>
-  <p>LLM API cost per call is <strong>input tokens × input price + output tokens × output price</strong> (prices usually per million tokens), where output includes hidden reasoning tokens. Total cost scales with volume, prompt size, conversation length and model choice.</p>
+  <p>For a <strong>token-priced API</strong>, a useful estimate is input-token usage × input rate + output-token usage × output rate. Exact billing varies: providers may price cached input, reasoning, images or other features differently, and not every API uses this pricing model. Check the provider's current usage fields and price list.</p>
 </div>
 <div class="callout plain">
   <div class="c-label">In plain words</div>
-  <p>It's a taxi meter that runs on tokens, with the meter running faster for output than input. The good news: most of the bill comes from a few things you control.</p>
+  <p>It's a taxi meter whose rules depend on the provider. On many token-priced models, input and output have different rates, and some features use separate rates. The good news: prompt size, output length and model choice often matter.</p>
 </div>
 
 <h3>Do the maths once (illustrative prices)</h3>
-<p>Say your model costs <strong>$0.40 per million input tokens</strong> and <strong>$1.60 per million output tokens</strong> (check your model's current price). RR Finance Bank's assistant has 40,000 conversations a month, averaging 4 turns: 160,000 turns.</p>
+<p>For illustration only, say a model costs <strong>$0.40 per million input tokens</strong> and <strong>$1.60 per million output tokens</strong>; these are not current prices for a named model. RR Finance Bank's assistant has 40,000 conversations a month, averaging 4 turns: 160,000 turns.</p>
+<p class="small muted">Check the <a href="https://azure.microsoft.com/pricing/details/azure-openai/">current Azure OpenAI price list</a> or the corresponding page for your provider; the arithmetic below is a teaching example only.</p>
 <div class="table-wrap min">
   <table>
     <thead><tr><th>Scenario</th><th>Per turn</th><th>Monthly tokens</th><th>Monthly cost</th></tr></thead>
@@ -157,11 +158,11 @@
 <h3>The cost levers, easiest first</h3>
 <ol class="steps">
   <li><strong>Measure.</strong> Log usage per call with a feature name. You can't optimise what you can't see.</li>
-  <li><strong>Choose the smallest model that passes your quality bar</strong> (Drill 01.11, Module 11).</li>
+  <li><strong>Choose the smallest model that passes your quality bar</strong> (<a class="xref" href="../../modules/01/foundation-models.html#d01-11">Drill 01.11</a>, <a class="xref" href="../../project/index.html#module-11">Module 11</a>).</li>
   <li><strong>Trim the prompt</strong>: remove repeated instructions, send only relevant documents, trim history.</li>
-  <li><strong>Cap the output</strong> with <code>max_completion_tokens</code> and instructions like "under 80 words".</li>
-  <li><strong>Lower reasoning effort</strong> for simple tasks; hidden reasoning is billed as output.</li>
-  <li><strong>Cache and batch</strong> repeated and non-urgent work (Module 11).</li>
+  <li><strong>Cap the output</strong> with the token-limit parameter your API supports (for example, <code>max_completion_tokens</code> or <code>max_output_tokens</code>) and instructions like "under 80 words".</li>
+  <li><strong>Where supported, tune reasoning effort</strong> for simple tasks; some providers count hidden reasoning tokens as output usage.</li>
+  <li><strong>Where supported, cache and batch</strong> repeated and non-urgent work (<a class="xref" href="../../project/index.html#module-11">Module 11</a>).</li>
   <li><strong>Set budgets and alerts</strong> so surprises arrive by email, not on the invoice.</li>
 </ol>
 
@@ -172,7 +173,7 @@
   <div class="c-label">In finance</div>
   <p>Banks budget AI features the way they budget anything else: a business case with a cost per unit. A useful unit for a contact centre is <strong>cost per resolved conversation</strong>, compared with the fully loaded cost of a human-handled one (often several dollars). At 160,000 turns a month, the difference between $160 and $5,440 decides whether finance approves the project. Expect two more lines in the business case: the cost of the evaluation and monitoring runs you'll add in Modules 09 and 12, and a chargeback so each business line pays for its own usage.</p>
 </div>
-  <p>Teams running AI features at scale track cost per feature and per user, set quotas so one heavy user can't run up the bill, and use provider discounts: prompt caching for repeated prompt prefixes, batch APIs for overnight work, and committed capacity for steady high volume. Many discover that a long, repeated system prompt is their single biggest cost line.</p>
+  <p>Teams running AI features at scale track cost per feature and per user and set quotas so one heavy user can't run up the bill. Depending on the provider, they may use prompt caching for repeated prefixes, batch APIs for overnight work, or committed capacity for steady high volume. A long, repeated system prompt can be a major cost driver.</p>
 </div>
 
 <div class="callout pitfall">
@@ -311,7 +312,7 @@ lean + 'under 60 words'       70 in ·   82 out (0 reasoning) · $0.00016/turn �
         <p class="small muted">Real token counts from llama3.2 on Ollama, priced at the illustrative $0.40 / $1.60 per million tokens. Locally you pay nothing; the point is the <em>ratio</em> you'll pay on a hosted model.</p>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
-        <ul class="verify-list"><li>The bloated system prompt is paid on <em>every turn</em>: boilerplate is the most expensive text you'll write.</li><li>Brevity cut output tokens, the pricier ones.</li><li><code>usage.jsonl</code> exists with three JSON lines. Run the script two more times to give the next drill more data.</li></ul>
+        <ul class="verify-list"><li>The prompt is included in each request's input usage; provider caching or billing rules may change how that usage is charged.</li><li>Brevity cut output tokens; compare their rate with the input-token rate for your provider.</li><li><code>usage.jsonl</code> exists with three JSON lines. Run the script two more times to give the next drill more data.</li></ul>
       </li>
     </ol>
   </div>
@@ -377,7 +378,7 @@ lean + 'under 60 words'        1       70       82     0.00016         25</code>
         <ul class="verify-list"><li>Calls per label match the number of times you ran Drill 02.14.</li><li>The most expensive label is at the top.</li></ul>
       </li>
     </ol>
-    <p class="lab-try"><b>Try this:</b> multiply by a four-times-longer real conversation (history is resent every turn) and a model with ten times the price. That's why Module 11 exists.</p>
+    <p class="lab-try"><b>Try this:</b> multiply by a four-times-longer real conversation (history is resent every turn) and a model with ten times the price. That's why <a class="xref" href="../../project/index.html#module-11">Module 11</a> exists.</p>
   </div>
   <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d02-15"> I've completed Drill 02.15</label></div>
 </div>

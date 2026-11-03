@@ -287,10 +287,10 @@ HELP_CENTRE_URL=https://help.rrfinance.example/</code></pre></div></details>
   <div class="drill-head"><span class="drill-id">Milestone 6</span><h3>Help-centre RAG with checked citations</h3>
     <div class="drill-meta"><span class="time">~75 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · numpy · pytest</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> the Module 06 hands-on project, a company knowledge assistant. RR Finance Assist answers policy questions only from RR Finance Bank's help centre, cites every fact, checks the citations in code, and exposes the same engine as <code>POST /api/ask</code>.</p>
+    <p class="drill-goal"><b>Goal:</b> the <a class="xref" href="../../modules/06/index.html">Module 06</a> hands-on project, a company knowledge assistant. RR Finance Assist answers policy questions only from RR Finance Bank's help centre, cites every fact, checks the citations in code, and exposes the same engine as <code>POST /api/ask</code>.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Settings</h4>
-        <p>Add to <code>app/config.py</code>, and the matching lines to <code>.env</code> (leave <code>RAG_MIN_SCORE</code> empty unless you calibrated your own in Drill 06.6):</p>
+        <p>Add to <code>app/config.py</code>, and the matching lines to <code>.env</code> (leave <code>RAG_MIN_SCORE</code> empty unless you calibrated your own in <a class="xref" href="../../modules/06/retrieval.html#d06-6">Drill 06.6</a>):</p>
         <pre class="code" data-file="app/config.py (added)"><code><span class="c"># New in milestone 6: answers grounded in the help centre (RAG)</span>
 RAG_TOP_K = int(os.getenv("RAG_TOP_K", "4"))                         <span class="c"># help sections retrieved per search</span>
 <span class="c"># Relevance floor on cosine similarity. Model-specific: calibrate it for yours with Drill 06.6.</span>
@@ -300,7 +300,7 @@ RAG_MAX_CONTEXT_TOKENS = int(os.getenv("RAG_MAX_CONTEXT_TOKENS", "1500"))   <spa
 HELP_CENTRE_URL = os.getenv("HELP_CENTRE_URL", "https://help.rrfinance.example/")</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Keep the introductions, then rebuild the index</h4>
-        <p>Drill 06.4 showed Milestone 5's chunker dropping every article's introduction. Replace <code>chunk_by_headings</code> in <code>app/search.py</code>, add <code>CHUNKER_VERSION = "headings-v2"</code> near the top, and record it in <code>LocalIndex.save()</code> and check it in <code>load()</code> (see the reference code), so an old index is refused instead of silently mismatched:</p>
+        <p><a class="xref" href="../../modules/06/chunking.html#d06-4">Drill 06.4</a> showed <a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a>'s chunker dropping every article's introduction. Replace <code>chunk_by_headings</code> in <code>app/search.py</code>, add <code>CHUNKER_VERSION = "headings-v2"</code> near the top, and record it in <code>LocalIndex.save()</code> and check it in <code>load()</code> (see the reference code), so an old index is refused instead of silently mismatched:</p>
         <pre class="code" data-file="app/search.py (chunk_by_headings)"><code>def chunk_by_headings(markdown: str):
     """Yield (title, text) per section, both starting 'Article &gt; Section' so a chunk stands on its own.
     Drill 05.7 showed heading chunks beat fixed-size ones. Milestone 6 also keeps the introduction
@@ -694,7 +694,7 @@ What is the capital of France?
 </div>
 <div class="callout note">
   <div class="c-label">Fell behind? Catch up here</div>
-  <p>The complete reference code is in <a href="../../code/rrfinance-assist/m06/app/rag.py"><code>code/rrfinance-assist/m06/</code></a>. Copy it over your project, keep your <code>.env</code>, run <code>python -m scripts.build_index</code> (the chunker changed, so the old index is refused) and <code>pytest -q</code>, and you're ready for Module 07.</p>
+  <p>The complete reference code is in <a href="../../code/rrfinance-assist/m06/app/rag.py"><code>code/rrfinance-assist/m06/</code></a>. Copy it over your project, keep your <code>.env</code>, run <code>python -m scripts.build_index</code> (the chunker changed, so the old index is refused) and <code>pytest -q</code>, and you're ready for <a class="xref" href="../../modules/07/index.html">Module 07</a>.</p>
 </div>
 
 </div>

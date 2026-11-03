@@ -159,7 +159,7 @@
       <path d="M690 92 Q760 100 840 168" class="s-dash" marker-end="url(#ah)"/>
     </svg>
   </div>
-  <figcaption><b>School, then interviews.</b> After the cutoff, the only way to give a model new or private knowledge at inference time is to put it in the prompt: the whole idea behind RAG (Module 06).</figcaption>
+  <figcaption><b>School, then interviews.</b> After the cutoff, the only way to give a model new or private knowledge at inference time is to put it in the prompt: the whole idea behind RAG (<span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 06 <span class="badge b-tool">Coming soon</span></span>).</figcaption>
 </figure>
 
 <h3>Three ways to give a model your knowledge</h3>
@@ -167,8 +167,8 @@
   <table>
     <thead><tr><th>Approach</th><th>What it changes</th><th>Effort and cost</th><th>Use it when</th></tr></thead>
     <tbody>
-      <tr><td>1 · Prompting</td><td>Instructions and examples in each request</td><td>Minutes, almost free</td><td>Always first. Tone, format, behaviour (Module 03).</td></tr>
-      <tr><td>2 · RAG (grounding)</td><td>Fetches relevant facts at request time and adds them to the prompt</td><td>Days; needs search infrastructure</td><td>The model needs <em>your</em> or <em>fresh</em> facts: policies, catalogues, records (Module 06).</td></tr>
+      <tr><td>1 · Prompting</td><td>Instructions and examples in each request</td><td>Minutes, almost free</td><td>Always first. Tone, format, behaviour (<a class="xref" href="../../modules/03/index.html">Module 03</a>).</td></tr>
+      <tr><td>2 · RAG (grounding)</td><td>Fetches relevant facts at request time and adds them to the prompt</td><td>Days; needs search infrastructure</td><td>The model needs <em>your</em> or <em>fresh</em> facts: policies, catalogues, records (<span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 06 <span class="badge b-tool">Coming soon</span></span>).</td></tr>
       <tr><td>3 · Fine-tuning</td><td>Adjusts the model's weights with your examples</td><td>Weeks; data, cost, re-evaluation</td><td>A consistent style or narrow skill prompting can't reach. Rarely for facts.</td></tr>
       <tr><td>Training from scratch</td><td>Builds a new model</td><td>Months, serious money</td><td>Almost never for an application team.</td></tr>
     </tbody>
@@ -320,7 +320,7 @@ print("\n3) A question the policy doesn't cover:\n", ask([
  The policy doesn't cover credit card bills or fees for them.</code></pre>
       </li>
       <li class="dstep verify"><span class="st">Verify</span>
-        <ul class="verify-list"><li>Answer 1 is a guess or a generic deflection: the weights never saw RR Finance Bank's fee schedule.</li><li>Answer 2 should be specific and correct ($29, because $80 is more than $50) with no training at all: only the <strong>prompt</strong> changed. Check the reasoning, not just the number. In the run above the small model found the right rule and then claimed <em>three</em> fees (one overdrawn day means one $29 fee). In an earlier run it subtracted $50 from $80 and said "no fee". Grounding fixes missing facts; it doesn't fix weak reasoning. A larger model, a clearer prompt (Module 03) or a calculation in code (Module 04) does.</li><li>Answer 3 refuses to invent. Now delete the system message from call 3 and run again: does it start guessing? That one sentence is a guardrail.</li></ul>
+        <ul class="verify-list"><li>Answer 1 is a guess or a generic deflection: the weights never saw RR Finance Bank's fee schedule.</li><li>Answer 2 should be specific and correct ($29, because $80 is more than $50) with no training at all: only the <strong>prompt</strong> changed. Check the reasoning, not just the number. In the run above the small model found the right rule and then claimed <em>three</em> fees (one overdrawn day means one $29 fee). In an earlier run it subtracted $50 from $80 and said "no fee". Grounding fixes missing facts; it doesn't fix weak reasoning. A larger model, a clearer prompt (<a class="xref" href="../../modules/03/index.html">Module 03</a>) or a calculation in code (<span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 04 <span class="badge b-tool">Coming soon</span></span>) does.</li><li>Answer 3 refuses to invent. Now delete the system message from call 3 and run again: does it start guessing? That one sentence is a guardrail.</li></ul>
       </li>
     </ol>
   </div>
@@ -347,7 +347,7 @@ print("\n3) A question the policy doesn't cover:\n", ask([
             <li><strong>Prompting.</strong> Tone and a sign-off are instructions in the system prompt.</li>
             <li><strong>RAG.</strong> New facts after the cutoff must come from retrieval (the product catalogue).</li>
             <li><strong>Fine-tuning</strong> is a reasonable candidate: a narrow skill, lots of labelled data, cost pressure. Try few-shot prompting first and measure.</li>
-            <li><strong>RAG with citations.</strong> Grounding plus source attribution (Module 06).</li>
+            <li><strong>RAG with citations.</strong> Grounding plus source attribution (<span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 06 <span class="badge b-tool">Coming soon</span></span>).</li>
           </ol>
         </div></details>
       </li>

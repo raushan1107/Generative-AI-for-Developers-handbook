@@ -466,7 +466,7 @@ class VectorStore:
 5 passed in 0.23s</span></code></pre>
         <ul class="verify-list">
           <li>Read the solution's <code>search()</code>: one matrix multiply scores every item. That's exact search; fine for our 20 products and 44 help sections.</li>
-          <li>Milestone 5 uses the same idea in <code>LocalIndex</code>, so RR Finance Assist works without any cloud search service.</li>
+          <li><a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a> uses the same idea in <code>LocalIndex</code>, so RR Finance Assist works without any cloud search service.</li>
         </ul>
       </li>
     </ol>
@@ -476,7 +476,7 @@ class VectorStore:
 
 <div class="drill exercise" id="d05-5" data-title="Exercise: a semantic search system on Azure AI Search" data-time="~35 min" data-steps="portal,run,verify">
   <div class="drill-head"><span class="drill-id">Drill 05.5</span><h3>Exercise: a semantic search system on Azure AI Search</h3>
-    <div class="drill-meta"><span class="time">~35 min</span><span class="badge b-exercise">Module 05 exercise</span><span class="badge b-azure">Azure AI Search</span><span class="badge b-azure">Azure OpenAI</span></div></div>
+    <div class="drill-meta"><span class="time">~35 min</span><span class="badge b-exercise"><a class="xref" href="../../modules/05/index.html">Module 05</a> exercise</span><span class="badge b-azure">Azure AI Search</span><span class="badge b-azure">Azure OpenAI</span></div></div>
   <div class="drill-body">
     <p class="drill-goal"><b>Goal:</b> build a semantic search system using embeddings and a vector database: create an index with a vector field, load the RR Finance Bank catalogue with its embeddings, and query it by meaning.</p>
     <ol class="dsteps">
@@ -486,7 +486,7 @@ class VectorStore:
           <li>Pricing tier: <strong>Free</strong> (one per subscription; fine for these labs). If you already have a Free service, use it or choose Basic and delete it afterwards.</li>
           <li>Open the resource. Copy the <strong>Url</strong> from Overview and an <strong>admin key</strong> from Settings → Keys into <code>.env</code> as <code>AZURE_SEARCH_ENDPOINT</code> and <code>AZURE_SEARCH_API_KEY</code>.</li>
         </ol>
-        <p class="small muted">Admin keys can create and delete indexes. Keep them in <code>.env</code> only. Module 10 replaces keys with Microsoft Entra ID and query-only access for the app.</p>
+        <p class="small muted">Admin keys can create and delete indexes. Keep them in <code>.env</code> only. <a class="xref" href="../../project/index.html#module-10">Module 10</a> replaces keys with Microsoft Entra ID and query-only access for the app.</p>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Index, upload, query</h4>
         <pre class="code" data-file="lab05_05_azure_search.py"><code>"""Drill 05.5 (and 05.9): the product catalogue in Azure AI Search.
@@ -586,9 +586,9 @@ keyword search: 'somewhere to save for a house deposit'
       <li class="dstep verify"><span class="st">Verify</span>
         <ul class="verify-list">
           <li>The vector query should put High-Yield Savings first: its description says "save for a home deposit", close in meaning to "a house deposit". Keyword search may rank the mortgage or the CDs first, because "deposit" appears there too; try <code>"rainy-day money that grows"</code> in both modes and compare.</li>
-          <li>Vector scores are similarities (bigger is better). Write down the score of the best hit; you'll compare it with hybrid scores in Drill 05.9.</li>
+          <li>Vector scores are similarities (bigger is better). Write down the score of the best hit; you'll compare it with hybrid scores in <a class="xref" href="../../modules/05/hybrid-search.html#d05-9">Drill 05.9</a>.</li>
           <li>Re-run <code>upload</code>: it's an upsert (<code>merge_or_upload_documents</code>), so you still have 20 documents, not 40.</li>
-          <li>Keep the service for Drill 05.9 and Milestone 5 (optional). Delete it when you finish Part II if you used a paid tier.</li>
+          <li>Keep the service for <a class="xref" href="../../modules/05/hybrid-search.html#d05-9">Drill 05.9</a> and <a class="xref" href="../../modules/05/build.html#b05-1">Milestone 5</a> (optional). Delete it when you finish Part II if you used a paid tier.</li>
         </ul>
       </li>
     </ol>
@@ -641,7 +641,7 @@ for pid, dist, meta, doc in zip(res["ids"][0], res["distances"][0], res["metadat
     </div>
     <p class="lab-say"><b>Remember:</b> “Same embeddings, different home. The ideas carry over to any vector database.”</p>
   </div>
-  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-5"> I've completed the Module 05 exercise</label></div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d05-5"> I've completed the <a class="xref" href="../../modules/05/index.html">Module 05</a> exercise</label></div>
 </div>
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Vector databases.</p></div></div>

@@ -239,7 +239,7 @@
       <tr><td>Marker format</td><td>[1] numbers · section ids · quoted spans</td><td>[n]: short, cheap in tokens, easy to check</td></tr>
       <tr><td>Granularity</td><td>Document · section (chunk) · sentence</td><td>Section: precise enough to check, links to a heading</td></tr>
       <tr><td>Where shown</td><td>Inline markers · footnote list · hover cards · "related articles"</td><td>Inline markers plus a list of cited sources with links</td></tr>
-      <tr><td>Verification</td><td>Rules in code · a second model judging support · human review</td><td>Rules in code on every answer; model-based groundedness in Module 09</td></tr>
+      <tr><td>Verification</td><td>Rules in code · a second model judging support · human review</td><td>Rules in code on every answer; model-based groundedness in <a class="xref" href="../../project/index.html#module-09">Module 09</a></td></tr>
       <tr><td>When a check fails</td><td>Remove the marker · warn · retry · fall back to "not found"</td><td>Remove unknown markers, log it, warn on unsupported numbers</td></tr>
     </tbody>
   </table>
@@ -252,7 +252,7 @@
   <div class="c-label">In finance</div>
   <p>Citations are what make a banking assistant auditable. A complaints handler, an auditor or a regulator can follow the link from "you have 60 days to dispute" to the policy section and its version. Checking citations in code (does the cited section exist, does it contain the number?) turns that from a nice feature into a control.</p>
 </div>
-  <p>Citations are now expected in enterprise assistants: answers show numbered references to files or pages, and users click them, especially for HR, legal and policy questions. Legal and medical tools go further and verify quoted spans against the source text. On Azure, Azure AI Content Safety offers groundedness detection, a model-based check of whether an answer is supported by given sources; Module 09 compares that kind of evaluator with the free rule-based checks you build here.</p>
+  <p>Citations are now expected in enterprise assistants: answers show numbered references to files or pages, and users click them, especially for HR, legal and policy questions. Legal and medical tools go further and verify quoted spans against the source text. On Azure, Azure AI Content Safety offers groundedness detection, a model-based check of whether an answer is supported by given sources; <a class="xref" href="../../project/index.html#module-09">Module 09</a> compares that kind of evaluator with the free rule-based checks you build here.</p>
 </div>
 
 <div class="lens">
@@ -262,7 +262,7 @@
 
 <div class="callout pitfall">
   <div class="c-label">Common trap</div>
-  <p>Showing every retrieved source as if it were cited. The reader sees four authoritative links under an answer that used one of them, or none, and assumes all four support it. Show what the answer cites; if it cites nothing, label the list honestly ("related articles"), as Milestone 6 does.</p>
+  <p>Showing every retrieved source as if it were cited. The reader sees four authoritative links under an answer that used one of them, or none, and assumes all four support it. Show what the answer cites; if it cites nothing, label the list honestly ("related articles"), as <a class="xref" href="../../modules/06/build.html#b06-1">Milestone 6</a> does.</p>
 </div>
 
 <div class="callout exam">
@@ -525,7 +525,7 @@ audience=("public",) gives restricted == [2] and ok False. All existing tests mu
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Citations.</p></div></div>
 <div class="quiz">
-  <details><summary>1. The answer says "a reissue costs $25 [1]" and source 1 says "After 30 days, a reissue costs $25." Do the checks prove the answer is right?</summary><div><p>No. They prove the number appears in the cited source. The answer could still apply it to the wrong situation (for example, a correction requested within 30 days, which is free). That needs a model-based groundedness check or human review (Module 09).</p></div></details>
+  <details><summary>1. The answer says "a reissue costs $25 [1]" and source 1 says "After 30 days, a reissue costs $25." Do the checks prove the answer is right?</summary><div><p>No. They prove the number appears in the cited source. The answer could still apply it to the wrong situation (for example, a correction requested within 30 days, which is free). That needs a model-based groundedness check or human review (<a class="xref" href="../../project/index.html#module-09">Module 09</a>).</p></div></details>
   <details><summary>2. Why does <code>check()</code> ignore codes like TC-10477 and LAB-503 when comparing numbers?</summary><div><p>They're identifiers, often copied from the question or the customer's data, not amounts or durations claimed from a source. Treating them as numbers would flag correct answers.</p></div></details>
   <details><summary>3. A model often answers correctly but cites nothing. What do you show the customer?</summary><div><p>The answer, without pretending it was sourced: list the top retrieved sections as "related articles", log the missing citations, and measure the citation rate per model. Small local models do this far more often than larger hosted ones.</p></div></details>
 </div>

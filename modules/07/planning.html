@@ -229,8 +229,8 @@
   </table>
 </div>
 <ul>
-  <li><strong>Reasoning happens anyway.</strong> Modern models reason before choosing a tool; reasoning models do it explicitly with a separate effort setting (Module 03's chain-of-thought topic). You don't need "think step by step" in every prompt.</li>
-  <li><strong>Plans are structured output</strong> (Module 04): a list of steps with tool names, purposes and flags, which code can validate.</li>
+  <li><strong>Reasoning happens anyway.</strong> Modern models reason before choosing a tool; reasoning models do it explicitly with a separate effort setting (<a class="xref" href="../../modules/03/index.html">Module 03</a>'s chain-of-thought topic). You don't need "think step by step" in every prompt.</li>
+  <li><strong>Plans are structured output</strong> (<a class="xref" href="../../modules/04/index.html">Module 04</a>): a list of steps with tool names, purposes and flags, which code can validate.</li>
   <li><strong>Re-planning</strong> is normal: when a step fails, give the model the plan, what's done, and the error, and ask for the rest.</li>
 </ul>
 
@@ -415,7 +415,7 @@ PLAN CHECK: ["reschedule_quote needs an ID, but my_enrolments isn't called befor
           <ol>
             <li>Yes: <code>reschedule</code> comes after <code>reschedule_quote</code> and <code>upcoming_sessions</code>, which the order check enforces. But the plan never calls <code>my_enrolments</code>, so it would need an enrolment ID nobody looked up, and the dependency check flags exactly that. In an earlier version of this drill, without that check, a plan with the same gap (and <code>reschedule</code> twice) printed "PLAN CHECK: OK". A validator only catches what you encode.</li>
             <li>By the person. "Too expensive" is Diego's judgement; the agent should find the fee and show it in the approval request (topic 7). That's why the reschedule step is marked for approval.</li>
-            <li>Send the problems back to the model and ask for a corrected plan (a repair loop, as in Module 04), with a limit; or fall back to the step-by-step loop with approvals still enforced.</li>
+            <li>Send the problems back to the model and ask for a corrected plan (a repair loop, as in <a class="xref" href="../../modules/04/index.html">Module 04</a>), with a limit; or fall back to the step-by-step loop with approvals still enforced.</li>
           </ol>
         </div></details>
       </li>
@@ -441,7 +441,7 @@ Allow at most 2 re-plans. Don't change PlanStep or Plan.</code></pre></div></div
 
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Planning.</p></div></div>
 <div class="quiz">
-  <details><summary>1. What does ReAct stand for, and what does a ReAct loop look like in code?</summary><div><p>Reason and act. In code it's the tool loop: the model reasons, calls a tool, sees the result and decides the next step, until it answers. Milestone 4's loop and <code>agent.py</code> are ReAct loops.</p></div></details>
+  <details><summary>1. What does ReAct stand for, and what does a ReAct loop look like in code?</summary><div><p>Reason and act. In code it's the tool loop: the model reasons, calls a tool, sees the result and decides the next step, until it answers. <a class="xref" href="../../modules/04/build.html#b04-1">Milestone 4</a>'s loop and <code>agent.py</code> are ReAct loops.</p></div></details>
   <details><summary>2. Give two checks you'd run on a model-written plan.</summary><div><p>Any two: every tool exists; write steps are marked for approval; dependencies come first (quote before reschedule); the number of steps is within budget; no step uses data the plan hasn't fetched.</p></div></details>
   <details><summary>3. When is a separate planning call worth its cost?</summary><div><p>For longer or sensitive tasks where a plan can be checked, shown to a person, or reused, and where a wrong first action is expensive. For a two-step look-up, the plain loop is cheaper and just as good.</p></div></details>
 </div>

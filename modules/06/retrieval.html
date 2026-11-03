@@ -225,7 +225,7 @@
       <tr><td><strong>k</strong> (how many chunks)</td><td>Answers needing two sections (k of 3 to 5 is typical)</td><td>Tokens and noise grow with k</td></tr>
       <tr><td><strong>Relevance floor</strong></td><td>Off-topic questions retrieving unrelated chunks</td><td>Calibrate per embedding model; too high drops real questions</td></tr>
       <tr><td><strong>Permission pre-filter</strong></td><td>Users seeing documents they may not read</td><td>Needs audience or group metadata from ingestion</td></tr>
-      <tr><td><strong>Hybrid search</strong></td><td>Codes and names (LAB-503, AZ-104) plus paraphrases</td><td>None worth mentioning (Module 05)</td></tr>
+      <tr><td><strong>Hybrid search</strong></td><td>Codes and names (LAB-503, AZ-104) plus paraphrases</td><td>None worth mentioning (<a class="xref" href="../../modules/05/index.html">Module 05</a>)</td></tr>
       <tr><td><strong>Query rewriting</strong></td><td>Follow-ups, typos, other languages, chatty messages</td><td>One small model call (or free, when the model writes a tool query)</td></tr>
       <tr><td><strong>Reranking</strong></td><td>The best chunk ranked fourth instead of first</td><td>A reranker call; Azure AI Search's semantic ranker does it on the service</td></tr>
       <tr><td><strong>Diversity</strong> (for example MMR)</td><td>Three near-identical chunks crowding out a second topic</td><td>A little extra computation</td></tr>
@@ -483,7 +483,7 @@ Rewritten : Does the cost of replacing or updating a certificate issued with an 
         <p>The rewritten questions are clumsy (a 3-billion-parameter model wrote them), yet two of three raw follow-ups retrieved the wrong article and all three rewrites found the right one, with much higher scores. Notice also that the third raw follow-up (0.56) passes even the 0.55 floor from Drill 06.6: a floor can't fix a query that has lost its subject.</p>
       </li>
       <li class="dstep write"><span class="st">Your prompt</span><h4>Make the rewriter handle other languages</h4>
-        <p>In Drill 06.9 a Spanish question finds nothing: <code>nomic-embed-text</code> is mostly English and the help centre is English. Improve the <code>REWRITE</code> prompt so the search query is always English, while the customer still gets an answer in their language later.</p>
+        <p>In <a class="xref" href="../../modules/06/generation.html#d06-9">Drill 06.9</a> a Spanish question finds nothing: <code>nomic-embed-text</code> is mostly English and the help centre is English. Improve the <code>REWRITE</code> prompt so the search query is always English, while the customer still gets an answer in their language later.</p>
         <div class="template-box"><pre><code>Goal: improve REWRITE in #file:lab06_07_rewrite.py
 Context: the index is English; customers write in any language ...
 Constraints: output ...
@@ -510,7 +510,7 @@ after a first turn about rescheduling. Done when its rewrite is English and retr
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Retrieval.</p></div></div>
 <div class="quiz">
   <details><summary>1. Why is "zero results" a good outcome for some questions?</summary><div><p>It lets the system say "I couldn't find that" without a model call, instead of handing the model unrelated chunks it may improvise from. Users trust a system that admits gaps.</p></div></details>
-  <details><summary>2. In tool-based RAG, who does the query rewriting?</summary><div><p>The model, when it writes the <code>query</code> argument of the search tool. That's why Milestone 6's prompt asks for "a complete question, including details from earlier in the conversation".</p></div></details>
+  <details><summary>2. In tool-based RAG, who does the query rewriting?</summary><div><p>The model, when it writes the <code>query</code> argument of the search tool. That's why <a class="xref" href="../../modules/06/build.html#b06-1">Milestone 6</a>'s prompt asks for "a complete question, including details from earlier in the conversation".</p></div></details>
   <details><summary>3. The right chunk is usually in the top 10 but rarely first. What do you add?</summary><div><p>A reranker (a cross-encoder model, or Azure AI Search's semantic ranker) over the top 10 to 50, then keep the best 3 to 5. It improves ordering without changing the index.</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Rewrite the question, filter by permission inside the search, keep only matches above a calibrated floor, and accept zero results. The model can only be as good as what it's given.</p></div>

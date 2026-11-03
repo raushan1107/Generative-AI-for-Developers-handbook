@@ -190,7 +190,7 @@ Content-Type: application/json
       <tr><td><code>stop</code></td><td>Finished naturally or hit a stop sequence</td><td>Use the answer</td></tr>
       <tr><td><code>length</code></td><td>Hit the output token cap mid-answer</td><td>Don't show a half answer as complete; raise the cap or ask for brevity</td></tr>
       <tr><td><code>content_filter</code></td><td>Output blocked by safety filtering</td><td>Show a safe fallback message; log it</td></tr>
-      <tr><td><code>tool_calls</code></td><td>The model wants your code to run a function</td><td>Module 04</td></tr>
+      <tr><td><code>tool_calls</code></td><td>The model wants your code to run a function</td><td><span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 04 <span class="badge b-tool">Coming soon</span></span></td></tr>
     </tbody>
   </table>
 </div>
@@ -289,7 +289,7 @@ MODEL = {
   <div class="drill-head"><span class="drill-id">Drill 02.4</span><h3>Build a response inspector</h3>
     <div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">AI assistant · no API cost</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> a script that prints the fields that matter from a saved response, including error bodies, using <code>response.json</code> from Drill 02.2.</p>
+    <p class="drill-goal"><b>Goal:</b> a script that prints the fields that matter from a saved response, including error bodies, using <code>response.json</code> from <a class="xref" href="../../modules/02/authentication.html#d02-2">Drill 02.2</a>.</p>
     <ol class="dsteps">
       <li class="dstep ask"><span class="st">Ask AI</span>
         <div class="prompt-box"><pre><code>Look at #response.json (a saved Azure OpenAI chat completion). Write inspect_response.py that
@@ -351,7 +351,7 @@ ERROR: DeploymentNotFound - no such deployment</code></pre>
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Read the response.</p></div></div>
 <div class="quiz">
   <details><summary>1. A response is HTTP 200 but the answer stops mid-sentence. What do you check?</summary><div><p><code>finish_reason</code>: it's <strong>length</strong>. The output cap was hit (reasoning tokens count too).</p></div></details>
-  <details><summary>2. Which five fields would you log for every call?</summary><div><p>Request ID, <strong>model version</strong>, <strong>finish_reason</strong>, <strong>token usage</strong> and <strong>latency</strong> (plus your own prompt version, from Module 03).</p></div></details>
+  <details><summary>2. Which five fields would you log for every call?</summary><div><p>Request ID, <strong>model version</strong>, <strong>finish_reason</strong>, <strong>token usage</strong> and <strong>latency</strong> (plus your own prompt version, from <a class="xref" href="../../modules/03/index.html">Module 03</a>).</p></div></details>
 </div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>A 200 is not the same as success. Read finish_reason and usage on every response.</p></div>
 

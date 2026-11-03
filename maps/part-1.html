@@ -130,7 +130,7 @@
 <div class="content">
 
 <h2 id="story">The story in one line</h2>
-<div class="cards"><div class="card"><span class="num">MODULE 01</span><h3>The model</h3><p>What a generative model is, how it turns text into tokens and predicts the next one, and which model to choose.</p></div><div class="card"><span class="num">MODULE 02</span><h3>The API</h3><p>How your application sends messages to a model safely, streams the answer, survives errors and controls cost.</p></div><div class="card"><span class="num">MODULE 03</span><h3>The prompt</h3><p>How you write instructions, examples and formats so the answer is useful, consistent and safe to process.</p></div></div>
+<div class="cards"><div class="card"><span class="num"><a class="xref" href="../modules/01/index.html">MODULE 01</a></span><h3>The model</h3><p>What a generative model is, how it turns text into tokens and predicts the next one, and which model to choose.</p></div><div class="card"><span class="num"><a class="xref" href="../modules/02/index.html">MODULE 02</a></span><h3>The API</h3><p>How your application sends messages to a model safely, streams the answer, survives errors and controls cost.</p></div><div class="card"><span class="num"><a class="xref" href="../modules/03/index.html">MODULE 03</a></span><h3>The prompt</h3><p>How you write instructions, examples and formats so the answer is useful, consistent and safe to process.</p></div></div>
 
 <h2 id="picture">Everything at once</h2>
 <p>Every topic of this Part on one picture. Read the columns left to right; click a topic to jump to its card below.</p>
@@ -263,7 +263,7 @@
     <dt>Example</dt><dd>You never train GPT; every call from RR Finance Assist is inference, billed per token.</dd>
     <dt>In finance</dt><dd>Rates and fees change weekly, so banks retrieve them at request time; a fine-tuned model would quote last year&#x27;s APY with confidence.</dd>
     <dt>Where it's used</dt><dd>Knowing what you can change (the prompt, the data you send) and what you can&#x27;t (the model&#x27;s knowledge) without fine-tuning.</dd>
-    <dt>Keep in mind</dt><dd>To give a model new facts, put them in the prompt (Module 06, RAG); retraining is rarely the answer.</dd>
+    <dt>Keep in mind</dt><dd>To give a model new facts, put them in the prompt (<span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 06 <span class="badge b-tool">Coming soon</span></span>, RAG); retraining is rarely the answer.</dd>
   </dl>
   <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-llm" title="a trained LLM">Large Language Models (LLMs)<span>a trained LLM</span></button><button type="button" class="cm-link" data-target="t-life" title="every API call is inference">Request/response lifecycle<span>every API call is inference</span></button><button type="button" class="cm-link" data-target="t-cost" title="inference is what you pay for">Managing API costs<span>inference is what you pay for</span></button></div>
   <p class="cm-more"><a href="../modules/01/training-inference.html">Read the full topic page →</a></p>
@@ -527,7 +527,7 @@
     <dt>Example</dt><dd>Return only JSON with category, urgency, customer_id and summary, then validate it with Pydantic and retry once if invalid.</dd>
     <dt>In finance</dt><dd>Amounts must be numbers with a currency, missing values null, never guessed: a guessed account number flows straight into a payment.</dd>
     <dt>Where it's used</dt><dd>Any output a program reads: triage, extraction, routing.</dd>
-    <dt>Keep in mind</dt><dd>Always validate; models sometimes add text or code fences around JSON. Module 04 makes the shape guaranteed.</dd>
+    <dt>Keep in mind</dt><dd>Always validate; models sometimes add text or code fences around JSON. <span class="xref is-soon" aria-disabled="true" title="Coming soon">Module 04 <span class="badge b-tool">Coming soon</span></span> makes the shape guaranteed.</dd>
   </dl>
   <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-params" title="JSON mode and low temperature help">Temperature and other parameters<span>JSON mode and low temperature help</span></button><button type="button" class="cm-link" data-target="t-struct" title="the output format section">Structured prompts<span>the output format section</span></button><button type="button" class="cm-link" data-target="t-uses" title="extraction depends on it">Developer use cases<span>extraction depends on it</span></button></div>
   <p class="cm-more"><a href="../modules/03/output-constraints.html">Read the full topic page →</a></p>

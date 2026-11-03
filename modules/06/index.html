@@ -179,7 +179,7 @@
 <div class="content">
 
 <h2 id="map">The mental map: index once, retrieve every time</h2>
-<p>Module 05 built the search half. RAG adds the other half: turning what search finds into a grounded answer. Every RAG system, from a help-centre bot to an enterprise "ask our documents" tool, is these two pipelines.</p>
+<p><a class="xref" href="../../modules/05/index.html">Module 05</a> built the search half. RAG adds the other half: turning what search finds into a grounded answer. Every RAG system, from a help-centre bot to an enterprise "ask our documents" tool, is these two pipelines.</p>
 <figure class="diagram">
   <div class="frame">
     <svg viewBox="0 0 960 350" role="img" aria-labelledby="m6-t m6-d">
@@ -219,7 +219,7 @@
 </div>
 
 <h2 id="why">Why this module matters</h2>
-<p>RR Finance Assist's policy lives in its system prompt: five lines, typed by hand in Milestone 3. That doesn't scale. The help centre has ten articles and forty-seven sections; the support team's internal wiki has more; both change every month. Put all of it in every prompt and you pay for thousands of tokens per message and the model still misses details. Leave it out and the model guesses, confidently. In Drill 06.1 a model asked about error LAB-503 without the help centre explains it as a "malfunction in instrument communication".</p>
+<p>RR Finance Assist's policy lives in its system prompt: five lines, typed by hand in <a class="xref" href="../../modules/03/build.html#b03-1">Milestone 3</a>. That doesn't scale. The help centre has ten articles and forty-seven sections; the support team's internal wiki has more; both change every month. Put all of it in every prompt and you pay for thousands of tokens per message and the model still misses details. Leave it out and the model guesses, confidently. In <a class="xref" href="../../modules/06/what-is-rag.html#d06-1">Drill 06.1</a> a model asked about error LAB-503 without the help centre explains it as a "malfunction in instrument communication".</p>
 <p>The hands-on project of this module is a <strong>company knowledge assistant</strong>: it answers from RR Finance Bank's own documents, public and internal, says when they don't cover a question, and shows where each fact came from.</p>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
@@ -255,7 +255,7 @@ RAG_MIN_SCORE=</code></pre></li>
   <li><strong>New data in <code>genai-labs/data/internal/</code>:</strong> four fictional internal documents for RR Finance Bank's support staff, in four formats (a markdown playbook, an HTML wiki export, a plain-text runbook and a CSV FAQ), plus a duplicate file to catch.</li>
   <li><strong>New helpers in <code>genai-labs/</code>:</strong> <code>ingest.py</code>, <code>rag_chunks.py</code>, <code>kb_index.py</code>, <code>rag_prompt.py</code>, <code>citations.py</code>, and <code>rag.py</code>, which puts them together. Each drill builds or uses one of them, with tests.</li>
   <li><strong>Cost:</strong> a few cents on Azure for the whole module; embeddings are cached on disk, so re-runs are free.</li>
-  <li><strong>Build:</strong> Milestone 6 moves the policy out of the prompt and into the help centre: a <code>search_help</code> tool, citations checked in code, sources in the UI, and a <code>/api/ask</code> endpoint for a help-centre search box.</li>
+  <li><strong>Build:</strong> <a class="xref" href="../../modules/06/build.html#b06-1">Milestone 6</a> moves the policy out of the prompt and into the help centre: a <code>search_help</code> tool, citations checked in code, sources in the UI, and a <code>/api/ask</code> endpoint for a help-centre search box.</li>
 </ul>
 
 </div>

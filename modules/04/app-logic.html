@@ -223,7 +223,7 @@
       <tr><td><strong>Errors are data</strong>: return <code>{"error": "..."}</code>, don't raise</td><td>The model can explain or recover; one bad call doesn't crash the chat</td></tr>
       <tr><td><strong>Small, specific tools</strong> (<code>quote_fee_refund</code>, not <code>run_sql</code>)</td><td>Easier for the model to choose, easier for you to secure and test</td></tr>
       <tr><td><strong>Money, dates and rules in code</strong></td><td>The model explains a fee refund; <code>policy.fee_refund_quote()</code> calculates it</td></tr>
-      <tr><td><strong>Separate reads from writes</strong>; writes need extra care</td><td>Reading a status is safe to retry; creating a ticket twice isn't. Module 07 adds human approval.</td></tr>
+      <tr><td><strong>Separate reads from writes</strong>; writes need extra care</td><td>Reading a status is safe to retry; creating a ticket twice isn't. <a class="xref" href="../../modules/07/index.html">Module 07</a> adds human approval.</td></tr>
       <tr><td><strong>Limit the loop</strong> (rounds, time, tokens)</td><td>A confused model can call tools forever, and you pay for every round</td></tr>
       <tr><td><strong>Log every call</strong> (tool, ok/error, duration)</td><td>When an answer is wrong, the tool log tells you whether the model or the data was at fault</td></tr>
     </tbody>
@@ -255,7 +255,7 @@
   <p>"I run a bounded tool loop through a dispatcher that validates arguments, enforces <strong>authorization from the session context</strong>, returns errors as data, and logs every call. The model chooses tools; it never chooses <strong>whose</strong> data a tool touches."</p>
 </div>
 
-<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>The Module 04 hands-on exercise, then the identity drill.</p></div></div>
+<div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>The <a class="xref" href="../../modules/04/index.html">Module 04</a> hands-on exercise, then the identity drill.</p></div></div>
 
 <div class="callout note prereq">
   <div class="c-label">Before you run this code</div>
@@ -327,7 +327,7 @@ MODEL = {
 
 <div class="drill exercise" id="d04-7" data-title="Exercise: an assistant that calls your app's functions" data-time="~35 min" data-steps="ask,run,write,verify">
   <div class="drill-head"><span class="drill-id">Drill 04.7</span><h3>Exercise: an assistant that calls your app's functions</h3>
-    <div class="drill-meta"><span class="time">~35 min</span><span class="badge b-exercise">Module 04 exercise</span><span class="badge b-azure">Azure OpenAI</span></div></div>
+    <div class="drill-meta"><span class="time">~35 min</span><span class="badge b-exercise"><a class="xref" href="../../modules/04/index.html">Module 04</a> exercise</span><span class="badge b-azure">Azure OpenAI</span></div></div>
   <div class="drill-body">
     <p class="drill-goal"><b>Goal:</b> build an assistant that calls functions to <strong>search products</strong>, <strong>retrieve customer information</strong>, <strong>check card status</strong> (order status) and <strong>create support tickets</strong>, through a tested registry and a bounded loop.</p>
     <ol class="dsteps">
@@ -550,7 +550,7 @@ Done when: signed in as Mei, "is my card ending 4821 active?" works,
            "show me card 9034" is refused, and "I don't recognise a payment, please open a case" returns a case ID</code></pre></div>
         <p class="hint"><b>Hint:</b> the important constraint is identity: tools that touch a customer's data use <code>needs_context=True</code> and read <code>context["customer_id"]</code>; no tool takes a customer ID as an argument. Pass <code>context={"customer_id": "RR-10293"}</code> to <code>kit.dispatch</code> in the loop. Validate <code>card_last4</code> as four digits, raise <code>PermissionError</code> for other customers' cards, and limit case categories with a <code>Literal</code>.</p>
         <details class="solution"><summary>Compare with my design</summary><div>
-          <p>RR Finance Assist's Milestone 4 is the full version of this exercise: <code>list_my_accounts</code>, <code>list_my_transactions</code>, <code>get_card_status</code>, <code>quote_fee_refund</code>, <code>quote_dispute</code> and <code>create_support_ticket</code>, all reading identity from context. Compare your tools with <a href="build.html#b04-1">app/tools.py on the Milestone 4 page</a>: same registry, same rules, more tools.</p>
+          <p>RR Finance Assist's <a class="xref" href="../../modules/04/build.html#b04-1">Milestone 4</a> is the full version of this exercise: <code>list_my_accounts</code>, <code>list_my_transactions</code>, <code>get_card_status</code>, <code>quote_fee_refund</code>, <code>quote_dispute</code> and <code>create_support_ticket</code>, all reading identity from context. Compare your tools with <a href="build.html#b04-1">app/tools.py on the Milestone 4 page</a>: same registry, same rules, more tools.</p>
         </div></details>
       </li>
       <li class="dstep verify"><span class="st">Verify</span><h4>Try to break it</h4>
@@ -564,7 +564,7 @@ Done when: signed in as Mei, "is my card ending 4821 active?" works,
     </ol>
     <p class="lab-say"><b>Remember:</b> “The model picks the tool. The session picks the person. The code picks the outcome.”</p>
   </div>
-  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-7"> I've completed the Module 04 exercise</label></div>
+  <div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d04-7"> I've completed the <a class="xref" href="../../modules/04/index.html">Module 04</a> exercise</label></div>
 </div>
 
 <div class="drill" id="d04-8" data-title="Who decides whose data? Identity in tools" data-time="~10 min" data-steps="run,think">
