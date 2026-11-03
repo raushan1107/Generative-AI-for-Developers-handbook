@@ -81,7 +81,6 @@
       "modules": [
         {
           "num": "04", "title": "Structured Outputs and Function Calling",
-          "draft": true,
           "pages": [
             {"id": "m04", "title": "Overview and mental map", "path": "modules/04/index.html", "kind": "overview"},
             {"id": "m04-why", "title": "Why structured outputs matter", "path": "modules/04/why-structured.html", "kind": "topic"},
@@ -97,7 +96,6 @@
         },
         {
           "num": "05", "title": "Embeddings and Semantic Search",
-          "draft": true,
           "pages": [
             {"id": "m05", "title": "Overview and mental map", "path": "modules/05/index.html", "kind": "overview"},
             {"id": "m05-emb", "title": "What are embeddings?", "path": "modules/05/embeddings.html", "kind": "topic"},
@@ -120,7 +118,6 @@
       "modules": [
         {
           "num": "06", "title": "Retrieval-Augmented Generation",
-          "draft": true,
           "pages": [
             {"id": "m06", "title": "Overview and mental map", "path": "modules/06/index.html", "kind": "overview"},
             {"id": "m06-what", "title": "What is RAG, and why use it?", "path": "modules/06/what-is-rag.html", "kind": "topic"},
@@ -138,7 +135,6 @@
         },
         {
           "num": "07", "title": "Building AI Agents",
-          "draft": true,
           "pages": [
             {"id": "m07", "title": "Overview and mental map", "path": "modules/07/index.html", "kind": "overview"},
             {"id": "m07-what", "title": "What is an AI agent? Agent vs chatbot", "path": "modules/07/what-is-an-agent.html", "kind": "topic"},

@@ -11,7 +11,7 @@ docs/HANDBOOK-GUIDE.md (page structure, callouts, house style).
 - Notes keep their generic explanation and examples, and every topic gets a mandatory
   `<div class="callout finance">` ("In finance") example.
 - Parts I–III are retrofitted in place. Parts IV–V and the capstone are then written finance-first.
-- Modules 04–07 are `"draft": true` in tools/nav.json. Keep drafts as drafts unless the author says otherwise.
+- Modules 04–07 were approved for publication by the author on 2026-11-03; their pages and code are now live. Known content follow-ups below remain editorial improvements, not publication gates. Open-source Labs 2–3 remain drafts.
 
 ## Rules
 

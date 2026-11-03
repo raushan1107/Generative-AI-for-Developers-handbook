@@ -1,6 +1,6 @@
 # Generative AI for Developers handbook: build guide
 
-Notes for myself (not published on the site): how this handbook is built and how to add Parts II–V in the same style. Part I (setup, Modules 01–03, project milestones 1–3, drills, and open-source Labs 0–1) is live. Modules 04–07 and open-source Labs 2–3 are drafts; Modules 08–12, the remaining concept maps, and the full capstone brief are not complete yet. New modules start as drafts (see "Draft modules" below).
+Notes for myself (not published on the site): how this handbook is built and how to add Parts II–V in the same style. Modules 01–07, project milestones 1–7, their drills, setup, the Part I concept map, and open-source Labs 0–1 are live. Open-source Labs 2–3 remain drafts; Modules 08–12, the remaining concept maps, and the full capstone brief are not complete yet. New modules start as drafts (see "Draft modules" below).
 
 ---
 
@@ -65,7 +65,7 @@ Build after any change: `python tools/build.py` (from the repo root). It fails l
 - `<pre class="code" data-file="name.py" data-src="code/genai-labs/x.py"></pre>` inlines the real file, HTML-escaped, with `#` comments highlighted. Optional `data-lines="a-b"`.
 - `<!--MODULE_PAGES:NN-->` renders the module's page cards with their drills (overview pages).
 - `<!--DRILL_INDEX-->` renders the catalogue of all drills (labs page), filterable by step type.
-- Sidebar, breadcrumbs, prev/next pager and "Mark this page as done" are generated for every page. Curriculum navigation labels published modules and open-source Labs 0–1 as "Live", draft modules/labs as "Draft", and roadmap-only modules as "Planned".
+- Sidebar, breadcrumbs, prev/next pager and "Mark this page as done" are generated for every page. Curriculum navigation labels published modules and open-source Labs 0–1 as "Live", draft labs as "Draft", and roadmap-only modules as "Planned".
 - Prose references such as "Module 02", "Milestone 2" and "Drill 02.4" are linked to their overview, build page or drill. Draft references remain visibly marked as coming soon; references to planned modules link to their roadmap rows.
 
 ### Draft modules (build now, publish later)
