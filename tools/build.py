@@ -196,6 +196,16 @@ def link_references(content, page, drills):
                 number = int(ref)
                 target = BY_ID.get(f"m{number:02d}-build")
                 anchor = f"#b{number:02d}-1"
+                if target and not any(
+                    drill["page"] == target["id"] and drill["id"] == f"b{number:02d}-1"
+                    for drill in drills
+                ):
+                    build_check = next(
+                        (drill for drill in drills
+                         if drill["page"] == target["id"] and drill["id"] == f"d{number:02d}-build"),
+                        None,
+                    )
+                    anchor = f"#{build_check['id']}" if build_check else ""
                 if not target and f"{number:02d}" in MODULE_NUMS:
                     target = BY_ID.get("project")
                     anchor = f"#module-{number:02d}"
