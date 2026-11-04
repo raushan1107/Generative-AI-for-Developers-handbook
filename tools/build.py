@@ -60,9 +60,9 @@ def flatten():
 
 PAGES = flatten()
 BY_ID = {p["id"]: p for p in PAGES}
-# Draft modules ("draft": true in nav.json) are built but not linked from live pages:
-# they stay "soon" in the live sidebar, out of the live pager, drill catalogue and cards.
-# Draft pages link to each other so they can be reviewed. Remove the flag to go live.
+# Draft modules ("draft": true in nav.json) are built but kept out of the live
+# navigation, pager, drill catalogue and cards until reviewed. Remove the flag
+# to publish a module and its pages.
 LIVE = [p for p in PAGES if not p.get("draft")]
 DRAFT = [p for p in PAGES if p.get("draft")]
 

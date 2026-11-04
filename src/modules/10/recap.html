@@ -1,0 +1,11 @@
+<!--meta
+{"id": "m10-recap", "short": "Module 10 Recap", "h1": "Module 10 · Recap and Self-Check", "description": "Review prompt injection, least privilege, data minimization, fairness checks and escalation.", "lead": "Check that you can explain which controls are enforced by code and which signals remain fallible.", "chips": ["Review", "Self-check", "Next: cost and performance"], "time": "10 min"}
+-->
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Security and responsible AI review.</p></div></div>
+<div class="quiz">
+<details><summary>1. What should happen if a retrieved article tells the model to call a write tool?</summary><div><p>Treat it as untrusted content. Application code still verifies identity, permissions, policy and approval before any write.</p></div></details>
+<details><summary>2. What does the M10 masker guarantee?</summary><div><p>Only that its tested labeled patterns are replaced in those tests. It does not guarantee complete PII detection or regulatory compliance.</p></div></details>
+<details><summary>3. Why is a prompt instruction not an authorization check?</summary><div><p>The model can misunderstand or be influenced by untrusted content. Authorization must be enforced by trusted server-side code using authenticated identity.</p></div></details>
+<details><summary>4. What is next?</summary><div><p><a href="../11/index.html">Module 11</a> measures cost and latency, using the evaluation practices from <a href="../09/index.html">Module 09</a> to ensure optimization does not degrade critical behavior.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Remember</div><p>Minimize sensitive data, constrain model authority, test safety across relevant users and provide human escalation for consequential cases.</p></div>

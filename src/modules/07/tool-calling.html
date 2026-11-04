@@ -51,11 +51,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Tool design is access design. A bank exposes narrow tools ("freeze this signed-in customer's card") rather than broad ones ("update any account"), names and describes them so the model picks the right one, and returns errors the model can act on. Each tool maps to an entitlement the security team can review, exactly like an API for a mobile app.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Tool design is access design. A bank exposes narrow tools ("freeze this signed-in customer's card") rather than broad ones ("update any account"), names and describes them so the model picks the right one, and returns errors the model can act on. Each tool maps to an entitlement the security team can review, exactly like an API for a mobile app.</p>
-</div>
   <p>Teams that wrap an existing internal API for an agent usually start by exposing its endpoints one-to-one, and the agent struggles: cryptic names, dozens of parameters, error codes like <code>E4012</code>. The fix that works is a thin "agent-facing" layer: fewer, task-shaped tools, descriptions written for the model, and errors translated into sentences. The Model Context Protocol (MCP) has made this layer reusable across assistants, but the design rules are the same.</p>
 </div>
 

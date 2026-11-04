@@ -140,12 +140,16 @@ Use Mei (RR-10293, account AC-5512, cards 4821 and 1177) and Diego (RR-20877, ca
           <li><strong>Not signed in:</strong> "What are my accounts?" Assist asks you to sign in instead of guessing.</li>
           <li><strong>Triage:</strong> in <code>/docs</code>, <code>POST /api/triage</code> now returns <code>"prompt_version": "triage@v2"</code>, with <code>attempts</code> almost always 1.</li>
         </ul>
-        <span class="out-label">A real turn from my local test (small Ollama model, prompted to use the tool)</span>
-<pre class="out"><code>[tool] quote_refund
-If you cancel today, you won't receive a refund because the cancellation requirement is 14 or more
-days before the start. However, you can move back to a later date for free by rescheduling.
-DONE ['quote_refund'] 2406</code></pre>
-        <p class="small muted">Without the nudge, that same small model skipped the tool and confidently said "100% refund". That's the gap between a model that follows tool instructions and one that doesn't, and why you'll measure it in Module 09 rather than trust a demo.</p>
+        <span class="out-label">Deterministic result from the M4 tool test (model wording may vary)</span>
+<pre class="out"><code>{
+  "account_id": "AC-5512",
+  "fees_charged": 5,
+  "fees_charged_usd": 145,
+  "charged_in_error": 2,
+  "courtesy_refund": true,
+  "refund_usd": 87
+}</code></pre>
+        <p class="small muted">The $87 is the policy tool's result for the synthetic test data, not a promise about a real account. If the model asks the customer for an internal account ID, asks them to call a tool, or reports a tool error, don't treat that response as verified. Check <code>assist.log</code>; the prompt instructs the model to look up IDs from the signed-in profile first, but model tool selection still varies by provider and version.</p>
       </li>
     </ol>
   </div>

@@ -1,5 +1,5 @@
 <!--meta
-{"id": "m06", "short": "Retrieval-Augmented Generation", "h1": "Retrieval-Augmented Generation: Answers from Your Own Documents", "description": "Module 06 overview: what RAG is and why teams use it, the RAG architecture, document ingestion, chunking, embeddings and vector storage, retrieval, prompt construction, response generation and citations, with 10 drills and RR Finance Assist milestone 6.", "lead": "A model knows the public internet up to its training cut-off. It doesn't know RR Finance Bank's refund rules, last week's lab incident or the approval limits on an internal wiki page. Retrieval-augmented generation fixes that without retraining anything: find the right passages at question time, put them in the prompt, and make the model answer from them, with citations you can check.", "chips": ["9 topics", "10 drills", "Milestone 6", "≈ 5 hours hands-on"]}
+{"id": "m06", "short": "Retrieval-Augmented Generation", "h1": "Retrieval-Augmented Generation: Answers from Your Own Documents", "description": "Module 06 overview: what RAG is and why teams use it, the RAG architecture, document ingestion, chunking, embeddings and vector storage, retrieval, prompt construction, response generation and citations, with 10 drills and RR Finance Assist milestone 6.", "lead": "A model may not know RR Finance Bank's current card, payment or dispute policies. Retrieval-augmented generation lets an application find relevant passages at question time, provide them to the model, and check its citations—without retraining the model. RAG can improve grounding, but it does not guarantee a correct answer.", "chips": ["9 topics", "10 drills", "Milestone 6", "≈ 5 hours hands-on"]}
 -->
 <h2 id="map">The mental map: index once, retrieve every time</h2>
 <p>Module 05 built the search half. RAG adds the other half: turning what search finds into a grounded answer. Every RAG system, from a help-centre bot to an enterprise "ask our documents" tool, is these two pipelines.</p>
@@ -19,7 +19,7 @@
       <path d="M680 79 H704" class="s-arrow" marker-end="url(#ah)"/>
       <rect x="710" y="44" width="230" height="70" rx="12" class="s-blue"/><text x="825" y="72" class="t-b mid">vector index</text><text x="825" y="92" class="t-s mid">vector + text + source + audience</text>
       <text x="20" y="182" class="t-m">QUERY · EVERY QUESTION</text>
-      <rect x="20" y="194" width="150" height="76" rx="12" class="s-surface"/><text x="95" y="226" class="t-b mid">question</text><text x="95" y="246" class="t-s mid">"cancel 10 days before?"</text>
+      <rect x="20" y="194" width="150" height="76" rx="12" class="s-surface"/><text x="95" y="226" class="t-b mid">question</text><text x="95" y="246" class="t-s mid">"dispute deadline?"</text>
       <path d="M170 232 H194" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <rect x="200" y="194" width="170" height="76" rx="12" class="s-teal"/><text x="285" y="222" class="t-b mid">retrieve</text><text x="285" y="242" class="t-s mid">top k · floor · audience</text><text x="285" y="258" class="t-s mid">(6)</text>
       <path d="M370 232 H394" class="s-arrow-accent" marker-end="url(#ah-a)"/>
@@ -30,20 +30,20 @@
       <rect x="770" y="194" width="170" height="76" rx="12" class="s-rose"/><text x="855" y="222" class="t-b mid">check citations</text><text x="855" y="242" class="t-s mid">in code, then show</text><text x="855" y="258" class="t-s mid">sources (9)</text>
       <path d="M825 114 V150 H285 V188" class="s-dash" marker-end="url(#ah)"/>
       <text x="420" y="144" class="t-s">searches the index (Module 05)</text>
-      <text x="20" y="310" class="t-b">→ "Cancelling 7 to 13 days before the start gives a 50% refund [1]."</text>
-      <text x="20" y="332" class="t-s">[1] Refunds and cancellations › How much you get back</text>
+      <text x="20" y="310" class="t-b">→ "You have 60 days from the statement date to raise a dispute [1]."</text>
+      <text x="20" y="332" class="t-s">[1] Disputing a card transaction › Deadlines</text>
     </svg>
   </div>
   <figcaption><b>Numbers in brackets are this module's topic pages.</b> Each stage has its own way to fail, which is why each gets its own page and drill.</figcaption>
 </figure>
 <div class="callout takeaway">
   <div class="c-label">Takeaway</div>
-  <p>RAG is an open-book exam: find the right pages, hand them to the model, and insist the answer comes from them. Most RAG quality problems are retrieval problems, not model problems.</p>
+  <p>RAG is an open-book exam: retrieve relevant pages, provide them to the model, and inspect whether the generated answer is supported. Citation-number validation catches references to unseen sources, but does not establish that a cited passage entails a claim. Retrieval, source quality and generation all affect answer quality.</p>
 </div>
 
 <h2 id="why">Why this module matters</h2>
-<p>RR Finance Assist's policy lives in its system prompt: five lines, typed by hand in Milestone 3. That doesn't scale. The help centre has ten articles and forty-seven sections; the support team's internal wiki has more; both change every month. Put all of it in every prompt and you pay for thousands of tokens per message and the model still misses details. Leave it out and the model guesses, confidently. In Drill 06.1 a model asked about error LAB-503 without the help centre explains it as a "malfunction in instrument communication".</p>
-<p>The hands-on project of this module is a <strong>company knowledge assistant</strong>: it answers from RR Finance Bank's own documents, public and internal, says when they don't cover a question, and shows where each fact came from.</p>
+<p>RR Finance Assist's policy initially lived in its system prompt. That doesn't scale: policies change, and copying every detail into every request is costly and hard to maintain. The help centre has ten articles with 44 titled sections; Module 06 keeps the introductions too, for 54 searchable chunks. Without relevant evidence, a model can confidently invent details—for example, Drill 06.1 demonstrates why the assistant should not guess at a bank's dispute policy.</p>
+<p>The hands-on project of this module extends <strong>RR Finance Assist</strong>: it answers questions from the bank's help-centre documents, says when they don't cover a question, and shows the sources used. A citation helps a reader inspect the evidence; it does not prove that the answer is correct.</p>
 <div class="callout analogy">
   <div class="c-label">Imagine this</div>
   <p>A new call-centre agent doesn't memorise the policy binder. When a caller asks something, they look up the right page, read it, answer from it, and say "that's in section 4.2" if challenged. A good RAG system works the same way: it looks things up every time, and it can show its page numbers.</p>

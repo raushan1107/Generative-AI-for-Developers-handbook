@@ -46,11 +46,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Card-fraud detection is the classic example of <strong>traditional ML</strong> in banking: a model scores every card payment in a few milliseconds from structured features (amount, merchant, country, time since the last payment), billions of times a year. Credit scoring is similar. Generative AI sits next to these systems, not in place of them: it reads the customer's free-text dispute, drafts the letter explaining a declined payment, or summarises an investigation for the fraud analyst. Regulators also expect lending and fraud decisions to be explainable, which a fixed, well-documented model makes much easier than a free-text answer.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Card-fraud detection is the classic example of <strong>traditional ML</strong> in banking: a model scores every card payment in a few milliseconds from structured features (amount, merchant, country, time since the last payment), billions of times a year. Credit scoring is similar. Generative AI sits next to these systems, not in place of them: it reads the customer's free-text dispute, drafts the letter explaining a declined payment, or summarises an investigation for the fraud analyst. Regulators also expect lending and fraud decisions to be explainable, which a fixed, well-documented model makes much easier than a free-text answer.</p>
-</div>
   <p>Most production systems are <strong>hybrids</strong>. Card-fraud scoring and product recommendations are still classic ML because they need millisecond decisions on structured data at huge volume. LLMs sit on top for the language parts: explaining a decision to a customer, summarising a case for an analyst, understanding a free-text complaint. Search products work the same way: classic ranking finds results, a language model writes the summary.</p>
 </div>
 

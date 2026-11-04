@@ -40,11 +40,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>In finance, "fail safely" has a precise meaning: never act on a half-parsed instruction. A truncated or refused reply is logged, the customer gets a calm fallback, and nothing reaches a payment or a case system. Chaos tests like this drill are part of operational resilience testing, which many regulators now require for important business services.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>In finance, "fail safely" has a precise meaning: never act on a half-parsed instruction. A truncated or refused reply is logged, the customer gets a calm fallback, and nothing reaches a payment or a case system. Chaos tests like this drill are part of operational resilience testing, which many regulators now require for important business services.</p>
-</div>
   <p>Teams running document extraction at scale typically see a small but steady fraction of replies needing repair, and a far smaller fraction refused or filtered. They track each outcome separately on a dashboard. A jump in "truncated" usually means documents got longer; a jump in "invalid" after a deploy usually means someone changed the prompt or the schema.</p>
 </div>
 

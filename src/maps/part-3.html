@@ -1,0 +1,271 @@
+<!--meta
+{"id": "map-part3", "short": "Part Iii Concept Map", "h1": "Part III Concept Map: Ground It and Let It Act", "description": "An expandable map of Modules 06–07, connecting RAG retrieval, grounded answers and citations with agent tools, state and human approval.", "lead": "Part III gives a model access to relevant information and, in controlled cases, application tools. RAG retrieves source material before generation; an agent can coordinate multiple steps. In both cases the application still owns access controls, validation and the decision to execute consequential actions.", "chips": ["Modules 06–07", "17 topics", "RAG connections", "Agent boundaries"]}
+-->
+<h2 id="story">The story in one line</h2>
+<div class="cards"><div class="card"><span class="num">MODULE 06</span><h3>Ground the answer</h3><p>Prepare, retrieve and present source passages, then check generated claims and citations.</p></div><div class="card"><span class="num">MODULE 07</span><h3>Control the action</h3><p>Coordinate tool calls and state within a bounded workflow, with reliability checks and human review.</p></div></div>
+
+<h2 id="picture">Everything at once</h2>
+<p>Every topic of this Part on one picture. Read the columns left to right; click a topic to jump to its card below.</p>
+<figure class="diagram">
+  <div class="frame">
+<svg viewBox="0 0 660 442" role="img" aria-labelledby="cm-t cm-d">
+<title id="cm-t">Part III concept map: all topics at once</title>
+<desc id="cm-d">Ground the answer (Module 06): Prepare, retrieve and present source passages, then check generated claims and citations. Control the action (Module 07): Coordinate tool calls and state within a bounded workflow, with reliability checks and human review.</desc>
+<rect x="20" y="14" width="300" height="414" rx="14" class="s-blue"/>
+<text x="36" y="40" class="t-m">MODULE 06 · GROUND THE ANSWER</text>
+<text x="36" y="64" class="t-b">Retrieval-Augmented Generation</text>
+<a href="#t-what-rag" class="cm-svg-link"><rect x="34" y="80" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="99" class="t-s">What is RAG, and why use it?</text></a>
+<a href="#t-architecture" class="cm-svg-link"><rect x="34" y="114" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="133" class="t-s">RAG architecture</text></a>
+<a href="#t-ingestion" class="cm-svg-link"><rect x="34" y="148" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="167" class="t-s">Document ingestion</text></a>
+<a href="#t-chunking" class="cm-svg-link"><rect x="34" y="182" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="201" class="t-s">Text chunking</text></a>
+<a href="#t-embedding-storage" class="cm-svg-link"><rect x="34" y="216" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="235" class="t-s">Embedding generation and vector storage</text></a>
+<a href="#t-retrieval" class="cm-svg-link"><rect x="34" y="250" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="269" class="t-s">Retrieval</text></a>
+<a href="#t-prompt-construction" class="cm-svg-link"><rect x="34" y="284" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="303" class="t-s">Prompt construction</text></a>
+<a href="#t-generation" class="cm-svg-link"><rect x="34" y="318" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="337" class="t-s">Response generation</text></a>
+<a href="#t-citations" class="cm-svg-link"><rect x="34" y="352" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="371" class="t-s">Citation and source attribution</text></a>
+<path d="M320 221.0 H338" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+<rect x="340" y="14" width="300" height="414" rx="14" class="s-teal"/>
+<text x="356" y="40" class="t-m">MODULE 07 · CONTROL THE ACTION</text>
+<text x="356" y="64" class="t-b">Building AI Agents</text>
+<a href="#t-what-agent" class="cm-svg-link"><rect x="354" y="80" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="99" class="t-s">What is an AI agent? Agent vs chatbot</text></a>
+<a href="#t-planning" class="cm-svg-link"><rect x="354" y="114" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="133" class="t-s">Reasoning and planning</text></a>
+<a href="#t-tool-calling" class="cm-svg-link"><rect x="354" y="148" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="167" class="t-s">Tool calling for agents</text></a>
+<a href="#t-workflows" class="cm-svg-link"><rect x="354" y="182" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="201" class="t-s">Agent workflows</text></a>
+<a href="#t-state-memory" class="cm-svg-link"><rect x="354" y="216" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="235" class="t-s">State and memory</text></a>
+<a href="#t-multi-step" class="cm-svg-link"><rect x="354" y="250" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="269" class="t-s">Multi-step tasks</text></a>
+<a href="#t-human-review" class="cm-svg-link"><rect x="354" y="284" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="303" class="t-s">Human-in-the-loop workflows</text></a>
+<a href="#t-reliability" class="cm-svg-link"><rect x="354" y="318" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="337" class="t-s">Agent reliability</text></a>
+</svg>
+  </div>
+  <figcaption><b>2 modules, 17 topics, one story.</b> Each column builds on the one before it.</figcaption>
+</figure>
+
+<h2 id="tree">Explore the map</h2>
+<p>Open a module, then a topic. Each topic shows a definition, an example, an example from finance, where it's used, the point to keep in mind, and the topics it <em>connects to</em>; click a connection to jump there.</p>
+<div class="cm-tools">
+  <button type="button" class="btn" data-cm="expand">Expand all</button>
+  <button type="button" class="btn" data-cm="collapse">Collapse all</button>
+  <input type="search" placeholder="Find a term, e.g. tokens" aria-label="Find a term" data-cm="filter">
+</div>
+<div class="cmap" data-cmap>
+<details class="cm-root" open>
+  <summary><b>Part III concept map</b><span class="cm-short">2 modules · 17 topics</span></summary>
+<details class="cm-module" id="m-06">
+  <summary><span class="cm-num">06</span><b>Retrieval-Augmented Generation</b><span class="cm-short">Retrieve relevant sources before generating an answer · 9 topics</span></summary>
+  <div class="cm-topics">
+<details class="cm-topic" id="t-what-rag">
+  <summary><b>What is RAG, and why use it?</b><span class="cm-short">Retrieval-Augmented Generation supplies selected external information to a model at answer time.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Retrieval-Augmented Generation supplies selected external information to a model at answer time.</dd>
+    <dt>Example</dt><dd>Search current help articles for a dispute deadline, then provide relevant passages to the model.</dd>
+    <dt>In finance</dt><dd>RAG can ground a customer-support draft in current bank policy, but the cited policy still needs verification.</dd>
+    <dt>Where it's used</dt><dd>Question answering over documents that change or are not in the model&#x27;s training data.</dd>
+    <dt>Keep in mind</dt><dd>RAG can improve access to evidence; it does not guarantee that retrieval or generation is correct.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-architecture" title="the flow has retrieval and generation stages">RAG architecture<span>the flow has retrieval and generation stages</span></button><button type="button" class="cm-link" data-target="t-retrieval" title="the system selects evidence">Retrieval<span>the system selects evidence</span></button><button type="button" class="cm-link" data-target="t-generation" title="the model uses supplied context">Response generation<span>the model uses supplied context</span></button><button type="button" class="cm-link" data-target="t-citations" title="attribution helps users check sources">Citation and source attribution<span>attribution helps users check sources</span></button></div>
+  <p class="cm-more"><a href="../modules/06/what-is-rag.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-architecture">
+  <summary><b>RAG architecture</b><span class="cm-short">A RAG pipeline prepares documents, retrieves candidate context, constructs a prompt and generates a response.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>A RAG pipeline prepares documents, retrieves candidate context, constructs a prompt and generates a response.</dd>
+    <dt>Example</dt><dd>An ingestion job builds an index; at query time the app embeds the question, searches, filters and sends selected passages.</dd>
+    <dt>In finance</dt><dd>Separate public help from staff procedures before retrieval, not after a generated answer is produced.</dd>
+    <dt>Where it's used</dt><dd>Designing document-grounded assistants and search-backed applications.</dd>
+    <dt>Keep in mind</dt><dd>Every stage can fail independently and should be measured and monitored.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-ingestion" title="documents enter the pipeline">Document ingestion<span>documents enter the pipeline</span></button><button type="button" class="cm-link" data-target="t-retrieval" title="query-time selection">Retrieval<span>query-time selection</span></button><button type="button" class="cm-link" data-target="t-prompt-construction" title="selected evidence is passed to the model">Prompt construction<span>selected evidence is passed to the model</span></button><button type="button" class="cm-link" data-target="t-generation" title="context becomes an answer">Response generation<span>context becomes an answer</span></button></div>
+  <p class="cm-more"><a href="../modules/06/architecture.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-ingestion">
+  <summary><b>Document ingestion</b><span class="cm-short">Ingestion extracts and normalizes source content and metadata for downstream indexing.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Ingestion extracts and normalizes source content and metadata for downstream indexing.</dd>
+    <dt>Example</dt><dd>Parse Markdown headings, extract a PDF table and attach source ID, audience and revision date.</dd>
+    <dt>In finance</dt><dd>A revised fee schedule should replace or supersede stale policy text in the searchable corpus.</dd>
+    <dt>Where it's used</dt><dd>Building indexes from policies, manuals, reports and knowledge-base content.</dd>
+    <dt>Keep in mind</dt><dd>Track provenance, access labels and freshness; extraction errors can become retrieval errors.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-architecture" title="ingestion is an offline pipeline stage">RAG architecture<span>ingestion is an offline pipeline stage</span></button><button type="button" class="cm-link" data-target="t-chunking" title="normalized content is divided">Text chunking<span>normalized content is divided</span></button><button type="button" class="cm-link" data-target="t-embedding-storage" title="prepared chunks are indexed">Embedding generation and vector storage<span>prepared chunks are indexed</span></button></div>
+  <p class="cm-more"><a href="../modules/06/ingestion.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-chunking">
+  <summary><b>Text chunking</b><span class="cm-short">Chunking splits source documents into units that can be retrieved within model and application limits.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Chunking splits source documents into units that can be retrieved within model and application limits.</dd>
+    <dt>Example</dt><dd>Keep a dispute rule and its eligibility exception in the same section-sized chunk.</dd>
+    <dt>In finance</dt><dd>Separating a fee amount from its waiver condition can lead to an incomplete answer.</dd>
+    <dt>Where it's used</dt><dd>Preparing long content for retrieval and context assembly.</dd>
+    <dt>Keep in mind</dt><dd>Chunk size, overlap and boundaries should be tested against real questions and source structure.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-ingestion" title="chunking follows extraction">Document ingestion<span>chunking follows extraction</span></button><button type="button" class="cm-link" data-target="t-embedding-storage" title="chunks are stored with vectors">Embedding generation and vector storage<span>chunks are stored with vectors</span></button><button type="button" class="cm-link" data-target="t-retrieval" title="retrieval ranks chunks">Retrieval<span>retrieval ranks chunks</span></button><button type="button" class="cm-link" data-target="t-prompt-construction" title="selected chunks use context space">Prompt construction<span>selected chunks use context space</span></button></div>
+  <p class="cm-more"><a href="../modules/06/chunking.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-embedding-storage">
+  <summary><b>Embedding generation and vector storage</b><span class="cm-short">Embedding generation maps chunks to vectors that are stored with identifiers and useful metadata.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Embedding generation maps chunks to vectors that are stored with identifiers and useful metadata.</dd>
+    <dt>Example</dt><dd>Store each policy section&#x27;s vector with a source ID, revision and audience label.</dd>
+    <dt>In finance</dt><dd>A bank can re-index amended policies while preserving version information for auditing.</dd>
+    <dt>Where it's used</dt><dd>Making document passages searchable by semantic similarity.</dd>
+    <dt>Keep in mind</dt><dd>Keep the embedding model and index version aligned, and retain source provenance.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-ingestion" title="normalized text is embedded">Document ingestion<span>normalized text is embedded</span></button><button type="button" class="cm-link" data-target="t-chunking" title="the chunk is the indexed unit">Text chunking<span>the chunk is the indexed unit</span></button><button type="button" class="cm-link" data-target="t-retrieval" title="queries search stored vectors">Retrieval<span>queries search stored vectors</span></button></div>
+  <p class="cm-more"><a href="../modules/06/embedding-storage.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-retrieval">
+  <summary><b>Retrieval</b><span class="cm-short">Retrieval selects and ranks candidate source passages for a query, often using filters and a top-k limit.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Retrieval selects and ranks candidate source passages for a query, often using filters and a top-k limit.</dd>
+    <dt>Example</dt><dd>Retrieve the three most relevant current public help sections for a customer&#x27;s question.</dd>
+    <dt>In finance</dt><dd>Apply the customer&#x27;s authorized audience before searching staff-only content.</dd>
+    <dt>Where it's used</dt><dd>RAG context selection, search results and evidence gathering.</dd>
+    <dt>Keep in mind</dt><dd>Relevant-looking passages can still be stale, incomplete or incorrect; evaluate retrieval separately.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-embedding-storage" title="retrieval searches the index">Embedding generation and vector storage<span>retrieval searches the index</span></button><button type="button" class="cm-link" data-target="t-prompt-construction" title="selected passages become prompt context">Prompt construction<span>selected passages become prompt context</span></button><button type="button" class="cm-link" data-target="t-citations" title="source identifiers support attribution">Citation and source attribution<span>source identifiers support attribution</span></button><button type="button" class="cm-link" data-target="t-architecture" title="retrieval is one pipeline stage">RAG architecture<span>retrieval is one pipeline stage</span></button></div>
+  <p class="cm-more"><a href="../modules/06/retrieval.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-prompt-construction">
+  <summary><b>Prompt construction</b><span class="cm-short">Prompt construction combines instructions, user input and retrieved context into a model request.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Prompt construction combines instructions, user input and retrieved context into a model request.</dd>
+    <dt>Example</dt><dd>Label each source, ask for a concise answer and tell the model to say when supplied sources do not answer.</dd>
+    <dt>In finance</dt><dd>Use clear boundaries between a customer&#x27;s message and retrieved policy text.</dd>
+    <dt>Where it's used</dt><dd>Grounded question answering and controlled summarization.</dd>
+    <dt>Keep in mind</dt><dd>Retrieved content is untrusted input; prompt wording alone is not a security boundary.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-retrieval" title="retrieval supplies context">Retrieval<span>retrieval supplies context</span></button><button type="button" class="cm-link" data-target="t-generation" title="the model receives the constructed request">Response generation<span>the model receives the constructed request</span></button><button type="button" class="cm-link" data-target="t-what-agent" title="both systems use instructions and context">What is an AI agent? Agent vs chatbot<span>both systems use instructions and context</span></button></div>
+  <p class="cm-more"><a href="../modules/06/prompt-construction.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-generation">
+  <summary><b>Response generation</b><span class="cm-short">Generation produces an answer from the model&#x27;s instructions, input and any retrieved context.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Generation produces an answer from the model&#x27;s instructions, input and any retrieved context.</dd>
+    <dt>Example</dt><dd>Ask for an answer supported by supplied policy passages and a clear abstention when evidence is missing.</dd>
+    <dt>In finance</dt><dd>A response about a dispute deadline should reflect the current source, not a plausible model guess.</dd>
+    <dt>Where it's used</dt><dd>Natural-language answers, summaries and drafts over retrieved information.</dd>
+    <dt>Keep in mind</dt><dd>A grounded prompt can still produce unsupported claims; inspect and evaluate the output.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-prompt-construction" title="instructions and context shape the request">Prompt construction<span>instructions and context shape the request</span></button><button type="button" class="cm-link" data-target="t-citations" title="generated claims can reference sources">Citation and source attribution<span>generated claims can reference sources</span></button><button type="button" class="cm-link" data-target="t-reliability" title="outputs need checks">Agent reliability<span>outputs need checks</span></button></div>
+  <p class="cm-more"><a href="../modules/06/generation.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-citations">
+  <summary><b>Citation and source attribution</b><span class="cm-short">Citation and attribution connect a response to source identifiers so users can inspect supporting material.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Citation and attribution connect a response to source identifiers so users can inspect supporting material.</dd>
+    <dt>Example</dt><dd>Render a link to the policy section used to answer a question about card disputes.</dd>
+    <dt>In finance</dt><dd>A support agent can compare a drafted policy explanation with the bank&#x27;s approved source.</dd>
+    <dt>Where it's used</dt><dd>Auditable knowledge answers and evidence review.</dd>
+    <dt>Keep in mind</dt><dd>A citation can point to a real source without proving the source entails the claim.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-retrieval" title="sources are selected before citation">Retrieval<span>sources are selected before citation</span></button><button type="button" class="cm-link" data-target="t-generation" title="the model emits attribution">Response generation<span>the model emits attribution</span></button><button type="button" class="cm-link" data-target="t-reliability" title="check claim-to-source support">Agent reliability<span>check claim-to-source support</span></button><button type="button" class="cm-link" data-target="t-what-rag" title="attribution is part of grounded answering">What is RAG, and why use it?<span>attribution is part of grounded answering</span></button></div>
+  <p class="cm-more"><a href="../modules/06/citations.html">Read the full topic page →</a></p>
+</details>
+  <p class="cm-more"><a href="../modules/06/index.html">Module 06 overview →</a></p>
+  </div>
+</details>
+<details class="cm-module" id="m-07">
+  <summary><span class="cm-num">07</span><b>Building AI Agents</b><span class="cm-short">Coordinate model decisions and application tools within explicit boundaries · 8 topics</span></summary>
+  <div class="cm-topics">
+<details class="cm-topic" id="t-what-agent">
+  <summary><b>What is an AI agent? Agent vs chatbot</b><span class="cm-short">An agent uses a model to select steps or tools toward a task, while application code runs tools and enforces constraints.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>An agent uses a model to select steps or tools toward a task, while application code runs tools and enforces constraints.</dd>
+    <dt>Example</dt><dd>An assistant can look up a customer&#x27;s card status and request a freeze through a separate approval step.</dd>
+    <dt>In finance</dt><dd>A bank agent should not be allowed to move money merely because a model generated a tool call.</dd>
+    <dt>Where it's used</dt><dd>Multi-step workflows where tool access adds value beyond a single response.</dd>
+    <dt>Keep in mind</dt><dd>More autonomy adds complexity and risk; use the least autonomy that solves the task.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-tool-calling" title="agents request application tools">Tool calling for agents<span>agents request application tools</span></button><button type="button" class="cm-link" data-target="t-workflows" title="steps are coordinated">Agent workflows<span>steps are coordinated</span></button><button type="button" class="cm-link" data-target="t-human-review" title="consequential actions may need approval">Human-in-the-loop workflows<span>consequential actions may need approval</span></button></div>
+  <p class="cm-more"><a href="../modules/07/what-is-an-agent.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-planning">
+  <summary><b>Reasoning and planning</b><span class="cm-short">Planning decomposes a task into steps or tool requests; the application should bound and validate that process.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Planning decomposes a task into steps or tool requests; the application should bound and validate that process.</dd>
+    <dt>Example</dt><dd>List allowed cards, inspect one card&#x27;s status and ask for approval before freezing it.</dd>
+    <dt>In finance</dt><dd>A support workflow can require verified identity and policy checks before a card action.</dd>
+    <dt>Where it's used</dt><dd>Tasks that need ordered information gathering or controlled tool execution.</dd>
+    <dt>Keep in mind</dt><dd>A generated plan is not proof of correct reasoning or permission to act.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-tool-calling" title="plans may request tools">Tool calling for agents<span>plans may request tools</span></button><button type="button" class="cm-link" data-target="t-multi-step" title="tasks may span several operations">Multi-step tasks<span>tasks may span several operations</span></button><button type="button" class="cm-link" data-target="t-reliability" title="bound and verify each stage">Agent reliability<span>bound and verify each stage</span></button></div>
+  <p class="cm-more"><a href="../modules/07/planning.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-tool-calling">
+  <summary><b>Tool calling for agents</b><span class="cm-short">Tool calling lets a model request a named function with arguments that application code can inspect.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Tool calling lets a model request a named function with arguments that application code can inspect.</dd>
+    <dt>Example</dt><dd>The model requests card_status with a last-four identifier from the app&#x27;s own card list.</dd>
+    <dt>In finance</dt><dd>The server must check that the card belongs to the authenticated customer before returning status.</dd>
+    <dt>Where it's used</dt><dd>Connecting assistants to databases, APIs and approved actions.</dd>
+    <dt>Keep in mind</dt><dd>Validate tool names and arguments, enforce authorization and limit side effects.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-what-agent" title="tools are an agent capability">What is an AI agent? Agent vs chatbot<span>tools are an agent capability</span></button><button type="button" class="cm-link" data-target="t-planning" title="tool selection can follow a plan">Reasoning and planning<span>tool selection can follow a plan</span></button><button type="button" class="cm-link" data-target="t-human-review" title="pause actions requiring approval">Human-in-the-loop workflows<span>pause actions requiring approval</span></button><button type="button" class="cm-link" data-target="t-reliability" title="handle tool failures">Agent reliability<span>handle tool failures</span></button></div>
+  <p class="cm-more"><a href="../modules/07/tool-calling.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-workflows">
+  <summary><b>Agent workflows</b><span class="cm-short">An agent workflow defines how model calls, tools, state and control flow interact.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>An agent workflow defines how model calls, tools, state and control flow interact.</dd>
+    <dt>Example</dt><dd>A bounded loop receives a tool request, validates it, executes it and returns the result to the model.</dd>
+    <dt>In finance</dt><dd>A card-freeze workflow can separate lookup, approval and the actual state change.</dd>
+    <dt>Where it's used</dt><dd>Repeatable, observable multi-step tasks.</dd>
+    <dt>Keep in mind</dt><dd>Explicit state transitions and stop conditions are safer than an unbounded loop.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-tool-calling" title="tools are workflow steps">Tool calling for agents<span>tools are workflow steps</span></button><button type="button" class="cm-link" data-target="t-state-memory" title="workflows carry state">State and memory<span>workflows carry state</span></button><button type="button" class="cm-link" data-target="t-multi-step" title="several steps form a task">Multi-step tasks<span>several steps form a task</span></button><button type="button" class="cm-link" data-target="t-human-review" title="approval can pause a workflow">Human-in-the-loop workflows<span>approval can pause a workflow</span></button></div>
+  <p class="cm-more"><a href="../modules/07/workflows.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-state-memory">
+  <summary><b>State and memory</b><span class="cm-short">State is information retained for a task or session; memory may be passed back into later model requests.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>State is information retained for a task or session; memory may be passed back into later model requests.</dd>
+    <dt>Example</dt><dd>Store a conversation identifier and recent turns, with a defined expiration and deletion policy.</dd>
+    <dt>In finance</dt><dd>Customer conversation history needs access controls, retention limits and secure storage.</dd>
+    <dt>Where it's used</dt><dd>Multi-turn assistants and workflows that span requests.</dd>
+    <dt>Keep in mind</dt><dd>A model does not automatically remember prior calls; application-managed memory has privacy and cost trade-offs.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-workflows" title="state coordinates steps">Agent workflows<span>state coordinates steps</span></button><button type="button" class="cm-link" data-target="t-multi-step" title="later actions depend on earlier results">Multi-step tasks<span>later actions depend on earlier results</span></button><button type="button" class="cm-link" data-target="t-what-rag" title="retrieval adds external context rather than session memory">What is RAG, and why use it?<span>retrieval adds external context rather than session memory</span></button></div>
+  <p class="cm-more"><a href="../modules/07/state-memory.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-multi-step">
+  <summary><b>Multi-step tasks</b><span class="cm-short">A multi-step task performs several dependent operations before returning a result.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>A multi-step task performs several dependent operations before returning a result.</dd>
+    <dt>Example</dt><dd>Check a card, ask for consent, execute a freeze and confirm the resulting status.</dd>
+    <dt>In finance</dt><dd>A dispute case may require identity, transaction and policy checks before a human review.</dd>
+    <dt>Where it's used</dt><dd>Workflows with dependencies, conditional branches or multiple tools.</dd>
+    <dt>Keep in mind</dt><dd>Each step needs a bounded retry policy, clear failure behavior and outcome verification.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-planning" title="planning proposes steps">Reasoning and planning<span>planning proposes steps</span></button><button type="button" class="cm-link" data-target="t-workflows" title="the workflow executes steps">Agent workflows<span>the workflow executes steps</span></button><button type="button" class="cm-link" data-target="t-state-memory" title="steps share necessary state">State and memory<span>steps share necessary state</span></button><button type="button" class="cm-link" data-target="t-reliability" title="verify results and failures">Agent reliability<span>verify results and failures</span></button></div>
+  <p class="cm-more"><a href="../modules/07/multi-step.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-human-review">
+  <summary><b>Human-in-the-loop workflows</b><span class="cm-short">Human review inserts a person into a workflow to approve, reject or correct a decision or action.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Human review inserts a person into a workflow to approve, reject or correct a decision or action.</dd>
+    <dt>Example</dt><dd>Show a freeze preview derived from application data, then ask the customer to approve before executing it.</dd>
+    <dt>In finance</dt><dd>A consequential account action should have a defined consent and escalation path.</dd>
+    <dt>Where it's used</dt><dd>High-impact decisions, ambiguous cases and actions with external side effects.</dd>
+    <dt>Keep in mind</dt><dd>Approval must be bound to the exact action and trusted data; a prompt asking for consent is not enough by itself.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-tool-calling" title="review gates tool execution">Tool calling for agents<span>review gates tool execution</span></button><button type="button" class="cm-link" data-target="t-workflows" title="approval pauses a workflow">Agent workflows<span>approval pauses a workflow</span></button><button type="button" class="cm-link" data-target="t-reliability" title="approval and outcomes need auditing">Agent reliability<span>approval and outcomes need auditing</span></button></div>
+  <p class="cm-more"><a href="../modules/07/human-in-the-loop.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-reliability">
+  <summary><b>Agent reliability</b><span class="cm-short">Agent reliability uses bounded behavior, validation, explicit errors and measured outcomes to reduce failures.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Agent reliability uses bounded behavior, validation, explicit errors and measured outcomes to reduce failures.</dd>
+    <dt>Example</dt><dd>Limit tool-loop steps, reject unknown functions and report a failed tool call rather than claiming success.</dd>
+    <dt>In finance</dt><dd>Compare the final customer-facing response with the actual recorded account action.</dd>
+    <dt>Where it's used</dt><dd>Production workflows that must handle model and dependency failures.</dd>
+    <dt>Keep in mind</dt><dd>A fluent final answer is not evidence that the requested operation succeeded.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-workflows" title="control flow needs stop conditions">Agent workflows<span>control flow needs stop conditions</span></button><button type="button" class="cm-link" data-target="t-multi-step" title="each dependency can fail">Multi-step tasks<span>each dependency can fail</span></button><button type="button" class="cm-link" data-target="t-human-review" title="review and audit consequential changes">Human-in-the-loop workflows<span>review and audit consequential changes</span></button><button type="button" class="cm-link" data-target="t-citations" title="source checks are another reliability measure">Citation and source attribution<span>source checks are another reliability measure</span></button></div>
+  <p class="cm-more"><a href="../modules/07/reliability.html">Read the full topic page →</a></p>
+</details>
+  <p class="cm-more"><a href="../modules/07/index.html">Module 07 overview →</a></p>
+  </div>
+</details>
+</details>
+</div>
+<div class="callout takeaway"><div class="c-label">How to use this map</div><p>Before a module, skim its branch to see what's coming. After it, close the page and try to explain each topic and one connection from memory, then open the card to check yourself.</p></div>

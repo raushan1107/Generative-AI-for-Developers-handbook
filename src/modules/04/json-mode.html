@@ -38,11 +38,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Valid JSON with the wrong keys is a classic integration bug in banking: one reply says <code>amount</code>, the next <code>txn_amount</code>, a third returns the amount as the string <code>"$412"</code>. Downstream reconciliation then silently drops records. JSON mode alone is acceptable for exploratory analyst tools; anything that feeds payments, disputes or reporting needs a schema and validation.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Valid JSON with the wrong keys is a classic integration bug in banking: one reply says <code>amount</code>, the next <code>txn_amount</code>, a third returns the amount as the string <code>"$412"</code>. Downstream reconciliation then silently drops records. JSON mode alone is acceptable for exploratory analyst tools; anything that feeds payments, disputes or reporting needs a schema and validation.</p>
-</div>
   <p>Teams that started with JSON mode in 2023 all built the same thing next: a validator that checks the keys and types, plus a retry loop. That pile of glue code is exactly what structured outputs replaced. You'll still meet JSON mode with local and older models, so it's worth knowing its limits.</p>
 </div>
 

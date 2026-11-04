@@ -1,5 +1,5 @@
 <!--meta
-{"id": "oss", "short": "Open-Source Lab Guide", "h1": "Open-Source Lab Guide", "description": "A step-by-step hands-on lab guide for Generative AI for Developers using only free, open-source models: Ollama on your own computer, open models such as Llama, Qwen and nomic-embed-text, and Python. One lab per Part, about three hours each, with exact commands and expected output.", "lead": "Everything in this course can be practised without a cloud subscription or a paid API key. This guide runs open-source models on your own computer with Ollama, and walks you through each lab step by step: what to install, where each setting goes, what to type, and what you should see. Follow it after each Part's demonstrations; by the end of each lab you have working code of your own.", "chips": ["Free and local", "Ollama + Python", "Step by step", "≈ 3 hours per lab"]}
+{"id": "oss", "short": "Open-Source Lab Guide", "h1": "Open-Source Lab Guide", "description": "Step-by-step practice for Generative AI for Developers using Python and open models. Labs 0–5 cover setup and one practice lab for each Part.", "lead": "The open-source track uses Python and, where model calls are needed, Ollama or a compatible hosted open-model endpoint. Lab 0 sets up the environment. Labs 1–5 provide hands-on practice for Parts I–V using the fictional RR Finance Bank scenario, with runnable examples, checks and clear limitations.", "chips": ["Python and open models", "Ollama setup", "Finance scenario", "Labs 0–5 available"]}
 -->
 <h2 id="how">How to use this guide</h2>
 <ul>
@@ -17,8 +17,10 @@
     <tbody>
       <tr><td><a href="lab-0-setup.html">Lab 0 · Setup</a></td><td>Python, VS Code, Ollama, open models, <code>.env</code></td><td>A checked lab environment</td><td>30–60 min</td></tr>
       <tr><td><a href="lab-1.html">Lab 1 · Prompts, APIs and JSON</a></td><td>Part I: Modules 01–03</td><td>A streaming chat app with memory, errors and logs; a triage prompt that returns valid JSON</td><td>≈ 3 h</td></tr>
-      <tr><td><a href="lab-2.html">Lab 2 · Tools and semantic search</a></td><td>Part II: Modules 04–05</td><td>An assistant that calls your functions; a semantic search app over a help centre</td><td>≈ 3 h</td></tr>
-      <tr><td><a href="lab-3.html">Lab 3 · RAG and agents</a></td><td>Part III: Modules 06–07</td><td>A company knowledge assistant with citations; an agent that acts with your approval</td><td>≈ 3 h</td></tr>
+      <tr><td><a href="lab-2.html">Lab 2 · Tools and semantic search</a></td><td>Part II: Modules 04–05</td><td>Schema extraction, bank-product tools, embeddings and hybrid search</td><td>≈ 3 h</td></tr>
+      <tr><td><a href="lab-3.html">Lab 3 · RAG and agents</a></td><td>Part III: Modules 06–07</td><td>Bank-policy retrieval with citations; an in-memory card-freeze approval demo</td><td>≈ 3 h</td></tr>
+      <tr><td><a href="lab-4.html">Lab 4 · Architecture, evaluation and safety</a></td><td>Part IV: Modules 08–10</td><td>Local traces, synthetic session storage, metrics, thresholds and advisory checks</td><td>≈ 3 h</td></tr>
+      <tr><td><a href="lab-5.html">Lab 5 · Performance, cost and release</a></td><td>Part V: Modules 11–12</td><td>Illustrative routing, cost estimates, cache keys and release preflight</td><td>≈ 3 h</td></tr>
     </tbody>
   </table>
 </div>
@@ -29,7 +31,7 @@
     <thead><tr><th></th><th>Open models on Ollama (this guide)</th><th>Hosted APIs (the main handbook)</th></tr></thead>
     <tbody>
       <tr><td>Cost</td><td>Free; runs on your computer</td><td>Pay per token; needs a subscription or key</td></tr>
-      <tr><td>Privacy</td><td>Nothing leaves your machine</td><td>Data goes to the provider (under its terms)</td></tr>
+      <tr><td>Privacy</td><td>With local Ollama settings, model requests stay on your machine</td><td>Data goes to the configured provider (under its terms)</td></tr>
       <tr><td>Speed</td><td>Depends on your hardware; seconds to a minute per answer on a laptop</td><td>Fast and consistent</td></tr>
       <tr><td>Quality</td><td>Good for learning; small models make more mistakes, which is instructive</td><td>Stronger models, better instruction following</td></tr>
       <tr><td>Code</td><td>The same OpenAI-compatible Python code</td><td>The same code, different URL, key and model</td></tr>
@@ -41,17 +43,17 @@
 <h2 id="hardware">What your computer needs</h2>
 <div class="table-wrap min">
   <table>
-    <thead><tr><th>Memory (RAM)</th><th>Chat model</th><th>Agent model (Lab 3)</th><th>Expect</th></tr></thead>
+    <thead><tr><th>Setup</th><th>Chat model</th><th>Tool-call model (Lab 3)</th><th>Check before choosing</th></tr></thead>
     <tbody>
-      <tr><td>8 GB</td><td><code>llama3.2</code> (3B, 2 GB download)</td><td><code>llama3.2</code></td><td>5–30 s per answer; agents make more mistakes</td></tr>
-      <tr><td>16 GB or more</td><td><code>llama3.2</code></td><td><code>qwen2.5:7b</code> (4.7 GB download)</td><td>Agents follow multi-step tasks much better</td></tr>
-      <tr><td>A GPU (NVIDIA, or Apple silicon)</td><td>Any of the above</td><td><code>qwen2.5:7b</code> or larger</td><td>Answers in a few seconds</td></tr>
+      <tr><td>CPU-only</td><td>A quantized model that fits available memory</td><td>A model and runtime version that support tool calls</td><td>Measure speed and memory use on your own hardware</td></tr>
+      <tr><td>More available memory</td><td>Choose a model appropriate for the task</td><td>A larger tool-capable model may be an option</td><td>Check model requirements, tool support and quality on your test cases</td></tr>
+      <tr><td>Supported GPU and drivers</td><td>A model supported by your runtime/backend</td><td>Only if tool calling is also supported</td><td>Acceleration depends on hardware, drivers, quantization and runtime configuration</td></tr>
     </tbody>
   </table>
 </div>
-<p>Plus about 10 GB of free disk space, Windows 10/11, macOS 12 or later, or a recent Linux, and an internet connection for the downloads. If your computer is too slow, Lab 0 shows an alternative: hosted open models with a free API key.</p>
+<p>Allow disk space for the models you choose; download sizes and hardware requirements can change by model and quantization. You also need a supported operating system and an internet connection for downloads. If your computer is too slow, Lab 0 explains an alternative: a hosted open-model provider, which sends requests to that provider and may require a key or incur charges.</p>
 
 <div class="callout note">
   <div class="c-label">For trainers</div>
-  <p>Ask learners to complete Lab 0 before the first day; downloads on a shared classroom network are slow. Each lab maps to one Part of the handbook and assumes the Part was demonstrated first. The labs use the same fictional RR Finance Bank scenario and data as the handbook: a retail bank building a customer-support assistant.</p>
+  <p>Ask learners to complete Lab 0 before the course begins; downloads on a shared network can take time. Each lab maps to one Part of the handbook and assumes the Part was demonstrated first. The labs use the same fictional RR Finance Bank scenario and data as the handbook: a retail bank building a customer-support assistant.</p>
 </div>

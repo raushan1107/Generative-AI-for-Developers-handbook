@@ -1,0 +1,106 @@
+{
+  "id": "map-part4",
+  "path": "maps/part-4.html",
+  "title": "Part IV concept map",
+  "h1": "Part IV Concept Map: Build It Right",
+  "description": "An expandable map of Modules 08–10, connecting application architecture and tracing to evaluation, threat modeling, privacy and safety review.",
+  "lead": "Part IV moves from a working prototype toward a system that can be observed, evaluated and reviewed for risk. Architecture gives the request a controlled path; evaluation measures behavior against examples and thresholds; security and responsible-AI work identify threats and add human and technical controls.",
+  "chips": ["Modules 08–10", "6 topics", "Available modules", "Quality and safety"],
+  "story": [
+    ["Structure the system", "Module 08", "Route requests through explicit boundaries and manage sessions, queues and traces."],
+    ["Measure behavior", "Module 09", "Build an evaluation set, choose metrics and use transparent release gates."],
+    ["Review risk", "Module 10", "Threat-model model-enabled flows and combine privacy, safety and human review."]
+  ],
+  "modules": [
+    {
+      "num": "08",
+      "title": "AI Application Architecture",
+      "tagline": "Give requests controlled routes and observable state",
+      "overview": "modules/08/index.html",
+      "topics": [
+        {
+          "id": "gateway-routing",
+          "title": "Gateways and model routing",
+          "page": "modules/08/gateway.html",
+          "definition": "A gateway provides a controlled interface to model services; routing selects a model or deployment for a request.",
+          "example": "Send an eligible low-complexity request to a lower-cost deployment and route other requests according to tested rules.",
+          "finance": "A bank's route must respect data classification, residency, approved deployments and fallback policy.",
+          "usecase": "Centralized policy, provider abstraction, observability and model selection.",
+          "keep": "A gateway does not make an unsafe route safe; route decisions need explicit constraints and evaluation.",
+          "connects": [["sessions-traces", "requests need correlation across services"], ["evaluation-data", "measure route quality"], ["evaluation-metrics", "compare quality against criteria"], ["privacy-safety", "data handling constrains route choices"]]
+        },
+        {
+          "id": "sessions-traces",
+          "title": "Sessions, queues and traces",
+          "page": "modules/08/state-and-telemetry.html",
+          "definition": "Sessions retain task context, queues manage asynchronous work and traces correlate events across a request path.",
+          "example": "Attach a trace ID to retrieval and model-call events while storing only the session data needed for follow-up.",
+          "finance": "Support history and trace attributes should minimize sensitive content and follow access and retention rules.",
+          "usecase": "Multi-turn systems, background jobs, incident diagnosis and performance analysis.",
+          "keep": "A trace ID is not a trace system, and persistent session data needs security, retention and deletion controls.",
+          "connects": [["gateway-routing", "route requests through observable boundaries"], ["evaluation-metrics", "production signals complement offline evaluation"], ["privacy-safety", "telemetry can expose sensitive data"], ["threat-model", "data collection crosses trust boundaries"]]
+        }
+      ]
+    },
+    {
+      "num": "09",
+      "title": "Evaluating GenAI Applications",
+      "tagline": "Test a representative dataset and gate on measurable behavior",
+      "overview": "modules/09/index.html",
+      "topics": [
+        {
+          "id": "evaluation-data",
+          "title": "Build an evaluation set",
+          "page": "modules/09/datasets.html",
+          "definition": "An evaluation set contains representative inputs, expected outcomes and, where useful, human-reviewed references.",
+          "example": "Include routine, ambiguous and adversarial bank-support messages with expected categories and urgency.",
+          "finance": "Fraud and lost-card cases should be represented so important misses are visible, not averaged away.",
+          "usecase": "Regression tests, model comparisons and ongoing quality measurement.",
+          "keep": "Small or biased samples can hide failures; protect evaluation data and avoid training/evaluation leakage.",
+          "connects": [["evaluation-metrics", "datasets feed metrics"], ["gateway-routing", "compare candidate routes on the same cases"], ["threat-model", "include misuse and attack cases"]]
+        },
+        {
+          "id": "evaluation-metrics",
+          "title": "Metrics, judges and release gates",
+          "page": "modules/09/metrics.html",
+          "definition": "Metrics summarize selected behavior; judges may score outputs, and a release gate compares results with explicit criteria.",
+          "example": "Track fraud recall separately from overall accuracy and block a release if the required minimum is missed.",
+          "finance": "A high accuracy score can still hide missed fraud messages when classes are imbalanced.",
+          "usecase": "Model selection, prompt regression and release decisions.",
+          "keep": "No single metric proves quality; automated judges need calibration and human review for important outcomes.",
+          "connects": [["evaluation-data", "metrics need labeled examples"], ["sessions-traces", "live telemetry complements test results"], ["privacy-safety", "safety outcomes need separate evaluation"], ["gateway-routing", "compare route quality on the same task set"]]
+        }
+      ]
+    },
+    {
+      "num": "10",
+      "title": "Security and Responsible AI",
+      "tagline": "Threat-model the system and use layered privacy and safety controls",
+      "overview": "modules/10/index.html",
+      "topics": [
+        {
+          "id": "threat-model",
+          "title": "Threat model and prompt injection",
+          "page": "modules/10/threat-model.html",
+          "definition": "Threat modeling identifies assets, trust boundaries, threats and mitigations for an AI-enabled system.",
+          "example": "Treat retrieved documents and user messages as untrusted input, and prevent them from directly authorizing privileged tool calls.",
+          "finance": "A support assistant must not expose staff procedures or act on payment instructions embedded in retrieved content.",
+          "usecase": "Design reviews, abuse analysis and security testing.",
+          "keep": "Prompt wording and keyword indicators are not security boundaries; enforce permissions and tool rules in code.",
+          "connects": [["privacy-safety", "privacy and safety controls mitigate risks"], ["gateway-routing", "route choices belong in the threat model"], ["evaluation-data", "attack cases belong in evaluation"]]
+        },
+        {
+          "id": "privacy-safety",
+          "title": "Privacy, safety and human review",
+          "page": "modules/10/privacy-and-safety.html",
+          "definition": "Privacy and safety controls govern what data is used, what outputs are allowed and when a person must review a result.",
+          "example": "Minimize customer data sent to a model and require review for a high-impact account action.",
+          "finance": "Masking, access control, retention, escalation and user disclosure must be designed for the actual service and jurisdiction.",
+          "usecase": "Reducing exposure and harm across collection, inference, storage and user interaction.",
+          "keep": "A regex or content filter can miss cases; use layered controls, testing and accountable review.",
+          "connects": [["threat-model", "controls should address identified threats"], ["sessions-traces", "stored data and telemetry need safeguards"], ["evaluation-metrics", "measure safety failures separately"], ["gateway-routing", "data sensitivity constrains deployment choice"]]
+        }
+      ]
+    }
+  ]
+}

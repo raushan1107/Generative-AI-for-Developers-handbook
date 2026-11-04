@@ -47,11 +47,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>A sensible split for a bank: <strong>temperature low</strong> (or the model's default on reasoning models) for anything a customer relies on, such as fee explanations, dispute steps and extracted amounts; <strong>higher</strong> only for internal drafting such as marketing ideas that compliance reviews anyway. Output caps protect the budget and stop rambling replies, but set them generously and check <code>finish_reason</code>, because a truncated disclosure is worse than a long one. For multi-step calculations such as working out which fees were charged in error, a reasoning model at higher effort earns its extra tokens, although the arithmetic itself still belongs in code.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>A sensible split for a bank: <strong>temperature low</strong> (or the model's default on reasoning models) for anything a customer relies on, such as fee explanations, dispute steps and extracted amounts; <strong>higher</strong> only for internal drafting such as marketing ideas that compliance reviews anyway. Output caps protect the budget and stop rambling replies, but set them generously and check <code>finish_reason</code>, because a truncated disclosure is worse than a long one. For multi-step calculations such as working out which fees were charged in error, a reasoning model at higher effort earns its extra tokens, although the arithmetic itself still belongs in code.</p>
-</div>
   <p>Teams tune these per feature, not per app. The same product might run ticket classification at the lowest reasoning effort with a 50-token cap, chat at low effort, and a "deep analysis" button at high effort, because each feature trades quality, speed and cost differently. They keep the settings in configuration so they can change them without a release.</p>
 </div>
 

@@ -1,0 +1,235 @@
+<!--meta
+{"id": "map-part2", "short": "Part Ii Concept Map", "h1": "Part II Concept Map: Connect the Model to Your App", "description": "An expandable map of Modules 04–05, connecting structured outputs and function calling to embeddings, retrieval and hybrid search.", "lead": "Part II turns a model response into something an application can validate and use. First define the shape of the response and the functions the model may request. Then represent text as vectors and retrieve useful information by combining semantic similarity with metadata and keywords.", "chips": ["Modules 04–05", "15 topics", "Structured output", "Search connections"]}
+-->
+<h2 id="story">The story in one line</h2>
+<div class="cards"><div class="card"><span class="num">MODULE 04</span><h3>The contract</h3><p>Define output shapes, expose narrow tools, validate results and handle malformed responses.</p></div><div class="card"><span class="num">MODULE 05</span><h3>The retrieval</h3><p>Embed text, compare vectors, chunk documents and combine semantic search with metadata and keywords.</p></div></div>
+
+<h2 id="picture">Everything at once</h2>
+<p>Every topic of this Part on one picture. Read the columns left to right; click a topic to jump to its card below.</p>
+<figure class="diagram">
+  <div class="frame">
+<svg viewBox="0 0 340 646" role="img" aria-labelledby="cm-t cm-d">
+<title id="cm-t">Part II concept map: all topics at once</title>
+<desc id="cm-d">The contract (Module 04): Define output shapes, expose narrow tools, validate results and handle malformed responses. The retrieval (Module 05): Embed text, compare vectors, chunk documents and combine semantic search with metadata and keywords.</desc>
+<rect x="20" y="14" width="300" height="618" rx="14" class="s-blue"/>
+<text x="36" y="40" class="t-m">MODULE 04 · THE CONTRACT</text>
+<text x="36" y="64" class="t-b">Structured Outputs and Function Calling</text>
+<a href="#t-why-structured" class="cm-svg-link"><rect x="34" y="80" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="99" class="t-s">Why structured outputs matter</text></a>
+<a href="#t-json-mode" class="cm-svg-link"><rect x="34" y="114" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="133" class="t-s">JSON responses</text></a>
+<a href="#t-schema-outputs" class="cm-svg-link"><rect x="34" y="148" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="167" class="t-s">Schema-based generation</text></a>
+<a href="#t-function-calling" class="cm-svg-link"><rect x="34" y="182" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="201" class="t-s">Function calling</text></a>
+<a href="#t-app-logic" class="cm-svg-link"><rect x="34" y="216" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="235" class="t-s">Connecting LLMs to app logic</text></a>
+<a href="#t-validation" class="cm-svg-link"><rect x="34" y="250" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="269" class="t-s">Validating model outputs</text></a>
+<a href="#t-malformed" class="cm-svg-link"><rect x="34" y="284" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="303" class="t-s">Handling malformed responses</text></a>
+<a href="#t-embeddings" class="cm-svg-link"><rect x="34" y="318" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="337" class="t-s">What are embeddings?</text></a>
+<a href="#t-similarity" class="cm-svg-link"><rect x="34" y="352" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="371" class="t-s">Vector similarity</text></a>
+<a href="#t-embedding-models" class="cm-svg-link"><rect x="34" y="386" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="405" class="t-s">Embedding models</text></a>
+<a href="#t-vector-databases" class="cm-svg-link"><rect x="34" y="420" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="439" class="t-s">Vector databases</text></a>
+<a href="#t-similarity-search" class="cm-svg-link"><rect x="34" y="454" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="473" class="t-s">Similarity search</text></a>
+<a href="#t-chunking" class="cm-svg-link"><rect x="34" y="488" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="507" class="t-s">Chunking strategies</text></a>
+<a href="#t-metadata-filtering" class="cm-svg-link"><rect x="34" y="522" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="541" class="t-s">Metadata filtering</text></a>
+<a href="#t-hybrid-search" class="cm-svg-link"><rect x="34" y="556" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="575" class="t-s">Hybrid search</text></a>
+</svg>
+  </div>
+  <figcaption><b>1 modules, 15 topics, one story.</b> Each column builds on the one before it.</figcaption>
+</figure>
+
+<h2 id="tree">Explore the map</h2>
+<p>Open a module, then a topic. Each topic shows a definition, an example, an example from finance, where it's used, the point to keep in mind, and the topics it <em>connects to</em>; click a connection to jump there.</p>
+<div class="cm-tools">
+  <button type="button" class="btn" data-cm="expand">Expand all</button>
+  <button type="button" class="btn" data-cm="collapse">Collapse all</button>
+  <input type="search" placeholder="Find a term, e.g. tokens" aria-label="Find a term" data-cm="filter">
+</div>
+<div class="cmap" data-cmap>
+<details class="cm-root" open>
+  <summary><b>Part II concept map</b><span class="cm-short">1 modules · 15 topics</span></summary>
+<details class="cm-module" id="m-04">
+  <summary><span class="cm-num">04</span><b>Structured Outputs and Function Calling</b><span class="cm-short">Give the model a contract, then connect it to controlled application logic · 15 topics</span></summary>
+  <div class="cm-topics">
+<details class="cm-topic" id="t-why-structured">
+  <summary><b>Why structured outputs matter</b><span class="cm-short">A structured response follows a predictable shape that application code can parse and validate.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>A structured response follows a predictable shape that application code can parse and validate.</dd>
+    <dt>Example</dt><dd>Return a support category and urgency as named fields rather than extracting them from a paragraph.</dd>
+    <dt>In finance</dt><dd>A bank can route a card dispute only after checking required fields and allowed category values.</dd>
+    <dt>Where it's used</dt><dd>Form extraction, classification, API payloads and downstream workflow decisions.</dd>
+    <dt>Keep in mind</dt><dd>A valid structure does not prove that the values are true, complete or appropriate.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-json-mode" title="JSON is one response format">JSON responses<span>JSON is one response format</span></button><button type="button" class="cm-link" data-target="t-schema-outputs" title="schemas constrain fields">Schema-based generation<span>schemas constrain fields</span></button><button type="button" class="cm-link" data-target="t-validation" title="validate values after parsing">Validating model outputs<span>validate values after parsing</span></button></div>
+  <p class="cm-more"><a href="../modules/04/why-structured.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-json-mode">
+  <summary><b>JSON responses</b><span class="cm-short">JSON mode asks a model to return syntactically valid JSON, subject to provider and model support.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>JSON mode asks a model to return syntactically valid JSON, subject to provider and model support.</dd>
+    <dt>Example</dt><dd>A response might contain {&quot;category&quot;:&quot;card&quot;,&quot;urgency&quot;:&quot;high&quot;}.</dd>
+    <dt>In finance</dt><dd>A support intake service can parse fields from a lost-card message before applying its own rules.</dd>
+    <dt>Where it's used</dt><dd>Integrations that need machine-readable output rather than prose.</dd>
+    <dt>Keep in mind</dt><dd>Valid JSON alone does not enforce a particular schema or business rule.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-why-structured" title="predictable output supports application code">Why structured outputs matter<span>predictable output supports application code</span></button><button type="button" class="cm-link" data-target="t-schema-outputs" title="a schema adds field constraints">Schema-based generation<span>a schema adds field constraints</span></button><button type="button" class="cm-link" data-target="t-malformed" title="providers can still return errors or incomplete output">Handling malformed responses<span>providers can still return errors or incomplete output</span></button></div>
+  <p class="cm-more"><a href="../modules/04/json-mode.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-schema-outputs">
+  <summary><b>Schema-based generation</b><span class="cm-short">A schema describes the expected fields, data types and sometimes allowed values for a response.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>A schema describes the expected fields, data types and sometimes allowed values for a response.</dd>
+    <dt>Example</dt><dd>A product request schema can constrain a family to accounts, cards or loans and represent an unstated fee as null.</dd>
+    <dt>In finance</dt><dd>The bank can reject an unsupported case category before a ticket enters its workflow.</dd>
+    <dt>Where it's used</dt><dd>Typed extraction, constrained classification and API-facing responses.</dd>
+    <dt>Keep in mind</dt><dd>Provider support differs; schema conformance is not evidence that the model interpreted the request correctly.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-json-mode" title="schemas can constrain JSON output">JSON responses<span>schemas can constrain JSON output</span></button><button type="button" class="cm-link" data-target="t-validation" title="validate business meaning after parsing">Validating model outputs<span>validate business meaning after parsing</span></button><button type="button" class="cm-link" data-target="t-malformed" title="handle unsupported or failed constrained responses">Handling malformed responses<span>handle unsupported or failed constrained responses</span></button></div>
+  <p class="cm-more"><a href="../modules/04/schema-outputs.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-function-calling">
+  <summary><b>Function calling</b><span class="cm-short">The model requests a named tool with arguments; application code decides whether to validate and execute it.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>The model requests a named tool with arguments; application code decides whether to validate and execute it.</dd>
+    <dt>Example</dt><dd>The model requests a product search with family=cards and a maximum annual fee.</dd>
+    <dt>In finance</dt><dd>A card-status tool must use the authenticated customer&#x27;s account, not an identity supplied by the model.</dd>
+    <dt>Where it's used</dt><dd>Grounding answers in application data and initiating controlled workflows.</dd>
+    <dt>Keep in mind</dt><dd>A tool call is a proposal, not execution or authorization; enforce access and side-effect rules in code.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-app-logic" title="the application owns execution">Connecting LLMs to app logic<span>the application owns execution</span></button><button type="button" class="cm-link" data-target="t-validation" title="validate tool arguments">Validating model outputs<span>validate tool arguments</span></button><button type="button" class="cm-link" data-target="t-malformed" title="handle invalid tool requests">Handling malformed responses<span>handle invalid tool requests</span></button></div>
+  <p class="cm-more"><a href="../modules/04/function-calling.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-app-logic">
+  <summary><b>Connecting LLMs to app logic</b><span class="cm-short">Application code routes model requests to narrowly scoped functions and returns their results to the model.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Application code routes model requests to narrowly scoped functions and returns their results to the model.</dd>
+    <dt>Example</dt><dd>A loop checks the requested function name, validates arguments, executes it and appends the result.</dd>
+    <dt>In finance</dt><dd>Product fees and card status should come from bank systems of record rather than model-generated text.</dd>
+    <dt>Where it's used</dt><dd>Combining language interfaces with approved business operations and data sources.</dd>
+    <dt>Keep in mind</dt><dd>Keep identity, authorization, validation and side-effect handling in trusted application code.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-function-calling" title="tool calls request application work">Function calling<span>tool calls request application work</span></button><button type="button" class="cm-link" data-target="t-validation" title="guard the boundary">Validating model outputs<span>guard the boundary</span></button><button type="button" class="cm-link" data-target="t-malformed" title="fail explicitly when arguments are unusable">Handling malformed responses<span>fail explicitly when arguments are unusable</span></button></div>
+  <p class="cm-more"><a href="../modules/04/app-logic.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-validation">
+  <summary><b>Validating model outputs</b><span class="cm-short">Validation checks parsed model values against types, allowed values and application-specific rules.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Validation checks parsed model values against types, allowed values and application-specific rules.</dd>
+    <dt>Example</dt><dd>Reject a negative annual fee or a card identifier that is not in the signed-in customer&#x27;s account.</dd>
+    <dt>In finance</dt><dd>A transfer amount may be well-formed but still exceed account or policy limits.</dd>
+    <dt>Where it's used</dt><dd>Preventing malformed or unauthorized data from reaching downstream code.</dd>
+    <dt>Keep in mind</dt><dd>Schema validation and business validation solve different problems; use both where needed.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-schema-outputs" title="schemas provide structural constraints">Schema-based generation<span>schemas provide structural constraints</span></button><button type="button" class="cm-link" data-target="t-function-calling" title="validate arguments before tools run">Function calling<span>validate arguments before tools run</span></button><button type="button" class="cm-link" data-target="t-malformed" title="report invalid values clearly">Handling malformed responses<span>report invalid values clearly</span></button></div>
+  <p class="cm-more"><a href="../modules/04/validation.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-malformed">
+  <summary><b>Handling malformed responses</b><span class="cm-short">Malformed-response handling detects failed, incomplete or unexpected model output and returns an explicit error or safe retry.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Malformed-response handling detects failed, incomplete or unexpected model output and returns an explicit error or safe retry.</dd>
+    <dt>Example</dt><dd>If a required category is missing, the application records the validation failure instead of silently assigning a default.</dd>
+    <dt>In finance</dt><dd>A missing dispute amount should trigger clarification or review, not an invented number.</dd>
+    <dt>Where it's used</dt><dd>Reliable APIs, tool loops and user-facing forms.</dd>
+    <dt>Keep in mind</dt><dd>Retries need limits and should not turn persistent failures into success-shaped defaults.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-json-mode" title="syntax errors can occur at the format boundary">JSON responses<span>syntax errors can occur at the format boundary</span></button><button type="button" class="cm-link" data-target="t-validation" title="semantic checks can fail after parsing">Validating model outputs<span>semantic checks can fail after parsing</span></button><button type="button" class="cm-link" data-target="t-app-logic" title="the caller chooses an explicit recovery path">Connecting LLMs to app logic<span>the caller chooses an explicit recovery path</span></button></div>
+  <p class="cm-more"><a href="../modules/04/malformed.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-embeddings">
+  <summary><b>What are embeddings?</b><span class="cm-short">An embedding model maps text or other input to a numeric vector intended to represent learned relationships.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>An embedding model maps text or other input to a numeric vector intended to represent learned relationships.</dd>
+    <dt>Example</dt><dd>A question about getting money back may be close to a question about disputing a duplicate charge.</dd>
+    <dt>In finance</dt><dd>A bank can retrieve help articles that use different wording from a customer&#x27;s question.</dd>
+    <dt>Where it's used</dt><dd>Semantic retrieval, clustering, deduplication and similarity features.</dd>
+    <dt>Keep in mind</dt><dd>An embedding is a representation, not a fact, answer or authorization decision.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-similarity" title="vectors are compared">Vector similarity<span>vectors are compared</span></button><button type="button" class="cm-link" data-target="t-embedding-models" title="the chosen model defines the vector space">Embedding models<span>the chosen model defines the vector space</span></button><button type="button" class="cm-link" data-target="t-chunking" title="documents are embedded in pieces">Chunking strategies<span>documents are embedded in pieces</span></button></div>
+  <p class="cm-more"><a href="../modules/05/embeddings.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-similarity">
+  <summary><b>Vector similarity</b><span class="cm-short">A similarity function compares vectors; cosine similarity measures their orientation after normalization.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>A similarity function compares vectors; cosine similarity measures their orientation after normalization.</dd>
+    <dt>Example</dt><dd>Two vectors pointing in similar directions can represent text with related meanings despite different words.</dd>
+    <dt>In finance</dt><dd>A query about a returned payment can match a policy section titled &#x27;Sent money to the wrong person&#x27;.</dd>
+    <dt>Where it's used</dt><dd>Ranking candidate passages or items by semantic closeness.</dd>
+    <dt>Keep in mind</dt><dd>A score is model- and dataset-dependent; it is not a calibrated probability of correctness.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-embeddings" title="similarity compares embedding vectors">What are embeddings?<span>similarity compares embedding vectors</span></button><button type="button" class="cm-link" data-target="t-similarity-search" title="ranking retrieves nearest candidates">Similarity search<span>ranking retrieves nearest candidates</span></button><button type="button" class="cm-link" data-target="t-metadata-filtering" title="filter candidates before ranking when policy requires it">Metadata filtering<span>filter candidates before ranking when policy requires it</span></button></div>
+  <p class="cm-more"><a href="../modules/05/similarity.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-embedding-models">
+  <summary><b>Embedding models</b><span class="cm-short">An embedding model defines how inputs are represented, including its dimensions, supported modalities and behavior.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>An embedding model defines how inputs are represented, including its dimensions, supported modalities and behavior.</dd>
+    <dt>Example</dt><dd>Replacing an embedding model changes the vector space and generally requires re-embedding the indexed documents.</dd>
+    <dt>In finance</dt><dd>Choose a model using the bank&#x27;s languages, privacy requirements and retrieval evaluation set.</dd>
+    <dt>Where it's used</dt><dd>Selecting and operating semantic-search infrastructure.</dd>
+    <dt>Keep in mind</dt><dd>Vectors from incompatible models should not be compared as if they shared one space.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-embeddings" title="models produce embeddings">What are embeddings?<span>models produce embeddings</span></button><button type="button" class="cm-link" data-target="t-vector-databases" title="indexes store model vectors">Vector databases<span>indexes store model vectors</span></button><button type="button" class="cm-link" data-target="t-hybrid-search" title="embedding retrieval can be combined with lexical ranking">Hybrid search<span>embedding retrieval can be combined with lexical ranking</span></button></div>
+  <p class="cm-more"><a href="../modules/05/embedding-models.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-vector-databases">
+  <summary><b>Vector databases</b><span class="cm-short">A vector database stores vectors and associated records and supports similarity retrieval and, depending on the product, filters.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>A vector database stores vectors and associated records and supports similarity retrieval and, depending on the product, filters.</dd>
+    <dt>Example</dt><dd>Store each help passage&#x27;s vector alongside its article ID, audience and revision date.</dd>
+    <dt>In finance</dt><dd>An internal knowledge index should keep staff-only passages separate from customer-visible retrieval.</dd>
+    <dt>Where it's used</dt><dd>Retrieving relevant chunks from collections larger than an in-memory demo.</dd>
+    <dt>Keep in mind</dt><dd>A vector database does not automatically solve freshness, access control or groundedness.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-embedding-models" title="the index is tied to vector generation">Embedding models<span>the index is tied to vector generation</span></button><button type="button" class="cm-link" data-target="t-metadata-filtering" title="records can carry filter fields">Metadata filtering<span>records can carry filter fields</span></button><button type="button" class="cm-link" data-target="t-similarity-search" title="search ranks stored vectors">Similarity search<span>search ranks stored vectors</span></button></div>
+  <p class="cm-more"><a href="../modules/05/vector-databases.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-similarity-search">
+  <summary><b>Similarity search</b><span class="cm-short">Similarity search retrieves the nearest vectors to a query vector, often returning a ranked set of records.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Similarity search retrieves the nearest vectors to a query vector, often returning a ranked set of records.</dd>
+    <dt>Example</dt><dd>Embed a customer question and retrieve the closest help-centre sections for review.</dd>
+    <dt>In finance</dt><dd>A retrieval system can surface card-dispute deadlines, which still need source and policy checks.</dd>
+    <dt>Where it's used</dt><dd>Semantic search and the retrieval stage of RAG.</dd>
+    <dt>Keep in mind</dt><dd>The nearest passage may still be irrelevant or incomplete; evaluate retrieval against labeled queries.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-similarity" title="ranking relies on a similarity function">Vector similarity<span>ranking relies on a similarity function</span></button><button type="button" class="cm-link" data-target="t-chunking" title="the indexed unit affects results">Chunking strategies<span>the indexed unit affects results</span></button><button type="button" class="cm-link" data-target="t-metadata-filtering" title="filter allowed records">Metadata filtering<span>filter allowed records</span></button><button type="button" class="cm-link" data-target="t-hybrid-search" title="combine vector and lexical evidence">Hybrid search<span>combine vector and lexical evidence</span></button></div>
+  <p class="cm-more"><a href="../modules/05/similarity-search.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-chunking">
+  <summary><b>Chunking strategies</b><span class="cm-short">Chunking divides longer documents into retrievable units while attempting to preserve useful context.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Chunking divides longer documents into retrievable units while attempting to preserve useful context.</dd>
+    <dt>Example</dt><dd>Split a help article by headings, keeping its title and section text together.</dd>
+    <dt>In finance</dt><dd>Keep the conditions and exceptions of a fee policy with the fee rule they qualify.</dd>
+    <dt>Where it's used</dt><dd>Preparing source documents for search and RAG.</dd>
+    <dt>Keep in mind</dt><dd>Chunk size and boundaries affect retrieval; measure them with representative questions.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-embeddings" title="each chunk is embedded">What are embeddings?<span>each chunk is embedded</span></button><button type="button" class="cm-link" data-target="t-similarity-search" title="chunks become searchable units">Similarity search<span>chunks become searchable units</span></button><button type="button" class="cm-link" data-target="t-hybrid-search" title="ranking operates over prepared chunks">Hybrid search<span>ranking operates over prepared chunks</span></button></div>
+  <p class="cm-more"><a href="../modules/05/chunking.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-metadata-filtering">
+  <summary><b>Metadata filtering</b><span class="cm-short">Metadata filters restrict candidate records using attributes such as audience, date, product or region.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Metadata filters restrict candidate records using attributes such as audience, date, product or region.</dd>
+    <dt>Example</dt><dd>Retrieve only current public help sections for a customer-facing answer.</dd>
+    <dt>In finance</dt><dd>Staff procedures must not be included in a customer retrieval set.</dd>
+    <dt>Where it's used</dt><dd>Enforcing retrieval scope and narrowing search results.</dd>
+    <dt>Keep in mind</dt><dd>A filter is only as trustworthy as its metadata and enforcement point; it is not identity authentication by itself.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-vector-databases" title="metadata is stored with records">Vector databases<span>metadata is stored with records</span></button><button type="button" class="cm-link" data-target="t-similarity-search" title="filter before ranking">Similarity search<span>filter before ranking</span></button><button type="button" class="cm-link" data-target="t-hybrid-search" title="combine filters with multiple retrieval signals">Hybrid search<span>combine filters with multiple retrieval signals</span></button></div>
+  <p class="cm-more"><a href="../modules/05/metadata-filtering.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-hybrid-search">
+  <summary><b>Hybrid search</b><span class="cm-short">Hybrid search combines semantic retrieval with lexical or other ranking signals.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Hybrid search combines semantic retrieval with lexical or other ranking signals.</dd>
+    <dt>Example</dt><dd>Use vector similarity for a paraphrased question and keyword matching for an exact policy code.</dd>
+    <dt>In finance</dt><dd>A query can find both a natural-language card policy and an exact alert identifier such as FR-12.</dd>
+    <dt>Where it's used</dt><dd>Search tasks where meaning and exact terms both matter.</dd>
+    <dt>Keep in mind</dt><dd>Fusion methods need evaluation; adding ranking signals does not guarantee better results.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-similarity-search" title="one component ranks semantic matches">Similarity search<span>one component ranks semantic matches</span></button><button type="button" class="cm-link" data-target="t-metadata-filtering" title="apply scope constraints">Metadata filtering<span>apply scope constraints</span></button><button type="button" class="cm-link" data-target="t-chunking" title="prepared sections are ranked">Chunking strategies<span>prepared sections are ranked</span></button></div>
+  <p class="cm-more"><a href="../modules/05/hybrid-search.html">Read the full topic page →</a></p>
+</details>
+  <p class="cm-more"><a href="../modules/04/index.html">Module 04 overview →</a></p>
+  </div>
+</details>
+</details>
+</div>
+<div class="callout takeaway"><div class="c-label">How to use this map</div><p>Before a module, skim its branch to see what's coming. After it, close the page and try to explain each topic and one connection from memory, then open the card to check yourself.</p></div>

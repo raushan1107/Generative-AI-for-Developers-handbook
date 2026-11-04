@@ -1,0 +1,138 @@
+<!--meta
+{"id": "map-part4", "short": "Part Iv Concept Map", "h1": "Part IV Concept Map: Build It Right", "description": "An expandable map of Modules 08–10, connecting application architecture and tracing to evaluation, threat modeling, privacy and safety review.", "lead": "Part IV moves from a working prototype toward a system that can be observed, evaluated and reviewed for risk. Architecture gives the request a controlled path; evaluation measures behavior against examples and thresholds; security and responsible-AI work identify threats and add human and technical controls.", "chips": ["Modules 08–10", "6 topics", "Available modules", "Quality and safety"]}
+-->
+<h2 id="story">The story in one line</h2>
+<div class="cards"><div class="card"><span class="num">MODULE 08</span><h3>Structure the system</h3><p>Route requests through explicit boundaries and manage sessions, queues and traces.</p></div><div class="card"><span class="num">MODULE 09</span><h3>Measure behavior</h3><p>Build an evaluation set, choose metrics and use transparent release gates.</p></div><div class="card"><span class="num">MODULE 10</span><h3>Review risk</h3><p>Threat-model model-enabled flows and combine privacy, safety and human review.</p></div></div>
+
+<h2 id="picture">Everything at once</h2>
+<p>Every topic of this Part on one picture. Read the columns left to right; click a topic to jump to its card below.</p>
+<figure class="diagram">
+  <div class="frame">
+<svg viewBox="0 0 980 204" role="img" aria-labelledby="cm-t cm-d">
+<title id="cm-t">Part IV concept map: all topics at once</title>
+<desc id="cm-d">Structure the system (Module 08): Route requests through explicit boundaries and manage sessions, queues and traces. Measure behavior (Module 09): Build an evaluation set, choose metrics and use transparent release gates. Review risk (Module 10): Threat-model model-enabled flows and combine privacy, safety and human review.</desc>
+<rect x="20" y="14" width="300" height="176" rx="14" class="s-blue"/>
+<text x="36" y="40" class="t-m">MODULE 08 · STRUCTURE THE SYSTEM</text>
+<text x="36" y="64" class="t-b">AI Application Architecture</text>
+<a href="#t-gateway-routing" class="cm-svg-link"><rect x="34" y="80" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="99" class="t-s">Gateways and model routing</text></a>
+<a href="#t-sessions-traces" class="cm-svg-link"><rect x="34" y="114" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="133" class="t-s">Sessions, queues and traces</text></a>
+<path d="M320 102.0 H338" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+<rect x="340" y="14" width="300" height="176" rx="14" class="s-teal"/>
+<text x="356" y="40" class="t-m">MODULE 09 · MEASURE BEHAVIOR</text>
+<text x="356" y="64" class="t-b">Evaluating GenAI Applications</text>
+<a href="#t-evaluation-data" class="cm-svg-link"><rect x="354" y="80" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="99" class="t-s">Build an evaluation set</text></a>
+<a href="#t-evaluation-metrics" class="cm-svg-link"><rect x="354" y="114" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="133" class="t-s">Metrics, judges and release gates</text></a>
+<path d="M640 102.0 H658" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+<rect x="660" y="14" width="300" height="176" rx="14" class="s-violet"/>
+<text x="676" y="40" class="t-m">MODULE 10 · REVIEW RISK</text>
+<text x="676" y="64" class="t-b">Security and Responsible AI</text>
+<a href="#t-threat-model" class="cm-svg-link"><rect x="674" y="80" width="272" height="28" rx="7" class="s-surface"/><text x="686" y="99" class="t-s">Threat model and prompt injection</text></a>
+<a href="#t-privacy-safety" class="cm-svg-link"><rect x="674" y="114" width="272" height="28" rx="7" class="s-surface"/><text x="686" y="133" class="t-s">Privacy, safety and human review</text></a>
+</svg>
+  </div>
+  <figcaption><b>3 modules, 6 topics, one story.</b> Each column builds on the one before it.</figcaption>
+</figure>
+
+<h2 id="tree">Explore the map</h2>
+<p>Open a module, then a topic. Each topic shows a definition, an example, an example from finance, where it's used, the point to keep in mind, and the topics it <em>connects to</em>; click a connection to jump there.</p>
+<div class="cm-tools">
+  <button type="button" class="btn" data-cm="expand">Expand all</button>
+  <button type="button" class="btn" data-cm="collapse">Collapse all</button>
+  <input type="search" placeholder="Find a term, e.g. tokens" aria-label="Find a term" data-cm="filter">
+</div>
+<div class="cmap" data-cmap>
+<details class="cm-root" open>
+  <summary><b>Part IV concept map</b><span class="cm-short">3 modules · 6 topics</span></summary>
+<details class="cm-module" id="m-08">
+  <summary><span class="cm-num">08</span><b>AI Application Architecture</b><span class="cm-short">Give requests controlled routes and observable state · 2 topics</span></summary>
+  <div class="cm-topics">
+<details class="cm-topic" id="t-gateway-routing">
+  <summary><b>Gateways and model routing</b><span class="cm-short">A gateway provides a controlled interface to model services; routing selects a model or deployment for a request.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>A gateway provides a controlled interface to model services; routing selects a model or deployment for a request.</dd>
+    <dt>Example</dt><dd>Send an eligible low-complexity request to a lower-cost deployment and route other requests according to tested rules.</dd>
+    <dt>In finance</dt><dd>A bank&#x27;s route must respect data classification, residency, approved deployments and fallback policy.</dd>
+    <dt>Where it's used</dt><dd>Centralized policy, provider abstraction, observability and model selection.</dd>
+    <dt>Keep in mind</dt><dd>A gateway does not make an unsafe route safe; route decisions need explicit constraints and evaluation.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-sessions-traces" title="requests need correlation across services">Sessions, queues and traces<span>requests need correlation across services</span></button><button type="button" class="cm-link" data-target="t-evaluation-data" title="measure route quality">Build an evaluation set<span>measure route quality</span></button><button type="button" class="cm-link" data-target="t-evaluation-metrics" title="compare quality against criteria">Metrics, judges and release gates<span>compare quality against criteria</span></button><button type="button" class="cm-link" data-target="t-privacy-safety" title="data handling constrains route choices">Privacy, safety and human review<span>data handling constrains route choices</span></button></div>
+  <p class="cm-more"><a href="../modules/08/gateway.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-sessions-traces">
+  <summary><b>Sessions, queues and traces</b><span class="cm-short">Sessions retain task context, queues manage asynchronous work and traces correlate events across a request path.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Sessions retain task context, queues manage asynchronous work and traces correlate events across a request path.</dd>
+    <dt>Example</dt><dd>Attach a trace ID to retrieval and model-call events while storing only the session data needed for follow-up.</dd>
+    <dt>In finance</dt><dd>Support history and trace attributes should minimize sensitive content and follow access and retention rules.</dd>
+    <dt>Where it's used</dt><dd>Multi-turn systems, background jobs, incident diagnosis and performance analysis.</dd>
+    <dt>Keep in mind</dt><dd>A trace ID is not a trace system, and persistent session data needs security, retention and deletion controls.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-gateway-routing" title="route requests through observable boundaries">Gateways and model routing<span>route requests through observable boundaries</span></button><button type="button" class="cm-link" data-target="t-evaluation-metrics" title="production signals complement offline evaluation">Metrics, judges and release gates<span>production signals complement offline evaluation</span></button><button type="button" class="cm-link" data-target="t-privacy-safety" title="telemetry can expose sensitive data">Privacy, safety and human review<span>telemetry can expose sensitive data</span></button><button type="button" class="cm-link" data-target="t-threat-model" title="data collection crosses trust boundaries">Threat model and prompt injection<span>data collection crosses trust boundaries</span></button></div>
+  <p class="cm-more"><a href="../modules/08/state-and-telemetry.html">Read the full topic page →</a></p>
+</details>
+  <p class="cm-more"><a href="../modules/08/index.html">Module 08 overview →</a></p>
+  </div>
+</details>
+<details class="cm-module" id="m-09">
+  <summary><span class="cm-num">09</span><b>Evaluating GenAI Applications</b><span class="cm-short">Test a representative dataset and gate on measurable behavior · 2 topics</span></summary>
+  <div class="cm-topics">
+<details class="cm-topic" id="t-evaluation-data">
+  <summary><b>Build an evaluation set</b><span class="cm-short">An evaluation set contains representative inputs, expected outcomes and, where useful, human-reviewed references.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>An evaluation set contains representative inputs, expected outcomes and, where useful, human-reviewed references.</dd>
+    <dt>Example</dt><dd>Include routine, ambiguous and adversarial bank-support messages with expected categories and urgency.</dd>
+    <dt>In finance</dt><dd>Fraud and lost-card cases should be represented so important misses are visible, not averaged away.</dd>
+    <dt>Where it's used</dt><dd>Regression tests, model comparisons and ongoing quality measurement.</dd>
+    <dt>Keep in mind</dt><dd>Small or biased samples can hide failures; protect evaluation data and avoid training/evaluation leakage.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-evaluation-metrics" title="datasets feed metrics">Metrics, judges and release gates<span>datasets feed metrics</span></button><button type="button" class="cm-link" data-target="t-gateway-routing" title="compare candidate routes on the same cases">Gateways and model routing<span>compare candidate routes on the same cases</span></button><button type="button" class="cm-link" data-target="t-threat-model" title="include misuse and attack cases">Threat model and prompt injection<span>include misuse and attack cases</span></button></div>
+  <p class="cm-more"><a href="../modules/09/datasets.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-evaluation-metrics">
+  <summary><b>Metrics, judges and release gates</b><span class="cm-short">Metrics summarize selected behavior; judges may score outputs, and a release gate compares results with explicit criteria.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Metrics summarize selected behavior; judges may score outputs, and a release gate compares results with explicit criteria.</dd>
+    <dt>Example</dt><dd>Track fraud recall separately from overall accuracy and block a release if the required minimum is missed.</dd>
+    <dt>In finance</dt><dd>A high accuracy score can still hide missed fraud messages when classes are imbalanced.</dd>
+    <dt>Where it's used</dt><dd>Model selection, prompt regression and release decisions.</dd>
+    <dt>Keep in mind</dt><dd>No single metric proves quality; automated judges need calibration and human review for important outcomes.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-evaluation-data" title="metrics need labeled examples">Build an evaluation set<span>metrics need labeled examples</span></button><button type="button" class="cm-link" data-target="t-sessions-traces" title="live telemetry complements test results">Sessions, queues and traces<span>live telemetry complements test results</span></button><button type="button" class="cm-link" data-target="t-privacy-safety" title="safety outcomes need separate evaluation">Privacy, safety and human review<span>safety outcomes need separate evaluation</span></button><button type="button" class="cm-link" data-target="t-gateway-routing" title="compare route quality on the same task set">Gateways and model routing<span>compare route quality on the same task set</span></button></div>
+  <p class="cm-more"><a href="../modules/09/metrics.html">Read the full topic page →</a></p>
+</details>
+  <p class="cm-more"><a href="../modules/09/index.html">Module 09 overview →</a></p>
+  </div>
+</details>
+<details class="cm-module" id="m-10">
+  <summary><span class="cm-num">10</span><b>Security and Responsible AI</b><span class="cm-short">Threat-model the system and use layered privacy and safety controls · 2 topics</span></summary>
+  <div class="cm-topics">
+<details class="cm-topic" id="t-threat-model">
+  <summary><b>Threat model and prompt injection</b><span class="cm-short">Threat modeling identifies assets, trust boundaries, threats and mitigations for an AI-enabled system.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Threat modeling identifies assets, trust boundaries, threats and mitigations for an AI-enabled system.</dd>
+    <dt>Example</dt><dd>Treat retrieved documents and user messages as untrusted input, and prevent them from directly authorizing privileged tool calls.</dd>
+    <dt>In finance</dt><dd>A support assistant must not expose staff procedures or act on payment instructions embedded in retrieved content.</dd>
+    <dt>Where it's used</dt><dd>Design reviews, abuse analysis and security testing.</dd>
+    <dt>Keep in mind</dt><dd>Prompt wording and keyword indicators are not security boundaries; enforce permissions and tool rules in code.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-privacy-safety" title="privacy and safety controls mitigate risks">Privacy, safety and human review<span>privacy and safety controls mitigate risks</span></button><button type="button" class="cm-link" data-target="t-gateway-routing" title="route choices belong in the threat model">Gateways and model routing<span>route choices belong in the threat model</span></button><button type="button" class="cm-link" data-target="t-evaluation-data" title="attack cases belong in evaluation">Build an evaluation set<span>attack cases belong in evaluation</span></button></div>
+  <p class="cm-more"><a href="../modules/10/threat-model.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-privacy-safety">
+  <summary><b>Privacy, safety and human review</b><span class="cm-short">Privacy and safety controls govern what data is used, what outputs are allowed and when a person must review a result.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Privacy and safety controls govern what data is used, what outputs are allowed and when a person must review a result.</dd>
+    <dt>Example</dt><dd>Minimize customer data sent to a model and require review for a high-impact account action.</dd>
+    <dt>In finance</dt><dd>Masking, access control, retention, escalation and user disclosure must be designed for the actual service and jurisdiction.</dd>
+    <dt>Where it's used</dt><dd>Reducing exposure and harm across collection, inference, storage and user interaction.</dd>
+    <dt>Keep in mind</dt><dd>A regex or content filter can miss cases; use layered controls, testing and accountable review.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-threat-model" title="controls should address identified threats">Threat model and prompt injection<span>controls should address identified threats</span></button><button type="button" class="cm-link" data-target="t-sessions-traces" title="stored data and telemetry need safeguards">Sessions, queues and traces<span>stored data and telemetry need safeguards</span></button><button type="button" class="cm-link" data-target="t-evaluation-metrics" title="measure safety failures separately">Metrics, judges and release gates<span>measure safety failures separately</span></button><button type="button" class="cm-link" data-target="t-gateway-routing" title="data sensitivity constrains deployment choice">Gateways and model routing<span>data sensitivity constrains deployment choice</span></button></div>
+  <p class="cm-more"><a href="../modules/10/privacy-and-safety.html">Read the full topic page →</a></p>
+</details>
+  <p class="cm-more"><a href="../modules/10/index.html">Module 10 overview →</a></p>
+  </div>
+</details>
+</details>
+</div>
+<div class="callout takeaway"><div class="c-label">How to use this map</div><p>Before a module, skim its branch to see what's coming. After it, close the page and try to explain each topic and one connection from memory, then open the card to check yourself.</p></div>

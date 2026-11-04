@@ -30,11 +30,11 @@ Message: "I was charged twice for the same hotel night."</code></pre>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Banks rarely start with real customer messages: privacy rules make them hard to use for development. Teams build a synthetic, labelled test set first (exactly like Drill 03.4), get the labels reviewed by experienced agents, and only later add carefully anonymised real cases. They also weight the score by risk: a missed fraud report counts far more than a branch-hours question labelled wrong, so "accuracy 83%" is reported alongside "fraud recall", the share of real fraud messages that were caught.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Banks rarely start with real customer messages: privacy rules make them hard to use for development. Teams build a synthetic, labelled test set first (exactly like Drill 03.4), get the labels reviewed by experienced agents, and only later add carefully anonymised real cases. They also weight the score by risk: a missed fraud report counts far more than a branch-hours question labelled wrong, so "accuracy 83%" is reported alongside "fraud recall", the share of real fraud messages that were caught.</p>
-</div>
   <p>Before any prompt work, good teams assemble a <strong>test set</strong>: real (anonymised) or synthetic inputs with the expected answers. They measure the simple zero-shot prompt first to get a <strong>baseline</strong>, then every change is a measured improvement or it's reverted. Generating synthetic test data with an LLM is now standard practice, with human review of the labels.</p>
 </div>
 

@@ -74,11 +74,11 @@ Content-Type: application/json
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>When a customer complains "your chatbot told me there was no fee", the bank must be able to reconstruct that conversation exactly: which model version answered, with which prompt version, what it was given and what it said. That's why regulated firms log the request ID, model version, prompt version and finish_reason for every call and keep them under the same retention rules as call recordings. It also explains why a 200 response with <code>finish_reason="length"</code> matters: a reply cut off mid-sentence ("the fee is $") is a misleading statement, not just an ugly one.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>When a customer complains "your chatbot told me there was no fee", the bank must be able to reconstruct that conversation exactly: which model version answered, with which prompt version, what it was given and what it said. That's why regulated firms log the request ID, model version, prompt version and finish_reason for every call and keep them under the same retention rules as call recordings. It also explains why a 200 response with <code>finish_reason="length"</code> matters: a reply cut off mid-sentence ("the fee is $") is a misleading statement, not just an ugly one.</p>
-</div>
   <p>Production teams log at least the request ID, model version, finish_reason, token usage and latency for every call. When a customer says "the bot gave me a weird answer yesterday", those five fields are how you find out what happened: which model version, whether it was truncated, how long it took.</p>
 </div>
 

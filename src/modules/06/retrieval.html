@@ -58,11 +58,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>The relevance floor matters more in finance than almost anywhere: if nothing relevant is found, "I couldn't find that, shall I raise a case?" is far better than an answer stitched together from an unrelated policy. Retrieval also enforces entitlements: a customer's question must never retrieve a staff-only approval limit, which is why audience is a filter, not an instruction.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>The relevance floor matters more in finance than almost anywhere: if nothing relevant is found, "I couldn't find that, shall I raise a case?" is far better than an answer stitched together from an unrelated policy. Retrieval also enforces entitlements: a customer's question must never retrieve a staff-only approval limit, which is why audience is a filter, not an instruction.</p>
-</div>
   <p>Production RAG systems on Azure AI Search commonly run hybrid queries with the semantic ranker on top, filter by the user's group ids (security trimming), and keep a minimum reranker score below which the bot says it can't find an answer. Chat products also rewrite every follow-up into a standalone query, which is why their logs show search queries the user never typed.</p>
 </div>
 

@@ -1,0 +1,39 @@
+{
+  "notice": "All issuers and values are synthetic educational data.",
+  "report_version": "v1",
+  "issuers": {
+    "northstar_payments": {
+      "document_id": "NSP-Q3-2026-v1",
+      "period": "Q3 2026",
+      "revenue_usd_millions": 820.0,
+      "prior_year_revenue_usd_millions": 760.0,
+      "operating_income_usd_millions": 102.0,
+      "operating_margin_pct": 12.4,
+      "diluted_eps_usd": 1.18,
+      "guidance_page": 3,
+      "financial_results_page": 2
+    },
+    "riverstone_retail": {
+      "document_id": "RRG-Q3-2026-v1",
+      "period": "Q3 2026",
+      "revenue_usd_millions": 1240.0,
+      "prior_year_revenue_usd_millions": 1200.0,
+      "operating_income_usd_millions": 86.8,
+      "operating_margin_pct": 7.0,
+      "diluted_eps_usd": 0.74,
+      "guidance_page": 3,
+      "financial_results_page": 2
+    },
+    "cedar_grid_systems": {
+      "document_id": "CGS-Q3-2026-v1",
+      "period": "Q3 2026",
+      "revenue_usd_millions": 640.0,
+      "prior_year_revenue_usd_millions": 590.0,
+      "operating_income_usd_millions": 51.2,
+      "operating_margin_pct": 8.0,
+      "diluted_eps_usd": 0.92,
+      "guidance_page": 3,
+      "financial_results_page": 2
+    }
+  }
+}

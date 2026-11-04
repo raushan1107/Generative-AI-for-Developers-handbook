@@ -1,6 +1,6 @@
 # Generative AI for Developers handbook: build guide
 
-Notes for myself (not published on the site): how this handbook is built and how to add Parts II–V in the same style. Modules 01–07, project milestones 1–7, their drills, setup, the Part I concept map, and open-source Labs 0–1 are live. Open-source Labs 2–3 remain drafts; Modules 08–12, the remaining concept maps, and the full capstone brief are not complete yet. New modules start as drafts (see "Draft modules" below).
+Notes for myself (not published on the site): how this handbook is built and how to add content in the same style. All 12 modules, all five Parts' concept maps, the progressive project milestones, drills, setup, open-source Labs 0–5 and the capstone package are available in the handbook. Later project milestones and labs are local learning examples, not production deployments. New modules and labs start as drafts and are published only after review.
 
 ---
 
@@ -10,7 +10,7 @@ Notes for myself (not published on the site): how this handbook is built and how
 - **Three practice tracks:**
   1. **Drills**: one or more per topic, 10–20 min, in a scratch folder `genai-labs/`.
   2. **The build**: one progressive project, **RR Finance Assist**, one milestone per module, in `rrfinance-assist/`.
-  3. **Capstone**: a different problem in Part V, from a brief (page exists; brief to be written).
+  3. **Capstone**: a different problem in Part V, with a brief, synthetic starter data, evaluation cases and a scored rubric.
 - Labs mix six **step types**: Run (copy code), Ask AI (given prompt for GitHub Copilot / Claude Code / Codex), Your prompt (learner writes it from a template, then compares), Verify, No-code, Think (and Portal for Azure portal steps).
 - Explanations always include the **developer mindset** (traditional vs GenAI developer lens) and an **"In the real world"** callout about how real products use the idea, followed by a mandatory **"In finance"** callout (most learners work in banking and investment).
 
@@ -45,7 +45,7 @@ code/rrfinance-assist/m01..m07/   complete project snapshot per milestone
 code/oss-labs/        the open-source lab guide's project (Ollama only), see section 8
 src/oss/              the open-source lab guide's pages
 assets/css/handbook.css, assets/js/handbook.js
-index.html, start/, setup/, modules/NN/, project/, labs/, capstone/   GENERATED: don't edit by hand
+index.html, start/, setup/, modules/NN/, project/, labs/, capstone/, maps/, oss/   GENERATED: don't edit by hand
 ```
 
 Build after any change: `python tools/build.py` (from the repo root). It fails loudly on a missing code file, a page not in `nav.json`, or a source file in the wrong place.
@@ -65,7 +65,7 @@ Build after any change: `python tools/build.py` (from the repo root). It fails l
 - `<pre class="code" data-file="name.py" data-src="code/genai-labs/x.py"></pre>` inlines the real file, HTML-escaped, with `#` comments highlighted. Optional `data-lines="a-b"`.
 - `<!--MODULE_PAGES:NN-->` renders the module's page cards with their drills (overview pages).
 - `<!--DRILL_INDEX-->` renders the catalogue of all drills (labs page), filterable by step type.
-- Sidebar, breadcrumbs, prev/next pager and "Mark this page as done" are generated for every page. Curriculum navigation labels published modules and open-source Labs 0–1 as "Live", draft labs as "Draft", and roadmap-only modules as "Planned".
+- Sidebar, breadcrumbs, prev/next pager and "Mark this page as done" are generated for every page. Curriculum navigation labels published modules and labs as "Live", draft items as "Draft", and roadmap-only modules as "Planned".
 - Prose references such as "Module 02", "Milestone 2" and "Drill 02.4" are linked to their overview, build page or drill. Draft references remain visibly marked as coming soon; references to planned modules link to their roadmap rows.
 
 ### Draft modules (build now, publish later)
@@ -76,11 +76,11 @@ Build after any change: `python tools/build.py` (from the repo root). It fails l
   - the build **fails** if a live page links to a draft page, so nothing leaks by accident.
 - Files inlined on live pages must not change while their module is a draft. In `genai-labs/` that means `llm.py`, `.env.example` and `requirements.txt` stay at their Part I versions; Part II adds `llm_tools.py` (tool settings) and `embed.py` (embedding model setting), and its pages list the extra `.env` lines and packages.
 
-**Going live (Part II, or any draft module):**
+**Publishing reviewed content (any draft module, lab or map):**
 1. Remove `"draft": true` from the module in `tools/nav.json`.
 2. Update the home page (`src/index.html`) cards and map, and the project roadmap status in `src/project/index.html`.
 3. Optionally fold the Part II settings into `llm.py`, `.env.example` and `requirements.txt` (and update the pages that mention `llm_tools.py`/`embed.py`).
-4. `python tools/build.py`, then the QA checks below. The build prints the live drill count.
+4. `python tools/build.py`, then the QA checks below. The build prints the live drill count. Publish only after review and approval; never include unreviewed content in a public release.
 
 ### Adding a module (Parts II–V)
 
@@ -88,7 +88,7 @@ Build after any change: `python tools/build.py` (from the repo root). It fails l
 2. Write drill code in `code/genai-labs/` (`labNN_XX_name.py`), and the milestone snapshot in `code/rrfinance-assist/mNN/` (copy the previous snapshot, then change it).
 3. Test the code: unit tests with pytest, and the app with a fake OpenAI client (see section 6).
 4. Write `src/modules/NN/*.html` using the anatomy below, then build and run the QA checks.
-5. When it's approved, go live (above): remove `draft`, update the home page module cards and the project roadmap status.
+5. Add or update the Part's concept map and open-source lab, then run the build and QA checks. When approved, go live (above): remove the relevant draft flags and update the home page, navigation and project roadmap.
 
 ---
 
@@ -161,9 +161,9 @@ Since 2026-10-16 every lab uses this case (learner feedback: most learners are f
 - Policies (help/*.md): freeze card instantly, replacement 5–7 business days, express 2 days $15 (free for Premier Checking); disputes within 60 days of the statement, provisional credit within 10 business days; overdraft $29 when more than $50 overdrawn at end of day, max 3 a day, one courtesy refund per 12 months; transfers 1–3 business days, can't be cancelled once processed, wires $25/$45; the bank never asks for a PIN, password or one-time code.
 - Data in `genai-labs/data/`: `products.json` (20 products P101–P120: family accounts/cards/loans, audience personal/student/business, annual_fee_usd, rate_pct, rate_type), `help/*.md` (10 articles), `help_questions.json` (20, source + must_contain), `train_tickets.json` (48) and `eval_tickets.json` (32), `statement.png` (Drill 01.12, a duplicate SkyHigh Airlines charge). `oss-labs/data` has the same help articles and products.
 - Milestones done for the bank (Part I): **M1** CLI · **M2** FastAPI SSE chat · **M3** prompt library (`assist_system@v2` with the bank policy, `triage@v1` with customer_name/customer_id/product), Pydantic triage with one repair, output guard, 10 offline tests, `check_triage`.
-- Being migrated (Parts II–III, drafts): M4 tools (products, the customer's transactions, `fee_refund_quote()`, cases), M5 hybrid search over products and help sections, M6 RAG with citations, M7 agent that proposes freeze_card / open_dispute for human approval. Internal staff docs become an agent playbook, a fraud escalation runbook, a staff FAQ and fee-waiver approvals.
-- Capstone: RR Finance Capital investment research copilot (fictional quarterly reports, metrics to JSON, cited answers, compliance disclaimer).
-- Planned: M8 gateway, persistent sessions, tracing · M9 evaluation in CI (triage accuracy, fraud recall, groundedness) · M10 Prompt Shields, PII masking, no-advice rules · M11 routing, caching, batch · M12 containers, secrets, fallbacks, CI/CD, model risk review.
+- Modules 01–12 and their project milestones are available. Open-source Labs 0–5 cover setup and Parts I–V using RR Finance Bank products, public help content and fictional staff documents.
+- Parts IV–V include M8 gateway, session persistence and tracing · M9 evaluation data, classification metrics and release thresholds · M10 threat modeling, limited identifier masking and injection indicators · M11 routing, caching concepts and token-cost estimates · M12 release checks and operational health thresholds. The example code is local and does not provision cloud services or claim production readiness.
+- Capstone: RR Finance Capital investment research copilot using fictional quarterly reports, structured metrics, cited answers and a compliance disclaimer. Its brief, starter data, evaluation cases and rubric are available.
 
 ---
 
@@ -179,7 +179,7 @@ Since 2026-10-16 every lab uses this case (learner feedback: most learners are f
 
 ## 7. Repository and publishing
 
-- Repo: `https://github.com/raushan1107/Generative-AI-for-Developers-handbook` (branch `main`). Commits are authored by Raushan Ranjan only; no co-author lines.
+- Repo: `https://github.com/raushan1107/Generative-AI-for-Developers-handbook` (branch `main`). Commits are authored by Raushan Ranjan and include the repository's Copilot co-author trailer.
 - Site: GitHub Pages, deployed by `.github/workflows/pages.yml` on every push to `main`. The workflow runs `python tools/build.py`, then `python tools/stage_site.py`, and publishes only `_site/`.
 - `tools/stage_site.py` copies the public files (`index.html`, `assets/`, `start/`, `setup/`, `modules/`, `project/`, `labs/`, `capstone/`, `code/`) and **leaves out**:
   - this guide and anything else in `docs/` (notes for me, not for learners);
@@ -188,7 +188,7 @@ Since 2026-10-16 every lab uses this case (learner feedback: most learners are f
   - every draft module: `modules/NN/` and `code/rrfinance-assist/mNN/` for modules with `"draft": true` in `nav.json`.
   So removing `"draft": true` and pushing is what publishes a Part.
 - Preview locally exactly what will go live: `python tools/build.py && python tools/stage_site.py`, then serve `_site/` (e.g. `python -m http.server -d _site 8000`). `_site/` is git-ignored.
-- Publish a change: commit and `git push`. Check the run under the repo's **Actions** tab.
+- Publish only after explicit approval: review the generated `_site/`, then commit and push. Check the run under the repository's **Actions** tab. Do not commit, push or deploy work that is still under local review.
 
 ---
 
@@ -197,24 +197,22 @@ Since 2026-10-16 every lab uses this case (learner feedback: most learners are f
 A second, separate track for learners without Azure or paid API access, written in the style of Microsoft hands-on labs: overview table (objectives, prerequisites, what you finish with), exercises > tasks > numbered steps, exact commands, expected output, a **Checkpoint** callout per exercise, a troubleshooting table, review and cleanup. One lab per Part, about **3 hours**, used after the trainer's demo. **Build one for every new Part** (standing request, 2026-10-12).
 
 - Pages: `src/oss/` (`index.html`, `lab-0-setup.html`, `lab-1.html` …), kind `osslab`, in the nav section "Open-source lab guide".
-- Code: `code/oss-labs/` is the learner's project folder `oss-genai-labs`: `client.py` (LLM_BASE_URL / LLM_API_KEY / CHAT_MODEL / AGENT_MODEL / EMBED_*), `.env.example`, `requirements.txt`, `lab0_check.py`, `lN_*.py` per lab, `data/` (courses, help articles, 3 internal docs). Programs are self-contained, simpler than the handbook drills, and Ollama-first.
+- Code: `code/oss-labs/` is the learner's project folder `oss-genai-labs`: `client.py` (LLM_BASE_URL / LLM_API_KEY / CHAT_MODEL / AGENT_MODEL / EMBED_*), `.env.example`, `requirements.txt`, `lab0_check.py`, lab scripts and tests, `data/` (fictional products, public help articles and three fictional staff documents). Labs 1–3 use model calls; Labs 4–5 are deterministic standard-library exercises.
 - Keys: Ollama needs none (the placeholder `ollama` satisfies the OpenAI library). Option B, documented in Lab 0, is a hosted open-model provider with a free key (Groq, OpenRouter); embeddings stay on Ollama.
-- Models: `llama3.2` (chat, 8 GB RAM), `nomic-embed-text` (embeddings), `qwen2.5:7b` (agents, 16 GB RAM).
-- Labs 0–1 are live; Labs 2–3 are drafts. The section keeps `"code_dirs": ["code/oss-labs"]`, so if it is ever set back to `"draft": true`, `tools/stage_site.py` hides its pages and code again. When a new Part is built as a draft, put its new lab on a draft section of its own, or keep the whole guide live and add the lab when the Part goes live.
+- Model choice and hardware needs vary by version, quantization and machine; verify the current provider requirements and test tool support rather than promising a fixed speed or quality.
+- Labs 0–1 are live; Labs 2–5 are drafts. The section keeps `"code_dirs": ["code/oss-labs"]`, and each draft lab lists its own page and code files so `tools/stage_site.py` excludes them from the site and learner download. Keep shared synthetic source data only when a live lab also needs it.
 - Draft sections work like draft modules: any nav section can carry `"draft": true`.
 
 ---
 
-## 9. Publishing day by day
+## 9. Publication status and release checks
 
-Content is built ahead; each training day is switched on separately with `"draft": true` in `tools/nav.json`:
-
-| Day | Turn on (remove `"draft": true`) |
+| Content | Status |
 | --- | --- |
-| Day 2 | modules `04`, `05` and item `oss-2` (Lab 2) |
-| Day 3 | modules `06`, `07` and item `oss-3` (Lab 3) |
+| Modules 01–12, project milestones 01–12, Parts I–V concept maps | Available |
+| Open-source Labs 0–5 and capstone package | Available |
 
-On live pages the build switches off, rather than deletes, everything that points at draft content: links and cards become greyed "coming soon" (class `is-soon`), course-map boxes tagged `data-module="NN"` turn grey, and roadmap badges `<span class="badge b-run" data-module="NN">Available</span>` become "Coming soon". Draft labs list their code in `"code_files"`, so `stage_site.py` leaves that code out of the site and out of `oss-labs-complete.zip`. Going live is: edit `nav.json`, `python tools/build.py`, commit, push.
+The build keeps draft content reviewable locally and prevents live pages from linking into draft modules. The staging step removes draft pages and each draft lab's listed code files from `_site/` and `oss-labs-complete.zip`. To publish, review the content and tests, update the appropriate `draft` flags, rebuild and stage, inspect `_site/`, and obtain explicit approval before committing, pushing or deploying.
 
 ---
 
@@ -229,8 +227,8 @@ On live pages the build switches off, rather than deletes, everything that point
 
 ## 11. Concept maps
 
-One interactive map per Part (and an overall map at the end): story cards, one picture of every topic, then an expandable tree Part > Module > Topic with definition, example, where it's used, keep in mind, and "connects to" links (click to open and highlight the related topic; also expand/collapse all and find a term).
+One interactive map per Part: story cards, one picture of every topic, then an expandable tree Part > Module > Topic with definition, example, a finance example, where it's used, keep in mind, and "connects to" links (click to open and highlight the related topic; also expand/collapse all and find a term).
 
 - Content: `tools/maps/part-N.json`. Generate: `python tools/concept_map.py` (writes `src/maps/part-N.html`; fails if a connection names an unknown topic), then `python tools/build.py`.
-- Add each map to the "Concept maps" nav section. Draft it with the Part (`"draft": true` on the item) and publish it with that Part's day.
-- Next: `part-2.json` (Modules 04–05), `part-3.json` (06–07), then an overall map linking the Parts.
+- Add each map to the "Concept maps" nav section. Draft maps that point to draft modules and publish them only after the referenced content is approved.
+- Status: Parts I–V maps are available. Keep every `connects` ID within the same map and run the generator to validate the references.

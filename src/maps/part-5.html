@@ -1,0 +1,102 @@
+<!--meta
+{"id": "map-part5", "short": "Part V Concept Map", "h1": "Part V Concept Map: Ship It", "description": "An expandable map of Modules 11–12, connecting model routing, caching and cost budgets with deployment, release controls and operational monitoring.", "lead": "Part V prepares an application for release and operation. Performance choices affect quality, latency and cost; release controls identify what is being deployed; operations observe the running system and provide incident and rollback paths. A passing local check is one input to that work, not a production certification.", "chips": ["Modules 11–12", "4 topics", "Available modules", "Operate responsibly"]}
+-->
+<h2 id="story">The story in one line</h2>
+<div class="cards"><div class="card"><span class="num">MODULE 11</span><h3>Optimize deliberately</h3><p>Use measured routing, caching and budgets to balance latency, quality and cost.</p></div><div class="card"><span class="num">MODULE 12</span><h3>Release and operate</h3><p>Use reproducible release controls, monitor the live service and respond to incidents.</p></div></div>
+
+<h2 id="picture">Everything at once</h2>
+<p>Every topic of this Part on one picture. Read the columns left to right; click a topic to jump to its card below.</p>
+<figure class="diagram">
+  <div class="frame">
+<svg viewBox="0 0 660 204" role="img" aria-labelledby="cm-t cm-d">
+<title id="cm-t">Part V concept map: all topics at once</title>
+<desc id="cm-d">Optimize deliberately (Module 11): Use measured routing, caching and budgets to balance latency, quality and cost. Release and operate (Module 12): Use reproducible release controls, monitor the live service and respond to incidents.</desc>
+<rect x="20" y="14" width="300" height="176" rx="14" class="s-blue"/>
+<text x="36" y="40" class="t-m">MODULE 11 · OPTIMIZE DELIBERATELY</text>
+<text x="36" y="64" class="t-b">Performance and Cost Optimization</text>
+<a href="#t-routing-cost" class="cm-svg-link"><rect x="34" y="80" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="99" class="t-s">Routing, caching and batching</text></a>
+<a href="#t-cost-budgets" class="cm-svg-link"><rect x="34" y="114" width="272" height="28" rx="7" class="s-surface"/><text x="46" y="133" class="t-s">Cost and latency budgets</text></a>
+<path d="M320 102.0 H338" class="s-arrow-accent" marker-end="url(#ah-a)"/>
+<rect x="340" y="14" width="300" height="176" rx="14" class="s-teal"/>
+<text x="356" y="40" class="t-m">MODULE 12 · RELEASE AND OPERATE</text>
+<text x="356" y="64" class="t-b">Productionizing Generative AI</text>
+<a href="#t-deployment" class="cm-svg-link"><rect x="354" y="80" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="99" class="t-s">Deployment and release controls</text></a>
+<a href="#t-operations" class="cm-svg-link"><rect x="354" y="114" width="272" height="28" rx="7" class="s-surface"/><text x="366" y="133" class="t-s">Monitoring, incidents and drift</text></a>
+</svg>
+  </div>
+  <figcaption><b>2 modules, 4 topics, one story.</b> Each column builds on the one before it.</figcaption>
+</figure>
+
+<h2 id="tree">Explore the map</h2>
+<p>Open a module, then a topic. Each topic shows a definition, an example, an example from finance, where it's used, the point to keep in mind, and the topics it <em>connects to</em>; click a connection to jump there.</p>
+<div class="cm-tools">
+  <button type="button" class="btn" data-cm="expand">Expand all</button>
+  <button type="button" class="btn" data-cm="collapse">Collapse all</button>
+  <input type="search" placeholder="Find a term, e.g. tokens" aria-label="Find a term" data-cm="filter">
+</div>
+<div class="cmap" data-cmap>
+<details class="cm-root" open>
+  <summary><b>Part V concept map</b><span class="cm-short">2 modules · 4 topics</span></summary>
+<details class="cm-module" id="m-11">
+  <summary><span class="cm-num">11</span><b>Performance and Cost Optimization</b><span class="cm-short">Measure and tune the work each request performs · 2 topics</span></summary>
+  <div class="cm-topics">
+<details class="cm-topic" id="t-routing-cost">
+  <summary><b>Routing, caching and batching</b><span class="cm-short">Routing selects a model or path, caching reuses eligible results and batching groups work to improve throughput.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Routing selects a model or path, caching reuses eligible results and batching groups work to improve throughput.</dd>
+    <dt>Example</dt><dd>Route a tested simple task to a smaller deployment and batch independent offline evaluations.</dd>
+    <dt>In finance</dt><dd>Customer-specific answers require cache isolation and authorization-aware keys before any response is reused.</dd>
+    <dt>Where it's used</dt><dd>Reducing latency or spend while preserving required quality and privacy.</dd>
+    <dt>Keep in mind</dt><dd>Measure end-to-end effects; caching and batching change freshness, isolation and failure behavior.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-cost-budgets" title="choices affect measurable budgets">Cost and latency budgets<span>choices affect measurable budgets</span></button><button type="button" class="cm-link" data-target="t-deployment" title="routes point to deployed versions">Deployment and release controls<span>routes point to deployed versions</span></button><button type="button" class="cm-link" data-target="t-operations" title="monitor performance after changes">Monitoring, incidents and drift<span>monitor performance after changes</span></button></div>
+  <p class="cm-more"><a href="../modules/11/routing-and-caching.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-cost-budgets">
+  <summary><b>Cost and latency budgets</b><span class="cm-short">A budget sets measurable limits for resource use, response time or error behavior over a defined workload.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>A budget sets measurable limits for resource use, response time or error behavior over a defined workload.</dd>
+    <dt>Example</dt><dd>Estimate monthly input and output token costs from a tested request volume and current provider rates.</dd>
+    <dt>In finance</dt><dd>A support feature needs a volume estimate, budget owner and a plan for traffic spikes.</dd>
+    <dt>Where it's used</dt><dd>Capacity planning, model selection and cost monitoring.</dd>
+    <dt>Keep in mind</dt><dd>Estimates depend on workload and rate-card details; include retries, tools, storage and other charges where applicable.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-routing-cost" title="optimization changes latency and spend">Routing, caching and batching<span>optimization changes latency and spend</span></button><button type="button" class="cm-link" data-target="t-deployment" title="release choices affect capacity">Deployment and release controls<span>release choices affect capacity</span></button><button type="button" class="cm-link" data-target="t-operations" title="measure actual service behavior">Monitoring, incidents and drift<span>measure actual service behavior</span></button></div>
+  <p class="cm-more"><a href="../modules/11/cost-budget.html">Read the full topic page →</a></p>
+</details>
+  <p class="cm-more"><a href="../modules/11/index.html">Module 11 overview →</a></p>
+  </div>
+</details>
+<details class="cm-module" id="m-12">
+  <summary><span class="cm-num">12</span><b>Productionizing Generative AI</b><span class="cm-short">Control releases and operate the service after launch · 2 topics</span></summary>
+  <div class="cm-topics">
+<details class="cm-topic" id="t-deployment">
+  <summary><b>Deployment and release controls</b><span class="cm-short">Deployment controls package and promote a versioned application and its model, prompts, configuration and dependencies.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Deployment controls package and promote a versioned application and its model, prompts, configuration and dependencies.</dd>
+    <dt>Example</dt><dd>Record an image digest, model deployment, prompt version, evaluation set and rollback target in a release manifest.</dd>
+    <dt>In finance</dt><dd>A bank release should be traceable to approved artifacts and a tested rollback path.</dd>
+    <dt>Where it's used</dt><dd>Repeatable promotion through development, test and production environments.</dd>
+    <dt>Keep in mind</dt><dd>A manifest&#x27;s shape does not verify artifact provenance, permissions, deployment success or rollback readiness.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-routing-cost" title="routes select deployed versions">Routing, caching and batching<span>routes select deployed versions</span></button><button type="button" class="cm-link" data-target="t-cost-budgets" title="capacity and spend depend on release configuration">Cost and latency budgets<span>capacity and spend depend on release configuration</span></button><button type="button" class="cm-link" data-target="t-operations" title="observe and respond after deployment">Monitoring, incidents and drift<span>observe and respond after deployment</span></button></div>
+  <p class="cm-more"><a href="../modules/12/deployment.html">Read the full topic page →</a></p>
+</details>
+<details class="cm-topic" id="t-operations">
+  <summary><b>Monitoring, incidents and drift</b><span class="cm-short">Operations monitor service health and quality, investigate incidents and detect changes in inputs or outcomes over time.</span></summary>
+  <dl class="cm-facts">
+    <dt>Definition</dt><dd>Operations monitor service health and quality, investigate incidents and detect changes in inputs or outcomes over time.</dd>
+    <dt>Example</dt><dd>Track latency and error rates alongside citation or evaluation signals, with thresholds and an incident owner.</dd>
+    <dt>In finance</dt><dd>Investigate a rise in unsupported policy answers and use the approved rollback or disable path when required.</dd>
+    <dt>Where it's used</dt><dd>Keeping a deployed AI feature reliable and accountable.</dd>
+    <dt>Keep in mind</dt><dd>Operational signals need context, access controls and response procedures; a dashboard alone does not resolve incidents.</dd>
+  </dl>
+  <div class="cm-connects"><span class="cm-label">Connects to</span><button type="button" class="cm-link" data-target="t-deployment" title="operations follow a controlled release">Deployment and release controls<span>operations follow a controlled release</span></button><button type="button" class="cm-link" data-target="t-cost-budgets" title="observe actual usage and latency">Cost and latency budgets<span>observe actual usage and latency</span></button><button type="button" class="cm-link" data-target="t-routing-cost" title="monitor route behavior and fallback outcomes">Routing, caching and batching<span>monitor route behavior and fallback outcomes</span></button></div>
+  <p class="cm-more"><a href="../modules/12/operations.html">Read the full topic page →</a></p>
+</details>
+  <p class="cm-more"><a href="../modules/12/index.html">Module 12 overview →</a></p>
+  </div>
+</details>
+</details>
+</div>
+<div class="callout takeaway"><div class="c-label">How to use this map</div><p>Before a module, skim its branch to see what's coming. After it, close the page and try to explain each topic and one connection from memory, then open the card to check yourself.</p></div>

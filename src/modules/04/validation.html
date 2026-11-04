@@ -61,11 +61,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Banks validate in layers exactly like this drill: the schema checks the shape, validators check business rules (a dispute date can't be in the future, an IBAN must pass its checksum, an amount must be positive), and a facts layer compares what the model said with what the systems hold. Any amount in a customer reply that no system produced is a red flag, and is blocked before the customer sees it.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Banks validate in layers exactly like this drill: the schema checks the shape, validators check business rules (a dispute date can't be in the future, an IBAN must pass its checksum, an amount must be positive), and a facts layer compares what the model said with what the systems hold. Any amount in a customer reply that no system produced is a red flag, and is blocked before the customer sees it.</p>
-</div>
   <p>Finance and insurance teams using extraction models run all three layers: schema, rules (totals add up, dates are plausible), and facts (the supplier exists in the vendor database, the policy number is active). Documents that fail go to a human queue. The validation-failure rate is a dashboard metric, just like error rates for an API.</p>
 </div>
 

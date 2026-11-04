@@ -6,7 +6,7 @@
 <div class="case">
   <div class="case-head"><b>RR Finance Bank</b><span>· the brief for milestone 6</span></div>
   <div class="case-body">
-    <p>The support team has updated the lab, voucher and certificate rules twice since RR Finance Assist launched, and both times someone had to edit the system prompt and redeploy. Customers also ask about things the five-line policy never covered: instalments, name corrections, accessibility, group discounts. The brief: answer policy questions <strong>from the help centre</strong>, show customers where each answer comes from, say clearly when the help centre doesn't cover something, and offer a search box on the help-centre site that uses the same engine. Constraints: no policy text in prompts, nothing shown as a source that the answer didn't use, and the chat must keep working if search is down.</p>
+    <p>The support team updates card, payment and dispute guidance as policies change. If those rules are copied into a system prompt, every update requires a prompt change and redeployment. The brief: answer policy questions <strong>from RR Finance Bank's help centre</strong>, show customers where each answer comes from, say clearly when the help centre doesn't cover something, and offer a search box on the help-centre site that uses the same engine. Constraints: no policy amounts in prompts, nothing shown as a source that the answer didn't use, and the chat must keep working if search is down.</p>
   </div>
 </div>
 
@@ -14,7 +14,7 @@
   <div class="frame">
     <svg viewBox="0 0 960 340" role="img" aria-labelledby="b6-t b6-d">
       <title id="b6-t">RR Finance Assist v0.6</title>
-      <desc id="b6-d">Two entry points share app/rag.py. In chat, the model calls the search_help tool with a complete question; the tool retrieves help sections above the relevance floor, numbers them across the turn and returns them; the model answers with citations; the chat service checks the citations, removes any to sections it never saw, and sends the cited sources in the done event, which the web UI and CLI show as links. POST /api/ask runs a fixed pipeline: retrieve, and if nothing is relevant return 'not found' without a model call; otherwise build a prompt with rag_answer@v1, generate, detect NOT_FOUND, check citations and return the answer with sources, or related sections if it cited none. Both use the milestone 5 search index, now built with introductions.</desc>
+      <desc id="b6-d">Two entry points share app/rag.py. In chat, the model calls search_help with a complete question; the tool retrieves help sections above the relevance floor, numbers them across the turn and returns them; the model answers with citations; the chat service checks the citations, removes any to sections it never saw, and sends cited sources in the done event for the web UI and CLI. POST /api/ask runs a fixed pipeline: retrieve, and if nothing is relevant return not found without a model call; otherwise build a prompt with rag_answer@v1, generate, detect NOT_FOUND, check citations and return the answer with sources, or related sections if none were cited. Both use the Module 05 index, with article introductions retained as Overview chunks.</desc>
       <text x="20" y="28" class="t-m">CHAT · TOOL-BASED RAG</text>
       <rect x="20" y="40" width="170" height="70" rx="12" class="s-surface"/><text x="105" y="68" class="t-b mid">POST /api/chat</text><text x="105" y="88" class="t-s mid">assist_system@v4</text>
       <path d="M190 75 H224" class="s-arrow-accent" marker-end="url(#ah-a)"/>
@@ -31,7 +31,7 @@
       <rect x="470" y="172" width="220" height="70" rx="12" class="s-violet"/><text x="580" y="200" class="t-b mid">rag_answer@v1</text><text x="580" y="220" class="t-s mid">generate · NOT_FOUND?</text>
       <path d="M690 207 H724" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <rect x="730" y="172" width="210" height="70" rx="12" class="s-rose"/><text x="835" y="200" class="t-b mid">check_citations</text><text x="835" y="220" class="t-s mid">sources or "related"</text>
-      <rect x="230" y="276" width="460" height="50" rx="12" class="s-blue"/><text x="460" y="298" class="t-b mid">app/rag.py over the milestone 5 index</text><text x="460" y="316" class="t-s mid">47 help sections, introductions included (chunker headings-v2)</text>
+      <rect x="230" y="276" width="460" height="50" rx="12" class="s-blue"/><text x="460" y="298" class="t-b mid">app/rag.py over the milestone 5 index</text><text x="460" y="316" class="t-s mid">54 chunks: 44 sections + 10 introductions (headings-v2)</text>
       <path d="M580 110 V140 M330 242 V270" class="s-dash"/>
     </svg>
   </div>
@@ -53,7 +53,7 @@
 ├── web/index.html            shows sources as links under each answer
 └── tests/
     ├── test_rag.py           NEW  retrieval, numbering, budget, citations, /api/ask, search_help in chat
-    ├── test_search.py        47 help sections; chunker version check
+    ├── test_search.py        54 help chunks; chunker version check
     └── test_offline.py       assist_system@v4 has no "$" amounts</code></pre>
 
 <div class="phase do" id="build"><span class="ph-num">2</span><div><h2>Build</h2><p>Settings, chunks, the RAG module, the tool, then the wiring.</p></div></div>
@@ -62,18 +62,18 @@
   <div class="drill-head"><span class="drill-id">Milestone 6</span><h3>Help-centre RAG with checked citations</h3>
     <div class="drill-meta"><span class="time">~75 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-tool">FastAPI · numpy · pytest</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> the Module 06 hands-on project, a company knowledge assistant. RR Finance Assist answers policy questions only from RR Finance Bank's help centre, cites every fact, checks the citations in code, and exposes the same engine as <code>POST /api/ask</code>.</p>
+    <p class="drill-goal"><b>Goal:</b> extend RR Finance Assist with help-centre retrieval. The prompts instruct it to answer from the bank's sources and cite claims; code verifies that cited numbers refer to retrieved sections, but does not prove that a citation supports a claim. The same retrieval pipeline is exposed as <code>POST /api/ask</code>.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Settings</h4>
         <p>Add to <code>app/config.py</code>, and the matching lines to <code>.env</code> (leave <code>RAG_MIN_SCORE</code> empty unless you calibrated your own in Drill 06.6):</p>
         <pre class="code" data-file="app/config.py (added)" data-src="code/rrfinance-assist/m06/app/config.py" data-lines="42-48"></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Keep the introductions, then rebuild the index</h4>
-        <p>Drill 06.4 showed Milestone 5's chunker dropping every article's introduction. Replace <code>chunk_by_headings</code> in <code>app/search.py</code>, add <code>CHUNKER_VERSION = "headings-v2"</code> near the top, and record it in <code>LocalIndex.save()</code> and check it in <code>load()</code> (see the reference code), so an old index is refused instead of silently mismatched:</p>
+        <p>Drill 06.4 showed Milestone 5's chunker dropping every article's introduction. Replace <code>chunk_by_headings</code> in <code>app/search.py</code>, add <code>CHUNKER_VERSION = "headings-v2"</code> near the top, and record it in <code>LocalIndex.save()</code> and check it in <code>load()</code> (see the reference code), so an old index is refused instead of silently mismatched. The 10 article introductions become "Overview" chunks, giving 54 help chunks in total: 44 existing sections plus 10 overviews.</p>
         <pre class="code" data-file="app/search.py (chunk_by_headings)" data-src="code/rrfinance-assist/m06/app/search.py" data-lines="27-37"></pre>
 <pre class="term"><code><span class="ps">$ </span>python -m scripts.build_index</code></pre>
         <span class="out-label">Real output (local backend, nomic-embed-text)</span>
-<pre class="out"><code>Local index: 20 courses + 47 help sections, 768-dimension vectors from nomic-embed-text.
+<pre class="out"><code>Local index: 20 products + 54 help sections, 768-dimension vectors from nomic-embed-text.
 Done in 10.2s.</code></pre>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The RAG module</h4>
@@ -117,7 +117,7 @@ Keep everything else as it is. Then run pytest -q.</code></pre></div>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>The help-centre endpoint, UI and CLI</h4>
         <pre class="code" data-file="app/main.py (POST /api/ask)" data-src="code/rrfinance-assist/m06/app/main.py" data-lines="106-120"></pre>
-        <p>In <code>web/index.html</code>, when the <code>done</code> event has <code>sources</code>, add one link per source under the answer (<code>[1] Refunds and cancellations › How much you get back</code>); <code>cli.py</code> prints the same lines. Both are in the reference code.</p>
+        <p>In <code>web/index.html</code>, when the <code>done</code> event has <code>sources</code>, add one link per source under the answer (for example, <code>[1] Lost or stolen cards › Your liability</code>); <code>cli.py</code> prints the same lines. Both are in the reference code.</p>
       </li>
       <li class="dstep run"><span class="st">Run</span><h4>Tests</h4>
         <pre class="code" data-file="tests/test_rag.py" data-src="code/rrfinance-assist/m06/tests/test_rag.py"></pre>
@@ -125,23 +125,26 @@ Keep everything else as it is. Then run pytest -q.</code></pre></div>
       <li class="dstep verify"><span class="st">Verify</span><h4>Evidence</h4>
 <pre class="term"><code><span class="ps">$ </span>pytest -q
 <span class="ps">$ </span>uvicorn app.main:app --reload</code></pre>
-        <span class="out-label">Expected (exact)</span>
-<pre class="out"><code>.............................................                            [100%]
-45 passed in 1.48s</code></pre>
-        <p>In <code>/docs</code>, try <code>POST /api/ask</code>. Real results from my local run (llama3.2 and nomic-embed-text, local backend):</p>
-<pre class="out"><code>How long until my refund shows up on my card?
-  -&gt; Card refunds can take one extra billing cycle to appear on your statement, [1].
-     sources: [1] Refunds and cancellations &gt; When the money arrives          (17.0s)
-I get error LAB-503, what do I do?
-  -&gt; The recommended solution for error LAB-503 is to wait two minutes and then refresh.
-     sources: none cited, so "related" lists the top sections                  (7.0s)
-What is the capital of France?
-  -&gt; I couldn't find that in the RR Finance Bank help centre. Would you like me to raise a
-     ticket for our support team?                                              (0.1s, no model call)</code></pre>
+        <span class="out-label">Expected</span>
+<pre class="out"><code>44 passed</code></pre>
+        <p>Saved local results demonstrate supported answers and honest abstention:</p>
+<pre class="out"><code>[public] How long do I have to dispute a card payment?
+You have 60 days from the statement date on which the payment first appeared to raise a dispute [1].
+Sources: [1] Disputing a card transaction &gt; Deadlines
+
+[public] My card was stolen and there are payments I didn't make. Will I get the money back, and how fast is a new card?
+If you report the card within 2 business days of noticing it's missing, you won't pay for payments you didn't make [1]. If the card is gone for good, a replacement card with a new number will be sent within 5 to 7 business days [2]. You can use a virtual card in your mobile wallet straight away [2].
+Sources: [2] Lost or stolen cards &gt; Report it and get a replacement
+
+[public] ¿Cuánto cuesta una transferencia internacional?
+I couldn't find that in RR Finance Bank's documents. Shall I raise a case for the support team? (0 model calls)
+
+[public] Who can approve a fee refund exception of $300?
+According to RR Finance Bank's policies, a fee refund exception of $300 can be approved by the bank, but the specific decision-making authority is not specified in the provided sources.</code></pre>
         <ul class="verify-list">
-          <li>In the chat, ask "How long do labs stay open after my course ends?" The meta line shows <code>tools: search_help</code>, the answer cites [1] or similar, and a link to the labs section appears under it.</li>
-          <li>Follow up with "And after that, how much is more time?" The <code>search_help</code> query in the log is a complete question about lab extension cost, not "and after that".</li>
-          <li>Ask "Can I bring my dog to class?" The assistant says it couldn't find it in the help centre and offers a ticket.</li>
+          <li>In the chat, ask "How long do I have to dispute a card payment?" The meta line shows <code>tools: search_help</code>, the answer cites the dispute-deadline section, and a source link appears under it.</li>
+          <li>Follow up with "And if the card is stolen?" Verify the second search uses a complete question and that the cited source supports the answer.</li>
+          <li>Ask "Can I bring my dog into the branch?" The assistant says it couldn't find an answer in the help centre and offers a support case.</li>
           <li>Sign in as Mei and ask how much she'd get back if she cancelled her RAG course: the policy comes from <code>search_help</code> with a citation, and the amount from <code>quote_refund</code>, never computed by the model.</li>
           <li>Edit a help article (for example change the $49 lab extension price), run <code>python -m scripts.build_index</code>, restart, and ask again: the new price appears, with no prompt change.</li>
         </ul>

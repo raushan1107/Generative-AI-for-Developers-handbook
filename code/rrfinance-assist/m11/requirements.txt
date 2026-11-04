@@ -1,0 +1,9 @@
+openai
+python-dotenv
+fastapi
+uvicorn
+pytest
+pydantic
+numpy
+rank_bm25
+azure-search-documents

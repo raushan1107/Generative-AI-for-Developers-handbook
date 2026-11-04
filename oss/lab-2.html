@@ -4,9 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lab 2: Tools and Semantic Search</title>
-<meta name="description" content="Open-source lab guide, Lab 2 (Part II, Modules 04–05): structured outputs from a Pydantic schema, an assistant that calls application functions (search the catalogue, retrieve customer information, check an enrolment, create a ticket), embeddings and similarity with nomic-embed-text, and a hybrid semantic search app over a help centre.">
+<meta name="description" content="Open-source lab guide, Lab 2 (Part II, Modules 04–05): extract RR Finance product needs into a Pydantic schema, call bank product and customer-card functions, compare embeddings and build hybrid search over fictional bank policies.">
 <meta name="author" content="Raushan Ranjan (MCT)">
-<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -134,23 +133,59 @@
 </details>
 </div>
 <div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
-<div class="sb-module status-planned"><span class="sb-num">08</span>AI Application Architecture<span class="sb-status sb-status-planned">Planned</span></div>
-<div class="sb-module status-planned"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-status sb-status-planned">Planned</span></div>
-<div class="sb-module status-planned"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-status sb-status-planned">Planned</span></div>
+<details class="sb-mod"><summary><span class="sb-num">08</span>AI Application Architecture<span class="sb-status sb-status-live">Live</span></summary>
+<a class="sb-link sub k-overview " data-page-id="m08" href="../modules/08/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m08-gateway" href="../modules/08/gateway.html"><span class="sb-ico">•</span>Gateways and model routing</a>
+<a class="sb-link sub k-topic " data-page-id="m08-state" href="../modules/08/state-and-telemetry.html"><span class="sb-ico">•</span>Sessions, queues and traces</a>
+<a class="sb-link sub k-build " data-page-id="m08-build" href="../modules/08/build.html"><span class="sb-ico">⚒</span>Build: Milestone 8</a>
+<a class="sb-link sub k-recap " data-page-id="m08-recap" href="../modules/08/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-status sb-status-live">Live</span></summary>
+<a class="sb-link sub k-overview " data-page-id="m09" href="../modules/09/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m09-data" href="../modules/09/datasets.html"><span class="sb-ico">•</span>Build an evaluation set</a>
+<a class="sb-link sub k-topic " data-page-id="m09-metrics" href="../modules/09/metrics.html"><span class="sb-ico">•</span>Metrics, judges and release gates</a>
+<a class="sb-link sub k-build " data-page-id="m09-build" href="../modules/09/build.html"><span class="sb-ico">⚒</span>Build: Milestone 9</a>
+<a class="sb-link sub k-recap " data-page-id="m09-recap" href="../modules/09/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">10</span>Security and Responsible AI<span class="sb-status sb-status-live">Live</span></summary>
+<a class="sb-link sub k-overview " data-page-id="m10" href="../modules/10/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m10-threat" href="../modules/10/threat-model.html"><span class="sb-ico">•</span>Threat model and prompt injection</a>
+<a class="sb-link sub k-topic " data-page-id="m10-privacy" href="../modules/10/privacy-and-safety.html"><span class="sb-ico">•</span>Privacy, safety and human review</a>
+<a class="sb-link sub k-build " data-page-id="m10-build" href="../modules/10/build.html"><span class="sb-ico">⚒</span>Build: Milestone 10</a>
+<a class="sb-link sub k-recap " data-page-id="m10-recap" href="../modules/10/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
 </div>
 <div class="sb-section"><div class="sb-title">Part V · Ship it</div>
-<div class="sb-module status-planned"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-status sb-status-planned">Planned</span></div>
-<div class="sb-module status-planned"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-status sb-status-planned">Planned</span></div>
+<details class="sb-mod"><summary><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-status sb-status-live">Live</span></summary>
+<a class="sb-link sub k-overview " data-page-id="m11" href="../modules/11/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m11-routing" href="../modules/11/routing-and-caching.html"><span class="sb-ico">•</span>Routing, caching and batching</a>
+<a class="sb-link sub k-topic " data-page-id="m11-budget" href="../modules/11/cost-budget.html"><span class="sb-ico">•</span>Cost and latency budgets</a>
+<a class="sb-link sub k-build " data-page-id="m11-build" href="../modules/11/build.html"><span class="sb-ico">⚒</span>Build: Milestone 11</a>
+<a class="sb-link sub k-recap " data-page-id="m11-recap" href="../modules/11/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-status sb-status-live">Live</span></summary>
+<a class="sb-link sub k-overview " data-page-id="m12" href="../modules/12/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m12-deploy" href="../modules/12/deployment.html"><span class="sb-ico">•</span>Deployment and release controls</a>
+<a class="sb-link sub k-topic " data-page-id="m12-ops" href="../modules/12/operations.html"><span class="sb-ico">•</span>Monitoring, incidents and drift</a>
+<a class="sb-link sub k-build " data-page-id="m12-build" href="../modules/12/build.html"><span class="sb-ico">⚒</span>Build: Milestone 12</a>
+<a class="sb-link sub k-recap " data-page-id="m12-recap" href="../modules/12/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
 </div>
 <div class="sb-section"><div class="sb-title">Concept maps</div>
 <a class="sb-link " data-page-id="map-part1" href="../maps/part-1.html"><span class="sb-ico">◇</span>Part I · Foundations</a>
+<a class="sb-link " data-page-id="map-part2" href="../maps/part-2.html"><span class="sb-ico">◇</span>Part II · Connect the model to your app</a>
+<a class="sb-link " data-page-id="map-part3" href="../maps/part-3.html"><span class="sb-ico">◇</span>Part III · Ground it and let it act</a>
+<a class="sb-link " data-page-id="map-part4" href="../maps/part-4.html"><span class="sb-ico">◇</span>Part IV · Build it right</a>
+<a class="sb-link " data-page-id="map-part5" href="../maps/part-5.html"><span class="sb-ico">◇</span>Part V · Ship it</a>
 </div>
 <div class="sb-section"><div class="sb-title">Open-source lab guide</div>
 <a class="sb-link " data-page-id="oss" href="../oss/index.html"><span class="sb-ico">▸</span>About the open-source labs</a>
 <a class="sb-link " data-page-id="oss-0" href="../oss/lab-0-setup.html"><span class="sb-ico">▸</span>Lab 0 · Set up Ollama and Python<span class="sb-status sb-status-live">Live</span></a>
 <a class="sb-link " data-page-id="oss-1" href="../oss/lab-1.html"><span class="sb-ico">▸</span>Lab 1 · Prompts, APIs and JSON<span class="sb-status sb-status-live">Live</span></a>
-<a class="sb-link active" data-page-id="oss-2" href="../oss/lab-2.html"><span class="sb-ico">▸</span>Lab 2 · Tools and semantic search<span class="sb-status sb-status-draft">Draft</span></a>
-<a class="sb-link " data-page-id="oss-3" href="../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-status sb-status-draft">Draft</span></a>
+<a class="sb-link active" data-page-id="oss-2" href="../oss/lab-2.html"><span class="sb-ico">▸</span>Lab 2 · Tools and semantic search</a>
+<a class="sb-link " data-page-id="oss-3" href="../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
+<a class="sb-link " data-page-id="oss-4" href="../oss/lab-4.html"><span class="sb-ico">▸</span>Lab 4 · Architecture, evaluation and safety</a>
+<a class="sb-link " data-page-id="oss-5" href="../oss/lab-5.html"><span class="sb-ico">▸</span>Lab 5 · Performance, cost and release</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
 <a class="sb-link " data-page-id="project" href="../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
@@ -167,7 +202,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
   </button>
   <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Handbook</a><i>/</i><span>Open-source lab guide</span><i>/</i><span>Lab 2 · Tools and semantic search</span></nav>
-  <span class="kind-pill">Open-source lab · Draft</span>
+  <span class="kind-pill">Open-source lab</span>
   <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
   </button>
@@ -175,14 +210,14 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Open-source lab</span><h1>Lab 2 · Tools and Semantic Search with Open Models</h1><p class="lead">In this lab your open model starts working with your code. First it returns data in a shape you define; then it calls your functions to search a catalogue, look up a customer and open a ticket; then you turn text into vectors and build a search engine that finds help articles by meaning. These are the hands-on exercises of Modules 04 and 05.</p><div class="chips"><span class="chip">Modules 04–05</span><span class="chip">Pydantic schemas</span><span class="chip">Function calling</span><span class="chip">Embeddings</span><span class="chip">Hybrid search</span><span class="chip">≈ 3 hours</span></div><div class="flow"><em>Estimated time: 3 hours</em></div></header>
+<header class="page-hero"><span class="eyebrow">Open-source lab</span><h1>Lab 2 · Tools and Semantic Search with Open Models</h1><p class="lead">In this lab an open model starts working with application code. It extracts a product request into a schema, asks for approved functions to look up RR Finance Bank products or the signed-in demo customer's card, and searches the fictional help centre by meaning and keywords. The code examples use synthetic data only.</p><div class="chips"><span class="chip">Modules 04–05</span><span class="chip">Pydantic schema</span><span class="chip">Product tools</span><span class="chip">Embeddings</span><span class="chip">Hybrid search</span><span class="chip">≈ 3 hours</span></div><div class="flow"><em>Estimated time: 3 hours</em></div></header>
 <div class="content">
 
 <h2 id="overview">Lab overview</h2>
 <div class="table-wrap min">
   <table>
     <tbody>
-      <tr><th>Objectives</th><td>Get schema-valid JSON from an open model · let the model call Python functions in a loop you control · keep identity out of the model's hands · create embeddings and compare meanings · build a semantic and keyword (hybrid) search over documents</td></tr>
+      <tr><th>Objectives</th><td>Extract a product request to a validated schema · let the model request narrowly scoped Python functions · keep customer identity in application code · compare embeddings · combine semantic and keyword search over bank help articles</td></tr>
       <tr><th>Prerequisites</th><td>Lab 1 completed · <code>nomic-embed-text</code> pulled (Lab 0) · the <code>data</code> folder in your project · Part II demonstrated</td></tr>
       <tr><th>You finish with</th><td><code>l2_structured.py</code>, <code>l2_tools.py</code> (an assistant that calls your functions), <code>l2_embeddings.py</code> and <code>l2_search.py</code> (a search app with a saved index)</td></tr>
     </tbody>
@@ -193,16 +228,16 @@
     <thead><tr><th>Exercise</th><th>Module</th><th>Time</th></tr></thead>
     <tbody>
       <tr><td><a href="#ex1">1 · Structured output from a schema</a></td><td>04</td><td>30 min</td></tr>
-      <tr><td><a href="#ex2">2 · An assistant that calls your functions</a></td><td>04</td><td>60 min</td></tr>
+      <tr><td><a href="#ex2">2 · Product and customer-card tools</a></td><td>04</td><td>60 min</td></tr>
       <tr><td><a href="#ex3">3 · Embeddings: meaning as numbers</a></td><td>05</td><td>25 min</td></tr>
-      <tr><td><a href="#ex4">4 · A semantic search app</a></td><td>05</td><td>55 min</td></tr>
+      <tr><td><a href="#ex4">4 · Hybrid search over bank policies</a></td><td>05</td><td>55 min</td></tr>
       <tr><td><a href="#review">Review and cleanup</a></td><td></td><td>10 min</td></tr>
     </tbody>
   </table>
 </div>
 
 <h2 id="before">Before you start: check your project folder</h2>
-<p>Every program in this lab imports its settings from two files in your <code>oss-genai-labs</code> folder. If you did Lab 0 they're already there; check them anyway, because a missing or wrong <code>.env</code> is the most common reason a lab program fails.</p>
+<p>Every program in this lab imports its settings from <code>client.py</code> and the optional <code>.env</code> file in your <code>oss-genai-labs</code> folder. If you did Lab 0 they're already there; check them anyway, because a missing or wrong model setting is a common reason a lab program fails.</p>
 <ol>
   <li>Open the <code>oss-genai-labs</code> folder in VS Code and activate the virtual environment: <code>.venv\Scripts\Activate.ps1</code> (Windows) or <code>source .venv/bin/activate</code> (macOS/Linux). The prompt starts with <code>(.venv)</code>.</li>
   <li>Make sure Ollama is running (open <code>http://localhost:11434</code>: it says <em>Ollama is running</em>).</li>
@@ -267,7 +302,7 @@ def get_embed_client() -&gt; OpenAI:
 <div class="callout note"><div class="c-label">Missing files, or starting fresh?</div><p>Download <a href="../code/oss-labs-complete.zip"><code>oss-labs-complete.zip</code></a>: it has <code>client.py</code>, <code>.env.example</code>, <code>requirements.txt</code>, the data folder and the code of every lab released so far. Unzip it, copy <code>.env.example</code> to <code>.env</code>, create the virtual environment and run <code>pip install -r requirements.txt</code> (Lab 0, Exercise 3).</p></div>
 
 <h2 id="ex1">Exercise 1 · Structured output from a schema</h2>
-<h3>Task 1: Extract a course request as validated data</h3>
+<h3>Task 1: Extract a product request as validated data</h3>
 <ol>
   <li>Create <code>l2_structured.py</code>:
     <pre class="code" data-file="l2_structured.py"><code>"""Lab 2, Exercise 1: schema-based output. Pydantic defines the shape; the model must return JSON that
@@ -299,24 +334,24 @@ for text in REQUESTS:
         messages=[{"role": "system", "content": "Extract the customer's product request. Use null for anything not stated."},
                   {"role": "user", "content": text}])
     print(f"{text}\n  -&gt; {completion.choices[0].message.parsed}\n")</code></pre></li>
-  <li>Note <code>client.chat.completions.parse(... response_format=CourseRequest)</code>: the OpenAI library turns the Pydantic class into a JSON Schema, Ollama constrains the model's output to it, and the library returns a <code>CourseRequest</code> object. If it says <code>parse</code> doesn't exist, run <code>pip install -U openai</code>.</li>
+  <li>Note <code>client.chat.completions.parse(... response_format=ProductRequest)</code>: the OpenAI SDK sends a schema-constrained request and returns a parsed Pydantic object when the provider supports that behavior. If <code>parse</code> is unavailable, update the <code>openai</code> package; provider/model support can differ.</li>
   <li>Run it:
 <pre class="term"><code><span class="ps">$ </span>python l2_structured.py</code></pre>
-    <span class="out-label">Real output with llama3.2 (yours will differ)</span>
-<pre class="out"><code>I'm new to the cloud and want something on Azure basics, under 400 dollars please.
-  -&gt; topic='Azure Basics' level='beginner' max_price_usd=400 format=None
+    <span class="out-label">Illustrative valid values (model wording may differ)</span>
+<pre class="out"><code>I'm a student and need a credit card to build my credit, no annual fee please.
+  -&gt; need='build credit' family='cards' max_annual_fee_usd=0 audience='student'
 
-Looking for an advanced course on building RAG apps, online with a trainer.
-  -&gt; topic='RAG app development' level='advanced' max_price_usd=None format='live-online'
+Looking for somewhere to keep my small company's tax money that earns some interest.
+  -&gt; need='keep tax money and earn interest' family='accounts' max_annual_fee_usd=None audience='business'
 
-Any self-paced Python course? Budget is about $300.
-  -&gt; topic='Python' level='beginner' max_price_usd=300 format='self-paced'</code></pre></li>
-  <li>Check each result against the request. A schema guarantees the <em>shape</em> (only allowed values for <code>level</code> and <code>format</code>, an integer price) but not that every value is <em>right</em>. Where did the model fill a value the customer didn't state?</li>
+Any card for travelling abroad? I could pay up to $100 a year.
+  -&gt; need='travel abroad' family='cards' max_annual_fee_usd=100 audience=None</code></pre></li>
+  <li>Check each result against the request. A schema constrains the <em>shape</em> and allowed enum values, but does not prove that the extraction is right, that the product is eligible, or that it is suitable for the customer.</li>
 </ol>
-<div class="callout note"><div class="c-label">Checkpoint</div><p>You get <code>CourseRequest</code> objects, not text, and can say what a schema does and doesn't guarantee.</p></div>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You get <code>ProductRequest</code> objects and can explain why schema validity is not a product recommendation.</p></div>
 
 <h2 id="ex2">Exercise 2 · An assistant that calls your functions</h2>
-<p><a class="xref" href="../modules/04/index.html">Module 04</a>'s hands-on exercise: an AI assistant that calls application functions: search products (here, courses), retrieve customer information, create a support ticket and check order (enrolment) status.</p>
+<p><a class="xref" href="../modules/04/index.html">Module 04</a>'s hands-on exercise: an assistant that can search RR Finance Bank's product catalogue, retrieve the signed-in demo profile, check a card status and create a support case.</p>
 <h3>Task 1: Build the assistant</h3>
 <ol>
   <li>Create <code>l2_tools.py</code>:
@@ -422,34 +457,23 @@ if __name__ == "__main__":
         print(f"Q: {q}")
         print(f"A: {ask(q)}\n")</code></pre></li>
   <li>Read the three parts: the <strong>functions</strong> are ordinary Python; <code>TOOLS</code> describes them to the model as JSON Schema; <code>ask()</code> is the <strong>tool loop</strong>: call the model, run any function it asks for, send the result back, repeat until it answers (at most 5 rounds).</li>
-  <li>This exercise uses <code>AGENT_MODEL</code> from <code>.env</code>, the model for tool calling. Set it to <code>qwen2.5:7b</code> if you pulled it: <code>llama3.2</code> often writes a tool call as text, or tells you to call the functions yourself.</li>
-  <li>Notice <code>SIGNED_IN = "RR-10293"</code>: the app decides who the customer is. No tool takes a customer ID from the model, so a prompt can't make it read someone else's data.</li>
+  <li>This exercise uses <code>AGENT_MODEL</code> from <code>.env</code> for tool calling. Choose a model and endpoint that support tool calls through the OpenAI-compatible API; actual support varies by model and version.</li>
+  <li>Notice <code>SIGNED_IN = "RR-10293"</code>: this is a hard-coded local demo identity, not authentication. The model cannot choose the customer ID, but a production API must derive the customer from a verified server-side session.</li>
 </ol>
 <h3>Task 2: Run it and watch the calls</h3>
 <ol>
   <li>Run it with the three built-in questions:
 <pre class="term"><code><span class="ps">$ </span>python l2_tools.py</code></pre>
-    <span class="out-label">Real output with qwen2.5:7b (yours will differ)</span>
-<pre class="out"><code>Q: Which beginner courses cost less than $300?
-  -&gt; search_courses({'level': 'beginner', 'max_price_usd': 300, 'text': ''}) = [{"id": "C101", "title": "Python Foundations", "level": "beginner", "price_usd": 290}, {"i
-A: Here are some beginner courses under $300: 
-- Python Foundations (C101, $290)
-- Docker Quick Start (C114, $190)
-- Secure Coding Fundamentals (C116, $240)
-- SQL for Everyone (C117, $210)
-
-Q: What's the status of my RAG course?
-  -&gt; check_enrolment_status({'enrolment_id': 'TC-RAG'}) = {"error": "not one of the signed-in customer's enrolments; call get_my_profile to see them"
-A: It seems there was an error. Let's get your profile to check your enrolments first.
-
-Q: My invoice is wrong, please open a ticket for me.
-  -&gt; create_support_ticket({'summary': 'Incorrect invoice amount', 'category': 'billing'}) = {"ticket_id": "T-D4BBD9", "status": "created", "category": "billing"}
-A: A support ticket has been created for you regarding your billing issue. Your ticket ID is T-D4BBD9.</code></pre></li>
+    <span class="out-label">The model run varies; inspect each requested function and its result. To test filtering without a model call, run:</span>
+<pre class="term"><code><span class="ps">$ </span>python -c "from l2_tools import search_products; print(search_products(family='cards', max_annual_fee_usd=0))"</code></pre>
+<pre class="out"><code>[{'id': 'P110', 'name': 'Cashback Card', 'family': 'cards', 'annual_fee_usd': 0, 'rate_pct': 22.99, 'rate_type': 'APR'},
+ {'id': 'P112', 'name': 'Starter Credit Card', 'family': 'cards', 'annual_fee_usd': 0, 'rate_pct': 26.99, 'rate_type': 'APR'},
+ {'id': 'P113', 'name': 'Balance Transfer Card', 'family': 'cards', 'annual_fee_usd': 0, 'rate_pct': 0.0, 'rate_type': 'APR'},
+ {'id': 'P114', 'name': 'Business Card', 'family': 'cards', 'annual_fee_usd': 0, 'rate_pct': 20.99, 'rate_type': 'APR'}]</code></pre></li>
   <li>For each question, check the arrows (<code>-&gt;</code>): which function did the model choose, with which arguments, and did the final answer use the result?</li>
-  <li>Look closely at the RAG question in the real run: the model guessed an ID (<code>TC-RAG</code>), got a clear error, said "Let's get your profile"… and stopped without calling it. Announcing a step instead of taking it is a common habit of smaller models. Run it again: the result varies from run to run, which is why real systems measure tool use over many runs (<a class="xref" href="../project/index.html#module-09">Module 09</a>). A larger model, or the handbook's Azure deployment, does this reliably.</li>
-  <li>Try your own: <code>python l2_tools.py "Is there an advanced course under $1,300?"</code> and <code>python l2_tools.py "Show me Diego's enrolments."</code> (the second should fail safely: only Mei is signed in).</li>
+  <li>Try: <code>python l2_tools.py "Has the replacement for my debit card been sent?"</code> and <code>python l2_tools.py "Show me Diego's card details."</code>. The second request should not reveal another customer's data. Treat model behavior as variable; measure tool selection and verify authorization in code.</li>
 </ol>
-<div class="callout note"><div class="c-label">Checkpoint</div><p>The model calls functions for the catalogue and ticket questions, your code runs them, and the answers use the results. You can explain what went wrong in any question where it didn't.</p></div>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>The model can request product and card functions, but application code owns identity, authorization, input validation and execution.</p></div>
 
 <h2 id="ex3">Exercise 3 · Embeddings: meaning as numbers</h2>
 <ol>
@@ -480,21 +504,14 @@ for i, text in enumerate(TEXTS):
     print(f"{text:38} closest: {TEXTS[j]:38} ({similarity[i, j]:.2f})")</code></pre></li>
   <li>Run it:
 <pre class="term"><code><span class="ps">$ </span>python l2_embeddings.py</code></pre>
-    <span class="out-label">Real output with nomic-embed-text</span>
-<pre class="out"><code>6 texts -&gt; vectors of 768 numbers. First five of the first: [0.063, 0.024, -0.171, 0.017, 0.036]
-
-How do I get my money back?            closest: Can I have a refund for my course?     (0.67)
-Can I have a refund for my course?     closest: How do I get my money back?            (0.67)
-¿Cómo pido un reembolso?               closest: How do I get my money back?            (0.44)
-My lab says quota exceeded             closest: Can I have a refund for my course?     (0.40)
-The sandbox won't start                closest: How do I get my money back?            (0.38)
-What's the weather in Paris?           closest: Can I have a refund for my course?     (0.35)</code></pre></li>
-  <li>Each text became 768 numbers. Texts with similar meaning have a high cosine similarity even when they share no words. Look at the Spanish sentence: how close is it to its English equivalents with this mostly English model?</li>
+    <span class="out-label">Typical shape with nomic-embed-text; vectors and similarity values depend on model version</span>
+<pre class="out"><code>6 texts -&gt; vectors of 768 numbers.</code></pre></li>
+  <li>Each text becomes one vector. Compare the actual nearest neighbors from your run, including the Spanish example. Vector dimensions and similarity scores depend on the embedding model; similarity is not a policy or suitability check.</li>
 </ol>
 <div class="callout note"><div class="c-label">Checkpoint</div><p>You can explain why "money back" and "refund" are close in vector space.</p></div>
 
 <h2 id="ex4">Exercise 4 · A semantic search app</h2>
-<p><a class="xref" href="../modules/05/index.html">Module 05</a>'s hands-on exercise: a semantic search application over a collection of documents.</p>
+<p><a class="xref" href="../modules/05/index.html">Module 05</a>'s hands-on exercise: hybrid retrieval over RR Finance Bank's fictional help articles.</p>
 <h3>Task 1: Build the index and the search</h3>
 <ol>
   <li>Create <code>l2_search.py</code>:
@@ -578,30 +595,23 @@ if __name__ == "__main__":
 <ol>
   <li>Run it with the built-in queries:
 <pre class="term"><code><span class="ps">$ </span>python l2_search.py</code></pre>
-    <span class="out-label">Real output with nomic-embed-text</span>
-<pre class="out"><code>(indexed 47 help sections with nomic-embed-text)
+    <span class="out-label">Example result categories; ranked order and scores may vary by model</span>
+<pre class="out"><code>(indexed 54 help sections with nomic-embed-text)
 
-money back if the trainer is ill
-  0.66  Refunds and cancellations &gt; If RR Finance Bank cancels
-  0.56  Refunds and cancellations &gt; When the money arrives
-  0.59  Refunds and cancellations &gt; How much you get back
+money back if I paid the wrong person
+  ...  Transfers and payments &gt; Sent money to the wrong person
 
-LAB-503
-  0.58  Labs and cloud sandboxes &gt; Common problems
-  0.52  Labs and cloud sandboxes &gt; How long labs stay open
-  0.49  Course formats &gt; Classroom
+Instant Pay
+  ...  Transfers and payments &gt; Limits and fees
 
-pay in parts
-  0.58  Payments and invoices &gt; Ways to pay
-  0.54  Payments and invoices &gt; Invoices and receipts
-  0.57  Payments and invoices &gt; Paying in instalments
+safe account
+  ...  Fraud and scams &gt; We will never ask
 
-discount for my team
-  0.70  Training for teams and companies &gt; Group discounts
-  0.58  Training for teams and companies &gt; Training credits
-  0.52  Training for teams and companies &gt; Reports for managers</code></pre></li>
+fingerprint sign in
+  ...  Online banking and app access &gt; Signing in</code></pre>
+    <p>Top results and scores can differ with the embedding model; open the cited policy and verify its text before using it.</p></li>
   <li>Run it again: no "(indexed …)" line this time, because the saved index is reused.</li>
-  <li>Try paraphrases and codes: <code>python l2_search.py "my sandbox stopped while I was at lunch" "AZ-104 voucher expiry"</code>. Keyword search finds exact codes; meaning search finds paraphrases; hybrid gets both.</li>
+  <li>Try paraphrases and bank terms: <code>python l2_search.py "someone moved money from my account" "FR-12 payment alert"</code>. Keyword search can help with exact terms, semantic search with paraphrases, and hybrid ranking combines both.</li>
   <li>In <code>.env</code>, if you change <code>EMBED_MODEL</code>, the index is rebuilt automatically: vectors from different models can't be compared.</li>
 </ol>
 <div class="callout note"><div class="c-label">Checkpoint</div><p>Your search finds the right help section for paraphrased questions and for error codes, and reuses its saved index.</p></div>
@@ -612,8 +622,8 @@ discount for my team
     <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
     <tbody>
       <tr><td><code>AttributeError: ... has no attribute 'parse'</code></td><td>Your <code>openai</code> package is old: <code>pip install -U openai</code>.</td></tr>
-      <tr><td>The model answers without calling any function</td><td>Small models sometimes do. Ask more specifically ("check my enrolment status"), or try <code>qwen2.5:7b</code> as <code>CHAT_MODEL</code> if you have 16 GB of RAM.</td></tr>
-      <tr><td><code>does not support tools</code></td><td>The chosen model has no tool support in Ollama. Use <code>llama3.2</code> or <code>qwen2.5</code>.</td></tr>
+      <tr><td>The model answers without calling any function</td><td>Inspect whether the chosen model and API endpoint support tool calls. Try a read-only request such as "Has the replacement for my debit card been sent?" and compare the model's response with the function result.</td></tr>
+      <tr><td><code>does not support tools</code></td><td>Use a model and endpoint combination that supports tool calls through the OpenAI-compatible API; check the provider's current documentation for supported models and behavior.</td></tr>
       <tr><td><code>model "nomic-embed-text" not found</code></td><td><code>ollama pull nomic-embed-text</code>.</td></tr>
       <tr><td>Search results look random after changing data</td><td>Delete <code>data/search_index.json</code> to rebuild the index.</td></tr>
     </tbody>
@@ -622,15 +632,15 @@ discount for my team
 
 <h2 id="review">Review and cleanup</h2>
 <ul class="checklist">
-  <li>A schema makes output shape reliable; validation and common sense check the values.</li>
+  <li>A schema constrains output shape; validation and domain rules still need to check the values.</li>
   <li>Function calling is a loop you control: the model asks, your code decides and runs, the result goes back.</li>
   <li>Identity comes from the app, never from the model's arguments.</li>
   <li>Embeddings turn meaning into vectors; hybrid search combines meaning with exact keywords.</li>
 </ul>
-<p><strong>Cleanup:</strong> keep <code>data/search_index.json</code>; Lab 3 builds a similar index for its knowledge assistant.</p>
+<p><strong>Cleanup:</strong> keep <code>data/search_index.json</code>; Lab 3 builds a separate index that also applies a public/staff audience filter.</p>
 
 </div>
-<nav class="pager" aria-label="Page navigation"><span></span><a class="next" href="../oss/lab-3.html"><small>Next</small><span>Lab 3 · RAG and agents →</span></a></nav>
+<nav class="pager" aria-label="Page navigation"><a class="prev" href="../oss/lab-1.html"><small>Previous</small><span>← Lab 1 · Prompts, APIs and JSON</span></a><a class="next" href="../oss/lab-3.html"><small>Next</small><span>Lab 3 · RAG and agents →</span></a></nav>
 </main>
 <aside class="otp" aria-label="On this page"></aside>
 </div>

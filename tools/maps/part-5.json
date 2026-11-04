@@ -1,0 +1,75 @@
+{
+  "id": "map-part5",
+  "path": "maps/part-5.html",
+  "title": "Part V concept map",
+  "h1": "Part V Concept Map: Ship It",
+  "description": "An expandable map of Modules 11–12, connecting model routing, caching and cost budgets with deployment, release controls and operational monitoring.",
+  "lead": "Part V prepares an application for release and operation. Performance choices affect quality, latency and cost; release controls identify what is being deployed; operations observe the running system and provide incident and rollback paths. A passing local check is one input to that work, not a production certification.",
+  "chips": ["Modules 11–12", "4 topics", "Available modules", "Operate responsibly"],
+  "story": [
+    ["Optimize deliberately", "Module 11", "Use measured routing, caching and budgets to balance latency, quality and cost."],
+    ["Release and operate", "Module 12", "Use reproducible release controls, monitor the live service and respond to incidents."]
+  ],
+  "modules": [
+    {
+      "num": "11",
+      "title": "Performance and Cost Optimization",
+      "tagline": "Measure and tune the work each request performs",
+      "overview": "modules/11/index.html",
+      "topics": [
+        {
+          "id": "routing-cost",
+          "title": "Routing, caching and batching",
+          "page": "modules/11/routing-and-caching.html",
+          "definition": "Routing selects a model or path, caching reuses eligible results and batching groups work to improve throughput.",
+          "example": "Route a tested simple task to a smaller deployment and batch independent offline evaluations.",
+          "finance": "Customer-specific answers require cache isolation and authorization-aware keys before any response is reused.",
+          "usecase": "Reducing latency or spend while preserving required quality and privacy.",
+          "keep": "Measure end-to-end effects; caching and batching change freshness, isolation and failure behavior.",
+          "connects": [["cost-budgets", "choices affect measurable budgets"], ["deployment", "routes point to deployed versions"], ["operations", "monitor performance after changes"]]
+        },
+        {
+          "id": "cost-budgets",
+          "title": "Cost and latency budgets",
+          "page": "modules/11/cost-budget.html",
+          "definition": "A budget sets measurable limits for resource use, response time or error behavior over a defined workload.",
+          "example": "Estimate monthly input and output token costs from a tested request volume and current provider rates.",
+          "finance": "A support feature needs a volume estimate, budget owner and a plan for traffic spikes.",
+          "usecase": "Capacity planning, model selection and cost monitoring.",
+          "keep": "Estimates depend on workload and rate-card details; include retries, tools, storage and other charges where applicable.",
+          "connects": [["routing-cost", "optimization changes latency and spend"], ["deployment", "release choices affect capacity"], ["operations", "measure actual service behavior"]]
+        }
+      ]
+    },
+    {
+      "num": "12",
+      "title": "Productionizing Generative AI",
+      "tagline": "Control releases and operate the service after launch",
+      "overview": "modules/12/index.html",
+      "topics": [
+        {
+          "id": "deployment",
+          "title": "Deployment and release controls",
+          "page": "modules/12/deployment.html",
+          "definition": "Deployment controls package and promote a versioned application and its model, prompts, configuration and dependencies.",
+          "example": "Record an image digest, model deployment, prompt version, evaluation set and rollback target in a release manifest.",
+          "finance": "A bank release should be traceable to approved artifacts and a tested rollback path.",
+          "usecase": "Repeatable promotion through development, test and production environments.",
+          "keep": "A manifest's shape does not verify artifact provenance, permissions, deployment success or rollback readiness.",
+          "connects": [["routing-cost", "routes select deployed versions"], ["cost-budgets", "capacity and spend depend on release configuration"], ["operations", "observe and respond after deployment"]]
+        },
+        {
+          "id": "operations",
+          "title": "Monitoring, incidents and drift",
+          "page": "modules/12/operations.html",
+          "definition": "Operations monitor service health and quality, investigate incidents and detect changes in inputs or outcomes over time.",
+          "example": "Track latency and error rates alongside citation or evaluation signals, with thresholds and an incident owner.",
+          "finance": "Investigate a rise in unsupported policy answers and use the approved rollback or disable path when required.",
+          "usecase": "Keeping a deployed AI feature reliable and accountable.",
+          "keep": "Operational signals need context, access controls and response procedures; a dashboard alone does not resolve incidents.",
+          "connects": [["deployment", "operations follow a controlled release"], ["cost-budgets", "observe actual usage and latency"], ["routing-cost", "monitor route behavior and fallback outcomes"]]
+        }
+      ]
+    }
+  ]
+}

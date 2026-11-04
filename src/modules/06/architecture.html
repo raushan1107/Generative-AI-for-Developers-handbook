@@ -64,11 +64,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>In a bank, each stage of the RAG pipeline has an owner: content teams own the documents, IT owns ingestion and the index, compliance approves the answer prompt, and model risk validates the whole pipeline before launch. Drawing the architecture like this diagram is often the first artefact a model risk review asks for.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>In a bank, each stage of the RAG pipeline has an owner: content teams own the documents, IT owns ingestion and the index, compliance approves the answer prompt, and model risk validates the whole pipeline before launch. Drawing the architecture like this diagram is often the first artefact a model risk review asks for.</p>
-</div>
   <p>When a RAG bot gives a wrong answer, experienced teams open the trace and read the retrieved chunks first. Most of the time the answer was wrong because the right passage wasn't there: an outdated document, a table that chunked badly, a question in another language, or a filter that hid it. Teams that log retrieval fix these in hours; teams that only log the final answer end up rewriting prompts for weeks.</p>
 </div>
 

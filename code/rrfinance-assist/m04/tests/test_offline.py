@@ -27,6 +27,9 @@ def test_every_prompt_renders_and_is_versioned():
 def test_render_uses_the_active_version():
     text, version = render("assist_system")
     assert version == "assist_system@v3" and "$29" in text and "quote_fee_refund" in text
+    assert "first call list_my_accounts" in text
+    assert "Never ask the customer for an internal account ID" in text
+    assert "Never claim a lookup" in text
 
 
 # ---------- triage with structured outputs (milestone 4) ----------

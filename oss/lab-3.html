@@ -4,9 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lab 3: RAG and Agents</title>
-<meta name="description" content="Open-source lab guide, Lab 3 (Part III, Modules 06–07): build a company knowledge assistant that answers from public and internal documents with citations and audience filtering, then an agent that understands a request, selects and calls tools, processes the results and answers, and asks for your approval before it changes anything.">
+<meta name="description" content="Open-source lab guide, Lab 3 (Part III, Modules 06–07): retrieve fictional RR Finance Bank help and staff documents with citations and a demo audience filter, then run a card-freeze tool flow with explicit human approval.">
 <meta name="author" content="Raushan Ranjan (MCT)">
-<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -134,23 +133,59 @@
 </details>
 </div>
 <div class="sb-section"><div class="sb-title">Part IV · Build it right</div>
-<div class="sb-module status-planned"><span class="sb-num">08</span>AI Application Architecture<span class="sb-status sb-status-planned">Planned</span></div>
-<div class="sb-module status-planned"><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-status sb-status-planned">Planned</span></div>
-<div class="sb-module status-planned"><span class="sb-num">10</span>Security and Responsible AI<span class="sb-status sb-status-planned">Planned</span></div>
+<details class="sb-mod"><summary><span class="sb-num">08</span>AI Application Architecture<span class="sb-status sb-status-live">Live</span></summary>
+<a class="sb-link sub k-overview " data-page-id="m08" href="../modules/08/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m08-gateway" href="../modules/08/gateway.html"><span class="sb-ico">•</span>Gateways and model routing</a>
+<a class="sb-link sub k-topic " data-page-id="m08-state" href="../modules/08/state-and-telemetry.html"><span class="sb-ico">•</span>Sessions, queues and traces</a>
+<a class="sb-link sub k-build " data-page-id="m08-build" href="../modules/08/build.html"><span class="sb-ico">⚒</span>Build: Milestone 8</a>
+<a class="sb-link sub k-recap " data-page-id="m08-recap" href="../modules/08/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">09</span>Evaluating GenAI Applications<span class="sb-status sb-status-live">Live</span></summary>
+<a class="sb-link sub k-overview " data-page-id="m09" href="../modules/09/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m09-data" href="../modules/09/datasets.html"><span class="sb-ico">•</span>Build an evaluation set</a>
+<a class="sb-link sub k-topic " data-page-id="m09-metrics" href="../modules/09/metrics.html"><span class="sb-ico">•</span>Metrics, judges and release gates</a>
+<a class="sb-link sub k-build " data-page-id="m09-build" href="../modules/09/build.html"><span class="sb-ico">⚒</span>Build: Milestone 9</a>
+<a class="sb-link sub k-recap " data-page-id="m09-recap" href="../modules/09/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">10</span>Security and Responsible AI<span class="sb-status sb-status-live">Live</span></summary>
+<a class="sb-link sub k-overview " data-page-id="m10" href="../modules/10/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m10-threat" href="../modules/10/threat-model.html"><span class="sb-ico">•</span>Threat model and prompt injection</a>
+<a class="sb-link sub k-topic " data-page-id="m10-privacy" href="../modules/10/privacy-and-safety.html"><span class="sb-ico">•</span>Privacy, safety and human review</a>
+<a class="sb-link sub k-build " data-page-id="m10-build" href="../modules/10/build.html"><span class="sb-ico">⚒</span>Build: Milestone 10</a>
+<a class="sb-link sub k-recap " data-page-id="m10-recap" href="../modules/10/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
 </div>
 <div class="sb-section"><div class="sb-title">Part V · Ship it</div>
-<div class="sb-module status-planned"><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-status sb-status-planned">Planned</span></div>
-<div class="sb-module status-planned"><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-status sb-status-planned">Planned</span></div>
+<details class="sb-mod"><summary><span class="sb-num">11</span>Performance and Cost Optimization<span class="sb-status sb-status-live">Live</span></summary>
+<a class="sb-link sub k-overview " data-page-id="m11" href="../modules/11/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m11-routing" href="../modules/11/routing-and-caching.html"><span class="sb-ico">•</span>Routing, caching and batching</a>
+<a class="sb-link sub k-topic " data-page-id="m11-budget" href="../modules/11/cost-budget.html"><span class="sb-ico">•</span>Cost and latency budgets</a>
+<a class="sb-link sub k-build " data-page-id="m11-build" href="../modules/11/build.html"><span class="sb-ico">⚒</span>Build: Milestone 11</a>
+<a class="sb-link sub k-recap " data-page-id="m11-recap" href="../modules/11/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
+<details class="sb-mod"><summary><span class="sb-num">12</span>Productionizing Generative AI<span class="sb-status sb-status-live">Live</span></summary>
+<a class="sb-link sub k-overview " data-page-id="m12" href="../modules/12/index.html"><span class="sb-ico">◎</span>Overview and mental map</a>
+<a class="sb-link sub k-topic " data-page-id="m12-deploy" href="../modules/12/deployment.html"><span class="sb-ico">•</span>Deployment and release controls</a>
+<a class="sb-link sub k-topic " data-page-id="m12-ops" href="../modules/12/operations.html"><span class="sb-ico">•</span>Monitoring, incidents and drift</a>
+<a class="sb-link sub k-build " data-page-id="m12-build" href="../modules/12/build.html"><span class="sb-ico">⚒</span>Build: Milestone 12</a>
+<a class="sb-link sub k-recap " data-page-id="m12-recap" href="../modules/12/recap.html"><span class="sb-ico">✓</span>Recap and self-check</a>
+</details>
 </div>
 <div class="sb-section"><div class="sb-title">Concept maps</div>
 <a class="sb-link " data-page-id="map-part1" href="../maps/part-1.html"><span class="sb-ico">◇</span>Part I · Foundations</a>
+<a class="sb-link " data-page-id="map-part2" href="../maps/part-2.html"><span class="sb-ico">◇</span>Part II · Connect the model to your app</a>
+<a class="sb-link " data-page-id="map-part3" href="../maps/part-3.html"><span class="sb-ico">◇</span>Part III · Ground it and let it act</a>
+<a class="sb-link " data-page-id="map-part4" href="../maps/part-4.html"><span class="sb-ico">◇</span>Part IV · Build it right</a>
+<a class="sb-link " data-page-id="map-part5" href="../maps/part-5.html"><span class="sb-ico">◇</span>Part V · Ship it</a>
 </div>
 <div class="sb-section"><div class="sb-title">Open-source lab guide</div>
 <a class="sb-link " data-page-id="oss" href="../oss/index.html"><span class="sb-ico">▸</span>About the open-source labs</a>
 <a class="sb-link " data-page-id="oss-0" href="../oss/lab-0-setup.html"><span class="sb-ico">▸</span>Lab 0 · Set up Ollama and Python<span class="sb-status sb-status-live">Live</span></a>
 <a class="sb-link " data-page-id="oss-1" href="../oss/lab-1.html"><span class="sb-ico">▸</span>Lab 1 · Prompts, APIs and JSON<span class="sb-status sb-status-live">Live</span></a>
-<a class="sb-link " data-page-id="oss-2" href="../oss/lab-2.html"><span class="sb-ico">▸</span>Lab 2 · Tools and semantic search<span class="sb-status sb-status-draft">Draft</span></a>
-<a class="sb-link active" data-page-id="oss-3" href="../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents<span class="sb-status sb-status-draft">Draft</span></a>
+<a class="sb-link " data-page-id="oss-2" href="../oss/lab-2.html"><span class="sb-ico">▸</span>Lab 2 · Tools and semantic search</a>
+<a class="sb-link active" data-page-id="oss-3" href="../oss/lab-3.html"><span class="sb-ico">▸</span>Lab 3 · RAG and agents</a>
+<a class="sb-link " data-page-id="oss-4" href="../oss/lab-4.html"><span class="sb-ico">▸</span>Lab 4 · Architecture, evaluation and safety</a>
+<a class="sb-link " data-page-id="oss-5" href="../oss/lab-5.html"><span class="sb-ico">▸</span>Lab 5 · Performance, cost and release</a>
 </div>
 <div class="sb-section"><div class="sb-title">Practice</div>
 <a class="sb-link " data-page-id="project" href="../project/index.html"><span class="sb-ico">⚒</span>RR Finance Assist: the build</a>
@@ -167,7 +202,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
   </button>
   <nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Handbook</a><i>/</i><span>Open-source lab guide</span><i>/</i><span>Lab 3 · RAG and agents</span></nav>
-  <span class="kind-pill">Open-source lab · Draft</span>
+  <span class="kind-pill">Open-source lab</span>
   <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light or dark theme">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
   </button>
@@ -175,16 +210,16 @@
 </header>
 <div class="page-wrap">
 <main class="page" id="main">
-<header class="page-hero"><span class="eyebrow">Open-source lab</span><h1>Lab 3 · RAG and Agents with Open Models</h1><p class="lead">You'll build the two projects of Part III with open models. First a company knowledge assistant: it ingests RR Finance Bank's help articles and staff documents, retrieves the right sections for each question, answers only from them and cites them, and shows staff-only documents only to staff. Then an agent that works through a request step by step and stops for your approval before it changes a booking.</p><div class="chips"><span class="chip">Modules 06–07</span><span class="chip">RAG with citations</span><span class="chip">Audience filter</span><span class="chip">Agent loop</span><span class="chip">Human approval</span><span class="chip">≈ 3 hours</span></div><div class="flow"><em>Estimated time: 3 hours</em></div></header>
+<header class="page-hero"><span class="eyebrow">Open-source lab</span><h1>Lab 3 · RAG and Agents with Open Models</h1><p class="lead">Build two small RR Finance Bank demonstrations with open models. The knowledge assistant retrieves public help or staff-only source files and shows citations. The agent can inspect a fictional customer's cards and request a card freeze, but a person must approve the change. These local examples are instructional only, not production banking controls.</p><div class="chips"><span class="chip">Modules 06–07</span><span class="chip">RAG and citations</span><span class="chip">Audience-filter demo</span><span class="chip">Agent loop</span><span class="chip">Approval before action</span><span class="chip">≈ 3 hours</span></div><div class="flow"><em>Estimated time: 3 hours</em></div></header>
 <div class="content">
 
 <h2 id="overview">Lab overview</h2>
 <div class="table-wrap min">
   <table>
     <tbody>
-      <tr><th>Objectives</th><td>Ingest documents in several formats · chunk, embed and store them · retrieve with a relevance floor and an audience filter · build a grounded prompt with numbered sources · check citations · run an agent loop with tools · require human approval for changes · verify outcomes in an audit log</td></tr>
-      <tr><th>Prerequisites</th><td>Lab 2 completed · <code>llama3.2</code> and <code>nomic-embed-text</code> pulled; <code>qwen2.5:7b</code> recommended for Exercise 2 if you have 16 GB of RAM · Part III demonstrated</td></tr>
-      <tr><th>You finish with</th><td><code>l3_knowledge.py</code>, a company knowledge assistant with customer and staff views, and <code>l3_agent.py</code>, an agent that acts only with your approval</td></tr>
+      <tr><th>Objectives</th><td>Parse Markdown, text and CSV sources · chunk, embed and retrieve relevant sections · filter the demo audience before retrieval · inspect citations without treating them as proof · trace tool calls · approve or decline a card-freeze action · compare the result with the in-memory audit log</td></tr>
+      <tr><th>Prerequisites</th><td>Lab 2 setup · Ollama running · <code>nomic-embed-text</code> pulled · a chat model configured in <code>.env</code>; a tool-capable model such as <code>qwen2.5:7b</code> may work better, but behavior varies</td></tr>
+      <tr><th>You finish with</th><td><code>l3_knowledge.py</code>, a local RAG demo, and <code>l3_agent.py</code>, an in-memory card-freeze approval demo. Neither implements production authorization or banking controls.</td></tr>
     </tbody>
   </table>
 </div>
@@ -192,8 +227,8 @@
   <table>
     <thead><tr><th>Exercise</th><th>Module</th><th>Time</th></tr></thead>
     <tbody>
-      <tr><td><a href="#ex1">1 · A company knowledge assistant (RAG)</a></td><td>06</td><td>90 min</td></tr>
-      <tr><td><a href="#ex2">2 · An agent that asks before it acts</a></td><td>07</td><td>80 min</td></tr>
+      <tr><td><a href="#ex1">1 · A bank-policy knowledge assistant (RAG)</a></td><td>06</td><td>90 min</td></tr>
+      <tr><td><a href="#ex2">2 · A card-freeze agent with approval</a></td><td>07</td><td>80 min</td></tr>
       <tr><td><a href="#review">Review and cleanup</a></td><td></td><td>10 min</td></tr>
     </tbody>
   </table>
@@ -264,13 +299,13 @@ def get_embed_client() -&gt; OpenAI:
 </ol>
 <div class="callout note"><div class="c-label">Missing files, or starting fresh?</div><p>Download <a href="../code/oss-labs-complete.zip"><code>oss-labs-complete.zip</code></a>: it has <code>client.py</code>, <code>.env.example</code>, <code>requirements.txt</code>, the data folder and the code of every lab released so far. Unzip it, copy <code>.env.example</code> to <code>.env</code>, create the virtual environment and run <code>pip install -r requirements.txt</code> (Lab 0, Exercise 3).</p></div>
 
-<h2 id="ex1">Exercise 1 · A company knowledge assistant (RAG)</h2>
-<p><a class="xref" href="../modules/06/index.html">Module 06</a>'s hands-on project: a company knowledge assistant that answers questions from internal documents.</p>
+<h2 id="ex1">Exercise 1 · A bank-policy knowledge assistant (RAG)</h2>
+<p><a class="xref" href="../modules/06/index.html">Module 06</a>'s hands-on project: retrieve relevant bank-help sections, answer from the supplied source text and display citations you can inspect.</p>
 
 <h3>Task 1: Look at the documents</h3>
 <ol>
-  <li>Open a few files in <code>data/help/</code> (public help articles) and all three in <code>data/internal/</code> (staff only): a markdown playbook, a plain-text runbook with upper-case headings, and a CSV FAQ. Real knowledge bases mix formats like this.</li>
-  <li>Find one fact that appears only in an internal document, for example the maximum class size in <code>staff-faq.csv</code>. You'll ask about it later.</li>
+  <li>Open <code>data/help/fraud-and-scams.md</code>, <code>data/help/card-disputes.md</code> and the three files in <code>data/internal/</code>: a Markdown playbook, a text runbook and a CSV FAQ. This demonstrates format handling with fictional policy content.</li>
+  <li>Find a fact that appears only in a staff source, such as the seven-year chat-transcript retention answer in <code>staff-faq.csv</code>. You will test whether the customer view can retrieve it.</li>
 </ol>
 
 <h3>Task 2: Build the assistant</h3>
@@ -376,68 +411,64 @@ if __name__ == "__main__":
         print()</code></pre></li>
   <li>Follow the numbered stages in the comments, which match the RAG architecture from <a class="xref" href="../modules/06/index.html">Module 06</a>:
     <ol>
-      <li><strong>Ingest:</strong> <code>read_document()</code> turns markdown, text and CSV into one shape.</li>
-      <li><strong>Chunk:</strong> one chunk per section, with the document title on every chunk and the introduction kept.</li>
-      <li><strong>Embed and store:</strong> every chunk once, saved to <code>data/kb_index.json</code> with its source and <strong>audience</strong> (<code>public</code> or <code>staff</code>).</li>
-      <li><strong>Retrieve:</strong> only chunks the current audience may see, only above a relevance floor of 0.55.</li>
-      <li><strong>Prompt:</strong> numbered <code>&lt;source&gt;</code> blocks, rules to answer only from them and cite like [1], and a <code>NOT_FOUND</code> way out.</li>
-      <li><strong>Generate and check:</strong> citations to sources that weren't sent are removed, and the cited sources are listed.</li>
+      <li><strong>Ingest:</strong> <code>read_document()</code> normalizes Markdown, text and CSV into text.</li>
+      <li><strong>Chunk:</strong> one chunk per heading, retaining the document title and any introduction.</li>
+      <li><strong>Embed and store:</strong> chunks and vectors are saved to <code>data/kb_index.json</code> with a source filename and <code>public</code> or <code>staff</code> label.</li>
+      <li><strong>Retrieve:</strong> the audience filter is applied before ranking, then a fixed 0.55 cosine-similarity floor is applied. That value is only a demo setting for the configured embedding model.</li>
+      <li><strong>Prompt:</strong> the selected chunks are sent as numbered <code>&lt;source&gt;</code> blocks, with instructions to cite them and return <code>NOT_FOUND</code> when they do not answer.</li>
+      <li><strong>Check:</strong> citation numbers outside the supplied range are removed; this does not verify that a valid citation supports the adjacent claim.</li>
     </ol></li>
 </ol>
 
-<h3>Task 3: Ask as a customer, then as staff</h3>
+<h3>Task 3: Compare the customer and staff demos</h3>
 <ol>
-  <li>Start the customer view (the first run builds the index, which takes a few seconds):
+  <li>Start the customer view (the first run builds the index; its duration depends on your machine and embedding endpoint):
 <pre class="term"><code><span class="ps">$ </span>python l3_knowledge.py</code></pre></li>
-  <li>Ask these questions, one at a time:
-<pre class="out"><code>How much do I get back if I cancel 10 days before the course?
-My lab shows LAB-503. What should I do?
-How many customers can join a classroom course?
+  <li>Ask a public-policy question, a staff-only question and an unrelated question:
+<pre class="out"><code>What should I do if someone asks me for a one-time code?
+How long do we keep chat transcripts?
 What is the capital of France?</code></pre>
-    <span class="out-label">Real session with llama3.2 (yours will differ)</span>
+    <span class="out-label">Illustrative checks; retrieved chunks and model wording can vary</span>
 <pre class="out"><code>RR Finance Bank knowledge assistant (customer view). Empty line to quit.
 
-Question: How much do I get back if I cancel 10 days before the course?
-50% refund. [1]
-  [1] Refunds and cancellations &gt; How much you get back (refunds-and-cancellations.md)
+Question: What should I do if someone asks me for a one-time code?
+The bank says it will never ask for a one-time code. [1]
+  [1] Fraud and scams &gt; We will never ask (fraud-and-scams.md)
 
-Question: My lab shows LAB-503. What should I do?
-Wait two minutes and refresh.
-
-Question: How many customers can join a classroom course?
+Question: How long do we keep chat transcripts?
 I couldn't find that in RR Finance Bank's documents.
 
 Question: What is the capital of France?
-I couldn't find that in RR Finance Bank's documents.
+Expected: no bank source answers this; check that the assistant abstains rather than inventing a bank policy.
 
 Question:</code></pre></li>
-  <li>Press <kbd>Enter</kbd> on an empty line to quit, then start the staff view and ask the class-size question again:
+  <li>Press <kbd>Enter</kbd> on an empty line to quit, then run the staff view and ask the retention question:
 <pre class="term"><code><span class="ps">$ </span>python l3_knowledge.py --staff</code></pre>
-    <span class="out-label">Real session with llama3.2</span>
+    <span class="out-label">Illustrative source-grounded answer; model wording can vary</span>
 <pre class="out"><code>RR Finance Bank knowledge assistant (staff view). Empty line to quit.
 
-Question: How many customers can join a classroom course?
-16 [1]
-  [1] Staff Faq &gt; How many customers can join a classroom course? (staff-faq.csv)
+Question: How long do we keep chat transcripts?
+Seven years, the same as call recordings. [1]
+  [1] Staff Faq &gt; How long do we keep chat transcripts? (staff-faq.csv)
 
 Question:</code></pre></li>
-  <li>Compare: the same question, two answers. Customers never retrieve staff documents, because the audience filter runs inside the search, before the model sees anything.</li>
+  <li>The public/staff split demonstrates retrieval filtering, but <code>--staff</code> is only a command-line switch anyone running this local script can set. It is not authentication or an authorization boundary; production access must come from a trusted identity and server-side policy.</li>
 </ol>
 
 <h3>Task 4: Judge the answers</h3>
 <ol>
   <li>For each answer, open the cited file and check the fact is really there. Citations make answers checkable; they don't make them correct.</li>
-  <li>"What is the capital of France?" should give "I couldn't find that": either no section passed the relevance floor (no model call at all) or the model replied <code>NOT_FOUND</code>.</li>
-  <li>Did any answer state a fact without a citation, or a number that isn't in its source? Small models do this; the handbook's <a class="xref" href="../modules/06/citations.html#d06-10">Drill 06.10</a> shows how to catch it in code.</li>
+  <li>For the unrelated question, see whether the assistant abstains. Retrieval can return irrelevant chunks, and a model can still fail to follow the abstention instruction.</li>
+  <li>Check each claim against its cited text. The code only removes citation numbers that were not supplied; it does not establish factual support. Compare with the citation checks in <a class="xref" href="../modules/06/index.html">Module 06</a>.</li>
 </ol>
-<div class="callout note"><div class="c-label">Checkpoint</div><p>Your assistant answers from the documents with cited sources, says when it can't find something, and gives staff-only answers only in the staff view.</p></div>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You can trace which chunks reached the model, verify cited facts against source files, and explain why the CLI audience flag is not production access control.</p></div>
 
 <h2 id="ex2">Exercise 2 · An agent that asks before it acts</h2>
-<p><a class="xref" href="../modules/07/index.html">Module 07</a>'s hands-on exercise: an agent that understands a user request, selects and calls an appropriate tool, processes the result and returns a final response.</p>
+<p><a class="xref" href="../modules/07/index.html">Module 07</a>'s hands-on exercise: an agent loop that reads a request, requests card tools, receives their results and asks a person before a freeze takes effect.</p>
 
 <h3>Task 1: Choose the agent model</h3>
 <ol>
-  <li>Agents need a model that's good at multi-step tool use. If you pulled <code>qwen2.5:7b</code>, set <code>AGENT_MODEL=qwen2.5:7b</code> in <code>.env</code>. Otherwise the agent uses <code>llama3.2</code>; it works, but expect more mistakes, and treat them as part of the lesson.</li>
+  <li>Set <code>AGENT_MODEL</code> in <code>.env</code> to a model available in your Ollama setup. A tool-capable model such as <code>qwen2.5:7b</code> may be more reliable, but tool selection and wording vary by model and version.</li>
 </ol>
 
 <h3>Task 2: Build the agent</h3>
@@ -536,71 +567,62 @@ if __name__ == "__main__":
     print(f"\nAnswer: {run(request)}")
     print(f"Audit log (what really changed): {AUDIT_LOG or 'nothing'}")</code></pre></li>
   <li>Find the five steps of the agent flow in <code>run()</code>: (1) understand the task (the model reads the request), (2) select a tool, (3) execute it, (4) evaluate the result (it goes back to the model, which decides the next step), (5) return a final response.</li>
-  <li>Find the guard rails: <code>LEARNER</code> is set by the app; <code>NEEDS_APPROVAL</code> makes <code>extend_lab</code> stop for a person, with a preview computed from real data; <code>max_steps</code> stops runaway loops; <code>AUDIT_LOG</code> records what really changed.</li>
+  <li>Find the safeguards: <code>CUSTOMER</code> and card data are hard-coded demo values; <code>NEEDS_APPROVAL</code> pauses <code>freeze_card</code> and shows a preview from the current in-memory card record; <code>max_steps</code> bounds the loop; <code>AUDIT_LOG</code> records successful changes only in memory.</li>
 </ol>
 
-<h3>Task 3: Decline, then approve</h3>
+<h3>Task 3: Inspect, decline, then approve</h3>
 <ol>
-  <li>Run it and answer <code>n</code> when asked for approval:
+  <li>Run the default request and answer <code>n</code> when the approval prompt appears:
 <pre class="term"><code><span class="ps">$ </span>python l3_agent.py</code></pre>
-    <span class="out-label">Real run with qwen2.5:7b, declined (yours will differ)</span>
-<pre class="out"><code>Request: Please extend my AI-102 lab and tell me the new end date.  (agent model: qwen2.5:7b)
-  step 1: my_enrolments({}) -&gt; [{"enrolment_id": "TC-10293", "course": "AI-102: Azure AI Engineer"}, {"enrolment_id": "TC-10477", "course": "Building RAG Applications"}]
-  step 2: lab_status({'enrolment_id': 'TC-10293'}) -&gt; {"enrolment_id": "TC-10293", "lab_until": "2026-10-16", "free_extension_available": true}
+    <span class="out-label">Illustrative tool results; model call order and wording can vary</span>
+<pre class="out"><code>Request: I think I left my Cashback Card in a taxi. Please freeze it.
+  step 1: my_cards({}) -&gt; [{"card_last4": "4821", "product": "Cashback Card"}, {"card_last4": "1177", "product": "Everyday Checking debit card"}]
+  step 2: card_status({'card_last4': '4821'}) -&gt; {"card_last4": "4821", "product": "Cashback Card", "status": "active"}
 
-  APPROVAL NEEDED: extend TC-10293 by 7 days, free (lab currently open until 2026-10-16)
+  APPROVAL NEEDED: freeze the Cashback Card ending 4821 (currently active)
   Approve? [y/n] n
-  step 3: extend_lab({'enrolment_id': 'TC-10293'}) -&gt; {"error": "the customer declined this action"}
-
-Answer: The extension for your AI-102 lab was declined. The current end date remains 2026-10-16.
+  step 3: freeze_card({'card_last4': '4821'}) -&gt; {"error": "the customer declined this action"}
+Answer: no card was frozen.
 Audit log (what really changed): nothing</code></pre></li>
-  <li>Run it again and answer <code>y</code>:
-    <span class="out-label">Real run with qwen2.5:7b, approved</span>
-<pre class="out"><code>Request: Please extend my AI-102 lab and tell me the new end date.  (agent model: qwen2.5:7b)
-  step 1: my_enrolments({}) -&gt; [{"enrolment_id": "TC-10293", "course": "AI-102: Azure AI Engineer"}, {"enrolment_id": "TC-10477", "course": "Building RAG Applications"}]
-  step 2: lab_status({'enrolment_id': 'TC-10293'}) -&gt; {"enrolment_id": "TC-10293", "lab_until": "2026-10-16", "free_extension_available": true}
-
-  APPROVAL NEEDED: extend TC-10293 by 7 days, free (lab currently open until 2026-10-16)
-  Approve? [y/n] y
-  step 3: extend_lab({'enrolment_id': 'TC-10293'}) -&gt; {"enrolment_id": "TC-10293", "lab_until": "2026-10-23", "fee_usd": 0}
-
-Answer: The AI-102 lab has been extended to 2026-10-23 with the free extension.
-Audit log (what really changed): [{'action': 'extend_lab', 'enrolment_id': 'TC-10293', 'lab_until': '2026-10-23'}]</code></pre></li>
-  <li>Compare the final answer with the <strong>audit log</strong> line each time. The log is the truth: if the answer ever claims a change the log doesn't show, the model is describing something it didn't do. That happens, which is why real systems report outcomes from logs, not from the model's words.</li>
+  <li>Run it again in a new process and answer <code>y</code>. The sample card data resets on each run:
+    <span class="out-label">On approval, the deterministic tool result is:</span>
+<pre class="out"><code>  step: freeze_card({'card_last4': '4821'}) -&gt; {"card_last4": "4821", "status": "frozen", "note": "payments declined until unfrozen; direct debits keep working"}
+Audit log (what really changed): [{'action': 'freeze_card', 'card_last4': '4821'}]</code></pre></li>
+  <li>Compare the final response with the tool result and audit log. A model can still misstate an outcome; a production system should report outcomes from trusted application state, not rely on free-form model text.</li>
 </ol>
-
-<h3>Task 4: Push it</h3>
+<h3>Task 4: Test boundaries</h3>
 <ol>
-  <li>Ask for something it can't do: <code>python l3_agent.py "Extend the lab for my RAG course."</code> (that course hasn't started, so there's no lab yet). Does the agent explain the tool's error, or claim success?</li>
-  <li>Ask a question that needs no change: <code>python l3_agent.py "When does my AI-102 lab close?"</code>. No approval should be requested.</li>
+  <li>Test the function boundary without a model call: <code>python -c "from l3_agent import AUDIT_LOG, freeze_card; print(freeze_card('9999')); print(AUDIT_LOG)"</code>. It should return an error and an empty log.</li>
+  <li>Try a read-only request: <code>python l3_agent.py "What cards do I have?"</code>. It should not request approval for a read. Model behavior can vary, so inspect the calls.</li>
 </ol>
-<div class="callout note"><div class="c-label">Checkpoint</div><p>Your agent finds the right enrolment by itself, asks before extending the lab, does nothing when you decline, and its audit log matches what actually happened.</p></div>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You can identify the tool boundary, inspect the approval preview, decline without changing state, and distinguish an in-memory demo log from a durable audit record.</p></div>
 
 <h2 id="trouble">Troubleshooting</h2>
 <div class="table-wrap min">
   <table>
     <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
     <tbody>
-      <tr><td>The knowledge assistant says "couldn't find" for everything</td><td>The relevance floor (0.55) is for <code>nomic-embed-text</code>. With another embedding model, lower <code>MIN_SCORE</code>; delete <code>data/kb_index.json</code> after changing the model.</td></tr>
-      <tr><td>Answers have no [1] citations</td><td>Small models often skip them. The answer may still be right; use a larger model for reliable citations.</td></tr>
-      <tr><td>The agent asks <em>you</em> to look up your enrolments</td><td>A weak-model habit. Use <code>qwen2.5:7b</code>, or strengthen the system prompt ("never ask the customer to call tools").</td></tr>
-      <tr><td>The agent guesses an ID like TC-12345</td><td>The tool refuses it and tells the model to call <code>my_enrolments</code>; good models recover on the next step.</td></tr>
-      <tr><td>Each agent step takes a minute</td><td>Normal for a 7B model on a CPU; the agent makes 3 to 5 calls. Close other apps, or use Lab 0's Option B for <code>AGENT_MODEL</code>.</td></tr>
+      <tr><td>The knowledge assistant says "couldn't find" for everything</td><td>Confirm the embedding model is running and the source files exist. The 0.55 floor is a demo value; inspect scores and recalibrate for your embedding model and data. Delete <code>data/kb_index.json</code> after changing the embedding model.</td></tr>
+      <tr><td>The answer has no citations or cites the wrong fact</td><td>Open the retrieved source and compare it with each claim. The code filters invalid source numbers but does not check entailment; try a different model or improve the chunking/prompt, then test again.</td></tr>
+      <tr><td>The public demo returns a staff fact</td><td>Check the audience labels and retrieval filter in <code>retrieve()</code>. Remember that this local script's <code>--staff</code> flag is not secure authorization.</td></tr>
+      <tr><td>The agent does not call tools</td><td>Confirm the configured <code>AGENT_MODEL</code> is available and supports tools through your Ollama version. Try another supported model and inspect its calls; the model is not guaranteed to follow the requested workflow.</td></tr>
+      <tr><td>The approval preview says "?" or unknown</td><td>Check that the requested last four digits came from <code>my_cards()</code> and that the tool arguments match the expected <code>card_last4</code> field.</td></tr>
+      <tr><td>A frozen card is active again after rerunning</td><td>Expected: card state is in memory and resets when the process exits. This example does not persist customer state.</td></tr>
     </tbody>
   </table>
 </div>
 
 <h2 id="review">Review and cleanup</h2>
 <ul class="checklist">
-  <li>RAG answers come from retrieved documents, with citations you can check and a way to say "not found".</li>
-  <li>Permission filters belong inside retrieval: customers never see staff documents.</li>
-  <li>An agent is a loop: understand, select a tool, execute, evaluate, answer, within a step budget.</li>
-  <li>Changes need a human's approval of an effect computed by code, and the audit log, not the model's words, says what happened.</li>
+  <li>RAG retrieves source text before generation; inspect the source and verify every factual claim.</li>
+  <li>Apply access controls before retrieval, but do not mistake a local command-line flag for authentication.</li>
+  <li>An agent is a bounded loop that requests tools; application code validates and executes them.</li>
+  <li>Approval, durable authorization, persistence and auditability require production controls beyond this in-memory demo.</li>
 </ul>
-<p><strong>Cleanup:</strong> delete <code>data/kb_index.json</code> and <code>data/search_index.json</code> if you want the disk space back (they're rebuilt when needed). To remove a model: <code>ollama rm qwen2.5:7b</code>.</p>
+<p><strong>Cleanup:</strong> delete <code>data/kb_index.json</code> if you want to rebuild it; the index is recreated on the next run. To remove an Ollama model, use <code>ollama rm MODEL_NAME</code>.</p>
 
 </div>
-<nav class="pager" aria-label="Page navigation"><a class="prev" href="../oss/lab-2.html"><small>Previous</small><span>← Lab 2 · Tools and semantic search</span></a><span></span></nav>
+<nav class="pager" aria-label="Page navigation"><a class="prev" href="../oss/lab-2.html"><small>Previous</small><span>← Lab 2 · Tools and semantic search</span></a><a class="next" href="../oss/lab-4.html"><small>Next</small><span>Lab 4 · Architecture, evaluation and safety →</span></a></nav>
 </main>
 <aside class="otp" aria-label="On this page"></aside>
 </div>

@@ -1,0 +1,11 @@
+<!--meta
+{"id": "m08-recap", "short": "Module 08 Recap", "h1": "Module 08 · Recap and Self-Check", "description": "Review gateways, explicit model routes, persistent session state, asynchronous queues and privacy-conscious traces.", "lead": "Use this check to separate what the infrastructure can enforce from what the application must still decide.", "chips": ["Review", "Self-check", "Next: evaluation"], "time": "10 min"}
+-->
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Architecture review.</p></div></div>
+<div class="quiz">
+<details><summary>1. Where should customer ownership checks live?</summary><div><p>In the application workflow, using verified identity and the bank's system of record. A gateway can enforce shared access controls but does not know the business relationship.</p></div></details>
+<details><summary>2. What is the primary purpose of a session TTL?</summary><div><p>To bound how long persisted session data remains available. It must align with product needs, legal retention policy and secure deletion requirements.</p></div></details>
+<details><summary>3. What makes a trace useful without copying sensitive content?</summary><div><p>A correlation ID, span relationships, timestamps, status and approved low-risk attributes. Do not attach full prompts, tokens, credentials or customer identifiers by default.</p></div></details>
+<details><summary>4. What is the next module?</summary><div><p><a href="../09/index.html">Module 09</a> builds a representative evaluation set and release gates; its metrics build on the citation limitations in <a href="../06/citations.html">Module 06</a>.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Remember</div><p>Gateways control access to model services; application code controls user-facing business outcomes. Treat session data and telemetry as sensitive design surfaces.</p></div>

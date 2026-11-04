@@ -55,11 +55,11 @@ data: [DONE]</code></pre>
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Streaming makes a banking chat feel responsive, but it creates a compliance wrinkle: text reaches the customer <em>before</em> you have checked it. Banks handle this by streaming only low-risk answers, checking the text in small chunks as it arrives (and replacing the message if a check fails, as Milestone 3 does), or buffering anything that quotes a rate, a fee or a balance until the full answer has been validated. Analyst tools that summarise long reports stream freely, because a human reviews the output anyway.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Streaming makes a banking chat feel responsive, but it creates a compliance wrinkle: text reaches the customer <em>before</em> you have checked it. Banks handle this by streaming only low-risk answers, checking the text in small chunks as it arrives (and replacing the message if a check fails, as Milestone 3 does), or buffering anything that quotes a rate, a fee or a balance until the full answer has been validated. Analyst tools that summarise long reports stream freely, because a human reviews the output anyway.</p>
-</div>
   <p>Every major chat product streams, and teams track TTFT as a headline metric alongside total latency. Voice assistants go further: they start speaking the first sentence while the rest is still being generated. Back-end jobs (summarising 10,000 tickets overnight) don't stream at all: nobody is watching, so they use batch processing instead (Module 11).</p>
 </div>
 

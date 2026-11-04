@@ -72,11 +72,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Model choice in a bank has two extra questions: <strong>where the data goes</strong> and <strong>who signs off</strong>. Customer data often must stay in a region, so teams pick regional or data-zone deployments, or self-host an open-weight model for the most sensitive work. And under model risk management rules (for example SR 11-7 in the US, or similar guidance elsewhere), each model used for a business decision is inventoried, validated and monitored. In practice that pushes banks towards a short list of approved models, chosen per task from their own evaluation results, with the model name in configuration so a re-validated replacement can be swapped in.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Model choice in a bank has two extra questions: <strong>where the data goes</strong> and <strong>who signs off</strong>. Customer data often must stay in a region, so teams pick regional or data-zone deployments, or self-host an open-weight model for the most sensitive work. And under model risk management rules (for example SR 11-7 in the US, or similar guidance elsewhere), each model used for a business decision is inventoried, validated and monitored. In practice that pushes banks towards a short list of approved models, chosen per task from their own evaluation results, with the model name in configuration so a re-validated replacement can be swapped in.</p>
-</div>
   <p>Many products quietly use several models. GitHub Copilot, for example, lets you pick between models from different providers for chat. Production systems often <strong>route</strong>: a small, cheap model handles routine requests and a larger one handles the hard ones (Module 11). Teams pick models from their own evaluation results, because public benchmarks rarely match a company's actual tasks.</p>
 </div>
 

@@ -155,23 +155,72 @@
       "title": "Part IV · Build it right",
       "part": "IV",
       "modules": [
-        {"num": "08", "title": "AI Application Architecture", "soon": true},
-        {"num": "09", "title": "Evaluating GenAI Applications", "soon": true},
-        {"num": "10", "title": "Security and Responsible AI", "soon": true}
+        {
+          "num": "08", "title": "AI Application Architecture",
+          "pages": [
+            {"id": "m08", "title": "Overview and mental map", "path": "modules/08/index.html", "kind": "overview"},
+            {"id": "m08-gateway", "title": "Gateways and model routing", "path": "modules/08/gateway.html", "kind": "topic"},
+            {"id": "m08-state", "title": "Sessions, queues and traces", "path": "modules/08/state-and-telemetry.html", "kind": "topic"},
+            {"id": "m08-build", "title": "Build: Milestone 8", "path": "modules/08/build.html", "kind": "build"},
+            {"id": "m08-recap", "title": "Recap and self-check", "path": "modules/08/recap.html", "kind": "recap"}
+          ]
+        },
+        {
+          "num": "09", "title": "Evaluating GenAI Applications",
+          "pages": [
+            {"id": "m09", "title": "Overview and mental map", "path": "modules/09/index.html", "kind": "overview"},
+            {"id": "m09-data", "title": "Build an evaluation set", "path": "modules/09/datasets.html", "kind": "topic"},
+            {"id": "m09-metrics", "title": "Metrics, judges and release gates", "path": "modules/09/metrics.html", "kind": "topic"},
+            {"id": "m09-build", "title": "Build: Milestone 9", "path": "modules/09/build.html", "kind": "build"},
+            {"id": "m09-recap", "title": "Recap and self-check", "path": "modules/09/recap.html", "kind": "recap"}
+          ]
+        },
+        {
+          "num": "10", "title": "Security and Responsible AI",
+          "pages": [
+            {"id": "m10", "title": "Overview and mental map", "path": "modules/10/index.html", "kind": "overview"},
+            {"id": "m10-threat", "title": "Threat model and prompt injection", "path": "modules/10/threat-model.html", "kind": "topic"},
+            {"id": "m10-privacy", "title": "Privacy, safety and human review", "path": "modules/10/privacy-and-safety.html", "kind": "topic"},
+            {"id": "m10-build", "title": "Build: Milestone 10", "path": "modules/10/build.html", "kind": "build"},
+            {"id": "m10-recap", "title": "Recap and self-check", "path": "modules/10/recap.html", "kind": "recap"}
+          ]
+        }
       ]
     },
     {
       "title": "Part V · Ship it",
       "part": "V",
       "modules": [
-        {"num": "11", "title": "Performance and Cost Optimization", "soon": true},
-        {"num": "12", "title": "Productionizing Generative AI", "soon": true}
+        {
+          "num": "11", "title": "Performance and Cost Optimization",
+          "pages": [
+            {"id": "m11", "title": "Overview and mental map", "path": "modules/11/index.html", "kind": "overview"},
+            {"id": "m11-routing", "title": "Routing, caching and batching", "path": "modules/11/routing-and-caching.html", "kind": "topic"},
+            {"id": "m11-budget", "title": "Cost and latency budgets", "path": "modules/11/cost-budget.html", "kind": "topic"},
+            {"id": "m11-build", "title": "Build: Milestone 11", "path": "modules/11/build.html", "kind": "build"},
+            {"id": "m11-recap", "title": "Recap and self-check", "path": "modules/11/recap.html", "kind": "recap"}
+          ]
+        },
+        {
+          "num": "12", "title": "Productionizing Generative AI",
+          "pages": [
+            {"id": "m12", "title": "Overview and mental map", "path": "modules/12/index.html", "kind": "overview"},
+            {"id": "m12-deploy", "title": "Deployment and release controls", "path": "modules/12/deployment.html", "kind": "topic"},
+            {"id": "m12-ops", "title": "Monitoring, incidents and drift", "path": "modules/12/operations.html", "kind": "topic"},
+            {"id": "m12-build", "title": "Build: Milestone 12", "path": "modules/12/build.html", "kind": "build"},
+            {"id": "m12-recap", "title": "Recap and self-check", "path": "modules/12/recap.html", "kind": "recap"}
+          ]
+        }
       ]
     },
     {
       "title": "Concept maps",
       "items": [
-        {"id": "map-part1", "title": "Part I · Foundations", "path": "maps/part-1.html", "kind": "map"}
+        {"id": "map-part1", "title": "Part I · Foundations", "path": "maps/part-1.html", "kind": "map"},
+        {"id": "map-part2", "title": "Part II · Connect the model to your app", "path": "maps/part-2.html", "kind": "map"},
+        {"id": "map-part3", "title": "Part III · Ground it and let it act", "path": "maps/part-3.html", "kind": "map"},
+        {"id": "map-part4", "title": "Part IV · Build it right", "path": "maps/part-4.html", "kind": "map"},
+        {"id": "map-part5", "title": "Part V · Ship it", "path": "maps/part-5.html", "kind": "map"}
       ]
     },
     {
@@ -181,8 +230,10 @@
         {"id": "oss", "title": "About the open-source labs", "path": "oss/index.html", "kind": "osslab"},
         {"id": "oss-0", "title": "Lab 0 · Set up Ollama and Python", "path": "oss/lab-0-setup.html", "kind": "osslab"},
         {"id": "oss-1", "title": "Lab 1 · Prompts, APIs and JSON", "path": "oss/lab-1.html", "kind": "osslab"},
-        {"id": "oss-2", "title": "Lab 2 · Tools and semantic search", "path": "oss/lab-2.html", "kind": "osslab", "draft": true, "code_files": ["code/oss-labs/l2_*.py"]},
-        {"id": "oss-3", "title": "Lab 3 · RAG and agents", "path": "oss/lab-3.html", "kind": "osslab", "draft": true, "code_files": ["code/oss-labs/l3_*.py"]}
+        {"id": "oss-2", "title": "Lab 2 · Tools and semantic search", "path": "oss/lab-2.html", "kind": "osslab"},
+        {"id": "oss-3", "title": "Lab 3 · RAG and agents", "path": "oss/lab-3.html", "kind": "osslab"},
+        {"id": "oss-4", "title": "Lab 4 · Architecture, evaluation and safety", "path": "oss/lab-4.html", "kind": "osslab"},
+        {"id": "oss-5", "title": "Lab 5 · Performance, cost and release", "path": "oss/lab-5.html", "kind": "osslab"}
       ]
     },
     {

@@ -43,11 +43,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Banks almost always put a gateway between their apps and any model, and the reasons are regulatory as much as technical. Customer data may only go to approved endpoints in approved regions; every prompt and response is logged for audit, often for years; personal data such as account numbers is masked before it leaves the bank's network; and each business line gets its own quota and cost centre. The proxy you build in Drill 02.1 is the seed of that gateway: one place where those rules are enforced, instead of every team calling the model directly.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Banks almost always put a gateway between their apps and any model, and the reasons are regulatory as much as technical. Customer data may only go to approved endpoints in approved regions; every prompt and response is logged for audit, often for years; personal data such as account numbers is masked before it leaves the bank's network; and each business line gets its own quota and cost centre. The proxy you build in Drill 02.1 is the seed of that gateway: one place where those rules are enforced, instead of every team calling the model directly.</p>
-</div>
   <p>Every serious AI product puts a service layer between users and the model. Larger organisations go further with an <strong>AI gateway</strong> in front of all model traffic (Azure API Management offers AI gateway features), giving one place for keys, quotas per team, caching, logging and failover between models. Your little FastAPI proxy in this drill is the same idea in 30 lines.</p>
 </div>
 

@@ -3,6 +3,11 @@
 Last local session: 2026-10-17. Read this first, then docs/FINANCE-USE-CASE.md (the approved design) and
 docs/HANDBOOK-GUIDE.md (page structure, callouts, house style).
 
+> **Historical handoff, superseded 2026-11-03:** all 12 modules, Parts I–V concept maps, open-source Labs 0–5
+> and the capstone package are now available in the handbook. Later project milestones and lab examples are
+> local learning references, not production deployments. The dated "To do" list below records the earlier
+> retrofit plan; use `docs/HANDBOOK-GUIDE.md` for current status and publishing instructions.
+
 ## The goal (agreed with the author)
 
 - Learners are mostly from banking and investment. Every lab, drill, milestone, open-source lab and demo

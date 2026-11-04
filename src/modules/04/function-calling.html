@@ -65,11 +65,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Function calling is how an assistant reaches the bank's systems of record: balances, card status, payment history, product rates. The model never reads the core banking database directly; it asks for a narrowly defined function, and the bank's code decides whether the request is allowed. Read tools are introduced first; anything that moves money or changes an account comes later, behind approval (Module 07).</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Function calling is how an assistant reaches the bank's systems of record: balances, card status, payment history, product rates. The model never reads the core banking database directly; it asks for a narrowly defined function, and the bank's code decides whether the request is allowed. Read tools are introduced first; anything that moves money or changes an account comes later, behind approval (Module 07).</p>
-</div>
   <p>Booking assistants call availability and pricing APIs, banking assistants call balance and transaction lookups, and IT help desks call "reset password" or "open incident" functions. Behind every one is the same loop you'll build here, plus a rule that the model only <em>proposes</em> and the backend <em>decides</em>.</p>
 </div>
 

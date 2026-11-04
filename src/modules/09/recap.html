@@ -1,0 +1,11 @@
+<!--meta
+{"id": "m09-recap", "short": "Module 09 Recap", "h1": "Module 09 · Recap and Self-Check", "description": "Review evaluation datasets, task-specific measures, evaluator calibration and release gates.", "lead": "Check that you can explain what a score measures, what it omits and what decision it supports.", "chips": ["Review", "Self-check", "Next: security"], "time": "10 min"}
+-->
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Evaluation review.</p></div></div>
+<div class="quiz">
+<details><summary>1. Why is accuracy insufficient for rare fraud reports?</summary><div><p>A model can label most ordinary messages correctly while missing a large share of fraud. Report recall and inspect representative fraud cases.</p></div></details>
+<details><summary>2. What is a model-based evaluator?</summary><div><p>A model that scores another output against a rubric or reference. Calibrate it against human judgments and inspect disagreements; it is not an oracle.</p></div></details>
+<details><summary>3. What belongs in an evaluation record?</summary><div><p>At minimum, the dataset version, model/deployment, prompt and tool versions, metric definitions, thresholds, results and review decisions.</p></div></details>
+<details><summary>4. What is next?</summary><div><p><a href="../10/index.html">Module 10</a> treats prompts, tools and customer data as security and responsible-AI concerns, building on the risk measures defined here.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Remember</div><p>A metric is evidence about a defined test, not a promise about every future interaction. Keep the test representative and the release decision explicit.</p></div>

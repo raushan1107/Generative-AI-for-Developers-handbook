@@ -42,11 +42,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Choosing an embedding model in a bank adds two questions to quality and cost: languages (customers write in many) and data residency (texts sent for embedding are customer data). Some banks host an open embedding model internally for exactly that reason. Changing the model means re-embedding everything, so the model name is versioned with the index.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Choosing an embedding model in a bank adds two questions to quality and cost: languages (customers write in many) and data residency (texts sent for embedding are customer data). Some banks host an open embedding model internally for exactly that reason. Changing the model means re-embedding everything, so the model name is versioned with the index.</p>
-</div>
   <p>Teams usually start with a cheap general model, build a small labelled test set from real user questions, and only move to a bigger or specialised model when the test set shows a real gain. Large indexes often use shortened vectors to cut storage and latency, accepting a small quality loss measured on that same test set.</p>
 </div>
 

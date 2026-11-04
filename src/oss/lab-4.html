@@ -1,0 +1,98 @@
+<!--meta
+{"id": "oss-4", "short": "Lab 4: Architecture, Evaluation and Safety", "h1": "Lab 4 · Architecture, Evaluation and Safety", "description": "Open-source lab guide for Part IV (Modules 08–10): trace a local request, persist synthetic session turns, evaluate a small classification set, and inspect the limits of simple privacy and injection indicators.", "lead": "Use deterministic Python examples to follow a request across stages, store synthetic turns in SQLite, measure classification results against explicit thresholds, and inspect narrow privacy and prompt-injection heuristics. Nothing calls a model or cloud service; the examples teach controls and their limitations, not production security.", "chips": ["Modules 08–10", "Local trace and session", "Evaluation gate", "Safety indicators", "≈ 3 hours"], "time": "Estimated time: 3 hours"}
+-->
+<h2 id="overview">Lab overview</h2>
+<div class="table-wrap min">
+  <table>
+    <tbody>
+      <tr><th>Objectives</th><td>Correlate stages with a trace ID · store and reload synthetic session turns · calculate classification metrics · apply explicit release thresholds · test narrow identifier masking and injection indicators · describe what each check does not prove</td></tr>
+      <tr><th>Prerequisites</th><td>Lab 0 Python environment · Labs 1–3 setup · Modules 08–10 demonstrated · no Ollama model or network access required for this lab's code</td></tr>
+      <tr><th>Scenario</th><td>RR Finance Assist is being checked before a fictional customer-support release. All data in the scripts is synthetic and the checks run locally.</td></tr>
+      <tr><th>You finish with</th><td><code>l4_quality.py</code>, a small session database, trace events, evaluation metrics and advisory safety indicators</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Exercise</th><th>Module</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td><a href="#ex1">1 · Trace a request and persist a demo session</a></td><td>08</td><td>45 min</td></tr>
+      <tr><td><a href="#ex2">2 · Evaluate a classifier with a release gate</a></td><td>09</td><td>60 min</td></tr>
+      <tr><td><a href="#ex3">3 · Test limited privacy and injection checks</a></td><td>10</td><td>55 min</td></tr>
+      <tr><td><a href="#review">Review and cleanup</a></td><td></td><td>20 min</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="before">Before you start</h2>
+<p>Open your <code>oss-genai-labs</code> folder and activate its virtual environment as shown in Lab 0. This lab uses only the Python standard library; the quality script does not read <code>.env</code>, call a model or send data anywhere. The complete lab download includes its scripts in the repository's <code>code/oss-labs/</code> folder.</p>
+
+<h2 id="ex1">Exercise 1 · Trace a request and persist a demo session</h2>
+<p>Module 08 connects application architecture to state and telemetry. This exercise uses a short trace ID to group stages and SQLite to store two synthetic turns.</p>
+<h3>Task 1: Run and inspect the code</h3>
+<ol>
+  <li>Open <code>l4_quality.py</code> and read <code>make_trace()</code> and <code>save_demo_turns()</code>:
+    <pre class="code" data-file="l4_quality.py" data-src="code/oss-labs/l4_quality.py"></pre></li>
+  <li>Run the script:
+<pre class="term"><code><span class="ps">$ </span>python l4_quality.py</code></pre>
+    <span class="out-label">Stable output except for the generated trace ID</span>
+<pre class="out"><code>Trace 138ccc511ec9: 3 correlated stages
+  138ccc511ec9 request_received
+  138ccc511ec9 retrieval_completed
+  138ccc511ec9 answer_returned
+SQLite demo session: stored 2 synthetic turns in l4_sessions.sqlite3
+Reloaded demo turns: 2
+Evaluation metrics: {'accuracy': 0.6, 'precision': 0.6666666666666666, 'recall': 1.0}
+Release gate: BLOCK; failed: ['accuracy', 'precision']
+Masked example: Customer gave account number [REDACTED] in a message.
+Heuristic indicators: ['override_instructions', 'reveal_prompt']
+These checks are teaching examples, not security controls.</code></pre></li>
+  <li>Run it again. The same demo session is replaced with the same two synthetic turns; the random trace ID changes. The example database stores content in plaintext, so do not put real customer or confidential data in it.</li>
+  <li>Run the focused tests:
+<pre class="term"><code><span class="ps">$ </span>python -m unittest test_l4_quality</code></pre></li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You can explain how one trace ID correlates events and where the two demo turns are stored. A trace ID is not a trace backend, and a local SQLite file is not a production session service.</p></div>
+
+<h2 id="ex2">Exercise 2 · Evaluate a classifier with a release gate</h2>
+<p>Module 09 starts with an evaluation set and measurable outcomes. The five examples in <code>CASES</code> are intentionally tiny and fixed so you can verify the arithmetic.</p>
+<h3>Task 1: Inspect the metrics</h3>
+<ol>
+  <li>Find the expected and predicted labels in <code>CASES</code>. The positive label is <code>fraud</code>; a false negative is a fraud example predicted as another category.</li>
+  <li>Read <code>classification_metrics()</code> and <code>failed_thresholds()</code>. Precision answers how many fraud predictions were correct; recall answers how many actual fraud examples were found.</li>
+  <li>Compare the output with the data: accuracy is 3/5 (0.6), precision is 2/3 (about 0.667), and recall is 2/2 (1.0). The gate blocks because accuracy and precision are below their configured minimums.</li>
+  <li>Change the two incorrect predictions, rerun the script and tests, then restore the original values. Observe how the metrics change. Do not treat a perfect score on five examples as evidence of production quality.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You can distinguish accuracy, precision and recall, identify the two failed thresholds, and explain why a small evaluation set is not enough for release approval.</p></div>
+
+<h2 id="ex3">Exercise 3 · Test limited privacy and injection checks</h2>
+<p>The final functions demonstrate two narrow pattern checks. They do not replace data-loss prevention, content moderation or authorization.</p>
+<h3>Task 1: Probe what the patterns recognize</h3>
+<ol>
+  <li>Run <code>python l4_quality.py</code> again. The labeled account-number example is replaced with <code>[REDACTED]</code>; the injection example returns two indicator names.</li>
+  <li>Change the message to a number without a label, such as <code>1234 5678 9012</code>. The masker will leave it unchanged. That is an intentional boundary of this teaching regex, not proof the text has no personal information.</li>
+  <li>Try an instruction not covered by the patterns, such as <code>disregard your rules</code>. An empty indicator list means only that these patterns did not match; it does not mean the input is safe.</li>
+  <li>Run <code>python -m unittest test_l4_quality</code> and check the tests for both a supported labeled identifier and an unlabeled number.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You can state exactly which patterns matched and why their absence cannot be used as a security decision.</p></div>
+
+<h2 id="trouble">Troubleshooting</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><code>ModuleNotFoundError</code> for a lab module</td><td>Run the command from the <code>oss-genai-labs</code> folder, where the script and test files are saved.</td></tr>
+      <tr><td>The session database is not created</td><td>Check that the process can write to the lab folder. The script creates the <code>data</code> folder when needed.</td></tr>
+      <tr><td>Your metrics differ from the sample</td><td>Check whether you edited <code>CASES</code>. The shown values correspond to the original five expected/predicted pairs.</td></tr>
+      <tr><td>A number is not masked or an attack is not flagged</td><td>These checks cover only a few labeled patterns. Inspect the regex and tests; do not broaden them into a claim of complete detection.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="review">Review and cleanup</h2>
+<ul class="checklist">
+  <li>A trace ID helps correlate stages; production telemetry also needs instrumentation, access controls, retention and data minimization.</li>
+  <li>Evaluation thresholds are explicit, but the dataset must represent real usage and relevant failure modes.</li>
+  <li>A regex can mask a limited labeled pattern; it cannot detect every sensitive value or injection attempt.</li>
+  <li>Human review, policy enforcement and provider security features remain separate controls.</li>
+</ul>
+<p><strong>Cleanup:</strong> remove only the synthetic session database with <code>python -c "from pathlib import Path; Path('data/l4_sessions.sqlite3').unlink(missing_ok=True)"</code>. Keep the scripts and tests for review.</p>

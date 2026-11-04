@@ -1,0 +1,188 @@
+{
+  "id": "map-part2",
+  "path": "maps/part-2.html",
+  "title": "Part II concept map",
+  "h1": "Part II Concept Map: Connect the Model to Your App",
+  "description": "An expandable map of Modules 04–05, connecting structured outputs and function calling to embeddings, retrieval and hybrid search.",
+  "lead": "Part II turns a model response into something an application can validate and use. First define the shape of the response and the functions the model may request. Then represent text as vectors and retrieve useful information by combining semantic similarity with metadata and keywords.",
+  "chips": ["Modules 04–05", "15 topics", "Structured output", "Search connections"],
+  "story": [
+    ["The contract", "Module 04", "Define output shapes, expose narrow tools, validate results and handle malformed responses."],
+    ["The retrieval", "Module 05", "Embed text, compare vectors, chunk documents and combine semantic search with metadata and keywords."]
+  ],
+  "modules": [
+    {
+      "num": "04",
+      "title": "Structured Outputs and Function Calling",
+      "tagline": "Give the model a contract, then connect it to controlled application logic",
+      "overview": "modules/04/index.html",
+      "topics": [
+        {
+          "id": "why-structured",
+          "title": "Why structured outputs matter",
+          "page": "modules/04/why-structured.html",
+          "definition": "A structured response follows a predictable shape that application code can parse and validate.",
+          "example": "Return a support category and urgency as named fields rather than extracting them from a paragraph.",
+          "finance": "A bank can route a card dispute only after checking required fields and allowed category values.",
+          "usecase": "Form extraction, classification, API payloads and downstream workflow decisions.",
+          "keep": "A valid structure does not prove that the values are true, complete or appropriate.",
+          "connects": [["json-mode", "JSON is one response format"], ["schema-outputs", "schemas constrain fields"], ["validation", "validate values after parsing"]]
+        },
+        {
+          "id": "json-mode",
+          "title": "JSON responses",
+          "page": "modules/04/json-mode.html",
+          "definition": "JSON mode asks a model to return syntactically valid JSON, subject to provider and model support.",
+          "example": "A response might contain {\"category\":\"card\",\"urgency\":\"high\"}.",
+          "finance": "A support intake service can parse fields from a lost-card message before applying its own rules.",
+          "usecase": "Integrations that need machine-readable output rather than prose.",
+          "keep": "Valid JSON alone does not enforce a particular schema or business rule.",
+          "connects": [["why-structured", "predictable output supports application code"], ["schema-outputs", "a schema adds field constraints"], ["malformed", "providers can still return errors or incomplete output"]]
+        },
+        {
+          "id": "schema-outputs",
+          "title": "Schema-based generation",
+          "page": "modules/04/schema-outputs.html",
+          "definition": "A schema describes the expected fields, data types and sometimes allowed values for a response.",
+          "example": "A product request schema can constrain a family to accounts, cards or loans and represent an unstated fee as null.",
+          "finance": "The bank can reject an unsupported case category before a ticket enters its workflow.",
+          "usecase": "Typed extraction, constrained classification and API-facing responses.",
+          "keep": "Provider support differs; schema conformance is not evidence that the model interpreted the request correctly.",
+          "connects": [["json-mode", "schemas can constrain JSON output"], ["validation", "validate business meaning after parsing"], ["malformed", "handle unsupported or failed constrained responses"]]
+        },
+        {
+          "id": "function-calling",
+          "title": "Function calling",
+          "page": "modules/04/function-calling.html",
+          "definition": "The model requests a named tool with arguments; application code decides whether to validate and execute it.",
+          "example": "The model requests a product search with family=cards and a maximum annual fee.",
+          "finance": "A card-status tool must use the authenticated customer's account, not an identity supplied by the model.",
+          "usecase": "Grounding answers in application data and initiating controlled workflows.",
+          "keep": "A tool call is a proposal, not execution or authorization; enforce access and side-effect rules in code.",
+          "connects": [["app-logic", "the application owns execution"], ["validation", "validate tool arguments"], ["malformed", "handle invalid tool requests"]]
+        },
+        {
+          "id": "app-logic",
+          "title": "Connecting LLMs to app logic",
+          "page": "modules/04/app-logic.html",
+          "definition": "Application code routes model requests to narrowly scoped functions and returns their results to the model.",
+          "example": "A loop checks the requested function name, validates arguments, executes it and appends the result.",
+          "finance": "Product fees and card status should come from bank systems of record rather than model-generated text.",
+          "usecase": "Combining language interfaces with approved business operations and data sources.",
+          "keep": "Keep identity, authorization, validation and side-effect handling in trusted application code.",
+          "connects": [["function-calling", "tool calls request application work"], ["validation", "guard the boundary"], ["malformed", "fail explicitly when arguments are unusable"]]
+        },
+        {
+          "id": "validation",
+          "title": "Validating model outputs",
+          "page": "modules/04/validation.html",
+          "definition": "Validation checks parsed model values against types, allowed values and application-specific rules.",
+          "example": "Reject a negative annual fee or a card identifier that is not in the signed-in customer's account.",
+          "finance": "A transfer amount may be well-formed but still exceed account or policy limits.",
+          "usecase": "Preventing malformed or unauthorized data from reaching downstream code.",
+          "keep": "Schema validation and business validation solve different problems; use both where needed.",
+          "connects": [["schema-outputs", "schemas provide structural constraints"], ["function-calling", "validate arguments before tools run"], ["malformed", "report invalid values clearly"]]
+        },
+        {
+          "id": "malformed",
+          "title": "Handling malformed responses",
+          "page": "modules/04/malformed.html",
+          "definition": "Malformed-response handling detects failed, incomplete or unexpected model output and returns an explicit error or safe retry.",
+          "example": "If a required category is missing, the application records the validation failure instead of silently assigning a default.",
+          "finance": "A missing dispute amount should trigger clarification or review, not an invented number.",
+          "usecase": "Reliable APIs, tool loops and user-facing forms.",
+          "keep": "Retries need limits and should not turn persistent failures into success-shaped defaults.",
+          "connects": [["json-mode", "syntax errors can occur at the format boundary"], ["validation", "semantic checks can fail after parsing"], ["app-logic", "the caller chooses an explicit recovery path"]]
+        },
+        {
+          "id": "embeddings",
+          "title": "What are embeddings?",
+          "page": "modules/05/embeddings.html",
+          "definition": "An embedding model maps text or other input to a numeric vector intended to represent learned relationships.",
+          "example": "A question about getting money back may be close to a question about disputing a duplicate charge.",
+          "finance": "A bank can retrieve help articles that use different wording from a customer's question.",
+          "usecase": "Semantic retrieval, clustering, deduplication and similarity features.",
+          "keep": "An embedding is a representation, not a fact, answer or authorization decision.",
+          "connects": [["similarity", "vectors are compared"], ["embedding-models", "the chosen model defines the vector space"], ["chunking", "documents are embedded in pieces"]]
+        },
+        {
+          "id": "similarity",
+          "title": "Vector similarity",
+          "page": "modules/05/similarity.html",
+          "definition": "A similarity function compares vectors; cosine similarity measures their orientation after normalization.",
+          "example": "Two vectors pointing in similar directions can represent text with related meanings despite different words.",
+          "finance": "A query about a returned payment can match a policy section titled 'Sent money to the wrong person'.",
+          "usecase": "Ranking candidate passages or items by semantic closeness.",
+          "keep": "A score is model- and dataset-dependent; it is not a calibrated probability of correctness.",
+          "connects": [["embeddings", "similarity compares embedding vectors"], ["similarity-search", "ranking retrieves nearest candidates"], ["metadata-filtering", "filter candidates before ranking when policy requires it"]]
+        },
+        {
+          "id": "embedding-models",
+          "title": "Embedding models",
+          "page": "modules/05/embedding-models.html",
+          "definition": "An embedding model defines how inputs are represented, including its dimensions, supported modalities and behavior.",
+          "example": "Replacing an embedding model changes the vector space and generally requires re-embedding the indexed documents.",
+          "finance": "Choose a model using the bank's languages, privacy requirements and retrieval evaluation set.",
+          "usecase": "Selecting and operating semantic-search infrastructure.",
+          "keep": "Vectors from incompatible models should not be compared as if they shared one space.",
+          "connects": [["embeddings", "models produce embeddings"], ["vector-databases", "indexes store model vectors"], ["hybrid-search", "embedding retrieval can be combined with lexical ranking"]]
+        },
+        {
+          "id": "vector-databases",
+          "title": "Vector databases",
+          "page": "modules/05/vector-databases.html",
+          "definition": "A vector database stores vectors and associated records and supports similarity retrieval and, depending on the product, filters.",
+          "example": "Store each help passage's vector alongside its article ID, audience and revision date.",
+          "finance": "An internal knowledge index should keep staff-only passages separate from customer-visible retrieval.",
+          "usecase": "Retrieving relevant chunks from collections larger than an in-memory demo.",
+          "keep": "A vector database does not automatically solve freshness, access control or groundedness.",
+          "connects": [["embedding-models", "the index is tied to vector generation"], ["metadata-filtering", "records can carry filter fields"], ["similarity-search", "search ranks stored vectors"]]
+        },
+        {
+          "id": "similarity-search",
+          "title": "Similarity search",
+          "page": "modules/05/similarity-search.html",
+          "definition": "Similarity search retrieves the nearest vectors to a query vector, often returning a ranked set of records.",
+          "example": "Embed a customer question and retrieve the closest help-centre sections for review.",
+          "finance": "A retrieval system can surface card-dispute deadlines, which still need source and policy checks.",
+          "usecase": "Semantic search and the retrieval stage of RAG.",
+          "keep": "The nearest passage may still be irrelevant or incomplete; evaluate retrieval against labeled queries.",
+          "connects": [["similarity", "ranking relies on a similarity function"], ["chunking", "the indexed unit affects results"], ["metadata-filtering", "filter allowed records"], ["hybrid-search", "combine vector and lexical evidence"]]
+        },
+        {
+          "id": "chunking",
+          "title": "Chunking strategies",
+          "page": "modules/05/chunking.html",
+          "definition": "Chunking divides longer documents into retrievable units while attempting to preserve useful context.",
+          "example": "Split a help article by headings, keeping its title and section text together.",
+          "finance": "Keep the conditions and exceptions of a fee policy with the fee rule they qualify.",
+          "usecase": "Preparing source documents for search and RAG.",
+          "keep": "Chunk size and boundaries affect retrieval; measure them with representative questions.",
+          "connects": [["embeddings", "each chunk is embedded"], ["similarity-search", "chunks become searchable units"], ["hybrid-search", "ranking operates over prepared chunks"]]
+        },
+        {
+          "id": "metadata-filtering",
+          "title": "Metadata filtering",
+          "page": "modules/05/metadata-filtering.html",
+          "definition": "Metadata filters restrict candidate records using attributes such as audience, date, product or region.",
+          "example": "Retrieve only current public help sections for a customer-facing answer.",
+          "finance": "Staff procedures must not be included in a customer retrieval set.",
+          "usecase": "Enforcing retrieval scope and narrowing search results.",
+          "keep": "A filter is only as trustworthy as its metadata and enforcement point; it is not identity authentication by itself.",
+          "connects": [["vector-databases", "metadata is stored with records"], ["similarity-search", "filter before ranking"], ["hybrid-search", "combine filters with multiple retrieval signals"]]
+        },
+        {
+          "id": "hybrid-search",
+          "title": "Hybrid search",
+          "page": "modules/05/hybrid-search.html",
+          "definition": "Hybrid search combines semantic retrieval with lexical or other ranking signals.",
+          "example": "Use vector similarity for a paraphrased question and keyword matching for an exact policy code.",
+          "finance": "A query can find both a natural-language card policy and an exact alert identifier such as FR-12.",
+          "usecase": "Search tasks where meaning and exact terms both matter.",
+          "keep": "Fusion methods need evaluation; adding ranking signals does not guarantee better results.",
+          "connects": [["similarity-search", "one component ranks semantic matches"], ["metadata-filtering", "apply scope constraints"], ["chunking", "prepared sections are ranked"]]
+        }
+      ]
+    }
+  ]
+}

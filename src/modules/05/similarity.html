@@ -58,11 +58,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Similarity scores drive real decisions in banking search tools, so their meaning must be understood: a cosine of 0.62 isn't a probability, and it isn't comparable across embedding models. Teams calibrate thresholds on labelled examples (the right policy section for each test question) before trusting them, and record the model version with the score.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Similarity scores drive real decisions in banking search tools, so their meaning must be understood: a cosine of 0.62 isn't a probability, and it isn't comparable across embedding models. Teams calibrate thresholds on labelled examples (the right policy section for each test question) before trusting them, and record the model version with the score.</p>
-</div>
   <p>Duplicate-ticket detectors and "related articles" widgets are built on exactly this: embed, compute cosine against recent items, show the top few above a threshold tuned on labelled examples. Teams re-tune that threshold whenever they change embedding model, because the score distribution moves.</p>
 </div>
 

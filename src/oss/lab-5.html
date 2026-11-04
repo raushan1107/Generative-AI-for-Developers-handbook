@@ -1,0 +1,95 @@
+<!--meta
+{"id": "oss-5", "short": "Lab 5: Performance, Cost and Release", "h1": "Lab 5 · Performance, Cost and Release", "description": "Open-source lab guide for Part V (Modules 11–12): route synthetic requests with explicit rules, estimate token cost from example rates, create a versioned cache key, and run local release-manifest and health-threshold checks.", "lead": "Prepare a small release preflight without deploying anything. Compare simple route rules, estimate cost from clearly labeled fictional rates, see how model and prompt versions affect a cache key, and validate a release manifest and health limits. Every check is local and deliberately narrower than a production deployment or monitoring system.", "chips": ["Modules 11–12", "Routing and cache keys", "Cost estimate", "Release preflight", "≈ 3 hours"], "time": "Estimated time: 3 hours"}
+-->
+<h2 id="overview">Lab overview</h2>
+<div class="table-wrap min">
+  <table>
+    <tbody>
+      <tr><th>Objectives</th><td>Apply explicit demo routing rules · estimate monthly token cost using supplied rates · build a versioned cache key · validate required release-manifest fields and digest syntax · compare observed health metrics with limits · separate preflight checks from deployment and monitoring</td></tr>
+      <tr><th>Prerequisites</th><td>Lab 0 Python environment · Lab 4 completed · Modules 11–12 demonstrated · no Ollama model, cloud account or network access required</td></tr>
+      <tr><th>Scenario</th><td>RR Finance Assist is preparing a fictional release. The rate card, routes, manifest and health observations are illustrative inputs, not vendor prices or an approved bank policy.</td></tr>
+      <tr><th>You finish with</th><td><code>l5_release.py</code> and a focused test suite for cost estimates, routing, cache-key versioning and release checks</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Exercise</th><th>Module</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td><a href="#ex1">1 · Compare routes and estimate token cost</a></td><td>11</td><td>55 min</td></tr>
+      <tr><td><a href="#ex2">2 · Create a versioned cache key</a></td><td>11</td><td>35 min</td></tr>
+      <tr><td><a href="#ex3">3 · Run a release and health preflight</a></td><td>12</td><td>65 min</td></tr>
+      <tr><td><a href="#review">Review and cleanup</a></td><td></td><td>25 min</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="before">Before you start</h2>
+<p>Open the same <code>oss-genai-labs</code> project folder used in earlier labs and activate its virtual environment. This script uses the Python standard library only. It makes no model calls, provisions no Azure resources and does not deploy an application.</p>
+
+<h2 id="ex1">Exercise 1 · Compare routes and estimate token cost</h2>
+<p>Module 11 introduces routing and budgets. This example uses a small, transparent decision table and a supplied token rate card; neither is an automatically safe production policy.</p>
+<h3>Task 1: Run the estimate and inspect its assumptions</h3>
+<ol>
+  <li>Open <code>l5_release.py</code> and read <code>choose_demo_route()</code> and <code>estimate_monthly_cost()</code>:
+    <pre class="code" data-file="l5_release.py" data-src="code/oss-labs/l5_release.py"></pre></li>
+  <li>Run the script:
+<pre class="term"><code><span class="ps">$ </span>python l5_release.py</code></pre>
+    <span class="out-label">Stable output except for the cache-key prefix</span>
+<pre class="out"><code>Illustrative monthly token estimate: $9.00
+Example cache key: cf3b435af2ec... (key only; no response cache is implemented)
+Route simple/public: small-model
+Route complex/public: large-model
+Route simple/customer: approved-private-route
+Local preflight: PASS
+Placeholder digests prove only string shape, not artifact provenance.
+Nothing was deployed or sent to a model provider.</code></pre></li>
+  <li>Check the estimate: 10 million input tokens at $0.50 per million is $5; 2 million output tokens at $2.00 per million is $4. The total is $9. Both rates are fictional teaching values. A real estimate must use current provider pricing and account for other charges and discounts.</li>
+  <li>Change request volume or the supplied rates and recalculate. Then inspect the route outcomes. The route names are labels only: they do not call a model, establish data residency, or authorize handling of customer information.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You can reproduce the $9 arithmetic and describe which explicit input caused each demo route.</p></div>
+
+<h2 id="ex2">Exercise 2 · Create a versioned cache key</h2>
+<p>The hash includes the model, prompt version and messages, so changing the prompt version changes the key even when the user message stays the same.</p>
+<h3>Task 1: Verify key stability and limits</h3>
+<ol>
+  <li>Read <code>cache_key()</code> and the corresponding test in <code>test_l5_release.py</code>.</li>
+  <li>Run the tests:
+<pre class="term"><code><span class="ps">$ </span>python -m unittest test_l5_release</code></pre></li>
+  <li>Change the prompt version from <code>assist-v1</code> to <code>assist-v2</code> and compare the key. Restore the original value after the experiment.</li>
+  <li>Notice what is deliberately absent: this script does not store or return cached responses, set a TTL, isolate users, or check whether a result is still authorized. Do not build a shared cache for private banking responses from this hash alone.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You can explain why a cache key needs relevant model and prompt versions, and why a deterministic hash is not a complete cache design.</p></div>
+
+<h2 id="ex3">Exercise 3 · Run a release and health preflight</h2>
+<p>Module 12 covers release controls and operations. This script checks required fields, digest-string shape and three supplied health thresholds; it does not verify artifacts or observe a running service.</p>
+<h3>Task 1: Exercise the preflight</h3>
+<ol>
+  <li>Inspect <code>validate_manifest()</code>, <code>health_failures()</code> and <code>HEALTH_LIMITS</code>. The digest examples use repeated letters to demonstrate syntax only.</li>
+  <li>Run the tests. Then change <code>p95_latency_ms</code> in the script to <code>1600</code> and rerun it; the local preflight should block on that metric. Restore the sample value afterward.</li>
+  <li>Remove the rollback digest from <code>manifest</code> or replace it with an invalid string, then rerun the program. Check that the manifest validation reports a failure. Restore the original sample.</li>
+  <li>Discuss what a real release needs in addition: verified artifact provenance, deployment permissions, secrets management, live health telemetry, rollback execution, incident ownership and tested recovery procedures.</li>
+</ol>
+<div class="callout note"><div class="c-label">Checkpoint</div><p>You can trigger a failed health check and explain why a passing local preflight does not certify or deploy a production release.</p></div>
+
+<h2 id="trouble">Troubleshooting</h2>
+<div class="table-wrap min">
+  <table>
+    <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>The displayed cost is not $9.00</td><td>Check the token counts and the illustrative input/output rates in <code>main()</code>; the calculation uses Decimal arithmetic.</td></tr>
+      <tr><td>The cache key changed unexpectedly</td><td>Compare the model, prompt version and message data. Any of them changes the canonical JSON and therefore the hash.</td></tr>
+      <tr><td>The health check blocks</td><td>Compare each observed value to its matching limit. Restore the original sample only after you have recorded which check failed.</td></tr>
+      <tr><td>The manifest passes with a fake digest</td><td>Expected: the check validates only the string's format. It does not retrieve the image or prove its integrity or origin.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="review">Review and cleanup</h2>
+<ul class="checklist">
+  <li>Cost projections depend on token usage and the current, applicable rate card; the sample prices are fictional.</li>
+  <li>Routing decisions need explicit quality, privacy, latency and availability requirements, not only a task label.</li>
+  <li>Cache isolation, retention, invalidation and authorization are part of the design, not properties supplied by a hash.</li>
+  <li>A release preflight is one check in a delivery process; it does not deploy, monitor or certify the service.</li>
+</ul>
+<p><strong>Cleanup:</strong> these programs create no persistent cache or release files. Keep the scripts and tests so you can rerun the checks.</p>

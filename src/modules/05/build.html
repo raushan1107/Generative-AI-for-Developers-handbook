@@ -1,12 +1,12 @@
 <!--meta
-{"id": "m05-build", "short": "Build: Milestone 5", "h1": "Build · Milestone 5: Search by Meaning", "description": "RR Finance Assist milestone 5: a search index over courses and help-centre sections built with embeddings, local hybrid search (BM25 + vectors + RRF) with metadata pre-filters or Azure AI Search as the backend, a /api/search endpoint, and a semantic search_courses tool with a keyword fallback.", "lead": "Version 0.5 understands what customers mean. An index holds every course and every help-centre section as vectors with text and metadata; a search service runs hybrid search with filters, locally or on Azure AI Search; a new /api/search endpoint exposes it; and the search_courses tool now finds 'a cheap intro to containers'. The help-centre index is also the retrieval layer Module 06 builds RAG on.", "chips": ["Index: 20 courses + 40 sections", "Hybrid + filters", "Local or Azure AI Search", "/api/search", "≈ 60 min"], "time": "Plan 10 min · Build 35 min · Verify 15 min"}
+{"id": "m05-build", "short": "Build: Milestone 5", "h1": "Build · Milestone 5: Search by Meaning", "description": "RR Finance Assist milestone 5: an embedding-backed index over bank products and help-centre sections, local hybrid search (BM25 + vectors + RRF) with metadata filters or Azure AI Search, a /api/search endpoint, and a semantic search_products tool with keyword fallback.", "lead": "Version 0.5 understands what customers mean. An index holds RR Finance Bank's products and help-centre sections as vectors with text and metadata; a search service runs hybrid search with filters, locally or on Azure AI Search; a new /api/search endpoint exposes it; and the search_products tool can find a travel card from a natural-language request. The help-centre index is also the retrieval layer Module 06 builds RAG on.", "chips": ["Index: 20 products + 44 sections", "Hybrid + filters", "Local or Azure AI Search", "/api/search", "≈ 60 min"], "time": "Plan 10 min · Build 35 min · Verify 15 min"}
 -->
 <div class="phase" id="plan"><span class="ph-num">1</span><div><h2>Plan</h2><p>From matching words to matching meaning.</p></div></div>
 
 <div class="case">
   <div class="case-head"><b>RR Finance Bank</b><span>· the brief for milestone 5</span></div>
   <div class="case-body">
-    <p>Customers describe what they want in their own words, and the catalogue tool misses half of it. The support team also wants a search over the ten help-centre articles, both for their own use and as the base for grounded answers next month. Constraints: it must run on a laptop for development, on Azure AI Search in production, and keep working (with plain keyword search) if the embedding service has a bad day.</p>
+    <p>Customers describe financial products in their own words, and exact keyword matching misses useful results. The support team also wants a search over the help-centre articles, both for their own use and as the base for grounded answers in Module 06. Constraints: it must run on a laptop for development, on Azure AI Search in production, and keep product search available with a keyword fallback if embeddings fail.</p>
   </div>
 </div>
 
@@ -14,11 +14,11 @@
   <div class="frame">
     <svg viewBox="0 0 960 330" role="img" aria-labelledby="b5-t b5-d">
       <title id="b5-t">RR Finance Assist v0.5</title>
-      <desc id="b5-d">Ahead of time, scripts/build_index.py loads 20 courses and the help articles, chunks the articles by heading into 40 sections, embeds everything with the embedding deployment, and saves a local index with vectors, text and metadata, or uploads it to Azure AI Search. At run time, SearchService embeds the query, then the local index pre-filters by kind, level, format and price, ranks by BM25 and by cosine, and merges with RRF; the Azure backend does the same on the service. GET /api/search and the search_courses tool both use SearchService; the tool falls back to keyword filtering if the index or embeddings are unavailable.</desc>
+      <desc id="b5-d">Ahead of time, scripts/build_index.py loads 20 bank products and the help articles, chunks the articles by heading into 44 sections, embeds everything with the configured embedding deployment, and saves a local index with vectors, text and metadata, or uploads it to Azure AI Search. At run time, SearchService embeds the query, then the local index pre-filters by kind, family, audience and annual fee, ranks by BM25 and cosine, and merges with RRF; the Azure backend performs hybrid search on the service. GET /api/search and the search_products tool both use SearchService; product search falls back to keyword matching if the index or embeddings are unavailable.</desc>
       <text x="20" y="30" class="t-m">AHEAD OF TIME · python -m scripts.build_index</text>
       <rect x="20" y="42" width="190" height="66" rx="12" class="s-surface"/><text x="115" y="70" class="t-b mid">courses.json</text><text x="115" y="90" class="t-s mid">+ data/help/*.md</text>
       <path d="M210 75 H244" class="s-arrow" marker-end="url(#ah)"/>
-      <rect x="250" y="42" width="190" height="66" rx="12" class="s-amber"/><text x="345" y="70" class="t-b mid">chunk by heading</text><text x="345" y="90" class="t-s mid">20 + 40 documents</text>
+      <rect x="250" y="42" width="190" height="66" rx="12" class="s-amber"/><text x="345" y="70" class="t-b mid">chunk by heading</text><text x="345" y="90" class="t-s mid">20 + 44 documents</text>
       <path d="M440 75 H474" class="s-arrow" marker-end="url(#ah)"/>
       <rect x="480" y="42" width="170" height="66" rx="12" class="s-violet"/><text x="565" y="70" class="t-b mid">embed</text><text x="565" y="90" class="t-s mid">EMBED_MODEL</text>
       <path d="M650 75 H684" class="s-arrow" marker-end="url(#ah)"/>
@@ -31,7 +31,7 @@
       <path d="M440 206 H474" class="s-arrow-accent" marker-end="url(#ah-a)"/>
       <rect x="480" y="150" width="460" height="112" rx="12" class="s-teal"/>
       <text x="496" y="174" class="t-b">LocalIndex.search() · or AzureIndex (same interface)</text>
-      <text x="496" y="198" class="t-s">1. pre-filter: kind, level, format, max_price_usd</text>
+      <text x="496" y="198" class="t-s">1. pre-filter: kind, family, audience, max_annual_fee_usd</text>
       <text x="496" y="216" class="t-s">2. rank by BM25 (with a small analyzer) and by cosine</text>
       <text x="496" y="234" class="t-s">3. merge with RRF → top k with text, source, scores</text>
       <path d="M815 108 V144" class="s-dash" marker-end="url(#ah)"/>
@@ -65,7 +65,7 @@
   <div class="drill-head"><span class="drill-id">Milestone 5</span><h3>Index, hybrid search service, API and semantic tool</h3>
     <div class="drill-meta"><span class="time">~60 min</span><span class="badge b-azure">Azure OpenAI</span><span class="badge b-azure">Azure AI Search optional</span><span class="badge b-tool">numpy · rank_bm25 · pytest</span></div></div>
   <div class="drill-body">
-    <p class="drill-goal"><b>Goal:</b> give RR Finance Assist a search index over courses and help sections, hybrid search with filters behind one service, a search API, and a catalogue tool that understands paraphrases.</p>
+    <p class="drill-goal"><b>Goal:</b> give RR Finance Assist a search index over bank products and help sections, hybrid search with filters behind one service, a search API, and a product tool that understands paraphrases.</p>
     <ol class="dsteps">
       <li class="dstep run"><span class="st">Run</span><h4>Settings</h4>
         <p>Copy <code>data/help/</code> from <code>genai-labs</code>, then add to <code>app/config.py</code> (and the matching lines to <code>.env</code>):</p>
@@ -80,10 +80,10 @@
 python -m scripts.build_index from the project folder.
 
 - If SEARCH_BACKEND (app.config) is "local": LocalIndex.build(get_client()) from #file:app/search.py,
-  save it, and print how many course and help documents, the vector dimensions and EMBED_MODEL.
+  save it, and print how many product and help-section documents, the vector dimensions and EMBED_MODEL.
 - If it's "azure": create or update an Azure AI Search index named AZURE_SEARCH_INDEX with fields
-  id (key), kind/level/format (filterable strings), title and text (searchable; text uses the
-  en.microsoft analyzer), source, price_usd (filterable, sortable Int32) and contentVector
+  id (key), kind/family/audience (filterable strings), title and text (searchable; text uses the
+  en.microsoft analyzer), source, annual_fee_usd (filterable, sortable Int32) and contentVector
   (Collection(Single), dimensions from the embeddings, HNSW profile "vprofile"); then
   merge_or_upload the documents from load_documents() with their vectors and print how many succeeded.
 - Import the Azure SDK only inside the Azure branch, so local users don't need it configured.
@@ -94,20 +94,20 @@ python -m scripts.build_index from the project folder.
         </div></details>
         <pre class="term"><code><span class="ps">$ </span>python -m scripts.build_index</code></pre>
         <span class="out-label">Real output (local backend, nomic-embed-text)</span>
-<pre class="out"><code>Local index: 20 courses + 40 help sections, 768-dimension vectors from nomic-embed-text.
+<pre class="out"><code>Local index: 20 products + 44 help sections, 768-dimension vectors from nomic-embed-text.
 Done in 5.0s.</code></pre>
       </li>
-      <li class="dstep write"><span class="st">Your prompt</span><h4>Upgrade the <code>search_courses</code> tool</h4>
+      <li class="dstep write"><span class="st">Your prompt</span><h4>Upgrade the <code>search_products</code> tool</h4>
         <p>Milestone 4's tool took a single keyword. Write a prompt for your assistant that changes it to take the customer's words plus typed filters, use the search service, and fall back safely.</p>
-        <div class="template-box"><pre><code>Goal: upgrade search_courses in #file:app/tools.py to semantic search
+        <div class="template-box"><pre><code>Goal: upgrade search_products in #file:app/tools.py to semantic search
 Context: app/search.py has SearchService.search(query, k, **filters) with filters
-         kind, level, format, max_price_usd
+         kind, family, audience, max_annual_fee_usd
 Constraints: arguments: query (the customer's words) + optional typed filters ...
              how the service is provided to the tool ...
              fallback when ...
-             return only id, title, level, format, price_usd
-Done when: pytest -q passes and "cheap intro to containers" returns Docker Quick Start first</code></pre></div>
-        <p class="hint"><b>Hint:</b> tools are plain functions, so give the module a <code>set_search_service()</code> that <code>main.py</code> calls at start-up. Filters must be <code>Literal</code>/<code>int</code> fields, never free text pasted into a filter. Fall back to the Milestone 4 keyword filter when no service is set <em>or</em> the search raises (embedding service down).</p>
+             return only id, name, family, audience, annual_fee_usd, rate_pct, rate_type
+Done when: pytest -q passes and a card request with family="cards" returns only cards</code></pre></div>
+        <p class="hint"><b>Hint:</b> tools are plain functions, so give the module a <code>set_search_service()</code> that <code>main.py</code> calls at start-up. Filters must be <code>Literal</code>/<code>int</code> fields, never free text pasted into a filter. Fall back to the Milestone 4 keyword filter when no service is set <em>or</em> the search raises (embedding service down). This fallback preserves basic matching; it does not preserve semantic ranking.</p>
         <details class="solution"><summary>Compare with my version</summary><div>
           <pre class="code" data-file="app/tools.py (search_courses)" data-src="code/rrfinance-assist/m05/app/tools.py" data-lines="60-94"></pre>
           <p>And in <code>main.py</code>, the service is created at start-up (a missing index is logged, not fatal) and exposed as <code>GET /api/search</code>:</p>
@@ -123,19 +123,25 @@ Done when: pytest -q passes and "cheap intro to containers" returns Docker Quick
 <pre class="term"><code><span class="ps">$ </span>pytest -q
 <span class="ps">$ </span>uvicorn app.main:app --reload</code></pre>
         <span class="out-label">Expected (exact)</span>
-<pre class="out"><code>....................................                                     [100%]
-36 passed in 2.18s</code></pre>
-        <p>In <code>/docs</code>, try <code>GET /api/search</code>. Real results from my local run (nomic-embed-text, local backend):</p>
-<pre class="out"><code>make my app understand photos (course)  -> C108 Computer Vision with Deep Learning, C114 Docker Quick Start, ...
-cheap intro to containers (course)      -> C114 Docker Quick Start, C113 Kubernetes for Developers, ...
-I get error LAB-503 (help)              -> labs-and-sandboxes-2 "Common problems", ...
-Is there a discount for a team of 12? (help) -> corporate-training-2 "Group discounts", ...
-hands-on cloud course, beginner, max $500 -> C109 AZ-900 ($350), C114 Docker ($190), C105 Prompt Eng. ($390)</code></pre>
+<pre class="out"><code>...................................                                      [100%]
+35 passed</code></pre>
+        <p>In <code>/docs</code>, try <code>GET /api/search</code>. Saved results from the local run (nomic-embed-text, local backend):</p>
+<pre class="out"><code>a card I can use on holiday without extra charges (product)
+  -> P114 Business Card ($0), P111 Voyager Travel Card ($95), P110 Cashback Card ($0)
+save for a house deposit (product)
+  -> P118 30-Year Fixed Mortgage ($0), P104 High-Yield Savings ($0), P106 12-Month CD ($0)
+someone is asking me to move money to a safe account (help)
+  -> fraud-and-scams-1 "We will never ask", transfers-and-payments-4 "Sent money to the wrong person", ...
+I paid the wrong person (help)
+  -> transfers-and-payments-4 "Sent money to the wrong person", transfers-and-payments-1 "Timing", ...
+card for spending abroad, no annual fee (family=cards, max fee=$0)
+  -> P110 Cashback Card ($0), P114 Business Card ($0), P112 Starter Credit Card ($0)</code></pre>
+        <p class="hint"><b>Interpret results, not just rank.</b> A semantically plausible top result is not necessarily policy-safe or suitable. Filters are strict constraints; compare search output against the underlying product data before making a recommendation. Here, the travel-related query needs a foreign-transaction-fee requirement that the current annual-fee filter does not express.</p>
         <ul class="verify-list">
-          <li>In the chat, as any customer: "Is there a cheap intro to containers?" The meta line shows <code>tools: search_courses</code> and the answer names Docker Quick Start ($190).</li>
-          <li>"Beginner cloud courses under $400?" The tool is called with <code>level="beginner"</code> and <code>max_price_usd=400</code>, and every course in the answer obeys both.</li>
-          <li>Stop Ollama (or break the embedding deployment name in <code>.env</code>) and ask again: the tool falls back to keyword search; Assist still answers, just less cleverly.</li>
-          <li>Delete <code>data/index/</code> and restart: <code>/api/search</code> returns 503 with "run python -m scripts.build_index", and chat still works.</li>
+          <li>Try a product request with <code>family="cards"</code> and <code>max_annual_fee_usd=0</code>; verify every returned product meets both filters.</li>
+          <li>Ask a help-centre question and inspect the source and section title; search returns passages, not a verified policy answer.</li>
+          <li>Stop the embedding service and ask for a product again: keyword fallback can preserve basic matching, but does not guarantee semantic results.</li>
+          <li>Delete <code>data/index/</code> and restart: <code>/api/search</code> returns 503 with "run python -m scripts.build_index", while chat's product tool uses its keyword fallback.</li>
           <li>Optional: set <code>SEARCH_BACKEND=azure</code>, rebuild, restart, and repeat. Same answers, now served by Azure AI Search.</li>
         </ul>
       </li>
@@ -146,11 +152,11 @@ hands-on cloud course, beginner, max $500 -> C109 AZ-900 ($350), C114 Docker ($1
 
 <div class="phase check" id="verify"><span class="ph-num">3</span><div><h2>Verify</h2><p>Where RR Finance Assist stands after Part II.</p></div></div>
 <ul class="checklist">
-  <li>Every course and help section is embedded in an index that records its embedding model.</li>
+  <li>Every product and help section is embedded in an index that records its embedding model.</li>
   <li>Search is hybrid (BM25 + vectors + RRF) with metadata pre-filters, locally or on Azure AI Search.</li>
-  <li><code>/api/search</code> exposes courses and help sections; <code>search_courses</code> understands paraphrases.</li>
-  <li>Failures degrade gracefully: no index or no embeddings means keyword search, not an error.</li>
-  <li>36 offline tests, including search, run in about two seconds.</li>
+  <li><code>/api/search</code> exposes products and help sections; <code>search_products</code> supports natural-language queries and typed filters.</li>
+  <li>Product search falls back to keyword matching when no index is available or embedding search fails; that fallback is less capable and is not a substitute for testing search quality.</li>
+  <li>35 offline tests cover search, filtering, saved-index compatibility and fallback behavior.</li>
 </ul>
 <div class="table-wrap min">
   <table>

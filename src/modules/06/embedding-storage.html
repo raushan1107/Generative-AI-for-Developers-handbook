@@ -73,11 +73,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Index updates in a bank follow change control: when a policy changes, only the changed sections are re-embedded, the index records which document versions it holds, and the old index is kept until the new one passes its evaluation. That lets the bank show, for any past answer, which version of the policy it was based on.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Index updates in a bank follow change control: when a policy changes, only the changed sections are re-embedded, the index records which document versions it holds, and the old index is kept until the new one passes its evaluation. That lets the bank show, for any past answer, which version of the policy it was based on.</p>
-</div>
   <p>A team switched embedding deployments from one model to another "for better quality" and re-embedded only new documents. For a week, answers about old policies got worse: old vectors and new query vectors lived in different spaces, and nothing raised an error. A manifest check on load, as in <code>kb_index.py</code>, turns that silent failure into an obvious one. Mature teams build a second index with the new model, compare hit rates on their question set, then switch traffic.</p>
 </div>
 

@@ -1,0 +1,218 @@
+{
+  "id": "map-part3",
+  "path": "maps/part-3.html",
+  "title": "Part III concept map",
+  "h1": "Part III Concept Map: Ground It and Let It Act",
+  "description": "An expandable map of Modules 06–07, connecting RAG retrieval, grounded answers and citations with agent tools, state and human approval.",
+  "lead": "Part III gives a model access to relevant information and, in controlled cases, application tools. RAG retrieves source material before generation; an agent can coordinate multiple steps. In both cases the application still owns access controls, validation and the decision to execute consequential actions.",
+  "chips": ["Modules 06–07", "17 topics", "RAG connections", "Agent boundaries"],
+  "story": [
+    ["Ground the answer", "Module 06", "Prepare, retrieve and present source passages, then check generated claims and citations."],
+    ["Control the action", "Module 07", "Coordinate tool calls and state within a bounded workflow, with reliability checks and human review."]
+  ],
+  "modules": [
+    {
+      "num": "06",
+      "title": "Retrieval-Augmented Generation",
+      "tagline": "Retrieve relevant sources before generating an answer",
+      "overview": "modules/06/index.html",
+      "topics": [
+        {
+          "id": "what-rag",
+          "title": "What is RAG, and why use it?",
+          "page": "modules/06/what-is-rag.html",
+          "definition": "Retrieval-Augmented Generation supplies selected external information to a model at answer time.",
+          "example": "Search current help articles for a dispute deadline, then provide relevant passages to the model.",
+          "finance": "RAG can ground a customer-support draft in current bank policy, but the cited policy still needs verification.",
+          "usecase": "Question answering over documents that change or are not in the model's training data.",
+          "keep": "RAG can improve access to evidence; it does not guarantee that retrieval or generation is correct.",
+          "connects": [["architecture", "the flow has retrieval and generation stages"], ["retrieval", "the system selects evidence"], ["generation", "the model uses supplied context"], ["citations", "attribution helps users check sources"]]
+        },
+        {
+          "id": "architecture",
+          "title": "RAG architecture",
+          "page": "modules/06/architecture.html",
+          "definition": "A RAG pipeline prepares documents, retrieves candidate context, constructs a prompt and generates a response.",
+          "example": "An ingestion job builds an index; at query time the app embeds the question, searches, filters and sends selected passages.",
+          "finance": "Separate public help from staff procedures before retrieval, not after a generated answer is produced.",
+          "usecase": "Designing document-grounded assistants and search-backed applications.",
+          "keep": "Every stage can fail independently and should be measured and monitored.",
+          "connects": [["ingestion", "documents enter the pipeline"], ["retrieval", "query-time selection"], ["prompt-construction", "selected evidence is passed to the model"], ["generation", "context becomes an answer"]]
+        },
+        {
+          "id": "ingestion",
+          "title": "Document ingestion",
+          "page": "modules/06/ingestion.html",
+          "definition": "Ingestion extracts and normalizes source content and metadata for downstream indexing.",
+          "example": "Parse Markdown headings, extract a PDF table and attach source ID, audience and revision date.",
+          "finance": "A revised fee schedule should replace or supersede stale policy text in the searchable corpus.",
+          "usecase": "Building indexes from policies, manuals, reports and knowledge-base content.",
+          "keep": "Track provenance, access labels and freshness; extraction errors can become retrieval errors.",
+          "connects": [["architecture", "ingestion is an offline pipeline stage"], ["chunking", "normalized content is divided"], ["embedding-storage", "prepared chunks are indexed"]]
+        },
+        {
+          "id": "chunking",
+          "title": "Text chunking",
+          "page": "modules/06/chunking.html",
+          "definition": "Chunking splits source documents into units that can be retrieved within model and application limits.",
+          "example": "Keep a dispute rule and its eligibility exception in the same section-sized chunk.",
+          "finance": "Separating a fee amount from its waiver condition can lead to an incomplete answer.",
+          "usecase": "Preparing long content for retrieval and context assembly.",
+          "keep": "Chunk size, overlap and boundaries should be tested against real questions and source structure.",
+          "connects": [["ingestion", "chunking follows extraction"], ["embedding-storage", "chunks are stored with vectors"], ["retrieval", "retrieval ranks chunks"], ["prompt-construction", "selected chunks use context space"]]
+        },
+        {
+          "id": "embedding-storage",
+          "title": "Embedding generation and vector storage",
+          "page": "modules/06/embedding-storage.html",
+          "definition": "Embedding generation maps chunks to vectors that are stored with identifiers and useful metadata.",
+          "example": "Store each policy section's vector with a source ID, revision and audience label.",
+          "finance": "A bank can re-index amended policies while preserving version information for auditing.",
+          "usecase": "Making document passages searchable by semantic similarity.",
+          "keep": "Keep the embedding model and index version aligned, and retain source provenance.",
+          "connects": [["ingestion", "normalized text is embedded"], ["chunking", "the chunk is the indexed unit"], ["retrieval", "queries search stored vectors"]]
+        },
+        {
+          "id": "retrieval",
+          "title": "Retrieval",
+          "page": "modules/06/retrieval.html",
+          "definition": "Retrieval selects and ranks candidate source passages for a query, often using filters and a top-k limit.",
+          "example": "Retrieve the three most relevant current public help sections for a customer's question.",
+          "finance": "Apply the customer's authorized audience before searching staff-only content.",
+          "usecase": "RAG context selection, search results and evidence gathering.",
+          "keep": "Relevant-looking passages can still be stale, incomplete or incorrect; evaluate retrieval separately.",
+          "connects": [["embedding-storage", "retrieval searches the index"], ["prompt-construction", "selected passages become prompt context"], ["citations", "source identifiers support attribution"], ["architecture", "retrieval is one pipeline stage"]]
+        },
+        {
+          "id": "prompt-construction",
+          "title": "Prompt construction",
+          "page": "modules/06/prompt-construction.html",
+          "definition": "Prompt construction combines instructions, user input and retrieved context into a model request.",
+          "example": "Label each source, ask for a concise answer and tell the model to say when supplied sources do not answer.",
+          "finance": "Use clear boundaries between a customer's message and retrieved policy text.",
+          "usecase": "Grounded question answering and controlled summarization.",
+          "keep": "Retrieved content is untrusted input; prompt wording alone is not a security boundary.",
+          "connects": [["retrieval", "retrieval supplies context"], ["generation", "the model receives the constructed request"], ["what-agent", "both systems use instructions and context"]]
+        },
+        {
+          "id": "generation",
+          "title": "Response generation",
+          "page": "modules/06/generation.html",
+          "definition": "Generation produces an answer from the model's instructions, input and any retrieved context.",
+          "example": "Ask for an answer supported by supplied policy passages and a clear abstention when evidence is missing.",
+          "finance": "A response about a dispute deadline should reflect the current source, not a plausible model guess.",
+          "usecase": "Natural-language answers, summaries and drafts over retrieved information.",
+          "keep": "A grounded prompt can still produce unsupported claims; inspect and evaluate the output.",
+          "connects": [["prompt-construction", "instructions and context shape the request"], ["citations", "generated claims can reference sources"], ["reliability", "outputs need checks"]]
+        },
+        {
+          "id": "citations",
+          "title": "Citation and source attribution",
+          "page": "modules/06/citations.html",
+          "definition": "Citation and attribution connect a response to source identifiers so users can inspect supporting material.",
+          "example": "Render a link to the policy section used to answer a question about card disputes.",
+          "finance": "A support agent can compare a drafted policy explanation with the bank's approved source.",
+          "usecase": "Auditable knowledge answers and evidence review.",
+          "keep": "A citation can point to a real source without proving the source entails the claim.",
+          "connects": [["retrieval", "sources are selected before citation"], ["generation", "the model emits attribution"], ["reliability", "check claim-to-source support"], ["what-rag", "attribution is part of grounded answering"]]
+        }
+      ]
+    },
+    {
+      "num": "07",
+      "title": "Building AI Agents",
+      "tagline": "Coordinate model decisions and application tools within explicit boundaries",
+      "overview": "modules/07/index.html",
+      "topics": [
+        {
+          "id": "what-agent",
+          "title": "What is an AI agent? Agent vs chatbot",
+          "page": "modules/07/what-is-an-agent.html",
+          "definition": "An agent uses a model to select steps or tools toward a task, while application code runs tools and enforces constraints.",
+          "example": "An assistant can look up a customer's card status and request a freeze through a separate approval step.",
+          "finance": "A bank agent should not be allowed to move money merely because a model generated a tool call.",
+          "usecase": "Multi-step workflows where tool access adds value beyond a single response.",
+          "keep": "More autonomy adds complexity and risk; use the least autonomy that solves the task.",
+          "connects": [["tool-calling", "agents request application tools"], ["workflows", "steps are coordinated"], ["human-review", "consequential actions may need approval"]]
+        },
+        {
+          "id": "planning",
+          "title": "Reasoning and planning",
+          "page": "modules/07/planning.html",
+          "definition": "Planning decomposes a task into steps or tool requests; the application should bound and validate that process.",
+          "example": "List allowed cards, inspect one card's status and ask for approval before freezing it.",
+          "finance": "A support workflow can require verified identity and policy checks before a card action.",
+          "usecase": "Tasks that need ordered information gathering or controlled tool execution.",
+          "keep": "A generated plan is not proof of correct reasoning or permission to act.",
+          "connects": [["tool-calling", "plans may request tools"], ["multi-step", "tasks may span several operations"], ["reliability", "bound and verify each stage"]]
+        },
+        {
+          "id": "tool-calling",
+          "title": "Tool calling for agents",
+          "page": "modules/07/tool-calling.html",
+          "definition": "Tool calling lets a model request a named function with arguments that application code can inspect.",
+          "example": "The model requests card_status with a last-four identifier from the app's own card list.",
+          "finance": "The server must check that the card belongs to the authenticated customer before returning status.",
+          "usecase": "Connecting assistants to databases, APIs and approved actions.",
+          "keep": "Validate tool names and arguments, enforce authorization and limit side effects.",
+          "connects": [["what-agent", "tools are an agent capability"], ["planning", "tool selection can follow a plan"], ["human-review", "pause actions requiring approval"], ["reliability", "handle tool failures"]]
+        },
+        {
+          "id": "workflows",
+          "title": "Agent workflows",
+          "page": "modules/07/workflows.html",
+          "definition": "An agent workflow defines how model calls, tools, state and control flow interact.",
+          "example": "A bounded loop receives a tool request, validates it, executes it and returns the result to the model.",
+          "finance": "A card-freeze workflow can separate lookup, approval and the actual state change.",
+          "usecase": "Repeatable, observable multi-step tasks.",
+          "keep": "Explicit state transitions and stop conditions are safer than an unbounded loop.",
+          "connects": [["tool-calling", "tools are workflow steps"], ["state-memory", "workflows carry state"], ["multi-step", "several steps form a task"], ["human-review", "approval can pause a workflow"]]
+        },
+        {
+          "id": "state-memory",
+          "title": "State and memory",
+          "page": "modules/07/state-memory.html",
+          "definition": "State is information retained for a task or session; memory may be passed back into later model requests.",
+          "example": "Store a conversation identifier and recent turns, with a defined expiration and deletion policy.",
+          "finance": "Customer conversation history needs access controls, retention limits and secure storage.",
+          "usecase": "Multi-turn assistants and workflows that span requests.",
+          "keep": "A model does not automatically remember prior calls; application-managed memory has privacy and cost trade-offs.",
+          "connects": [["workflows", "state coordinates steps"], ["multi-step", "later actions depend on earlier results"], ["what-rag", "retrieval adds external context rather than session memory"]]
+        },
+        {
+          "id": "multi-step",
+          "title": "Multi-step tasks",
+          "page": "modules/07/multi-step.html",
+          "definition": "A multi-step task performs several dependent operations before returning a result.",
+          "example": "Check a card, ask for consent, execute a freeze and confirm the resulting status.",
+          "finance": "A dispute case may require identity, transaction and policy checks before a human review.",
+          "usecase": "Workflows with dependencies, conditional branches or multiple tools.",
+          "keep": "Each step needs a bounded retry policy, clear failure behavior and outcome verification.",
+          "connects": [["planning", "planning proposes steps"], ["workflows", "the workflow executes steps"], ["state-memory", "steps share necessary state"], ["reliability", "verify results and failures"]]
+        },
+        {
+          "id": "human-review",
+          "title": "Human-in-the-loop workflows",
+          "page": "modules/07/human-in-the-loop.html",
+          "definition": "Human review inserts a person into a workflow to approve, reject or correct a decision or action.",
+          "example": "Show a freeze preview derived from application data, then ask the customer to approve before executing it.",
+          "finance": "A consequential account action should have a defined consent and escalation path.",
+          "usecase": "High-impact decisions, ambiguous cases and actions with external side effects.",
+          "keep": "Approval must be bound to the exact action and trusted data; a prompt asking for consent is not enough by itself.",
+          "connects": [["tool-calling", "review gates tool execution"], ["workflows", "approval pauses a workflow"], ["reliability", "approval and outcomes need auditing"]]
+        },
+        {
+          "id": "reliability",
+          "title": "Agent reliability",
+          "page": "modules/07/reliability.html",
+          "definition": "Agent reliability uses bounded behavior, validation, explicit errors and measured outcomes to reduce failures.",
+          "example": "Limit tool-loop steps, reject unknown functions and report a failed tool call rather than claiming success.",
+          "finance": "Compare the final customer-facing response with the actual recorded account action.",
+          "usecase": "Production workflows that must handle model and dependency failures.",
+          "keep": "A fluent final answer is not evidence that the requested operation succeeded.",
+          "connects": [["workflows", "control flow needs stop conditions"], ["multi-step", "each dependency can fail"], ["human-review", "review and audit consequential changes"], ["citations", "source checks are another reliability measure"]]
+        }
+      ]
+    }
+  ]
+}

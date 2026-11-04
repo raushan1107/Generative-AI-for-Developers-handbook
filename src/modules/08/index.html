@@ -1,0 +1,35 @@
+<!--meta
+{"id": "m08", "short": "AI Application Architecture", "h1": "AI Application Architecture", "description": "Module 08: place gateways, application services, session storage, queues and telemetry around a model without confusing infrastructure controls with application behavior.", "lead": "A model call is one component, not an architecture. In this module, we add explicit routing and expiring session persistence to RR Finance Assist, then map where gateways, queues and traces belong—and what this local demo does not provide.", "chips": ["Gateway", "Persistent sessions", "Queues", "Tracing"], "time": "Learn 25 min · Build 45 min"}
+-->
+<div class="phase" id="learn"><span class="ph-num">1</span><div><h2>Learn</h2><p>Separate the product workflow from the infrastructure around it.</p></div></div>
+
+<figure class="diagram">
+  <div class="frame">
+    <svg viewBox="0 0 960 250" role="img" aria-labelledby="m8-title m8-desc">
+      <title id="m8-title">RR Finance Assist architecture boundary</title>
+      <desc id="m8-desc">A client calls an application API. An optional AI gateway controls model access. The application owns identity, policy, retrieval, tools and approvals. A model endpoint returns a response. Session storage, a job queue and telemetry support the service but do not replace application checks.</desc>
+      <rect x="20" y="75" width="130" height="75" rx="10" class="s-surface"/><text x="85" y="105" class="t-b mid">Client</text><text x="85" y="127" class="t-s mid">agent or customer</text>
+      <rect x="175" y="75" width="145" height="75" rx="10" class="s-amber"/><text x="247" y="105" class="t-b mid">Gateway</text><text x="247" y="127" class="t-s mid">optional control plane</text>
+      <rect x="345" y="35" width="330" height="155" rx="12" class="s-blue"/><text x="510" y="62" class="t-b mid">RR Finance Assist API</text>
+      <rect x="365" y="82" width="140" height="75" rx="9" class="s-surface"/><text x="435" y="110" class="t-b mid">App rules</text><text x="435" y="132" class="t-s mid">identity · approvals</text>
+      <rect x="515" y="82" width="140" height="75" rx="9" class="s-violet"/><text x="585" y="110" class="t-b mid">Model endpoint</text><text x="585" y="132" class="t-s mid">drafts · triage</text>
+      <rect x="700" y="20" width="235" height="62" rx="10" class="s-teal"/><text x="817" y="47" class="t-b mid">Session store</text><text x="817" y="67" class="t-s mid">scoped · expiring</text>
+      <rect x="700" y="94" width="235" height="62" rx="10" class="s-surface2"/><text x="817" y="121" class="t-b mid">Queue</text><text x="817" y="141" class="t-s mid">durable background work</text>
+      <rect x="700" y="168" width="235" height="62" rx="10" class="s-rose"/><text x="817" y="195" class="t-b mid">Telemetry</text><text x="817" y="215" class="t-s mid">trace IDs, not payloads</text>
+      <path d="M150 112 H169 M320 112 H339 M675 95 H694 M675 120 H694 M675 145 H694" class="s-arrow" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <figcaption>The gateway can standardize model access. The application still owns business rules, authorization and safe actions.</figcaption>
+</figure>
+
+<div class="callout realworld"><div class="c-label">In the real world</div><p>Production AI systems combine application services with managed identity, storage, network controls and observability. A gateway helps apply shared model-access policies, while application code remains responsible for product-specific decisions.</p></div>
+<div class="callout finance"><div class="c-label">In finance</div><p>RR Finance Assist keeps the signed-in customer context and pending approvals in the application tier. A model gateway may centralize endpoint access and quotas, but it cannot decide whether a transaction belongs to that customer or whether a dispute is eligible.</p></div>
+
+<div class="lens">
+  <div><h5>Traditional developer view</h5><p>"Put each feature in a service and connect the APIs."</p></div>
+  <div><h5>GenAI developer view</h5><p>"Keep nondeterministic model work behind explicit application controls, and design state, cost and telemetry around every call."</p></div>
+</div>
+
+<h3>In this module</h3>
+<!--MODULE_PAGES:08-->
+<div class="callout takeaway"><div class="c-label">Takeaway</div><p>Architecture makes model access, state and operations explicit. It does not move business authority from application code into the model or the gateway.</p></div>

@@ -65,11 +65,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Banks extract the same fields again and again: payee, amount, currency, date and reference from payment instructions; borrower, income and employer from loan applications; counterparty and notional from trade confirmations. A strict schema per document type, with enums for currencies and categories and null for anything missing, turns those extractions into data a controls team can test. Amounts should be numbers in a stated currency, never strings with symbols.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Banks extract the same fields again and again: payee, amount, currency, date and reference from payment instructions; borrower, income and employer from loan applications; counterparty and notional from trade confirmations. A strict schema per document type, with enums for currencies and categories and null for anything missing, turns those extractions into data a controls team can test. Amounts should be numbers in a stated currency, never strings with symbols.</p>
-</div>
   <p>Extraction services (invoices, insurance claims, CVs, support tickets) define one Pydantic model per document type and share it between the model call, the API response and the database layer. When the business adds a field, one class changes and the schema, the docs and the validation all follow.</p>
 </div>
 

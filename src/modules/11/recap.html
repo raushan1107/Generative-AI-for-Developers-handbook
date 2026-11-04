@@ -1,0 +1,11 @@
+<!--meta
+{"id": "m11-recap", "short": "Module 11 Recap", "h1": "Module 11 · Recap and Self-Check", "description": "Review model routing, prompt and response caching, batch processing, latency percentiles and workload-based cost estimates.", "lead": "Optimization is a measured change. Check that you can explain what work is reused, which users it applies to and whether the quality gate still passes.", "chips": ["Review", "Self-check", "Next: production"], "time": "10 min"}
+-->
+<div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Performance and cost review.</p></div></div>
+<div class="quiz">
+<details><summary>1. Is prompt caching the same as reusing a previous response?</summary><div><p>No. Provider prompt caching can reuse eligible prefix processing; application response caching returns a stored result and has additional freshness and data-isolation risks.</p></div></details>
+<details><summary>2. Why measure p95 latency?</summary><div><p>It shows a slow tail experienced by a portion of requests, which an average can hide. Include retrieval, queue wait, retries and model steps.</p></div></details>
+<details><summary>3. Which tasks are candidates for batch processing?</summary><div><p>Tasks that tolerate asynchronous completion, such as a nightly evaluation or bulk analysis. Time-sensitive customer events need a monitored interactive path.</p></div></details>
+<details><summary>4. What is next?</summary><div><p><a href="../12/index.html">Module 12</a> turns the evaluation and operational budgets into deployment checks, monitoring and incident procedures.</p></div></details>
+</div>
+<div class="callout takeaway"><div class="c-label">Remember</div><p>Measure cost and latency for a quality-qualified task. Re-check performance, privacy and evaluation after changing a route or cache.</p></div>

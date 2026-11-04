@@ -64,11 +64,11 @@
 
 <div class="callout realworld">
   <div class="c-label">In the real world</div>
+  <p>Policies are written with conditions next to rules ("$29, at most 3 times a day, no fee if overdrawn by $50 or less"). If chunking separates the rule from its condition, the model answers with half a rule. Keeping whole sections, with their introductions, is why the help-centre chunker in this module keeps each section intact.</p>
+</div>
 
 <div class="callout finance">
   <div class="c-label">In finance</div>
-  <p>Policies are written with conditions next to rules ("$29, at most 3 times a day, no fee if overdrawn by $50 or less"). If chunking separates the rule from its condition, the model answers with half a rule. Keeping whole sections, with their introductions, is why the help-centre chunker in this module keeps each section intact.</p>
-</div>
   <p>A common production bug: a PDF extractor puts each page's header and footer into the text, and a fixed-size chunker splits mid-table. The bot then answers "the fee is $" with a citation. Teams catch these by sampling chunks by eye after every chunker change and by keeping a small set of questions whose answers sit in awkward places (intros, tables, footnotes), exactly like the five intro questions in Drill 06.4.</p>
 </div>
 
