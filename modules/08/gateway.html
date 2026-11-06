@@ -225,9 +225,10 @@
 <div class="callout pitfall"><div class="c-label">Common trap</div><p>Assuming a gateway makes a model call safe. It cannot infer whether a customer is authorized to dispute a transaction or whether a generated answer follows a bank policy.</p></div>
 <div class="callout exam"><div class="c-label">Interview cue</div><p>"I use a gateway for shared endpoint controls and quotas, and keep identity, business rules and tool authorization in the application. Model routing uses an allowlist and fails closed for unknown task names."</p></div>
 <div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Reject routes that aren't configured.</p></div></div>
+<div class="callout note prereq"><div class="c-label">Download and set up this drill</div><p>The code panels show files; their Copy buttons do not create files on your computer. <a href="../../code/rrfinance-assist-m08.zip" download>Download the complete Module 08 project</a> and extract it. Open the top-level <code>rrfinance-assist</code> folder, which already contains <code>app/architecture.py</code>, <code>tests/test_architecture.py</code>, <code>pytest.ini</code> and <code>requirements.txt</code>. You do not need to create the files or tests folder.</p><p>From that project folder, use an environment with the project dependencies installed (if needed, run <code>python -m pip install -r requirements.txt</code>). These focused tests are offline and do not call a model.</p></div>
 <div class="drill" id="d08-1" data-title="Route only configured tasks" data-time="~15 min" data-steps="run,verify">
 <div class="drill-head"><span class="drill-id">Drill 08.1</span><h3>Route only configured tasks</h3><div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">Python · pytest</span><span class="badge b-tool">offline</span></div></div>
-<div class="drill-body"><p class="drill-goal"><b>Goal:</b> use a trusted route map and reject unconfigured tasks instead of accepting arbitrary deployment names.</p><ol class="dsteps"><li class="dstep run"><span class="st">Run</span><h4>The route resolver</h4><pre class="code" data-file="architecture.py"><code>"""Small, offline examples of explicit routing and expiring session storage."""
+<div class="drill-body"><p class="drill-goal"><b>Goal:</b> use a trusted route map and reject unconfigured tasks instead of accepting arbitrary deployment names.</p><ol class="dsteps"><li class="dstep run"><span class="st">Run</span><h4>The route resolver</h4><pre class="code" data-file="app/architecture.py"><code>"""Small, offline examples of explicit routing and expiring session storage."""
 
 import json
 import sqlite3
@@ -309,7 +310,74 @@ class SessionStore:
         messages = json.loads(row[0])
         if not isinstance(messages, list):
             raise ValueError("Stored session must contain a message list")
-        return messages</code></pre><p>Run the focused tests from the M08 project folder.</p><pre class="term"><code><span class="ps">$ </span>python -m pytest -q tests/test_architecture.py</code></pre><span class="out-label">Expected result</span><pre class="out"><code>8 passed</code></pre></li><li class="dstep verify"><span class="st">Verify</span><ul class="verify-list"><li>An unknown task raises an explicit <code>ValueError</code>.</li><li>A blank deployment is rejected.</li><li>Production route names come from deployment configuration, not from user input.</li></ul></li></ol></div><div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d08-1"> I've completed Drill 08.1</label></div></div>
+        return messages</code></pre><pre class="code" data-file="tests/test_architecture.py"><code>import pytest
+
+from app.architecture import SessionStore, new_trace_id, select_deployment
+from app.chat import ChatService
+from tests.fakes import FakeClient
+
+
+def test_routes_only_configured_tasks():
+    assert select_deployment("triage", {"triage": "chat-small"}) == "chat-small"
+    with pytest.raises(ValueError, match="Unconfigured task"):
+        select_deployment("customer supplied name", {"triage": "chat-small"})
+
+
+def test_empty_deployment_is_rejected():
+    with pytest.raises(ValueError, match="Empty deployment"):
+        select_deployment("draft", {"draft": " "})
+
+
+def test_trace_ids_are_unique_and_safe_for_logs():
+    first, second = new_trace_id(), new_trace_id()
+    assert first != second
+    assert len(first) == 32 and all(char in "0123456789abcdef" for char in first)
+
+
+def test_session_round_trips_and_updates(tmp_path):
+    store = SessionStore(tmp_path / "sessions.sqlite")
+    store.save("s-1", [{"role": "user", "content": "Help with a dispute"}], 500)
+    assert store.load("s-1", now=100) == [
+        {"role": "user", "content": "Help with a dispute"}
+    ]
+    store.save("s-1", [{"role": "assistant", "content": "I can help"}], 600)
+    assert store.load("s-1", now=100) == [
+        {"role": "assistant", "content": "I can help"}
+    ]
+
+
+def test_expired_session_is_deleted(tmp_path):
+    store = SessionStore(tmp_path / "sessions.sqlite")
+    store.save("s-expired", [], expires_at=100)
+    assert store.load("s-expired", now=100) is None
+    assert store.load("s-expired", now=50) is None
+
+
+def test_invalid_session_is_rejected(tmp_path):
+    store = SessionStore(tmp_path / "sessions.sqlite")
+    with pytest.raises(ValueError, match="session ID"):
+        store.save("", [], expires_at=100)
+
+
+def test_chat_service_persists_completed_turns(tmp_path):
+    store = SessionStore(tmp_path / "sessions.sqlite")
+    service = ChatService(
+        client=FakeClient(rounds=[{"text": "I can help with the dispute."}]),
+        session_store=store,
+    )
+    list(service.stream("session-1234", "I recognize a duplicate charge."))
+    assert store.load("session-1234") == [
+        {"role": "user", "content": "I recognize a duplicate charge."},
+        {"role": "assistant", "content": "I can help with the dispute. "},
+    ]
+
+
+def test_reset_deletes_persisted_history(tmp_path):
+    store = SessionStore(tmp_path / "sessions.sqlite")
+    store.save("session-1234", [{"role": "user", "content": "question"}], 9999999999)
+    service = ChatService(client=FakeClient(), session_store=store)
+    service.reset("session-1234")
+    assert store.load("session-1234") is None</code></pre><p>From the extracted project folder, run:</p><pre class="term"><code><span class="ps">$ </span>python -m pytest -q tests/test_architecture.py</code></pre><span class="out-label">Expected result</span><pre class="out"><code>8 passed</code></pre></li><li class="dstep verify"><span class="st">Verify</span><ul class="verify-list"><li>An unknown task raises an explicit <code>ValueError</code>.</li><li>A blank deployment is rejected.</li><li>Production route names come from deployment configuration, not from user input.</li></ul></li></ol></div><div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d08-1"> I've completed Drill 08.1</label></div></div>
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Gateway boundaries.</p></div></div><div class="quiz"><details><summary>1. A gateway returns HTTP 200. Does that prove the user may freeze a card?</summary><div><p>No. The app must authorize the requested action against trusted customer identity and bank rules.</p></div></details><details><summary>2. Who should choose the deployment for a task?</summary><div><p>Trusted routing configuration or a tested application policy—not an arbitrary name supplied by the user or generated by the model.</p></div></details></div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Gateways govern shared model access. Application code still owns authorization, validation and business outcomes.</p></div>
 

@@ -224,9 +224,10 @@
 <div class="callout pitfall"><div class="c-label">Common trap</div><p>Assuming a model's automatic prompt cache stores and replays the answer. It reuses eligible prompt processing; response caching is a separate application behavior with separate correctness and privacy risks.</p></div>
 <div class="callout exam"><div class="c-label">Interview cue</div><p>"I select routes based on measured task quality, check provider cache support and cache-hit telemetry, avoid caching customer-specific responses without strict isolation, and use batch only where latency requirements allow."</p></div>
 <div class="phase do" id="do"><span class="ph-num">2</span><div><h2>Do</h2><p>Estimate cost with a supplied rate card, not a hard-coded price.</p></div></div>
-<div class="drill" id="d11-1" data-title="Compare routes with a current rate card" data-time="~15 min" data-steps="run,verify">
-<div class="drill-head"><span class="drill-id">Drill 11.1</span><h3>Compare routes with a current rate card</h3><div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">Python · pytest</span><span class="badge b-tool">offline</span></div></div>
-<div class="drill-body"><p class="drill-goal"><b>Goal:</b> calculate a monthly token-cost estimate from explicit input/output rates and request volume.</p><ol class="dsteps"><li class="dstep run"><span class="st">Run</span><h4>The estimator</h4><pre class="code" data-file="costing.py"><code>"""Cost estimates from an explicitly supplied, current rate card."""
+<div class="callout note prereq"><div class="c-label">Download and set up this drill</div><p>The code panels show files; their Copy buttons do not create files on your computer. <a href="../../code/rrfinance-assist-m11.zip" download>Download the complete Module 11 project</a> and extract it. Open the top-level <code>rrfinance-assist</code> folder, which already contains <code>app/costing.py</code>, <code>tests/test_costing.py</code>, <code>pytest.ini</code> and <code>requirements.txt</code>. You do not need to create the files or tests folder.</p><p>From that project folder, use an environment with the project dependencies installed (if needed, run <code>python -m pip install -r requirements.txt</code>). These focused tests are offline and do not call a model.</p></div>
+<div class="drill" id="d11-1" data-title="Estimate token cost for one approved route" data-time="~15 min" data-steps="run,verify">
+<div class="drill-head"><span class="drill-id">Drill 11.1</span><h3>Estimate token cost for one approved route</h3><div class="drill-meta"><span class="time">~15 min</span><span class="badge b-tool">Python · pytest</span><span class="badge b-tool">offline</span></div></div>
+<div class="drill-body"><p class="drill-goal"><b>Goal:</b> calculate the token cost for one candidate route with explicit input/output rates, then compare another route only after both pass the quality checks from <a class="xref" href="../../modules/09/index.html">Module 9</a>.</p><ol class="dsteps"><li class="dstep run"><span class="st">Run</span><h4>Calculate an illustrative monthly estimate</h4><pre class="code" data-file="app/costing.py"><code>"""Cost estimates from an explicitly supplied, current rate card."""
 
 from dataclasses import dataclass
 from decimal import Decimal
@@ -269,7 +270,40 @@ def estimate_monthly_cost(
         * rate_card.output_usd_per_million
         / Decimal(1_000_000)
     )
-    return input_cost + output_cost</code></pre><pre class="term"><code><span class="ps">$ </span>python -m pytest -q tests/test_costing.py</code></pre><span class="out-label">Expected result</span><pre class="out"><code>4 passed</code></pre></li><li class="dstep verify"><span class="st">Verify</span><ul class="verify-list"><li>Input and output rates are supplied separately.</li><li>The example does not claim to be a current vendor price quote.</li><li>Compare cost only after checking route quality and latency.</li></ul></li></ol></div><div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d11-1"> I've completed Drill 11.1</label></div></div>
+    return input_cost + output_cost</code></pre><pre class="code" data-file="tests/test_costing.py"><code>from decimal import Decimal
+
+import pytest
+
+from app.costing import RateCard, estimate_monthly_cost
+
+
+def test_monthly_cost_uses_separate_input_and_output_rates():
+    rates = RateCard(
+        input_usd_per_million=Decimal("0.40"),
+        output_usd_per_million=Decimal("1.60"),
+    )
+    assert estimate_monthly_cost(1000, 250, 40000, rates) == Decimal("32.000")
+
+
+def test_zero_requests_cost_nothing():
+    rates = RateCard(Decimal("1.00"), Decimal("2.00"))
+    assert estimate_monthly_cost(1000, 500, 0, rates) == Decimal(0)
+
+
+def test_negative_rate_is_rejected():
+    with pytest.raises(ValueError, match="cannot be negative"):
+        RateCard(Decimal("-0.01"), Decimal("1.00"))
+
+
+def test_negative_volume_is_rejected():
+    rates = RateCard(Decimal("1.00"), Decimal("2.00"))
+    with pytest.raises(ValueError, match="cannot be negative"):
+        estimate_monthly_cost(1000, 500, -1, rates)</code></pre><p>From the project folder, start Python with <code>python</code>, then paste these lines at the <code>&gt;&gt;&gt;</code> prompt. The rates are illustrative, not a current provider quote.</p><pre class="code" data-file="Python REPL input"><code>from decimal import Decimal
+from app.costing import RateCard, estimate_monthly_cost
+
+rates = RateCard(Decimal("0.40"), Decimal("1.60"))
+cost = estimate_monthly_cost(1000, 250, 160000, rates)
+print(f"${cost:,.2f}")</code></pre><pre class="out"><code>$128.00</code></pre><p>The inputs represent 160,000 model calls, each with 1,000 input and 250 output tokens. To compare a second candidate, rerun with its measured token counts and supplied rates; this helper does not choose a model or evaluate answer quality.</p><p>Run the focused tests from the same project folder:</p><pre class="term"><code><span class="ps">$ </span>python -m pytest -q tests/test_costing.py</code></pre><span class="out-label">Expected test result</span><pre class="out"><code>4 passed</code></pre></li><li class="dstep verify"><span class="st">Verify</span><ul class="verify-list"><li>Input and output rates are supplied separately.</li><li>The example does not claim to be a current vendor price quote.</li><li>Compare cost only after checking route quality and latency.</li></ul></li></ol></div><div class="drill-foot"><label class="done-row"><input type="checkbox" data-done="d11-1"> I've completed Drill 11.1</label></div></div>
 <div class="phase check" id="check"><span class="ph-num">3</span><div><h2>Check</h2><p>Caching and batch choices.</p></div></div><div class="quiz"><details><summary>1. Can an app response cache return one customer's balance to another?</summary><div><p>It must never do so. Include tenant/user scope in authorization and cache design, or do not cache personal responses.</p></div></details><details><summary>2. Which work is a better batch candidate: a nightly evaluation or a lost-card report?</summary><div><p>The nightly evaluation can usually wait. A lost-card report is time-sensitive and needs an interactive, monitored path.</p></div></details></div>
 <div class="callout takeaway"><div class="c-label">Takeaway</div><p>Distinguish model prompt caching, application response caching and batch processing. Each has different freshness, privacy and latency rules.</p></div>
 
